@@ -1,1 +1,1 @@
-Welcome to EcoVibe (ECK)
+Welcome to EcoVibe (ECK).
