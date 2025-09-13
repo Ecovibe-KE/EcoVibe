@@ -1,5 +1,5 @@
 # This workflow is for running tests on a React frontend application.
-# It uses Node.js and npm to install dependencies and run Jest tests.
+# It uses Node.js and npm to install dependencies and run tests.
 # For more information see: https://docs.github.com/en/actions
 
 name: React Client CI
@@ -40,13 +40,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
           # This caches the npm dependency folder to speed up subsequent runs
           cache: 'npm'
+          # Specify the path to the lock file for correct caching in a monorepo
+          cache-dependency-path: client/package-lock.json
 
       # 3. Installs project dependencies using npm ci (clean install)
       - name: Install dependencies
-        run: cd client && npm ci
+        run: npm ci
 
-      # 4. Runs Jest tests
-      - name: Run tests with coverage
-        # The 'npm test' command is standard for running Jest in React projects
-        run: cd client && npm run coverage
+      # 4. Runs tests
+      - name: Run tests
+        # The 'npm test' command is standard for running tests
+        run: npm test
 
