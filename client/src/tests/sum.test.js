@@ -3,7 +3,7 @@ import sum from '../sum';
 
 test('adds 1 + 2 to equal 3', () => {
   // expect() and toBe() are functions from Jest
-  expect(sum(1, 2)).toBe(30);
+  expect(sum(1, 2)).toBe(3);
 });
 
 test('adds -5 + 10 to equal 5', () => {
