@@ -1,16 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAnalytics } from '../../hooks/useAnalytics';
-import { logEvent as firebaseLogEvent } from 'firebase/analytics';
 
 // Mock the 'firebase/analytics' module
-vi.mock('firebase/analytics', async(importOriginal) => {
-    const actual = await importOriginal()
+vi.mock('firebase/analytics', async() => {
+    const actual = await vi.importActual('firebase/analytics');
     return {
         ...actual,
     logEvent: vi.fn(),
     }
 });
+
+import { logEvent as firebaseLogEvent } from 'firebase/analytics';
 
 // Mock our own firebaseConfig to provide a mutable analytics instance
 let analyticsInstance = { app: 'mock-app' };
