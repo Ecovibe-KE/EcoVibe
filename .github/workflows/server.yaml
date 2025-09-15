@@ -1,0 +1,68 @@
+# This is a basic workflow to help you get started with Actions
+# It runs tests for a Python project using Pipenv, Pytest, and Coverage.
+# For more information see: https://docs.github.com/en/actions
+
+name: Flask application CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" and "develop" branches
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server 
+    strategy:
+      # You can test against multiple Python versions
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Sets up the specified Python version from the matrix
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 3. Installs Pipenv
+      - name: Install Pipenv
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+
+      # 4. Caches Pipenv virtual environment to speed up builds
+      # The cache is invalidated when Pipfile.lock changes.
+      - name: Cache Pipenv virtual environment
+        uses: actions/cache@v4
+        id: cache-pipenv
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+
+      # 5. Installs project dependencies using Pipenv
+      - name: Install dependencies
+        # This step only runs if the cache was not restored in the previous step
+        if: steps.cache-pipenv.outputs.cache-hit != 'true'
+        run: pipenv install --dev
+
+      # 6. Runs tests with Pytest
+      - name: Test with pytest
+        run: |
+          pipenv run pytest
+
