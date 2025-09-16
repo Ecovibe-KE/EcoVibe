@@ -8,12 +8,12 @@ name: MegaLinter
 on: # yamllint disable-line rule:truthy - false positive
   # Comment this line to trigger action only on pull-requests
   # (not recommended if you don't pay for GH Actions)
-  push:
+  # push:
 
   pull_request:
     branches:
       - main
-      - master
+      - develop
 
 # Comment env block if you do not want to apply fixes
 env:
