@@ -31,10 +31,10 @@ describe('ActionButton', () => {
   });
 
   it('applies the correct classes for variant and action', () => {
-    const { container } = render(<ActionButton label="Test" action="update" variant="outline" />);
+    const { container } = render(<ActionButton label="Test" action="update" variant="outlined" />);
     const button = container.querySelector('button');
     expect(button.className).toContain('action-button');
-    expect(button.className).toContain('outline');
+    expect(button.className).toContain('outlined');
     expect(button.className).toContain('update');
   });
 
