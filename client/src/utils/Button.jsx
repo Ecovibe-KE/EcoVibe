@@ -54,17 +54,17 @@ const Button = ({
     transition: "all 0.3s ease",
   };
 
-  const hoverStyles = {
-    backgroundColor: "#f5a030",
-    borderColor: "#f5a030",
-    color: "#fff",
-  };
+  // const hoverStyles = {
+  //   backgroundColor: "#f5a030",
+  //   borderColor: "#f5a030",
+  //   color: "#fff",
+  // };
 
-  const outlineHoverStyles = {
-    backgroundColor: "#f5a030",
-    borderColor: "#f5a030",
-    color: "#fff",
-  };
+  // const outlineHoverStyles = {
+  //   backgroundColor: "#f5a030",
+  //   borderColor: "#f5a030",
+  //   color: "#fff",
+  // };
 
   // Determine button size class
   const sizeClass = size === "sm" ? "btn-sm" : size === "lg" ? "btn-lg" : "";
@@ -76,20 +76,20 @@ const Button = ({
         outline ? "btn-outline" : ""
       } ${sizeClass} ${className}`}
       style={outline ? outlineStyles : customStyles}
-      onMouseOver={(e) => {
-        if (!disabled) {
-          e.target.style.backgroundColor = outline ? "#f5a030" : "#f5a030";
-          e.target.style.borderColor = "#f5a030";
-          e.target.style.color = "#fff";
-        }
-      }}
-      onMouseOut={(e) => {
-        if (!disabled) {
-          e.target.style.backgroundColor = outline ? "transparent" : "#37b137";
-          e.target.style.borderColor = "#37b137";
-          e.target.style.color = outline ? "#37b137" : "#fff";
-        }
-      }}
+      // onMouseOver={(e) => {
+      //   if (!disabled) {
+      //     e.target.style.backgroundColor = outline ? "#f5a030" : "#f5a030";
+      //     e.target.style.borderColor = "#f5a030";
+      //     e.target.style.color = "#fff";
+      //   }
+      // }}
+      // onMouseOut={(e) => {
+      //   if (!disabled) {
+      //     e.target.style.backgroundColor = outline ? "transparent" : "#37b137";
+      //     e.target.style.borderColor = "#37b137";
+      //     e.target.style.color = outline ? "#37b137" : "#fff";
+      //   }
+      // }}
       onClick={onClick}
       disabled={disabled}
       {...props}
