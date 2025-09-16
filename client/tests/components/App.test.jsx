@@ -14,7 +14,7 @@ vi.mock('../../src/hooks/useAnalytics', () => ({
 
 // Mock the ActionButton to track its props and simulate clicks
 const mockActionButton = vi.fn();
-vi.mock('../../src/utils/button/Button', () => ({
+vi.mock('../../src/utils/Button', () => ({
   ActionButton: (props) => {
     mockActionButton(props);
     // Render a simple button to allow clicking
