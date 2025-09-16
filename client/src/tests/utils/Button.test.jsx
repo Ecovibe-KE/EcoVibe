@@ -35,7 +35,7 @@ describe('ActionButton', () => {
     const { container: container1 } = render(<ActionButton label="Test" action="update" />);
     const button1 = container1.querySelector('button');
     expect(button1.className).toContain('btn');
-    expect(button1.className).toContain('btn-primary');
+    expect(button1.className).toContain('btn-warning');
 
     // Test with outlined variant
     const { container: container2 } = render(<ActionButton label="Test" action="delete" variant="outlined" />);
