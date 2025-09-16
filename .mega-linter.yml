@@ -1,5 +1,8 @@
 DEFAULT_BRANCH: develop
 APPLY_FIXES: all
+IGNORE_GITIGNORED_FILES: true
+DISABLE:
+  - GIT_GIT_DIFF   # prevents it from touching git workflow files
 DISABLE_LINTERS:
   - SPELL_CSPELL
   - SPELL_MISSPELL
