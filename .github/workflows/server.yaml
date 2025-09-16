@@ -67,9 +67,9 @@ jobs:
 
       # 7. Run tests with coverage and comment on PR
       - name: Run tests with coverage
-        run: pipenv run pytest --cov=. --cov-report=xml --cov-report=term tests/
+        run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
 
       - name: Comment coverage
         uses: coroo/pytest-coverage-commentator@v1.0.2
         with:
-          pytest-coverage: ./server/coverage.xml
+          pytest-coverage: ./server/pytest-coverage.txt
