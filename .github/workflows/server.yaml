@@ -65,7 +65,12 @@ jobs:
       - name: Verify installed packages
         run: pipenv run pip list | grep pytest
 
+
       # 7. Run tests with coverage and comment on PR
+      - name: Run tests with coverage
+        run: |
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=src tests/ | tee pytest-coverage.txt
+
       - name: Coverage comment (changed files only)
         uses: MishaKav/pytest-coverage-comment@main
         with:
