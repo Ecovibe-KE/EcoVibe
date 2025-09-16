@@ -70,4 +70,4 @@ jobs:
       - name: Comment coverage
         uses: coroo/pytest-coverage-commentator@v1.0.2
         with:
-          pytest-coverage: ./server/coverage.xml
+          pytest-coverage: coverage.xml
