@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    setupFiles: './jest.setup.js',
+    setupFiles: './tests/setup.js',
     environment: 'jsdom',
     coverage: {
       provider: 'istanbul',
