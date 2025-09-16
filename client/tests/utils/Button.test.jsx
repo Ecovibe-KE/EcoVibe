@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ActionButton } from '../../src/utils/button/Button.jsx';
+import { ActionButton } from '../../src/utils/Button.jsx';
 
 // Mock the icons
 vi.mock('@mui/icons-material/Add', () => ({

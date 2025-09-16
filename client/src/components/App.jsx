@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics';
-import { ActionButton } from '../utils/button/Button';
+import { ActionButton } from '../utils/Button';
 
 
 function App() {
