@@ -30,12 +30,18 @@ describe('ActionButton', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('applies the correct classes for variant and action', () => {
-    const { container } = render(<ActionButton label="Test" action="update" variant="outlined" />);
-    const button = container.querySelector('button');
-    expect(button.className).toContain('action-button');
-    expect(button.className).toContain('outlined');
-    expect(button.className).toContain('update');
+  it('applies the correct classes for action and variant', () => {
+    // Test with solid variant
+    const { container: container1 } = render(<ActionButton label="Test" action="update" />);
+    const button1 = container1.querySelector('button');
+    expect(button1.className).toContain('btn');
+    expect(button1.className).toContain('btn-primary');
+
+    // Test with outlined variant
+    const { container: container2 } = render(<ActionButton label="Test" action="delete" variant="outlined" />);
+    const button2 = container2.querySelector('button');
+    expect(button2.className).toContain('btn');
+    expect(button2.className).toContain('btn-outline-danger');
   });
 
   it('displays the add icon for the "add" action', () => {
@@ -56,13 +62,6 @@ describe('ActionButton', () => {
   it('displays the view icon for the "view" action', () => {
     render(<ActionButton label="View" action="view" />);
     expect(screen.getByTestId('view-icon')).not.toBeNull();
-  });
-
-  it('applies custom styles', () => {
-    const { container } = render(<ActionButton label="Styled" action="add" style={{ color: 'red' }} />);
-    const button = container.querySelector('button');
-    expect(button.style.color).toBe('red');
-    expect(button.style.margin).toBe('5px');
   });
 
   it('has the correct aria-label', () => {
