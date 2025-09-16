@@ -55,21 +55,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pipenv-
 
-      # 5. Installs project dependencies using Pipenv
+      # 5. Install dependencies using Pipenv
       - name: Install dependencies
-        # This step only runs if the cache was not restored in the previous step
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: pipenv install --dev
 
-      # 6. Runs tests with Pytest
-      - name: Test with pytest
-        run: |
-          pipenv run pytest
+      # 6. Verify pytest and plugins
+      - name: Verify installed packages
+        run: pipenv run pip list | grep pytest
 
       # 7. Run tests with coverage and comment on PR
-      - name: Build coverage file
-        run: |
-          pipenv run pytest --cov=. tests/ > pytest-coverage.txt
+      - name: Run tests with coverage
+        run: pipenv run pytest --cov=. --cov-report=xml --cov-report=term tests/
+
       - name: Comment coverage
         uses: coroo/pytest-coverage-commentator@v1.0.2
-
