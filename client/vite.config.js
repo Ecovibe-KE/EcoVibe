@@ -6,12 +6,25 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
     setupFiles: './jest.setup.js',
-    provider: 'v8',
+    environment: 'jsdom',
     coverage: {
+      provider: 'istanbul',
+      include: ['src/**/*'],
+      exclude: [
+        'src/**/*.d.ts',
+        'src/main.jsx'
+      ],
+      all: true,
       reporter: ['text', 'json-summary', 'html', 'json'],
       reportOnFailure: true,
+      thresholds: {
+        // Have at least 60% coverage
+        lines: 60,
+        branches: 60,
+        functions: 60,
+        statements: 60
+      },
     },
   },
 })
