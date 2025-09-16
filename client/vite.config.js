@@ -10,7 +10,7 @@ export default defineConfig({
     setupFiles: './jest.setup.js',
     provider: 'v8',
     coverage: {
-      reporter: ['text', 'json-summary', 'html'],
+      reporter: ['text', 'json', 'html'],
       reportOnFailure: true,
     },
   },
