@@ -8,16 +8,29 @@ DISABLE_LINTERS:
   - SPELL_MISSPELL
 
 ENABLE_LINTERS:
+  # Python (Flask backend)
   - PYTHON_FLAKE8
   - PYTHON_BLACK
+
+  # JavaScript (React frontend)
   - JAVASCRIPT_ES
-PYTHON_FLAKE8_ARGUMENTS: "--max-line-length=88"
   - JAVASCRIPT_PRETTIER
+
+  # Common
   - MARKDOWN_MARKDOWNLINT
   - YAML_PRETTIER
   - JSON_PRETTIER
   - ENV_DOTENV_LINTER
   - SQL_SQL_LINT
+
+# Python settings (only lint server/)
+PYTHON_FLAKE8_ARGUMENTS: "--max-line-length=88"
+PYTHON_FLAKE8_FILTER_REGEX_INCLUDE: "server/.*"
+PYTHON_BLACK_FILTER_REGEX_INCLUDE: "server/.*"
+
+# JavaScript settings (only lint client/)
+JAVASCRIPT_ES_FILTER_REGEX_INCLUDE: "client/.*"
+JAVASCRIPT_PRETTIER_FILTER_REGEX_INCLUDE: "client/.*"
 
 SHOW_ELAPSED_TIME: true
 FILEIO_REPORTER: false
