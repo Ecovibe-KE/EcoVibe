@@ -66,10 +66,9 @@ jobs:
         run: pipenv run pip list | grep pytest
 
       # 7. Run tests with coverage and comment on PR
-      - name: Run tests with coverage
-        run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
-
-      - name: Comment coverage
-        uses: coroo/pytest-coverage-commentator@v1.0.2
+      - name: Coverage comment (changed files only)
+        uses: MishaKav/pytest-coverage-comment@main
         with:
-          pytest-coverage: ./server/pytest-coverage.txt
+          pytest-coverage-path: ./server/pytest-coverage.txt
+          junitxml-path: ./server/pytest.xml
+          report-only-changed-files: true
