@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
  * @param {string} [props.error] - Error message to display and apply error styles.
  * @param {string} [props.success] - Success message to display and apply success styles.
  * @param {boolean} [props.disabled=false] - Whether the input is disabled.
- * @param {...any} props.props - Additional props passed to the input element.
+ * @param props.props - Additional props passed to the input element.
  * @returns {JSX.Element} The rendered input component.
  * Sample Usage
  * <Input
