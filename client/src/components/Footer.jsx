@@ -1,14 +1,15 @@
+
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer = ({ pageType }) => {
   return (
-    <footer className="bg-dark text-light py-4 w-100 mt-auto">
-      {/* container-fluid makes it full width */}
-      <Container fluid className="px-5">
-        <Row className="text-center text-md-start">
-          {/* LOGO */}
+    <footer className="custom-footer">
+      {/* NOTE: p-0 removes all container padding */}
+      <Container fluid className="p-0">
+        <Row className="text-center text-md-start mx-0">
+          {/* Logo */}
           <Col md={3} className="mb-3">
             <img
               src="/images/logo.png"
@@ -19,7 +20,6 @@ const Footer = ({ pageType }) => {
 
           {pageType === "landing" && (
             <>
-              {/* Quick Links */}
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Quick Links</h6>
                 <ul className="list-unstyled">
@@ -29,7 +29,6 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              {/* Blogs */}
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Blogs</h6>
                 <ul className="list-unstyled">
@@ -38,7 +37,6 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              {/* Join Us */}
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Join Us</h6>
                 <Button
@@ -73,7 +71,6 @@ const Footer = ({ pageType }) => {
 
           {pageType === "client" && (
             <>
-              {/* Legal */}
               <Col md={6} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Legal & Policy</h6>
                 <ul className="list-unstyled">
@@ -83,7 +80,6 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              {/* Follow Us */}
               <Col md={3} className="mb-3 text-center text-md-start">
                 <h6 className="text-uppercase fw-bold">Follow Us</h6>
                 <a
@@ -107,8 +103,7 @@ const Footer = ({ pageType }) => {
           )}
         </Row>
 
-        {/* Copyright */}
-        <Row className="mt-3">
+        <Row className="mt-3 mx-0">
           <Col className="text-center">
             <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
           </Col>
