@@ -7,7 +7,6 @@ const Footer = ({ pageType }) => {
     <footer className="custom-footer">
       <Container fluid className="p-0">
         <Row className="text-center text-md-start mx-0">
-          {/* Logo */}
           <Col md={3} className="mb-3">
             <img
               src="/images/logo.png"

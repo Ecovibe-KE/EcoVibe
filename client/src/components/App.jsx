@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from '../hooks/useAnalytics';
 import Footer from "./Footer";
 
-// Demo placeholder pages
+
 function LandingPage() {
   return (
     <div className="page-content">
@@ -47,7 +47,7 @@ function App() {
   );
 }
 
-// Optimized FooterWrapper
+
 function FooterWrapper() {
   const location = useLocation();
   const pageType = useMemo(() => {
