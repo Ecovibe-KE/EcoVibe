@@ -38,14 +38,15 @@ fi
 echo "✅ Python code looks good."
 
 # --- 4. Lint and Format Frontend (JavaScript/React) ---
-echo "💅 Formatting frontend code with Prettier..."
-npx prettier --write "client/src/**/*.{js,jsx,ts,tsx,json,css,md}" --ignore-unknown
-
-echo "🔍 Linting and fixing frontend code with ESLint..."
-npx eslint --fix "client/src/**/*.{js,jsx,ts,tsx}"
+echo "💅 Formatting and linting frontend code..."
+(
+  cd client && \
+  npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,md}" --ignore-unknown && \
+  npx eslint --fix "src/**/*.{js,jsx,ts,tsx}"
+)
 
 echo "🔍 Checking for remaining ESLint issues..."
-if ! npx eslint "client/src/**/*.{js,jsx,ts,tsx}"; then
+if ! (cd client && npx eslint "src/**/*.{js,jsx,ts,tsx}"); then
     echo "------------------------------------------------"
     echo "🔥 ESLint found issues that could not be auto-fixed."
     echo "Please fix the issues above and try again."
