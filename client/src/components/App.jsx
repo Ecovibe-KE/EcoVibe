@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics';
-
+import NavBar from './Navbar';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   // 1. Get the logEvent function from the hook
@@ -18,8 +19,8 @@ function App() {
 
   return (
     <>
-    <p>Welcome to Ecovibe</p>
-    <p>Something good is coming soon!</p>
+      <p>Welcome to Ecovibe</p>
+      <p>Something good is coming soon!</p>
     </>
   )
 }
