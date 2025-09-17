@@ -32,4 +32,3 @@ coverage
 npm-shrinkwrap.json
 yarn.lock
 yarn.lock.nf
-package-lock.json
