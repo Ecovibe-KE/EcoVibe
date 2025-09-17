@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics';
-import NavBar from './Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
