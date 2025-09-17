@@ -88,10 +88,10 @@ const Footer = ({ pageType }) => {
                   <FaInstagram size={20} />
                 </a>
                 <a
-                  href="https://www.linkedin.com/company/ecovibe-ke"
+                  href="https://www.linkedin.com/company/ecovibe-kenya/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-light"
+                  className="text-light me-3"
                 >
                   <FaLinkedin size={20} />
                 </a>
