@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useState, useEffect, useMemo } from 'react'
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from '../hooks/useAnalytics';
 import Footer from "./Footer";
-
 
 // Demo placeholder pages
 function LandingPage() {
@@ -22,43 +21,40 @@ function ClientPage() {
     </div>
   );
 }
+
 function App() {
-  // 1. Get the logEvent function from the hook
   const { logEvent } = useAnalytics();
 
-  // 2. Log a screen_view event when the component mounts
   useEffect(() => {
     logEvent('screen_view', {
       firebase_screen: 'Home Page',
       firebase_screen_class: 'App'
     });
-  }, [logEvent]); // Add logEvent to dependency array
+  }, [logEvent]);
 
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-       <Router>
-      <div className="app-container d-flex flex-column min-vh-100">
-        <div className="flex-grow-1">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/client" element={<ClientPage />} />
-          </Routes>
-        </div>
-        <FooterWrapper />
+    <div className="app-container d-flex flex-column min-vh-100">
+      <div className="flex-grow-1">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/client" element={<ClientPage />} />
+        </Routes>
       </div>
-    </Router>
-
+      <FooterWrapper />
+    </div>
   );
 }
 
-// Wrapper to detect current route and set footer type
-
+// Optimized FooterWrapper
 function FooterWrapper() {
   const location = useLocation();
-  const pageType = location.pathname.startsWith("/client") ? "client" : "landing";
+  const pageType = useMemo(() => {
+    return location.pathname.startsWith("/client") ? "client" : "landing";
+  }, [location.pathname]);
+
   return <Footer pageType={pageType} />;
 }
 
-
-export default App
+export default App;

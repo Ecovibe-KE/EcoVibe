@@ -4,21 +4,22 @@ import { FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer = ({ pageType }) => {
   return (
-    <footer className="bg-dark text-light py-4 mt-5">
-      <Container>
+    <footer className="bg-dark text-light py-4 w-100 mt-auto">
+      {/* container-fluid makes it full width */}
+      <Container fluid className="px-5">
         <Row className="text-center text-md-start">
-        {/* ECK LOGO */}
+          {/* LOGO */}
           <Col md={3} className="mb-3">
             <img
               src="/images/logo.png"
               alt="EcoVibe Logo"
               className="img-fluid mb-2"
-            /> 
-          </Col> 
+            />
+          </Col>
 
           {pageType === "landing" && (
             <>
-              
+              {/* Quick Links */}
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Quick Links</h6>
                 <ul className="list-unstyled">
@@ -28,7 +29,7 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-             {/* Blog */}
+              {/* Blogs */}
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Blogs</h6>
                 <ul className="list-unstyled">
@@ -37,7 +38,7 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              
+              {/* Join Us */}
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Join Us</h6>
                 <Button
@@ -50,7 +51,7 @@ const Footer = ({ pageType }) => {
                 </Button>
                 <div>
                   <a
-                    href="https://www.linkedin.com/company/ecovibe-kenya/"
+                    href="https://www.instagram.com/ecovibe"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-light me-3"
@@ -72,7 +73,7 @@ const Footer = ({ pageType }) => {
 
           {pageType === "client" && (
             <>
-              
+              {/* Legal */}
               <Col md={6} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Legal & Policy</h6>
                 <ul className="list-unstyled">
@@ -82,7 +83,7 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              
+              {/* Follow Us */}
               <Col md={3} className="mb-3 text-center text-md-start">
                 <h6 className="text-uppercase fw-bold">Follow Us</h6>
                 <a
@@ -106,10 +107,12 @@ const Footer = ({ pageType }) => {
           )}
         </Row>
 
-       
-        <div className="text-center mt-3">
-          <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
-        </div>
+        {/* Copyright */}
+        <Row className="mt-3">
+          <Col className="text-center">
+            <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
+          </Col>
+        </Row>
       </Container>
     </footer>
   );
