@@ -5,7 +5,7 @@ import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
 import Footer from "./Footer";
 
-// Demo placeholder pages
+
 function LandingPage() {
   return (
     <div className="container-fluid">

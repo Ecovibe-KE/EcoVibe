@@ -30,9 +30,9 @@ const buttonHoverStyle = {
 
 const Footer = ({ pageType }) => {
   return (
-    <footer style={footerStyle}>
-      <Container>
-        <Row className="text-center text-md-start">
+    <footer className="custom-footer">
+      <Container fluid className="p-0">
+        <Row className="text-center text-md-start mx-0">
           <Col md={3} className="mb-3">
             <img
               src="/EcovibeLogo.png"
