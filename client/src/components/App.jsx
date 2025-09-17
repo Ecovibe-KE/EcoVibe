@@ -38,13 +38,18 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/client" element={<ClientPage />} />
-      </Routes>
-      <FooterWrapper /> 
-    </> //Footer always at the bottom with dynamic pageType
+       <Router>
+      <div className="app-container d-flex flex-column min-vh-100">
+        <div className="flex-grow-1">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/client" element={<ClientPage />} />
+          </Routes>
+        </div>
+        <FooterWrapper />
+      </div>
+    </Router>
+    
   );
 }
 
