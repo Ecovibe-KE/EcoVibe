@@ -33,7 +33,6 @@ const Footer = ({ pageType }) => {
     <footer style={footerStyle}>
       <Container>
         <Row className="text-center text-md-start">
-        {/* ECK LOGO */}
           <Col md={3} className="mb-3">
             <img
               src="/EcovibeLogo.png"
@@ -48,7 +47,7 @@ const Footer = ({ pageType }) => {
                 <h6 className="text-uppercase fw-bold">Quick Links</h6>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="/about"className="nav-link">About Us</a>
+                    <a href="/about" className="nav-link">About Us</a>
                   </li>
                   <li>
                     <a href="/services" className="nav-link">Services</a>
@@ -58,7 +57,7 @@ const Footer = ({ pageType }) => {
                   </li>
                 </ul>
               </Col>
-{/* Blog */}
+
               <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Blogs</h6>
                 <ul className="list-unstyled">
@@ -84,7 +83,7 @@ const Footer = ({ pageType }) => {
                 </Button>
                 <div>
                   <a
-                    href="https://www.linkedin.com/company/ecovibe-kenya/"
+                    href="https://www.instagram.com/ecovibe"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={socialIconStyle}
