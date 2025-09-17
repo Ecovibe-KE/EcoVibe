@@ -149,7 +149,7 @@ const Footer = ({ pageType }) => {
             <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
           </Col>
         </Row>
-      </Container>
+      {/* </Container> */}
     </footer>
   );
 };
