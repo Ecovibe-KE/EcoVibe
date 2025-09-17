@@ -5,8 +5,7 @@ import { FaInstagram, FaLinkedin } from "react-icons/fa";
 const Footer = ({ pageType }) => {
   return (
     <footer className="custom-footer">
-      {/* Container is full width, no horizontal padding */}
-      <Container fluid className="p-3">
+      <Container fluid className="p-0">
         <Row className="text-center text-md-start mx-0">
           {/* Logo */}
           <Col md={3} className="mb-3">
