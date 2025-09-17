@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
@@ -6,8 +5,10 @@ import { FaInstagram, FaLinkedin } from "react-icons/fa";
 const Footer = ({ pageType }) => {
   return (
     <footer className="custom-footer">
-      {/* <Container fluid className="p-0"> */}
+      {/* Container is full width, no horizontal padding */}
+      <Container fluid className="p-3">
         <Row className="text-center text-md-start mx-0">
+          {/* Logo */}
           <Col md={3} className="mb-3">
             <img
               src="/images/logo.png"
@@ -106,7 +107,7 @@ const Footer = ({ pageType }) => {
             <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
           </Col>
         </Row>
-      {/* </Container> */}
+      </Container>
     </footer>
   );
 };
