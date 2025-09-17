@@ -7,22 +7,21 @@ import Footer from "./Footer";
 // Demo placeholder pages
 function LandingPage() {
   return (
-    <>
+    <div className="page-content">
       <p>Welcome to Ecovibe</p>
       <p>Something good is coming soon!</p>
-    </>
+    </div>
   );
 }
 
 function ClientPage() {
   return (
-    <>
+    <div className="page-content">
       <h1>Client Dashboard</h1>
       <p>This is where client-specific content will go.</p>
-    </>
+    </div>
   );
 }
-
 function App() {
   // 1. Get the logEvent function from the hook
   const { logEvent } = useAnalytics();
@@ -35,7 +34,7 @@ function App() {
     });
   }, [logEvent]); // Add logEvent to dependency array
 
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0)
 
   return (
        <Router>
@@ -49,7 +48,7 @@ function App() {
         <FooterWrapper />
       </div>
     </Router>
-    
+
   );
 }
 
