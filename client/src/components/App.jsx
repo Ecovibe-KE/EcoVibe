@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
@@ -24,6 +24,13 @@ function ClientPage() {
   );
 }
 
+// Wrapper to detect current route and set footer type
+function FooterWrapper() {
+  const location = useLocation();
+  const pageType = location.pathname.startsWith("/client") ? "client" : "landing";
+  return <Footer pageType={pageType} />;
+}
+
 function App() {
   const { logEvent } = useAnalytics();
 
@@ -35,23 +42,23 @@ function App() {
   }, [logEvent]);
 
   return (
-    <Router>
+    <div className="app-container d-flex flex-column min-vh-100">
+      {/* Navigation */}
       <NavBar />
-      <Routes>
-        <Route path="/playground" element={<Playground />} />
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/client" element={<ClientPage />} />
-      </Routes>
-      <FooterWrapper />
-    </Router>
-  );
-}
 
-// Wrapper to detect current route and set footer type
-function FooterWrapper() {
-  const location = useLocation();
-  const pageType = location.pathname.startsWith("/client") ? "client" : "landing";
-  return <Footer pageType={pageType} />;
+      {/* Main content */}
+      <div className="flex-grow-1">
+        <Routes>
+          <Route path="/playground" element={<Playground />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/client" element={<ClientPage />} />
+        </Routes>
+      </div>
+
+      {/* Footer */}
+      <FooterWrapper />
+    </div>
+  );
 }
 
 export default App;
