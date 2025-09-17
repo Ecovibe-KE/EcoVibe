@@ -63,17 +63,30 @@ graph TD
 
 ## Workflow Approach
 
-This project follows a standard Git workflow. All contributions should be made through pull requests.
+This project utilizes the GitFlow workflow to manage development and releases. This approach helps to keep the codebase organized and stable.
+
+### Main Branches
+
+- **`main`**: This branch represents the production-ready state of the application. It is always stable and deployable.
+- **`develop`**: This is the main development branch where all feature branches are merged. It contains the latest development changes.
+
+### Supporting Branches
+
+- **Feature Branches (`feature/`)**: When you start working on a new feature, create a branch from `develop`. Name it using the convention `feature/<feature-name>` (e.g., `feature/user-authentication`). Once the feature is complete, you will open a pull request to merge it back into `develop`.
+
+- **Release Branches (`release/`)**: When the `develop` branch has enough features for a new release, a `release` branch is created from `develop`. This branch is used for final testing, bug fixes, and preparing for the production release. No new features are added to this branch. Once the release is ready, the `release` branch is merged into both `main` and `develop`.
+
+- **Hotfix Branches (`hotfix/`)**: If a critical bug is found in production, a `hotfix` branch is created from `main`. This allows you to quickly fix the issue without interrupting the ongoing development in the `develop` branch. Once the fix is complete, the `hotfix` branch is merged into both `main` and `develop`.
+
+### Contribution Steps
 
 1.  **Fork the repository:** Create a personal fork of the project on GitHub.
 2.  **Clone the fork:** Clone your fork to your local machine.
-3.  **Create a new branch:** Create a new branch for your changes.
+3.  **Create a feature branch:** Create a new branch from `develop` for your changes (e.g., `git checkout -b feature/my-new-feature develop`).
 4.  **Make your changes:** Implement your feature or bug fix.
 5.  **Commit your changes:** Commit your changes with a clear and descriptive commit message.
 6.  **Push to your fork:** Push your changes to your fork on GitHub.
-7.  **Create a pull request:** Create a pull request from your fork to the main repository.
-
-For more details, please see our [Contributing Guide](CONTRIBUTING.md).
+7.  **Create a pull request:** Create a pull request from your feature branch to the `develop` branch of the main repository.
 
 ## Tools Used
 
