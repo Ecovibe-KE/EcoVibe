@@ -34,7 +34,7 @@ function App() {
     });
   }, [logEvent]); // Add logEvent to dependency array
 
-  // const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0)
 
   return (
        <Router>
