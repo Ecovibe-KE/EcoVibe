@@ -70,7 +70,7 @@ button:focus-visible {
 
 .custom-footer {
   width: 100%;
-  background-color: rgb(185, 16, 207); /* TEST - change to #212529 later */
+  background-color:#37b137;
   color: white;
   margin-top: auto;
 }

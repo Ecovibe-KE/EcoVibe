@@ -6,10 +6,8 @@ import { FaInstagram, FaLinkedin } from "react-icons/fa";
 const Footer = ({ pageType }) => {
   return (
     <footer className="custom-footer">
-      {/* NOTE: p-0 removes all container padding */}
-      <Container fluid className="p-0">
+      {/* <Container fluid className="p-0"> */}
         <Row className="text-center text-md-start mx-0">
-          {/* Logo */}
           <Col md={3} className="mb-3">
             <img
               src="/images/logo.png"
@@ -108,7 +106,7 @@ const Footer = ({ pageType }) => {
             <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
           </Col>
         </Row>
-      </Container>
+      {/* </Container> */}
     </footer>
   );
 };
