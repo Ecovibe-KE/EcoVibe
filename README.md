@@ -2,6 +2,20 @@
 
 Welcome to EcoVibe, a web application designed to promote eco-friendly living and sustainable practices. This repository contains the source code for both the client-side and server-side applications.
 
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Project Diagram](#project-diagram)
+- [Folder Structure](#folder-structure)
+- [Workflow Approach](#workflow-approach)
+- [Tools Used](#tools-used)
+- [Setup Instructions](#setup-instructions)
+- [Environment Variables](#environment-variables)
+- [Local Development Checks](#local-development-checks)
+- [Running MegaLinter Locally](#running-megalinter-locally)
+- [Makefile Usage](#makefile-usage)
+- [GitHub Actions](#github-actions)
+
 ## Project Overview
 
 EcoVibe is a platform that encourages users to adopt a more environmentally conscious lifestyle. It provides information, resources, and a community space for individuals who are passionate about sustainability.
@@ -163,6 +177,71 @@ The server-side application uses Flask's prefixed environment variables. The rec
     ```
 
     Any other configuration your app needs should be added here as well.
+
+## Local Development Checks
+
+Before creating a pull request, it is recommended to run all local checks to ensure your code is clean and passes all tests. The `make propose` command automates this, but you can also run the checks manually.
+
+### Client-Side Checks
+
+From the `client` directory, run the following commands:
+
+- **Run tests:**
+
+  ```bash
+  npm test
+  ```
+
+- **Check for linting and formatting issues:**
+
+  ```bash
+  npx eslint "src/**/*.{js,jsx,ts,tsx}"
+  npx prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"
+  ```
+
+- **Fix linting and formatting issues:**
+
+  ```bash
+  npx eslint --fix "src/**/*.{js,jsx,ts,tsx}"
+  npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,md}"
+  ```
+
+### Server-Side Checks
+
+From the `server` directory, and with the `pipenv` shell activated, run the following commands:
+
+- **Run tests:**
+
+  ```bash
+  pytest
+  ```
+
+- **Check for linting and formatting issues:**
+
+  ```bash
+  flake8 .
+  black --check .
+  ```
+
+- **Fix linting and formatting issues:**
+
+  ```bash
+  flake8 .
+  black .
+  ```
+
+## Running MegaLinter Locally
+
+This project uses MegaLinter to ensure code quality. You can run MegaLinter locally using Docker to check your code before pushing it.
+
+1.  **Install Docker:** If you don't have Docker installed, follow the official installation instructions for your operating system.
+2.  **Run MegaLinter:** Open your terminal in the root of the project and run the following command:
+
+    ```bash
+    docker run -v $(pwd):/tmp/lint oxsecurity/megalinter:v8
+    ```
+
+This will mount your project directory into the Docker container and run all the relevant linters. The output will show you any issues that need to be fixed.
 
 ## Makefile Usage
 
