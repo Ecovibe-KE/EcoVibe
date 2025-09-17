@@ -12,8 +12,12 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.2",
+    "bootstrap": "^5.3.8",
     "firebase": "^12.2.1",
     "react": "^19.1.1",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
@@ -21,11 +25,13 @@
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@eslint/js": "^9.33.0",
+    "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-istanbul": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.33.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",

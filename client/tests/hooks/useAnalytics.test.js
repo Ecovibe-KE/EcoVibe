@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useAnalytics } from "../../hooks/useAnalytics";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useAnalytics } from '../../src/hooks/useAnalytics';
 
 // Mock firebase/app
 vi.mock("firebase/app", () => ({
@@ -19,8 +19,8 @@ vi.mock("firebase/analytics", () => {
 import { logEvent as firebaseLogEvent } from "firebase/analytics";
 
 // Mock our own firebaseConfig
-let analyticsInstance = { app: "mock-app" };
-vi.mock("../../firebaseConfig", () => ({
+let analyticsInstance = { app: 'mock-app' };
+vi.mock('../firebaseConfig', () => ({
   get analytics() {
     return analyticsInstance;
   },
