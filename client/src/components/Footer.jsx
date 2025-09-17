@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
@@ -143,9 +144,11 @@ const Footer = ({ pageType }) => {
           )}
         </Row>
 
-        <div className="text-center mt-3">
-          <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
-        </div>
+        <Row className="mt-3 mx-0">
+          <Col className="text-center">
+            <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
+          </Col>
+        </Row>
       </Container>
     </footer>
   );
