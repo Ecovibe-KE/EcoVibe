@@ -18,6 +18,8 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     defaults:
       run:
         working-directory: ./server 
@@ -55,14 +57,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pipenv-
 
-      # 5. Installs project dependencies using Pipenv
+      # 5. Install dependencies using Pipenv
       - name: Install dependencies
-        # This step only runs if the cache was not restored in the previous step
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: pipenv install --dev
 
-      # 6. Runs tests with Pytest
-      - name: Test with pytest
-        run: |
-          pipenv run pytest
+      # 6. Verify pytest and plugins
+      - name: Verify installed packages
+        run: pipenv run pip list | grep pytest
 
+      # 7. Run tests with coverage and comment on PR
+      - name: Run tests with coverage
+        run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
+
+      - name: Coverage comment (changed files only)
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./server/pytest-coverage.txt
+          junitxml-path: ./server/pytest.xml
+          report-only-changed-files: true
