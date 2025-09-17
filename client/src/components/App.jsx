@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
@@ -24,41 +24,38 @@ function ClientPage() {
   );
 }
 
+function App() {
+  // 1. Get the logEvent function from the hook
+  const { logEvent } = useAnalytics();
+
+  // 2. Log a screen_view event when the component mounts
+  useEffect(() => {
+    logEvent('screen_view', {
+      firebase_screen: 'Home Page',
+      firebase_screen_class: 'App'
+    });
+  }, [logEvent]); // Add logEvent to dependency array
+
+  const [count, setCount] = useState(0)
+
+   return (
+    <Router>
+      <NavBar />
+      <Routes>
+        <Route path="/playground" element={<Playground />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/client" element={<ClientPage />} />
+      </Routes>
+      <FooterWrapper />
+    </Router>
+  );
+}
+
 // Wrapper to detect current route and set footer type
 function FooterWrapper() {
   const location = useLocation();
   const pageType = location.pathname.startsWith("/client") ? "client" : "landing";
   return <Footer pageType={pageType} />;
-}
-
-function App() {
-  const { logEvent } = useAnalytics();
-
-  useEffect(() => {
-    logEvent("screen_view", {
-      firebase_screen: "Home Page",
-      firebase_screen_class: "App",
-    });
-  }, [logEvent]);
-
-  return (
-    <div className="app-container d-flex flex-column min-vh-100">
-      {/* Navigation */}
-      <NavBar />
-
-      {/* Main content */}
-      <div className="flex-grow-1">
-        <Routes>
-          <Route path="/playground" element={<Playground />} />
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/client" element={<ClientPage />} />
-        </Routes>
-      </div>
-
-      {/* Footer */}
-      <FooterWrapper />
-    </div>
-  );
 }
 
 export default App;
