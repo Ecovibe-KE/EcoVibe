@@ -3,8 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import "../css/index.css"
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
 
 function NavBar() {
     const size = "lg"
@@ -13,7 +12,7 @@ function NavBar() {
             {
                 <Navbar expand={size} className="mx-5 mb-3">
                     <Container fluid>
-                        <Navbar.Brand as={NavLink} to="/home"><img src="/public/EcovibeLogo.png" alt="EcoVibe Logo" width="250" height="70" className="d-inline-block" /></Navbar.Brand>
+                        <Navbar.Brand as={NavLink} to="/home"><img src="/EcovibeLogo.png" alt="EcoVibe Logo" width="250" height="70" className="d-inline-block" /></Navbar.Brand>
                         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${size}`} />
                         <Navbar.Offcanvas
                             id={`offcanvasNavbar-expand-${size}`}
