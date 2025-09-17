@@ -54,7 +54,7 @@ const Footer = ({ pageType }) => {
                     <FaInstagram size={20} />
                   </a>
                   <a
-                    href="https://www.linkedin.com/company/ecovibe-ke"
+                    href="https://www.linkedin.com/company/ecovibe-kenya"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-light"
@@ -91,7 +91,7 @@ const Footer = ({ pageType }) => {
                   href="https://www.linkedin.com/company/ecovibe-kenya/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-light me-3"
+                  className="text-light"
                 >
                   <FaLinkedin size={20} />
                 </a>
