@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
@@ -23,7 +23,6 @@ function ClientPage() {
     </div>
   );
 }
-
 function App() {
   // 1. Get the logEvent function from the hook
   const { logEvent } = useAnalytics();
@@ -36,18 +35,20 @@ function App() {
     });
   }, [logEvent]); // Add logEvent to dependency array
 
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0)
 
    return (
-    <Router>
+    <div className="app-wrapper">
       <NavBar />
+      < div className="app-content">
       <Routes>
         <Route path="/playground" element={<Playground />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/client" element={<ClientPage />} />
       </Routes>
+      </div>
       <FooterWrapper />
-    </Router>
+    </div>
   );
 }
 
