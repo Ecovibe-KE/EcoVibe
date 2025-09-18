@@ -80,7 +80,7 @@ jobs:
           #
           # To validate only diff with main, set to:
           # VALIDATE_ALL_CODEBASE: >-
-          #   $ {{ 
+          #   $ {{
           #     github.event_name == 'push' &&
           #     contains(fromJSON('["refs/heads/main", "refs/heads/develop"]'), github.ref)
           #   }}
