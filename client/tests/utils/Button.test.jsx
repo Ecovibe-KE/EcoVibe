@@ -1,71 +1,162 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { ActionButton } from '../../src/utils/Button';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
+import Button from "../../src/utils/Button";
 
-// Mock the icons
-vi.mock('@mui/icons-material/Add', () => ({
-    default: () => <div data-testid="add-icon" />
-}));
-vi.mock('@mui/icons-material/Edit', () => ({
-    default: () => <div data-testid="edit-icon" />
-}));
-vi.mock('@mui/icons-material/DeleteForever', () => ({
-    default: () => <div data-testid="delete-icon" />
-}));
-vi.mock('@mui/icons-material/RemoveRedEye', () => ({
-    default: () => <div data-testid="view-icon" />
-}));
-
-describe('ActionButton', () => {
-  it('renders with the correct label', () => {
-    render(<ActionButton label="Click Me" action="add" />);
-    expect(screen.getByText('Click Me')).not.toBeNull();
+describe('Button Component', () => {
+  // Test 1: Renders with children
+  it('renders the button with the correct text', () => {
+    const buttonText = 'Click Me';
+    render(<Button>{buttonText}</Button>);
+    expect(screen.getByRole('button', { name: buttonText })).toBeInTheDocument();
   });
 
-  it('calls onClick handler when clicked', () => {
+  // Test 2: onClick handler is called - FIXED: use vi.fn() instead of jest.fn()
+  it('calls the onClick handler when clicked', () => {
     const handleClick = vi.fn();
-    render(<ActionButton label="Click Me" action="add" onClick={handleClick} />);
-    fireEvent.click(screen.getByText('Click Me'));
+    render(<Button onClick={handleClick}>Clickable</Button>);
+
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('applies the correct classes for action and variant', () => {
-    // Test with solid variant
-    const { container: container1 } = render(<ActionButton label="Test" action="update" />);
-    const button1 = container1.querySelector('button');
-    expect(button1.className).toContain('btn');
-    expect(button1.className).toContain('btn-warning');
-
-    // Test with outlined variant
-    const { container: container2 } = render(<ActionButton label="Test" action="delete" variant="outlined" />);
-    const button2 = container2.querySelector('button');
-    expect(button2.className).toContain('btn');
-    expect(button2.className).toContain('btn-outline-danger');
+  // Test 3: Default type is "button"
+  it('has the default type "button"', () => {
+    render(<Button>Test</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
   });
 
-  it('displays the add icon for the "add" action', () => {
-    render(<ActionButton label="Add" action="add" />);
-    expect(screen.getByTestId('add-icon')).not.toBeNull();
+  // Test 4: Type attribute is set correctly
+  it('applies the correct type attribute', () => {
+    render(<Button type="submit">Submit</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
   });
 
-  it('displays the edit icon for the "update" action', () => {
-    render(<ActionButton label="Update" action="update" />);
-    expect(screen.getByTestId('edit-icon')).not.toBeNull();
+  // Test 5: Disabled state works
+  it('is disabled when the disabled prop is true', () => {
+    render(<Button disabled>Disabled Button</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('displays the delete icon for the "delete" action', () => {
-    render(<ActionButton label="Delete" action="delete" />);
-    expect(screen.getByTestId('delete-icon')).not.toBeNull();
+  // Test 6: onClick is NOT called when disabled - FIXED: use vi.fn() instead of jest.fn()
+  it('does not call onClick when disabled', () => {
+    const handleClick = vi.fn();
+    render(
+      <Button onClick={handleClick} disabled>
+        Disabled
+      </Button>
+    );
+
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
+    expect(handleClick).toHaveBeenCalledTimes(0);
   });
 
-  it('displays the view icon for the "view" action', () => {
-    render(<ActionButton label="View" action="view" />);
-    expect(screen.getByTestId('view-icon')).not.toBeNull();
+  // Test 7: Applies size classes
+  describe('Size variants', () => {
+    it('applies the "btn-sm" class for the "sm" size', () => {
+      render(<Button size="sm">Small</Button>);
+      expect(screen.getByRole('button')).toHaveClass('btn-sm');
+    });
+
+    it('applies the "btn-lg" class for the "lg" size', () => {
+      render(<Button size="lg">Large</Button>);
+      expect(screen.getByRole('button')).toHaveClass('btn-lg');
+    });
+
+    it('does not apply a size class if no size prop is provided', () => {
+      render(<Button>Default</Button>);
+      const button = screen.getByRole('button');
+      expect(button).not.toHaveClass('btn-sm');
+      expect(button).not.toHaveClass('btn-lg');
+    });
   });
 
-  it('has the correct aria-label', () => {
-    render(<ActionButton label="Aria Test" action="add" />);
-    expect(screen.getByLabelText('Aria Test')).not.toBeNull();
+  // Test 8: Outline variant
+  it('applies the "btn-outline" class when outline is true', () => {
+    render(<Button outline>Outline Button</Button>);
+    expect(screen.getByRole('button')).toHaveClass('btn-outline');
+  });
+
+  // Test 9: Custom className is merged
+  it('merges custom className with base classes', () => {
+    const testClass = 'my-custom-class';
+    render(<Button className={testClass}>Custom Class</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('btn');
+    expect(button).toHaveClass(testClass);
+  });
+
+  // Test 10: Custom border radius is applied via style
+  it('applies custom border radius through the style attribute', () => {
+    const borderRadius = '20px';
+    render(<Button borderRadius={borderRadius}>Rounded</Button>);
+    expect(screen.getByRole('button')).toHaveStyle({ borderRadius });
+  });
+
+  // Test 11: Applies correct inline styles for default variant
+  it('applies the correct default background color', () => {
+    render(<Button>Default Style</Button>);
+    expect(screen.getByRole('button')).toHaveStyle({ backgroundColor: '#37b137' });
+  });
+
+  // Test 12: Applies correct inline styles for outline variant - FIXED: Use rgb format
+it('applies the correct outline styles', () => {
+    render(<Button outline>Outline Style</Button>);
+    const button = screen.getByRole('button');
+
+    // Debug: log the actual styles
+    console.log('Button styles:', window.getComputedStyle(button));
+    console.log('Background color:', window.getComputedStyle(button).backgroundColor);
+    console.log('Color:', window.getComputedStyle(button).color);
+
+    // Use more flexible assertions
+    expect(button).toHaveStyle({
+      backgroundColor: expect.stringContaining('transparent') || expect.stringContaining('rgba(0, 0, 0, 0)'),
+    });
+
+    // Check if color contains the expected green (could be rgb, rgba, or hex)
+    const color = window.getComputedStyle(button).color;
+    expect(
+      color.includes('55, 177, 55') || // rgb
+      color.includes('#37b137') || // hex
+      color.includes('rgba(55, 177, 55') // rgba
+    ).toBe(true);
+  });
+
+
+  // Test 13: Additional props are spread onto the button element
+  it('passes additional props to the button element', () => {
+    render(<Button aria-label="Accessible label" data-testid="custom-attr">Test</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label', 'Accessible label');
+    expect(button).toHaveAttribute('data-testid', 'custom-attr');
+  });
+
+  // Test 14: Button has correct margin styles
+  it('applies the correct margin styles', () => {
+    render(<Button>Test Margin</Button>);
+    expect(screen.getByRole('button')).toHaveStyle({ margin: '0.5rem' });
+  });
+
+  // Test 15: Button has correct padding styles
+  it('applies the correct padding styles', () => {
+    render(<Button>Test Padding</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveStyle({
+      paddingLeft: '1.5rem',
+      paddingRight: '1.5rem',
+      paddingTop: '0.5rem',
+      paddingBottom: '0.5rem'
+    });
+  });
+
+  // Test 16: Button has transition effect
+  it('applies transition styles', () => {
+    render(<Button>Test Transition</Button>);
+    expect(screen.getByRole('button')).toHaveStyle({ transition: 'all 0.3s ease' });
   });
 });
