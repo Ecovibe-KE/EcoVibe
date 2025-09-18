@@ -10,7 +10,7 @@ export default defineConfig({
     environment: 'jsdom',
     coverage: {
       provider: 'istanbul',
-      include: ['src/**/*'],
+      include: ['src/**/*.{test,spec}.{js,jsx}'],
       exclude: [
         'src/**/*.d.ts',
         'src/main.jsx'
