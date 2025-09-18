@@ -1,8 +1,23 @@
 /* eslint-disable no-undef */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom'; // Add this import
+import { MemoryRouter } from 'react-router-dom';
 import App from '../../src/components/App';
+
+// Add matchMedia mock
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
 
 // 1. Mock dependencies
 // Mock the custom hook to track calls to logEvent
