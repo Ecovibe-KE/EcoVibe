@@ -22,7 +22,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
     role = db.Column(db.Enum(Role), nullable=False, default=Role.CLIENT)
-    profile_image_url = db.Column(db.String(200), nullable=True)
+    profile_image = db.Column(db.String(200), nullable=True)
     account_status = db.Column(db.Enum(AccountStatus), nullable=False, default=AccountStatus.ACTIVE)
     created_at = db.Column(db.DateTime, server_default=func.now(), nullable=False)
     updated_at = db.Column(
@@ -47,7 +47,7 @@ class User(db.Model):
             "industry": self.industry,
             "created_at": self.created_at.isoformat() + "Z" if self.created_at else None,
             "updated_at": self.updated_at.isoformat() + "Z" if self.updated_at else None,
-            "profile_image_url": self.profile_image_url,
+            "profile_image": self.profile_image,
         }
 
 

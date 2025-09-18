@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-werkzeug = "*"
-flask-restful = "*"
-flask-sqlalchemy = "*"
 flask = "*"
+flask-sqlalchemy = "*"
+flask-restful = "*"
+werkzeug = "*"
+pytest = "*"
 
 [dev-packages]
 
