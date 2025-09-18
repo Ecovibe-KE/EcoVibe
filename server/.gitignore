@@ -8,6 +8,7 @@ __pycache__/
 venv/
 ENV/
 env/
+.env
 
 # Pipenv files
 Pipfile.lock
@@ -48,6 +49,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+pytest-coverage.txt
 
 # Flask instance & logs
 instance/

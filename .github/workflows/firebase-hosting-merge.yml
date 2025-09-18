@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./client   # ✅ all run steps happen in /client 
+        working-directory: ./client # ✅ all run steps happen in /client
+    env:
+      VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - run: npm ci && npm run build
