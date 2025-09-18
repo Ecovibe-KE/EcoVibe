@@ -24,7 +24,7 @@ def test_register_success(client):
         "industry": "Energy",
         "phoneNumber": "1234567890",
     }
-    res = client.post("/register", json=payload)
+    res = client.post("/api/register", json=payload)
     assert res.status_code == 201
     assert res.get_json() == {"message": "Account created successfully."}
 
@@ -58,7 +58,7 @@ def test_register_success(client):
     },
 ])
 def test_register_invalid_input(client, bad_payload):
-    res = client.post("/register", json=bad_payload)
+    res = client.post("/api/register", json=bad_payload)
     assert res.status_code == 400
     assert res.get_json() == {"error": "Invalid input."}
 
@@ -72,13 +72,13 @@ def test_register_conflict_email(client):
         "industry": "Energy",
         "phoneNumber": "1234567890",
     }
-    res1 = client.post("/register", json=payload)
+    res1 = client.post("/api/register", json=payload)
     assert res1.status_code == 201
 
     # Try again with same email (different case to ensure case-insensitive check)
     payload2 = dict(payload)
     payload2["email"] = "DUP@example.com"
-    res2 = client.post("/register", json=payload2)
+    res2 = client.post("/api/register", json=payload2)
     assert res2.status_code == 409
     assert res2.get_json() == {"error": "Email already exists."}
 

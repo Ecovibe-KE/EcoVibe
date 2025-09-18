@@ -19,7 +19,7 @@ def create_app():
     # Init extensions
     db.init_app(app)
     api = Api(app)
-    api.add_resource(Register, "/register")
+    api.add_resource(Register, "/api/register")
 
     @app.route("/")
     def home():
