@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Offcanvas from 'react-bootstrap/Offcanvas';
+// import { Image } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 
 function NavBar() {
@@ -12,7 +13,9 @@ function NavBar() {
             {
                 <Navbar expand={size} className="mx-5 mb-3">
                     <Container fluid>
-                        <Navbar.Brand as={NavLink} to="/home"><img src="/EcovibeLogo.png" alt="EcoVibe Logo" width="250" height="70" className="d-inline-block" /></Navbar.Brand>
+                        <Navbar.Brand as={NavLink} to="/home"><img src="/EcovibeLogo.png" alt="EcoVibe Logo" width="250" height="70" className="d-inline-block" />
+                            {/* <Image src="/EcovibeLogo.png" alt="EcoVibe Logo" fluid style={{ height: "70px", maxWidth: "160px" }} /> */}
+                        </Navbar.Brand>
                         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${size}`} />
                         <Navbar.Offcanvas
                             id={`offcanvasNavbar-expand-${size}`}

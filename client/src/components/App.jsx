@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics';
 import { ActionButton } from '../utils/Button';
 import NavBar from './Navbar';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   // 1. Get the logEvent function from the hook
