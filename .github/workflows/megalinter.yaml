@@ -80,7 +80,7 @@ jobs:
           #
           # To validate only diff with main, set to:
           # VALIDATE_ALL_CODEBASE: >-
-          #   ${{
+          #   $ {{
           #     github.event_name == 'push' &&
           #     contains(fromJSON('["refs/heads/main", "refs/heads/develop"]'), github.ref)
           #   }}
@@ -135,12 +135,8 @@ jobs:
 
       # Push new commit if applicable
       # (for now works only on PR from same repository, not from forks)
-      - name: Prepare commit
-        if: env.APPLY_FIXES_IF_COMMIT == 'true'
-        run: sudo chown -Rc $UID .git/
-
       - name: Commit and push applied linter fixes
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v5
         if: env.APPLY_FIXES_IF_COMMIT == 'true'
         with:
           branch: >-
