@@ -15,6 +15,7 @@ We use **GitFlow** for branching:
 - **hotfix/** → For urgent fixes to production (e.g., `hotfix/login-crash`)  
 
 ### Example
+
 ```bash
 git checkout develop
 git pull origin develop
@@ -27,14 +28,14 @@ git checkout -b feature/my-feature
 
 Follow a consistent format. We recommend **Conventional Commits**:
 
-* `feat:` for new features
-* `fix:` for bug fixes
-* `chore:` for maintenance tasks
-* `docs:` for documentation updates
+- `feat:` for new features
+- `fix:` for bug fixes
+- `chore:` for maintenance tasks
+- `docs:` for documentation updates
 
 Example:
 
-```
+```bash
 feat: add signup form with email validation
 ```
 
@@ -46,13 +47,13 @@ feat: add signup form with email validation
 2. Push your branch and open a **Pull Request (PR)** → target `develop`.
 3. PRs should include:
 
-   * Clear description of changes
-   * Testing instructions
-   * Screenshots/logs if applicable
+   - Clear description of changes
+   - Testing instructions
+   - Screenshots/logs if applicable
 4. Ensure:
 
-   * All CI/CD checks pass
-   * Code is reviewed by at least **2 team members**
+   - All CI/CD checks pass
+   - Code is reviewed by at least **2 team members**
 5. Once approved, the PR will be merged into `develop`.
 
 > See the [Pull Request Template](.github/pull_request_template.md) for guidance.
@@ -61,15 +62,15 @@ feat: add signup form with email validation
 
 ## 🧪 Testing
 
-* Write/Update unit tests for your changes.
-* Run tests locally before submitting.
+- Write/Update unit tests for your changes.
+- Run tests locally before submitting.
 
 ---
 
 ## 📄 Documentation
 
-* Update `README.md` or other docs if your change affects setup or usage.
-* For new environment variables, update `.env.example`.
+- Update `README.md` or other docs if your change affects setup or usage.
+- For new environment variables, update `.env.example`.
 
 ---
 

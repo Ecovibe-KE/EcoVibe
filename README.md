@@ -193,7 +193,9 @@ The server-side application uses Flask's prefixed environment variables. The rec
 
     Any other configuration your app needs should be added here as well.
 
-The staging environment api can be found here: `https://ecovibe-staging.onrender.com/`, remember to update the client to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the client.
+All merges to `develop` on the server can be found here: [`https://ecovibe-develop.up.railway.app`](https://ecovibe-develop.up.railway.app)
+
+The staging environment api can be found here: [`https://ecovibe-staging.onrender.com/`](https://ecovibe-staging.onrender.com/), remember to update the client to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the client.
 
 ## Local Development Checks
 
@@ -326,4 +328,5 @@ This project uses GitHub Actions to automate testing, linting, and deployment. H
 
 ### Code Quality Workflow
 
-- **`MegaLinter` (`megalinter.yaml`)**: This workflow runs on every pull request to `main` and `develop`. It uses MegaLinter, a powerful tool that bundles many linters, to analyze the entire codebase for style issues, potential bugs, and inconsistencies. It is configured to automatically fix many of the issues it finds and commit them directly to the pull request branch, helping to maintain a clean and consistent codebase.
+- **`MegaLinter` (`megalinter.yaml`)**: This workflow runs on every pull request to `main` and `develop`. It uses MegaLinter, a powerful tool that bundles many linters, to analyze the entire codebase for style issues, potential bugs, and inconsistencies.
+It is configured to automatically fix many of the issues it finds and commit them directly to the pull request branch, helping to maintain a clean and consistent codebase.
