@@ -42,7 +42,7 @@ graph TD
 
 ## Folder Structure
 
-```
+```bash
 /
 ├── client/
 │   ├── src/            # Contains the client-side source code.
@@ -80,54 +80,54 @@ This project utilizes the GitFlow workflow to manage development and releases. T
 
 ### Contribution Steps
 
-1.  **Fork the repository:** Create a personal fork of the project on GitHub.
-2.  **Clone the fork:** Clone your fork to your local machine.
-3.  **Create a feature branch:** Create a new branch from `develop` for your changes (e.g., `git checkout -b feature/my-new-feature develop`).
-4.  **Make your changes:** Implement your feature or bug fix.
-5.  **Commit your changes:** Commit your changes with a clear and descriptive commit message.
-6.  **Push to your fork:** Push your changes to your fork on GitHub.
-7.  **Create a pull request:** Create a pull request from your feature branch to the `develop` branch of the main repository.
+1. **Fork the repository:** Create a personal fork of the project on GitHub.
+2. **Clone the fork:** Clone your fork to your local machine.
+3. **Create a feature branch:** Create a new branch from `develop` for your changes (e.g., `git checkout -b feature/my-new-feature develop`).
+4. **Make your changes:** Implement your feature or bug fix.
+5. **Commit your changes:** Commit your changes with a clear and descriptive commit message.
+6. **Push to your fork:** Push your changes to your fork on GitHub.
+7. **Create a pull request:** Create a pull request from your feature branch to the `develop` branch of the main repository.
 
 ## Tools Used
 
-### Client
+### Client (JavaScript/React)
 
-*   **Framework:** [React](https://reactjs.org/)
-*   **Build Tool:** [Vite](https://vitejs.dev/)
-*   **Styling:** [Bootstrap](https://getbootstrap.com/), [React-Bootstrap](https://react-bootstrap.github.io/), [MUI Icons](https://mui.com/material-ui/material-icons/)
-*   **Testing:** [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-*   **Deployment:** [Firebase Hosting](https://firebase.google.com/docs/hosting)
+- **Framework:** [React](https://reactjs.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Styling:** [Bootstrap](https://getbootstrap.com/), [React-Bootstrap](https://react-bootstrap.github.io/), [MUI Icons](https://mui.com/material-ui/material-icons/)
+- **Testing:** [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Deployment:** [Firebase Hosting](https://firebase.google.com/docs/hosting)
 
-### Server
+### Server (Python/Flask)
 
-*   **Framework:** [Flask](https://flask.palletsprojects.com/)
-*   **WSGI Server:** [Gunicorn](https://gunicorn.org/)
-*   **Dependency Management:** [Pipenv](https://pipenv.pypa.io/)
-*   **Testing:** [Pytest](https://docs.pytest.org/)
+- **Framework:** [Flask](https://flask.palletsprojects.com/)
+- **WSGI Server:** [Gunicorn](https://gunicorn.org/)
+- **Dependency Management:** [Pipenv](https://pipenv.pypa.io/)
+- **Testing:** [Pytest](https://docs.pytest.org/)
 
 ## Setup Instructions
 
 ### Client
 
-1.  **Navigate to the client directory:**
+1. **Navigate to the client directory:**
 
     ```bash
     cd client
     ```
 
-2.  **Install dependencies:**
+2. **Install dependencies:**
 
     ```bash
     npm install
     ```
 
-3.  **Run the development server:**
+3. **Run the development server:**
 
     ```bash
     npm run dev
     ```
 
-4.  **Run tests:**
+4. **Run tests:**
 
     ```bash
     npm run test
@@ -135,31 +135,31 @@ This project utilizes the GitFlow workflow to manage development and releases. T
 
 ### Server
 
-1.  **Navigate to the server directory:**
+1. **Navigate to the server directory:**
 
     ```bash
     cd server
     ```
 
-2.  **Install dependencies using Pipenv:**
+2. **Install dependencies using Pipenv:**
 
     ```bash
     pipenv install --dev
     ```
 
-3.  **Activate the virtual environment:**
+3. **Activate the virtual environment:**
 
     ```bash
     pipenv shell
     ```
 
-4.  **Run the development server:**
+4. **Run the development server:**
 
     ```bash
     flask run
     ```
 
-5.  **Run tests:**
+5. **Run tests:**
 
     ```bash
     pytest
@@ -171,10 +171,10 @@ This project utilizes the GitFlow workflow to manage development and releases. T
 
 For the client-side application to connect to Firebase, you will need to create a `.env` file in the `client` directory.
 
-1.  Create a new file named `.env` in the `client` directory.
-2.  Add the following line to the `.env` file, replacing `your-firebase-api-key` with your actual Firebase API key:
+1. Create a new file named `.env` in the `client` directory.
+2. Add the following line to the `.env` file, replacing `your-firebase-api-key` with your actual Firebase API key:
 
-    ```
+    ```bash
     VITE_FIREBASE_API_KEY=your-firebase-api-key
     ```
 
@@ -182,10 +182,10 @@ For the client-side application to connect to Firebase, you will need to create 
 
 The server-side application uses Flask's prefixed environment variables. The recommended way to manage these is with a `.flaskenv` file in the `server` directory.
 
-1.  Create a new file named `.flaskenv` in the `server` directory.
-2.  Add your configuration variables to this file, prefixed with `FLASK_`. For example, to run the application in debug mode, you would add:
+1. Create a new file named `.flaskenv` in the `server` directory.
+2. Add your configuration variables to this file, prefixed with `FLASK_`. For example, to run the application in debug mode, you would add:
 
-    ```
+    ```bash
     FLASK_DEBUG=1
     ```
 
@@ -247,8 +247,8 @@ From the `server` directory, and with the `pipenv` shell activated, run the foll
 
 This project uses MegaLinter to ensure code quality. You can run MegaLinter locally using Docker to check your code before pushing it.
 
-1.  **Install Docker:** If you don't have Docker installed, follow the official installation instructions for your operating system.
-2.  **Run MegaLinter:** Open your terminal in the root of the project and run the following command:
+1. **Install Docker:** If you don't have Docker installed, follow the official installation instructions for your operating system.
+2. **Run MegaLinter:** Open your terminal in the root of the project and run the following command:
 
     ```bash
     docker run -v $(pwd):/tmp/lint oxsecurity/megalinter:v8
@@ -277,20 +277,20 @@ Displays a list of available commands and their usage.
 
 This command automates the process of preparing your code for a pull request. It performs the following steps:
 
-1.  **Validates Input**: Checks that you've provided a commit message.
-2.  **Branch Check**: Ensures you are not on the `main` or `develop` branch.
-3.  **Backend Linting & Formatting**:
+1. **Validates Input**: Checks that you've provided a commit message.
+2. **Branch Check**: Ensures you are not on the `main` or `develop` branch.
+3. **Backend Linting & Formatting**:
     - Formats Python code in the `server/` directory using `black`.
     - Lints Python code with `flake8` to catch errors and style issues.
-4.  **Frontend Linting & Formatting**:
+4. **Frontend Linting & Formatting**:
     - Formats JavaScript/React code in the `client/` directory using `prettier`.
     - Lints and fixes issues in the frontend code with `eslint`.
-5.  **Commits Changes**:
+5. **Commits Changes**:
     - Stages all modified files (`git add .`).
     - Commits the changes with your provided message.
-6.  **Syncs with Remote**: Pulls the latest changes from the `develop` branch to keep your branch up-to-date.
-7.  **Pushes to GitHub**: Pushes your feature branch to the remote repository.
-8.  **Next Steps**: Reminds you to create a pull request on GitHub.
+6. **Syncs with Remote**: Pulls the latest changes from the `develop` branch to keep your branch up-to-date.
+7. **Pushes to GitHub**: Pushes your feature branch to the remote repository.
+8. **Next Steps**: Reminds you to create a pull request on GitHub.
 
 ### Example
 
