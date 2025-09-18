@@ -7,6 +7,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import Contact from "./Contact.jsx";
 
 function App() {
   const {logEvent} = useAnalytics();
@@ -23,6 +24,7 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/playground" element={<Playground />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/" element={
           <div className="container-fluid">
             <p>Welcome to Ecovibe</p>
