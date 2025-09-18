@@ -18,6 +18,8 @@ function Playground() {
     return (
         <div>
             <div className="container-fluid">
+                <h1>Playground</h1>
+
                 {/*Standard button with default colors*/}
                 <Button onClick={handleClick}>Click Me</Button>
                 {/*Standard button with custom colors*/}
