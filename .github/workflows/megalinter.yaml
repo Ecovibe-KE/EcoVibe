@@ -49,7 +49,6 @@ jobs:
       issues: write
       pull-requests: write
 
-
     steps:
       # Git Checkout
       - name: Checkout Code
@@ -133,7 +132,6 @@ jobs:
             env.APPLY_FIXES_MODE == 'commit' &&
             (!contains(fromJSON('["refs/heads/main", "refs/heads/master"]'), github.ref))
           }}" >> "${GITHUB_ENV}"
-
 
       # Push new commit if applicable
       # (for now works only on PR from same repository, not from forks)

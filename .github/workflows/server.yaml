@@ -8,9 +8,9 @@ name: Flask CI
 on:
   # Triggers the workflow on push events and pull request events but only for the "main" and "develop" branches
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,7 +22,7 @@ jobs:
       pull-requests: write
     defaults:
       run:
-        working-directory: ./server 
+        working-directory: ./server
     strategy:
       # You can test against multiple Python versions
       matrix:

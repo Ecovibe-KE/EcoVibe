@@ -8,7 +8,7 @@ name: Client Merge PR/Push CI
 on:
   # Triggers the workflow on push events for the "main" and "develop" branches
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./client 
+        working-directory: ./client
 
     strategy:
       # You can test against multiple Node.js versions
@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           # This caches the npm dependency folder to speed up subsequent runs
-          cache: 'npm'
+          cache: "npm"
           # Specify the path to the lock file for correct caching in a monorepo
           cache-dependency-path: client/package-lock.json
 

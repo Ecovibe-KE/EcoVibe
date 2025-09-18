@@ -7,7 +7,7 @@ APPLY_FIXES: all
 IGNORE_GITIGNORED_FILES: true
 
 DISABLE_LINTERS:
-  - GIT_GIT_DIFF     # prevents it from touching git workflow files
+  - GIT_GIT_DIFF # prevents it from touching git workflow files
   - SPELL_CSPELL
   - SPELL_MISSPELL
 

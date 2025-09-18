@@ -14,7 +14,7 @@ We use **GitFlow** for branching:
 - **feature/** → For new features (e.g., `feature/signup-form`)  
 - **hotfix/** → For urgent fixes to production (e.g., `hotfix/login-crash`)  
 
-### Example:
+### Example
 ```bash
 git checkout develop
 git pull origin develop
