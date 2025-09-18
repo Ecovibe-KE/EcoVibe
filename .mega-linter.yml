@@ -1,5 +1,6 @@
 EXCLUDED_DIRECTORIES:
-  - .github/workflows
+  - ./node_modules
+  - ./.github/workflows
 
 DEFAULT_BRANCH: develop
 APPLY_FIXES: all
