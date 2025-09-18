@@ -1,3 +1,6 @@
+EXCLUDED_DIRECTORIES:
+  - .github/workflows
+
 DEFAULT_BRANCH: develop
 APPLY_FIXES: all
 IGNORE_GITIGNORED_FILES: true

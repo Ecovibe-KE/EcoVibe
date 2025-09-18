@@ -2,11 +2,11 @@
 # It runs tests for a Python project using Pipenv, Pytest, and Coverage.
 # For more information see: https://docs.github.com/en/actions
 
-name: Flask application CI
+name: Flask CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" and "develop" branches
+  # Triggers the workflow on push events and pull request events but only for the "main" and "develop" branches
   push:
     branches: [ "main", "develop" ]
   pull_request:
@@ -71,6 +71,7 @@ jobs:
 
       # 8. Comment coverage report on PR, only for changed files
       - name: Coverage comment (changed files only)
+        if: github.event_name == 'pull_request'
         uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: ./server/pytest-coverage.txt

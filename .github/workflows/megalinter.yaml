@@ -21,7 +21,7 @@ env:
   #
   # When active, APPLY_FIXES must also be defined as environment variable
   # (in github/workflows/mega-linter.yml or other CI tool)
-  APPLY_FIXES: git_commit
+  APPLY_FIXES: all
 
   # Decide which event triggers application of fixes in a commit or a PR
   # (pull_request, push, all)
@@ -48,6 +48,7 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+      workflows: write
 
     steps:
       # Git Checkout
