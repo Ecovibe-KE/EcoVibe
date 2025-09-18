@@ -240,4 +240,5 @@ Button.propTypes = {
   icon: PropTypes.element,
 };
 
+export { Button as ActionButton };
 export default Button;
