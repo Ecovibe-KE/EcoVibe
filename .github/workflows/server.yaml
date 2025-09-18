@@ -2,7 +2,7 @@
 # It runs tests for a Python project using Pipenv, Pytest, and Coverage.
 # For more information see: https://docs.github.com/en/actions
 
-name: Flask Merge PR/Push CI
+name: Flask CI
 
 # Controls when the workflow will run
 on:
