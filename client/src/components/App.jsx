@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics';
 import { ActionButton } from '../utils/Button';
-
+import NavBar from './Navbar';
 
 function App() {
   // 1. Get the logEvent function from the hook
@@ -19,16 +19,17 @@ function App() {
 
   return (
     <>
+      <NavBar></NavBar>
       <p>Welcome to Ecovibe</p>
       <p onClick={() => setCount(count + 1)}>Something good is coming soon!</p>
-    <p>This is a sample of how to use the custom buttons</p>
+      <p>This is a sample of how to use the custom buttons</p>
 
-    <div>
-      <ActionButton label="Add Item" action="add" variant="solid" showIcon={false}  onClick={() => setCount(count + 1)} />
-      <ActionButton label="Update Item" action="update" variant="outlined" onClick={() => setCount(count + 1)} />
-      <ActionButton label="Delete Item" action="delete" variant="solid" onClick={() => setCount(count - 1)} />
-      <ActionButton label="View Item" action="view" variant="outlined" onClick={() => alert(`Current count is ${count}`)} />
-    </div>
+      <div>
+        <ActionButton label="Add Item" action="add" variant="solid" showIcon={false} onClick={() => setCount(count + 1)} />
+        <ActionButton label="Update Item" action="update" variant="outlined" onClick={() => setCount(count + 1)} />
+        <ActionButton label="Delete Item" action="delete" variant="solid" onClick={() => setCount(count - 1)} />
+        <ActionButton label="View Item" action="view" variant="outlined" onClick={() => alert(`Current count is ${count}`)} />
+      </div>
 
     </>
   );
