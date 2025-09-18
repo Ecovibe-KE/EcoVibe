@@ -193,7 +193,9 @@ The server-side application uses Flask's prefixed environment variables. The rec
 
     Any other configuration your app needs should be added here as well.
 
-The staging environment api can be found here: `https://ecovibe-staging.onrender.com/`, remember to update the client to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the client.
+All merges to `develop` on the server can be found here: [`https://ecovibe-develop.up.railway.app`](https://ecovibe-develop.up.railway.app)
+
+The staging environment api can be found here: [`https://ecovibe-staging.onrender.com/`](https://ecovibe-staging.onrender.com/), remember to update the client to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the client.
 
 ## Local Development Checks
 
