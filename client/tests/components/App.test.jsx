@@ -4,7 +4,6 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../../src/components/App';
 
-// Add matchMedia mock
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
@@ -59,7 +58,7 @@ describe('App component', () => {
   };
 
   test('logs screen_view event on mount', () => {
-    renderAppWithRouter(); // Use the helper function
+    renderAppWithRouter();
 
     // Check if the mock was called at least once (might be called multiple times)
     expect(mockLogEvent).toHaveBeenCalled();
