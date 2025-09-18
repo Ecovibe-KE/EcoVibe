@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom'; // Add this import
 import App from '../../src/components/App';
 
 // 1. Mock dependencies
@@ -34,14 +35,23 @@ describe('App component', () => {
     global.alert.mockClear();
   });
 
+  // Helper function to render App with Router
+  const renderAppWithRouter = () => {
+    return render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+  };
+
   test('renders initial welcome messages', () => {
-    render(<App />);
+    renderAppWithRouter(); // Use the helper function
     expect(screen.getByText('Welcome to Ecovibe')).toBeInTheDocument();
     expect(screen.getByText('Something good is coming soon!')).toBeInTheDocument();
   });
 
   test('logs screen_view event on mount', () => {
-    render(<App />);
+    renderAppWithRouter(); // Use the helper function
     expect(mockLogEvent).toHaveBeenCalledTimes(1);
     expect(mockLogEvent).toHaveBeenCalledWith('screen_view', {
       firebase_screen: 'Home Page',
@@ -50,8 +60,8 @@ describe('App component', () => {
   });
 
   test('renders ActionButtons with correct props', () => {
-    render(<App />);
-    
+    renderAppWithRouter(); // Use the helper function
+
     // Check props for "Add Item" button
     expect(mockActionButton).toHaveBeenCalledWith(expect.objectContaining({
       label: "Add Item",
@@ -84,7 +94,7 @@ describe('App component', () => {
 
   describe('button interactions and state management', () => {
     test('increments count when "Add Item" button is clicked', () => {
-      render(<App />);
+      renderAppWithRouter(); // Use the helper function
       // Find buttons by their text, which is their label
       const addButton = screen.getByText('Add Item');
       const viewButton = screen.getByText('View Item');
@@ -96,7 +106,7 @@ describe('App component', () => {
     });
 
     test('increments count when "Update Item" button is clicked', () => {
-      render(<App />);
+      renderAppWithRouter(); // Use the helper function
       const updateButton = screen.getByText('Update Item');
       const viewButton = screen.getByText('View Item');
 
@@ -107,7 +117,7 @@ describe('App component', () => {
     });
 
     test('decrements count when "Delete Item" button is clicked', () => {
-      render(<App />);
+      renderAppWithRouter(); // Use the helper function
       const deleteButton = screen.getByText('Delete Item');
       const viewButton = screen.getByText('View Item');
 
@@ -118,7 +128,7 @@ describe('App component', () => {
     });
 
     test('shows an alert with the correct count when "View Item" button is clicked', () => {
-      render(<App />);
+      renderAppWithRouter(); // Use the helper function
       const viewButton = screen.getByText('View Item');
       const addButton = screen.getByText('Add Item');
 
