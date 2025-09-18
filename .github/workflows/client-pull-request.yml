@@ -8,7 +8,7 @@ name: Client Pull Request CI
 on:
   # Triggers the workflow on pull request events for the "main" and "develop" branches
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,7 +19,7 @@ jobs:
       pull-requests: write
     defaults:
       run:
-        working-directory: ./client 
+        working-directory: ./client
 
     steps:
       - name: Checkout repository
@@ -28,8 +28,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'      
+          node-version: "22"
+          cache: "npm"
           # Specify the path to the lock file for correct caching in a monorepo
           cache-dependency-path: client/package-lock.json
 
@@ -43,7 +43,7 @@ jobs:
         id: coverage-comment
         # Set if: always() to also generate the report if tests are failing
         # Only works if you set `reportOnFailure: true` in your vite config as specified above
-        if: always() 
-        uses:  davelosert/vitest-coverage-report-action@v2
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
         with:
           working-directory: ./client
