@@ -43,38 +43,29 @@ const Footer = ({ pageType }) => {
 
           {pageType === "landing" && (
             <>
-              <Col md={3} className="mb-3">
+              <Col md={3} className="mb-3 mt-5">
                 <h6 className="text-uppercase fw-bold">Quick Links</h6>
                 <ul className="list-unstyled">
-                  <li>
-                    <a href="/about" className="nav-link">About Us</a>
-                  </li>
-                  <li>
-                    <a href="/services" className="nav-link">Services</a>
-                  </li>
-                  <li>
-                    <a href="/contact" className="nav-link">Contact</a>
-                  </li>
+                  <li><a href="/about" className="nav-link">About Us</a></li>
+                  <li><a href="/services" className="nav-link">Services</a></li>
+                  <li><a href="/contact" className="nav-link">Contact</a></li>
                 </ul>
               </Col>
 
-              <Col md={3} className="mb-3">
+              <Col md={3} className="mb-3 mt-5">
                 <h6 className="text-uppercase fw-bold">Blogs</h6>
                 <ul className="list-unstyled">
-                  <li>
-                    <a href="/blog" className="nav-link">Latest Posts</a>
-                  </li>
-                  <li>
-                    <a href="/blog/categories" className="nav-link">Categories</a>
-                  </li>
+                  <li><a href="/blog" className="nav-link">Latest Posts</a></li>
+                  <li><a href="/blog/categories" className="nav-link">Categories</a></li>
                 </ul>
               </Col>
 
-              <Col md={3} className="mb-3">
+              <Col md={3} className="mb-3 mt-5">
                 <h6 className="text-uppercase fw-bold">Join Us</h6>
                 <Button
                   style={buttonStyle}
                   size="sm"
+                  className="mb-2 join-btn"
                   href="/login"
                   onMouseOver={e => Object.assign(e.target.style, buttonHoverStyle)}
                   onMouseOut={e => Object.assign(e.target.style, buttonStyle)}
@@ -86,7 +77,7 @@ const Footer = ({ pageType }) => {
                     href="https://www.instagram.com/ecovibe"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={socialIconStyle}
+                    className="social-icon me-3"
                   >
                     <FaInstagram size={20} />
                   </a>
@@ -94,7 +85,7 @@ const Footer = ({ pageType }) => {
                     href="https://www.linkedin.com/company/ecovibe-kenya"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "black" }}
+                    className="social-icon"
                   >
                     <FaLinkedin size={20} />
                   </a>
@@ -108,15 +99,9 @@ const Footer = ({ pageType }) => {
               <Col md={6} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Legal & Policy</h6>
                 <ul className="list-unstyled">
-                  <li>
-                    <a href="/refund-policy" className="nav-link">Refund / Cancellation Policy</a>
-                  </li>
-                  <li>
-                    <a href="/privacy-policy" className="nav-link">Privacy Policy</a>
-                  </li>
-                  <li>
-                    <a href="/terms" className="nav-link">Terms & Conditions</a>
-                  </li>
+                  <li><a href="/refund-policy" className="nav-link">Refund / Cancellation Policy</a></li>
+                  <li><a href="/privacy-policy" className="nav-link">Privacy Policy</a></li>
+                  <li><a href="/terms" className="nav-link">Terms & Conditions</a></li>
                 </ul>
               </Col>
 
@@ -126,7 +111,7 @@ const Footer = ({ pageType }) => {
                   href="https://www.instagram.com/ecovibe"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={socialIconStyle}
+                  className="social-icon me-3"
                 >
                   <FaInstagram size={20} />
                 </a>
@@ -134,8 +119,7 @@ const Footer = ({ pageType }) => {
                   href="https://www.linkedin.com/company/ecovibe-kenya/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: "black" }}
-                  className="text-light"
+                  className="social-icon"
                 >
                   <FaLinkedin size={20} />
                 </a>
