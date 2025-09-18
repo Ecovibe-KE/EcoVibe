@@ -1,38 +1,36 @@
-import { useState, useEffect } from 'react'
-import { useAnalytics } from '../hooks/useAnalytics';
-import { ActionButton } from '../utils/Button';
-import NavBar from './Navbar';
+import {useState, useEffect} from "react";
+import {useAnalytics} from "../hooks/useAnalytics";
+import NavBar from "./Navbar.jsx";
+import Playground from "./Playground.jsx";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 function App() {
-  // 1. Get the logEvent function from the hook
-  const { logEvent } = useAnalytics();
+  const {logEvent} = useAnalytics();
 
-  // 2. Log a screen_view event when the component mounts
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: "Home Page",
       firebase_screen_class: "App",
     });
-  }, [logEvent]); // Add logEvent to dependency array
-
-  const [count, setCount] = useState(0);
+  }, [logEvent]);
 
   return (
     <>
-      <NavBar></NavBar>
-      <p>Welcome to Ecovibe</p>
-      <p onClick={() => setCount(count + 1)}>Something good is coming soon!</p>
-      <p>This is a sample of how to use the custom buttons</p>
-
-      <div>
-        <ActionButton label="Add Item" action="add" variant="solid" showIcon={false} onClick={() => setCount(count + 1)} />
-        <ActionButton label="Update Item" action="update" variant="outlined" onClick={() => setCount(count + 1)} />
-        <ActionButton label="Delete Item" action="delete" variant="solid" onClick={() => setCount(count - 1)} />
-        <ActionButton label="View Item" action="view" variant="outlined" onClick={() => alert(`Current count is ${count}`)} />
-      </div>
-
+      <NavBar />
+      <Routes>
+        <Route path="/playground" element={<Playground />} />
+        <Route path="/" element={
+          <div className="container-fluid">
+            <p>Welcome to Ecovibe</p>
+            <p>Something good is coming soon!</p>
+          </div>
+        } />
+      </Routes>
     </>
   );
 }
-
 export default App;
