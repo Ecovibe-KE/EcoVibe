@@ -178,6 +178,8 @@ For the client-side application to connect to Firebase, you will need to create 
     VITE_FIREBASE_API_KEY=your-firebase-api-key
     ```
 
+The staging environment client can be found here: `https://ecovibe-staging.web.app/`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
+
 ### Server-Side
 
 The server-side application uses Flask's prefixed environment variables. The recommended way to manage these is with a `.flaskenv` file in the `server` directory.
@@ -190,6 +192,8 @@ The server-side application uses Flask's prefixed environment variables. The rec
     ```
 
     Any other configuration your app needs should be added here as well.
+
+The staging environment api can be found here: `https://ecovibe-staging.onrender.com/`, remember to update the client to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the client.
 
 ## Local Development Checks
 
