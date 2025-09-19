@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics';
 import { ActionButton } from '../utils/Button';
 import NavBar from './Navbar';
+import Homepage from './Homepage';
+
 
 function App() {
   // 1. Get the logEvent function from the hook
@@ -20,6 +22,8 @@ function App() {
   return (
     <>
       <NavBar></NavBar>
+      <Homepage></Homepage>
+
       <p>Welcome to Ecovibe</p>
       <p onClick={() => setCount(count + 1)}>Something good is coming soon!</p>
       <p>This is a sample of how to use the custom buttons</p>
