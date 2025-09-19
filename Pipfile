@@ -8,6 +8,8 @@ werkzeug = "*"
 flask-restful = "*"
 flask-sqlalchemy = "*"
 flask = "*"
+flask-migrate = "*"
+email-validator = "*"
 
 [dev-packages]
 

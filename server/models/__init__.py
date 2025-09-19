@@ -1,5 +1,2 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
-from .user import User
+from app import db
+from .user import User, Role, AccountStatus
