@@ -67,7 +67,7 @@ jobs:
 
       # 7. Run tests with coverage and comment on PR
       - name: Run tests with coverage
-        run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
+        run: pipenv run pytest
 
       # 8. Comment coverage report on PR, only for changed files
       - name: Coverage comment (changed files only)
