@@ -31,24 +31,22 @@ def register_user():
     # Get the payload
     try:
         payload = request.get_json(force=True, silent=False)
-        #print(f"Received payload: {payload}")  # Debug
     except Exception as e:
-        #print(f"JSON parsing error: {e}")  # Debug
         return jsonify({"error": "Invalid JSON format", "details": str(e)}), 400
 
-    #print("Checking payload type...")
+
     if not isinstance(payload, dict):
         print("ERROR: Payload is not a dict")
         return jsonify({"error": "Payload must be a JSON object"}), 400
 
-    #print("Checking required fields...")
+    
     required_fields = ["fullname", "email", "password", "industry", "phoneNumber"]
     missing_fields = [field for field in required_fields if field not in payload]
     if missing_fields:
         print(f"ERROR: Missing fields: {missing_fields}")
         return jsonify({"error": "Missing required fields", "missing": missing_fields}), 400
 
-    #print("Processing fields...")
+    
     full_name = str(payload.get("fullname", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
     password = payload.get("password")
@@ -56,7 +54,6 @@ def register_user():
     phone_number = str(payload.get("phoneNumber", "")).strip()
 
 
-    print("Validating fields...")
     if not full_name:
         print("ERROR: fullname is empty")
         return jsonify({"error": "fullname cannot be empty"}), 400
@@ -71,28 +68,12 @@ def register_user():
     if not 
         return jsonify({"error": "Invalid email format"}), 400
 
-    print(f"Validating password...")
+    
     if not _is_valid_password(password):
         print(f"ERROR: Password validation failed")
         return jsonify({"error": "Password must be at least 8 characters with uppercase and digit"}), 400
 
-    print("All field validations passed!")
-    print("Checking for existing user...")
 
-    # Pre-check email uniqueness (case-insensitive)
-    try:
-        existing = (
-            db.session.query(User.id)
-            .filter(func.lower(User.email) == email)
-            .first()
-        )
-        if existing:
-            print(f"ERROR: Email already exists: {email}")
-            return jsonify({"error": "Email already exists."}), 409
-        print("No existing user found with this email")
-    except Exception as e:
-        print(f"ERROR: Database query failed: {e}")
-        return jsonify({"error": "Database query error", "details": str(e)}), 500
 
     try:
         user = User(
@@ -105,7 +86,15 @@ def register_user():
         
         print("Setting password...")
         user.set_password(password)
-        print("Password set successfully")
+
+    except ValueError as e:
+        return {"error": str(e)}, 400
+    except IntegrityError:
+        db.session.rollback()
+        return {"error": "Email or phone number already exists."}, 400
+    except Exception as e:
+        db.session.rollback()
+        return {"error": "Unexpected error."}, 500
         
     except Exception as e:
         print(f"ERROR: Failed to create User object or set password: {e}")
