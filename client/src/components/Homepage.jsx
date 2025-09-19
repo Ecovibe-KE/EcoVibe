@@ -56,11 +56,8 @@ const Homepage = () =>{
                             </Button>
                         </Link>
                         <Link to={"/contact"}>
-                            <Button color="#FFFFFF" className="rounded-pill px-4 fst-italic fs-5 fw-bold">
-                                <div className="text-color">
-                                    CONTACT
-                                </div>
-                            
+                            <Button color="#FFFFFF" hoverColor="none" className="rounded-pill px-4 fst-italic fs-5 fw-bold text-success">
+                                        CONTACT
                             </Button>
                         </Link>
                     </div>
