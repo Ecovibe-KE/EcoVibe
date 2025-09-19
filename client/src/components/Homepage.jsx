@@ -1,5 +1,7 @@
-import { Card, Button, Image } from "react-bootstrap"
-import { AccessAlarm, ThreeDRotation, Star, StarBorder, CheckBox } from '@mui/icons-material';
+import { Card} from "react-bootstrap"
+import { StarBorder} from '@mui/icons-material'
+import Button from "../utils/Button"
+import { Link } from "react-router-dom"
 const Homepage = () =>{
     const services = [
         {
@@ -40,7 +42,7 @@ const Homepage = () =>{
             <section className=" bg-secondary">
                 <Card className="bg-dark text-white border-0 rounded-0 vh-100">
                 <Card.Img 
-                    src="https://picsum.photos/1920/600" 
+                    src="/forest-272595_1280 2.png" 
                     className="h-100 w-100 object-fit-cover opacity-50" 
                     alt="Hero background" 
                 />
@@ -48,12 +50,19 @@ const Homepage = () =>{
                     <h1 className="display-4 display-md-3 display-lg-2 fw-normal mb-5" style={{fontSize:60}}>ECOVIBE KENYA</h1>
                     <p className="lead lh-1 fw-bold fst-italic" style={{maxWidth:"700px", fontSize: "36px"}}>Leading the way in offering cutting-edge solutions for sustainable development. we provice expert consultancy services and keep your up to date with the evolving ESG landscape</p>
                     <div className="d-flex flex-row gap-2">
-                        <Button className="btn bg-success rounded-pill px-4 text-white fs-5 fst-italic fw-bold border--">
-                            SERVICES
-                        </Button>
-                        <Button className="btn-light rounded-pill px-4 fst-italic fs-5 fw-bold text-success">
-                            CONTACT
-                        </Button>
+                        <Link to={"/services"}>
+                            <Button color="#37B137" hoverColor="none" className="rounded-pill px-4 text-white fs-5 fst-italic fw-bold">
+                                SERVICES
+                            </Button>
+                        </Link>
+                        <Link to={"/contact"}>
+                            <Button color="#FFFFFF" className="rounded-pill px-4 fst-italic fs-5 fw-bold">
+                                <div className="text-color">
+                                    CONTACT
+                                </div>
+                            
+                            </Button>
+                        </Link>
                     </div>
                     </Card.ImgOverlay>
                     </Card>
@@ -129,7 +138,7 @@ const Homepage = () =>{
                     <div className="col-12 col-lg-6 text-center">
                         <Card className="shadow-sm border-0">
                             <Card.Img
-                            src="https://picsum.photos/600/400"
+                            src="/investment-5241253_1280 2.png"
                             alt="EcoVibe ESG consultancy"
                             className="rounded-3 img-fluid"
                             />
@@ -141,12 +150,12 @@ const Homepage = () =>{
                 <div className="text-center mb-5 mx-5">
                     <div className="text-center">
                         <h1 className="fw-bold " style={{
-                            marginBottom: "60px",
+                            marginBottom:"60px",
                         }}>
                             Our Consultancy Services
                         </h1>
                         <p className="text-muted mx-auto" style={{
-                            maxWidth: "700px",
+                            maxWidth:"700px",
                             marginBottom:"60px"
                             }}
                         >
@@ -162,14 +171,15 @@ const Homepage = () =>{
                                         <div className="d-flex align-items-center gap-2 mb-4  " style={{height:"35px"}}>
                                             <div style={{
                                                 backgroundColor: "#F5A030", 
-                                                color: "#FFFFFF",           
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                borderRadius: "50%",        
-                                                width: "30px",              
-                                                height: "30px",
-                                                padding:"5px"
+                                                color:"#FFFFFF",           
+                                                display:"inline-flex",
+                                                alignItems:"center", 
+                                                width:"30px",              
+                                                height:"30px",
+                                                padding:"5px",
+                                                justifyContent:"center",
+                                                borderRadius:"50%",        
+                                               
                                             }}
                                             >
                                                 <StarBorder style={{ fontSize: 20 }} />
