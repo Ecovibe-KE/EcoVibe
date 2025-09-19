@@ -23,7 +23,7 @@ function NavBar() {
                             </Offcanvas.Header>
                             <Offcanvas.Body>
                                 <Nav className="justify-content-end flex-grow-1 pe-3">
-                                    <Nav.Link as={NavLink} to="/home" className="mx-3 fw-bold nav-link">Home</Nav.Link>
+                                    <Nav.Link as={NavLink} to="/" className="mx-3 fw-bold nav-link">Home</Nav.Link>
                                     <Nav.Link as={NavLink} to="/about" className="mx-3 fw-bold nav-link">About</Nav.Link>
                                     <Nav.Link as={NavLink} to="/services" className="mx-3 fw-bold nav-link">Services</Nav.Link>
                                     <Nav.Link as={NavLink} to="/blog" className="mx-3 fw-bold nav-link">Blog</Nav.Link>

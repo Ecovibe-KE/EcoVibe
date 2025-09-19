@@ -6,7 +6,7 @@ app.config.from_prefixed_env()
 
 @app.route("/")
 def home():
-    return "EcoVibe Completed Website!"
+    return "EcoVibe Completed Website!."
 
 
 if __name__ == "__main__":
