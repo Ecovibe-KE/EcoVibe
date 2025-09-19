@@ -11,7 +11,7 @@ function NavBar() {
     return (
         <>
             {
-                <Navbar expand={size} className="mx-5 mb-3">
+                <Navbar expand={size} className="mx-5 ">
                     <Container fluid>
                         <Navbar.Brand as={NavLink} to="/home"><img src="/EcovibeLogo.png" alt="EcoVibe Logo" width="250" height="70" className="d-inline-block" />
                             {/* <Image src="/EcovibeLogo.png" alt="EcoVibe Logo" fluid style={{ height: "70px", maxWidth: "160px" }} /> */}

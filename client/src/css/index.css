@@ -33,3 +33,9 @@
   padding-bottom: 4px;
   /* Adjust vertical offset */
 }
+
+.icon-sm {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}

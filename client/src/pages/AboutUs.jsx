@@ -1,24 +1,120 @@
 import NavBar from "../components/Navbar"
+// import AboutUsCard from "../components/AboutUsCard"
+import AboutUsPartition from "../components/AboutUsPartition"
 
 function AboutUs() {
+
+    const missionText = "To empower businesses with innovative digital solutions that drive growth, enhance efficiency, and create meaningful connections with their audiences.We strive to understand our clients' unique challenges and opportunities, delivering tailored strategies that produce measurable results."
+
+    // Bootstrap screen setting for core values and meet our team section
+    const screenSetting = "row-cols-lg-3"
+
+    const missionVisionContent = [
+        {
+            imageSourceName: "Target",
+            heading: "Our Mission",
+            paragraphContent: missionText
+        },
+        {
+            imageSourceName: "Eye",
+            heading: "Our Vision",
+            paragraphContent: missionText
+        }
+    ]
+
+    const coreValueContent = [
+        {
+            imageSourceName: "Target",
+            heading: "Innovation",
+            paragraphContent: missionText
+        },
+        {
+            imageSourceName: "Target",
+            heading: "Innovation",
+            paragraphContent: missionText
+        },
+        {
+            imageSourceName: "Target",
+            heading: "Innovation",
+            paragraphContent: missionText
+        }
+    ]
+
+    const meetOurTeamContent = [
+        {
+            imageSourceName: "ceo",
+            heading: "Sharon Maina",
+            paragraphContent: "CEO & Founder"
+        },
+        {
+            imageSourceName: "creativeDirector",
+            heading: "Sarah Williams",
+            paragraphContent: "Creative Director"
+        },
+        {
+            imageSourceName: "leadDeveloper",
+            heading: "Joseph David",
+            paragraphContent: "Lead Developer"
+        }
+    ]
+
+    const missionVision = "Mission & Vision"
+    const coreValues = "Our Core Values"
+    const meetOurTeam = "Meet Our Team"
+
+    function displayPage(title, contentArray, extraSetting = "", padding = "p-4", customClass = "icon-sm mx-auto") {
+        return (
+            <>
+                <AboutUsPartition key={title} title={title} contentArray={contentArray} extraSetting={extraSetting} padding={padding} customClass={customClass}></AboutUsPartition>
+            </>
+        )
+    }
+
+    // function displayContent(contentArray) {
+    //     return contentArray.map(({ imageSourceName, heading, paragraphContent }, index) => {
+    //         return (
+    //             <AboutUsCard key={index} imageSourceName={imageSourceName} heading={heading} paragraphContent={paragraphContent} ></AboutUsCard>
+    //         )
+    //     })
+    // }
+
     return (
         <>
             <NavBar></NavBar>
-            <section className="py-3">
-                <div className="container-fluid p-lg-0">
+            <section>
+                <div className="container-fluid p-lg-5">
                     <div className="row g-0 align-items-center">
-                        <h1 className="fw-semibold display-6 text-center about-underline">About Us</h1>
+                        <h1 className="mb-5 fw-semibold display-6 text-center about-underline">About Us</h1>
                         <div className="col-lg-6">
-                            <div className="col-lg-8 mx-auto">
+                            <div className="col-lg-8 mx-auto text-center">
                                 <h2 className="fw-bold">Empowering Sustainable Solutions</h2>
                                 <p className="lead">Ecovibe Kenya provides consultancy services and keeps up to date with evolving ESG landscape. We lead the way in offering cutting-edge solutions for sustainable development. Join us as we work towards a greener and more socially responsible world.</p>
                             </div>
                         </div>
                         <div className="col-lg-6">
-                            <div className="mt-5 mt-lg-0"><img alt="" className="img-fluid" src="/chairs.png" /></div>
+                            <div className="my-5 mt-lg-0 text-md-center text-lg-start"><img alt="" className="img-fluid" src="/chairs.png" /></div>
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section className="text-bg-light text-center p-4">
+                {displayPage(missionVision, missionVisionContent)}
+                {displayPage(coreValues, coreValueContent, screenSetting)}
+                {displayPage(meetOurTeam, meetOurTeamContent, screenSetting, "", "card-img-top rounded-top-5")}
+                {/* <article className="container mb-5">
+                    <h2 className="mb-5 fw-semibold display-6 about-underline">Mission & Vision</h2>
+                    <div className=" row row-cols-1 row-cols-md-2 g-5 justify-content-center">
+                        {displayContent(missionVisionContent)}
+                    </div>
+                </article>
+
+                <article className="container">
+                    <h2 className="mb-5 fw-semibold display-6 about-underline">Our Core Values</h2>
+                    <div className=" row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
+                        {displayContent(coreValueContent)}
+                    </div>
+                </article> */}
             </section>
         </>
     )
