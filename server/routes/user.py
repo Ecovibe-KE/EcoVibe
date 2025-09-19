@@ -1,8 +1,6 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from server.models.user import db, User
-from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-import re
 
 # Create the blueprint
 user_bp = Blueprint("user", __name__)
@@ -48,7 +46,8 @@ def register_user():
     if not _is_valid_password(password):
         return jsonify({"error": "Invalid input."}), 400
 
-    existing = db.session.query(User).filter(db.func.lower(User.email) == email).first()
+    existing = db.session.query(User).filter(db.func.lower(
+        User.email) == email).first()
     if existing:
         return jsonify({"error": "Email already exists."}), 409
 

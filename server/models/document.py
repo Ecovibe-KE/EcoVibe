@@ -20,7 +20,8 @@ class Document(db.Model):
     user = db.relationship("User", back_populates="documents")
 
     def __repr__(self):
-        return f"<Document id={self.id} admin_id={self.admin_id} file_path={self.file_path}>"
+        return f"<Document id={self.id} admin_id={self.admin_id} file_path={
+            self.file_path}>"
 
     def to_dict(self):
         return {
