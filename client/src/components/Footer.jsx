@@ -2,14 +2,6 @@ import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 
-// Inline styles
-const footerStyle = {
-  backgroundColor: "#d6f5d6", // light green
-  color: "black",
-  padding: "1.5rem 0",
-  marginTop: "Auto",
-};
-
 const buttonStyle = {
   color: "white",
   backgroundColor: "#37b137",
@@ -23,28 +15,33 @@ const buttonHoverStyle = {
   borderColor: "#37b137",
 };
 
+const socialIconStyle = {
+  color: "black",
+  marginRight: "0.75rem",
+};
+
+const footerStyle = {
+  backgroundColor: "#d6f5d6", 
+  padding: "1.5rem 0",
+  marginTop: "3rem",
+};
+
 const Footer = ({ pageType }) => {
   return (
     <footer style={footerStyle}>
-      <Container fluid className="p-3">
-        <Row className="text-center text-md-start mt-3" style={{ minHeight: "150px" }}>
-          <Col
-            md={3}
-            className="mb-5 d-flex flex-column justify-content-end"
-            style={{ height: "100%" }}
-          >
+      <Container>
+        <Row className="text-center text-md-start">
+          <Col md={3} className="mb-3">
             <img
               src="/EcovibeLogo.png"
               alt="EcoVibe Logo"
-              width="80%"
-              height="80%"
-              className="img-fluid mb-3"
+              className="img-fluid mb-2"
             />
           </Col>
 
           {pageType === "landing" && (
             <>
-              <Col md={3} className="mb-3 mt-5">
+              <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Quick Links</h6>
                 <ul className="list-unstyled">
                   <li><a href="/about" className="nav-link">About Us</a></li>
@@ -53,7 +50,7 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              <Col md={3} className="mb-3 mt-5">
+              <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Blogs</h6>
                 <ul className="list-unstyled">
                   <li><a href="/blog" className="nav-link">Latest Posts</a></li>
@@ -61,15 +58,14 @@ const Footer = ({ pageType }) => {
                 </ul>
               </Col>
 
-              <Col md={3} className="mb-3 mt-5">
+              <Col md={3} className="mb-3">
                 <h6 className="text-uppercase fw-bold">Join Us</h6>
                 <Button
                   style={buttonStyle}
                   size="sm"
-                  className="mb-2 join-btn"
                   href="/login"
-                  onMouseOver={(e) => Object.assign(e.target.style, buttonHoverStyle)}
-                  onMouseOut={(e) => Object.assign(e.target.style, buttonStyle)}
+                  onMouseOver={e => Object.assign(e.target.style, buttonHoverStyle)}
+                  onMouseOut={e => Object.assign(e.target.style, buttonStyle)}
                 >
                   Login
                 </Button>
@@ -78,15 +74,15 @@ const Footer = ({ pageType }) => {
                     href="https://www.instagram.com/ecovibe"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="social-icon me-3"
+                    style={socialIconStyle}
                   >
                     <FaInstagram size={20} />
                   </a>
                   <a
-                    href="https://www.linkedin.com/company/ecovibe-kenya"
+                    href="https://www.linkedin.com/company/ecovibe-ke"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="social-icon"
+                    style={{ color: "black" }}
                   >
                     <FaLinkedin size={20} />
                   </a>
@@ -112,15 +108,15 @@ const Footer = ({ pageType }) => {
                   href="https://www.instagram.com/ecovibe"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="social-icon me-3"
+                  style={socialIconStyle}
                 >
                   <FaInstagram size={20} />
                 </a>
                 <a
-                  href="https://www.linkedin.com/company/ecovibe-kenya/"
+                  href="https://www.linkedin.com/company/ecovibe-ke"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="social-icon"
+                  style={{ color: "black" }}
                 >
                   <FaLinkedin size={20} />
                 </a>
@@ -129,16 +125,12 @@ const Footer = ({ pageType }) => {
           )}
         </Row>
 
-        <Row className="mt-3 mx-0">
-          <Col className="text-center">
-            <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
-          </Col>
-        </Row>
+        <div className="text-center mt-3">
+          <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
+        </div>
       </Container>
     </footer>
   );
 };
 
 export default Footer;
-
-
