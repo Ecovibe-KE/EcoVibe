@@ -37,7 +37,7 @@ class User(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
@@ -86,13 +86,15 @@ class User(db.Model):
             raise ValueError(str(e))
 
     @validates("phone_number")
-    def validate_phone(self, key, number):
-        pattern = r"^(?:\+\d{7,15}|0\d{6,14})$"
-        if not re.match(pattern, number):
-            raise ValueError(
-                "Invalid phone number format. Use international (+254722123456) or local (0722123456)."
-            )
-        return number
+    def validate_phone(self, _key, number):
+        import phone_numbers
+        try:
+            parsed = phone_numbers.parse(number, None)  # set default region if desired, e.g., "KE"
+        except phone_numbers.NumberParseException as e:
+            raise ValueError(str(e)) from e
+        if not phone_numbers.is_valid_number(parsed):
+            raise ValueError("Invalid phone number.")
+        return phone_numbers.format_number(parsed, phone_numbers.PhoneNumberFormat.E164)
 
     @validates("full_name")
     def validate_name(self, key, name):

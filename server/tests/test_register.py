@@ -6,7 +6,7 @@ from server.app import create_app
 @pytest.fixture()
 def client(monkeypatch):
     # Use an in-memory SQLite DB for tests
-    monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
+    monkeypatch.setenv("FLASK_SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
     app = create_app()
     app.config.update({
         "TESTING": True,
@@ -17,12 +17,11 @@ def client(monkeypatch):
 
 def test_register_success(client):
     payload = {
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john@example.com",
+        "full_name": "John Doe",
+        "email": "john@gmail.com",
         "password": "StrongPass1",
         "industry": "Energy",
-        "phoneNumber": "1234567890",
+        "phone_number": "1234567890",
     }
     res = client.post("/api/register", json=payload)
     assert res.status_code == 201
@@ -33,24 +32,21 @@ def test_register_success(client):
     {},
     {"firstName": "John"},
     {
-        "firstName": " ",
-        "lastName": "Doe",
-        "email": "john@example.com",
+        "full_name": "John Doe",
+        "email": "john@gmail.com",
         "password": "StrongPass1",
         "industry": "Energy",
-        "phoneNumber": "1234567890",
+        "phone_number": "1234567890",
     },
     {
-        "firstName": "John",
-        "lastName": "Doe",
+        "full_name": "John Doe",
         "email": "not-an-email",
         "password": "StrongPass1",
         "industry": "Energy",
         "phoneNumber": "1234567890",
     },
     {
-        "firstName": "John",
-        "lastName": "Doe",
+        "full_name": "John Doe",
         "email": "john@example.com",
         "password": "weakpass",  # no uppercase or digit
         "industry": "Energy",
@@ -65,8 +61,7 @@ def test_register_invalid_input(client, bad_payload):
 
 def test_register_conflict_email(client):
     payload = {
-        "firstName": "John",
-        "lastName": "Doe",
+        "full_name": "John Doe",
         "email": "dup@example.com",
         "password": "StrongPass1",
         "industry": "Energy",

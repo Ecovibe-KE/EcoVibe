@@ -49,8 +49,12 @@ def register_user():
     email = email_raw.lower()
     
     if not _is_valid_password(password):
-        return jsonify({"error": "Password must be at least 8 characters with uppercase and digit"}), 400
+       return jsonify({"error": "Invalid input."}), 400
 
+    existing = db.session.query(User).filter(db.func.lower(User.email) == email).first()
+    if existing:
+       return jsonify({"error": "Email already exists."}), 409
+    
     try:
         user = User(
             full_name= full_name,
