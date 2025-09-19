@@ -154,12 +154,14 @@ const Homepage = () =>{
                         }}>
                             Our Consultancy Services
                         </h1>
-                        <p className="text-muted mx-auto" style={{
+                        <p className="text mx-auto fw-bold fw-bold" style={{
                             maxWidth:"700px",
-                            marginBottom:"60px"
+                            marginBottom:"60px",
+                            fontSize:25,
+                            color:"#535252"
                             }}
                         >
-                            We offer comprehensive ESG consultancy services designed to help your organization navigate the complex landscape of sustainable development and create lasting impact.
+                            We offer comprehensive ESG consultancy services designed to help your organization navigate the complex landscape of sustainable development and create a lasting impact.
                         </p>
                     </div>
                     
