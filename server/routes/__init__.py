@@ -1,7 +1,5 @@
-from flask_restful import Api
-from .user import RegisterResource
+# routes/__init__.py
+from .user import bp as user_bp
 
 def register_routes(app):
-    api = Api(app)
-
-    api.add_resource(RegisterResource, "/register")
+    app.register_blueprint(user_bp, url_prefix="/")

@@ -101,3 +101,6 @@ instance/
 .idea/
 *.swp
 *.swo
+
+# test database
+*.db
