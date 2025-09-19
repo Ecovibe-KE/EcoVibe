@@ -1,7 +1,0 @@
-# Comma-separated list of directories to ignore
-exclude =
-    .git,
-    __pycache__,
-    .venv,
-    build,
-    dist

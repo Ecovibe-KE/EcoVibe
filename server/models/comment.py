@@ -27,4 +27,5 @@ class Comment(db.Model):
         }
 
     def __repr__(self):
-        return f"<Comment: {self.id},{self.description},{self.client_id},{self.blog_id},{self.created_at},{self.updated_at}/>"
+        return f"<Comment: {self.id},{self.description},{self.client_id},{
+            self.blog_id},{self.created_at},{self.updated_at}/>"

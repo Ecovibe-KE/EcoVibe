@@ -52,7 +52,8 @@ class Payments(db.Model):
             "invoice_id": self.invoice_id,
             "payment_method": self.payment_method.value,
             "payment_method_id": self.payment_method_id,
-            "created_at": self.created_at.isoformat(),  # Simplified as it's non-nullable
+            # Simplified as it's non-nullable
+            "created_at": self.created_at.isoformat(),
             "metadata": payment_entity,
         }
 

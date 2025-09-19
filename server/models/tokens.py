@@ -29,4 +29,5 @@ class Token(db.Model):
         }
 
     def __repr__(self):
-        return f"<Tokens {self.id}, {self.user_id}, {self.created_at}, {self.value}, {self.expiry_time}>"
+        return f"<Tokens {self.id}, {self.user_id}, {
+            self.created_at}, {self.value}, {self.expiry_time}>"

@@ -62,4 +62,5 @@ class Ticket(db.Model):
         }
 
     def __repr__(self):
-        return f"<Ticket id={self.id} subject='{self.subject}' status='{self.status.value}'>"
+        return f"<Ticket id={self.id} subject='{
+            self.subject}' status='{self.status.value}'>"

@@ -153,7 +153,8 @@ class User(db.Model):
             return Role(role)
         except ValueError:
             raise ValueError(
-                f"Invalid role: {role}. Must be one of: {', '.join([r.value for r in Role])}"
+                f"Invalid role: {role}. Must be one of: {
+                    ', '.join([r.value for r in Role])}"
             )
 
     @validates("account_status")
@@ -166,7 +167,8 @@ class User(db.Model):
             return AccountStatus(status)
         except ValueError:
             raise ValueError(
-                f"Invalid account status: {status}. Must be one of: {', '.join([s.value for s in AccountStatus])}"
+                f"Invalid account status: {status}. Must be one of: {
+                    ', '.join([s.value for s in AccountStatus])}"
             )
 
     @validates("profile_image_url")

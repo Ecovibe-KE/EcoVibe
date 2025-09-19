@@ -1,0 +1,7 @@
+# Comma-separated list of directories to ignore
+exclude =
+    server/.git,
+    server/__pycache__,
+    server/.venv,
+ignore = 
+    F401
