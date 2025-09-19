@@ -4,13 +4,18 @@ from server.app import create_app
 
 
 @pytest.fixture()
-def client(monkeypatch):
-    # Use an in-memory SQLite DB for tests
-    monkeypatch.setenv("FLASK_SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
+def client(monkeypatch, tmp_path):
+    # Use a file-based SQLite DB for reliability across connections
+    db_path = tmp_path / "test.db"
+    monkeypatch.setenv("FLASK_SQLALCHEMY_DATABASE_URI", f"sqlite:///{db_path}")
     app = create_app()
     app.config.update({
         "TESTING": True,
     })
+    # Ensure tables exist for tests
+    with app.app_context():
+        from server.models import db as _db
+        _db.create_all()
     with app.test_client() as client:
         yield client
 

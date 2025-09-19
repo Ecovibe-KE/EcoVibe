@@ -23,7 +23,7 @@ class User(db.Model):
     __tablename__ = "users"
     
 
-    _table_args__ = (
+    __table_args__ = (
         CheckConstraint("length(trim(industry)) > 0", name="check_industry_not_empty"),
         CheckConstraint("length(trim(full_name)) > 0", name="check_full_name_not_empty"),
     )

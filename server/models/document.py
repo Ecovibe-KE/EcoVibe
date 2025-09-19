@@ -1,12 +1,13 @@
 from datetime import timezone, datetime
 from sqlalchemy.orm import validates
 from . import db
+from .user import User, Role
 
 class Document(db.Model):
     __tablename__ = "documents"
     
     id = db.Column(db.Integer, primary_key=True)
-    admin_id = db.Column(db.Integer, db.ForeignKey(users.id))
+    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     file_path = db.Column(db.String(200), nullable=False)
     created_at = db.Column(
@@ -30,10 +31,10 @@ class Document(db.Model):
         }
         
     @validates("admin_id")
-    def validate_admin_id(self, key, admin_id):
+    def validate_admin_id(self, _key, admin_id):
         if admin_id is None:
             raise ValueError("Admin ID is required.")
-        admin_user = User.query.get(admin_id)
+        admin_user = db.session.get(User, admin_id)
         if not admin_user:
             raise ValueError(f"Admin ID {admin_id} is not valid.")
         if admin_user.role not in [Role.ADMIN, Role.SUPER_ADMIN]:
