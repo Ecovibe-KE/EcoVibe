@@ -5,4 +5,5 @@ megalinter-reports/
 
 /client/.env
 /server/.env
-.idea
+/.idea
+/node_modules
