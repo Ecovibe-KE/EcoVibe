@@ -40,6 +40,19 @@ const Footer = ({ pageType }) => {
               className="img-fluid mb-2"
             />
           </Col>
+      <Container fluid className="p-3">
+<Row className="text-center text-md-start mt-3" style={{ minHeight: '150px' }}>
+  <Col
+    md={3}
+    className="mb-5 d-flex flex-column justify-content-end"
+    style={{ height: '100%' }}
+  >
+    <img
+      src="/EcovibeLogo.png"
+      alt="EcoVibe Logo" width="80%" height="80%"
+      className="img-fluid mb-3"
+    />
+  </Col>
 
           {pageType === "landing" && (
             <>
@@ -139,3 +152,5 @@ const Footer = ({ pageType }) => {
 };
 
 export default Footer;
+
+
