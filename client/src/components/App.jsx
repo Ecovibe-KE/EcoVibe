@@ -1,27 +1,36 @@
-import { useState, useEffect } from 'react'
-import { useAnalytics } from '../hooks/useAnalytics';
-
+import {useState, useEffect} from "react";
+import {useAnalytics} from "../hooks/useAnalytics";
+import NavBar from "./Navbar.jsx";
+import Playground from "./Playground.jsx";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 function App() {
-  // 1. Get the logEvent function from the hook
-  const { logEvent } = useAnalytics();
+  const {logEvent} = useAnalytics();
 
-  // 2. Log a screen_view event when the component mounts
   useEffect(() => {
-    logEvent('screen_view', {
-      firebase_screen: 'Home Page',
-      firebase_screen_class: 'App'
+    logEvent("screen_view", {
+      firebase_screen: "Home Page",
+      firebase_screen_class: "App",
     });
-  }, [logEvent]); // Add logEvent to dependency array
-
-  const [count, setCount] = useState(0)
+  }, [logEvent]);
 
   return (
     <>
-    <p>Welcome to Ecovibe</p>
-    <p>Something good is coming soon!</p>
+      <NavBar />
+      <Routes>
+        <Route path="/playground" element={<Playground />} />
+        <Route path="/" element={
+          <div className="container-fluid">
+            <p>Welcome to Ecovibe</p>
+            <p>Something good is coming soon!</p>
+          </div>
+        } />
+      </Routes>
     </>
-  )
+  );
 }
-
-export default App
+export default App;

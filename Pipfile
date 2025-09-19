@@ -4,15 +4,29 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+<<<<<<< HEAD:Pipfile
+pytest = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-restful = "*"
 werkzeug = "*"
-pytest = "*"
+
+[dev-packages]
+=======
+flask = "==3.0.3"
+gunicorn = "==22.0.0"
 flask-migrate = "*"
 email-validator = "*"
 
 [dev-packages]
+pytest = "==8.2.2"
+black = "==24.4.2"
+flake8 = "==7.1.0"
+pytest-cov = "*"
+
+>>>>>>> e033de5dd711c8ebbea4994602e5fbb70f6d335a:server/Pipfile
 
 [requires]
 python_version = "3.12"
+
+

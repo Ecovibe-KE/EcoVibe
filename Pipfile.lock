@@ -50,6 +50,7 @@
             ],
             "markers": "python_version >= '3.10'",
             "version": "==8.3.0"
+<<<<<<< HEAD
         },
         "dnspython": {
             "hashes": [
@@ -67,6 +68,8 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==2.3.0"
+=======
+>>>>>>> 8fedc03b04f04c01b974abfbbfea0b0af28cd2ce
         },
         "flask": {
             "hashes": [
