@@ -37,8 +37,7 @@ jobs:
       pull-requests: write
     defaults:
       run:
-        working-directory: ./serverenv:
-          POSTGRES_PASSWORD: postgres
+        working-directory: ./server
     strategy:
       # You can test against multiple Python versions
       matrix:
@@ -87,7 +86,7 @@ jobs:
         env:
           # Provide the database URI to the Flask app.
           # The host is 'localhost' and the port is dynamically assigned by the runner.
-          FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@postgres:${{ job.services.postgres.ports['5432'] }}/testdb
+          FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:${{ job.services.postgres.ports['5432'] }}/testdb
 
       # 8. Comment coverage report on PR, only for changed files
       - name: Coverage comment (changed files only)
