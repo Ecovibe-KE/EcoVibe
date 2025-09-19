@@ -1,10 +1,10 @@
 import os
 import pytest
-from server.app import create_app
+from server import create_app
 
 
 @pytest.fixture()
-def client(monkeypatch, tmp_path):
+def register_client(monkeypatch, tmp_path):
     # Use a file-based SQLite DB for reliability across connections
     db_path = tmp_path / "test.db"
     monkeypatch.setenv("FLASK_SQLALCHEMY_DATABASE_URI", f"sqlite:///{db_path}")
@@ -48,14 +48,14 @@ def test_register_success(client):
         "email": "not-an-email",
         "password": "StrongPass1",
         "industry": "Energy",
-        "phoneNumber": "1234567890",
+        "phone_number": "1234567890",
     },
     {
         "full_name": "John Doe",
         "email": "john@example.com",
         "password": "weakpass",  # no uppercase or digit
         "industry": "Energy",
-        "phoneNumber": "1234567890",
+        "phone_number": "1234567890",
     },
 ])
 def test_register_invalid_input(client, bad_payload):
