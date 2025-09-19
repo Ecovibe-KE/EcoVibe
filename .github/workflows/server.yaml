@@ -2,25 +2,27 @@
 # It runs tests for a Python project using Pipenv, Pytest, and Coverage.
 # For more information see: https://docs.github.com/en/actions
 
-name: Flask application CI
+name: Flask CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" and "develop" branches
+  # Triggers the workflow on push events and pull request events but only for the "main" and "develop" branches
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "flask-tests"
+  flask-tests:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     defaults:
       run:
-        working-directory: ./server 
+        working-directory: ./server
     strategy:
       # You can test against multiple Python versions
       matrix:
@@ -55,14 +57,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pipenv-
 
-      # 5. Installs project dependencies using Pipenv
+      # 5. Install dependencies using Pipenv
       - name: Install dependencies
-        # This step only runs if the cache was not restored in the previous step
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: pipenv install --dev
 
-      # 6. Runs tests with Pytest
-      - name: Test with pytest
-        run: |
-          pipenv run pytest
+      # 6. Verify pytest and plugins
+      - name: Verify installed packages
+        run: pipenv run pip list | grep pytest
 
+      # 7. Run tests with coverage and comment on PR
+      - name: Run tests with coverage
+        run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
+
+      # 8. Comment coverage report on PR, only for changed files
+      - name: Coverage comment (changed files only)
+        if: github.event_name == 'pull_request'
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./server/pytest-coverage.txt
+          junitxml-path: ./server/pytest.xml
+          report-only-changed-files: true

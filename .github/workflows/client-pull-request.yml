@@ -1,0 +1,49 @@
+# This workflow is for running tests on a React frontend application.
+# It uses Node.js and npm to install dependencies and run tests.
+# For more information see: https://docs.github.com/en/actions
+
+name: Client Pull Request CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on pull request events for the "main" and "develop" branches
+  pull_request:
+    branches: ["main", "develop"]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a job called "react-tests"
+  react-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./client
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          # Specify the path to the lock file for correct caching in a monorepo
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm run coverage
+
+      - name: Add coverage report to PR
+        id: coverage-comment
+        # Set if: always() to also generate the report if tests are failing
+        # Only works if you set `reportOnFailure: true` in your vite config as specified above
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          working-directory: ./client

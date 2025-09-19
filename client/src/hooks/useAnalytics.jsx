@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
-import { analytics } from '../../firebaseConfig';
-import { logEvent as firebaseLogEvent } from 'firebase/analytics';
+import { useCallback } from "react";
+import { analytics } from "../../firebaseConfig";
+import { logEvent as firebaseLogEvent } from "firebase/analytics";
 
 /**
  * Custom hook for logging Firebase Analytics events.
