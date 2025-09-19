@@ -34,11 +34,7 @@ def register_user():
     except Exception as e:
         return jsonify({"error": "Invalid JSON format", "details": str(e)}), 400
 
-    if not isinstance(payload, dict):
-        print("ERROR: Payload is not a dict")
-        return jsonify({"error": "Payload must be a JSON object"}), 400
 
-    
     full_name = str(payload.get("fullname", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
     password = payload.get("password")
@@ -74,6 +70,12 @@ def register_user():
         print("Setting password...")
         user.set_password(password)
 
+        db.session.add(user)
+        
+        db.session.commit()
+        
+        return jsonify({"message": "Account created successfully."}), 201
+
     except ValueError as e:
         return {"error": str(e)}, 400
     except IntegrityError:
@@ -81,14 +83,6 @@ def register_user():
         return {"error": "Email or phone number already exists."}, 400
     except Exception as e:
         db.session.rollback()
-        return {"error": "Unexpected error."}, 500
-        
-    except Exception as e:
-        print(f"ERROR: Failed to create User object or set password: {e}")
         return jsonify({"error": "User creation failed", "details": str(e)}), 500
+         
     
-    db.session.add(user)
-        
-    db.session.commit()
-        
-    return jsonify({"message": "Account created successfully."}), 201
