@@ -13,7 +13,6 @@ flask-migrate = "*"
 gunicorn = "==22.0.0"
 
 [dev-packages]
-pytest = "*"
 flask = "==3.0.3"
 gunicorn = "==22.0.0"
 flask-migrate = "*"
