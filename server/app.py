@@ -3,7 +3,6 @@ import os
 from .models import db  # SQLAlchemy instance
 from .routes.user import bp
 
-<<<<<<< HEAD
 
 def create_app():
     app = Flask(__name__)
@@ -30,15 +29,6 @@ def create_app():
         db.create_all()
 
     return app
-=======
-app = Flask(__name__)
-app.config.from_prefixed_env()
-
-
-@app.route("/")
-def home():
-    return "EcoVibe Completed Website!."
->>>>>>> e033de5dd711c8ebbea4994602e5fbb70f6d335a
 
 
 if __name__ == "__main__":
