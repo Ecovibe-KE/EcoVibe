@@ -3,6 +3,7 @@ from datetime import date
 from sqlalchemy.orm import validates
 from . import db
 
+
 # Define the Enum for the 'status' field to ensure data consistency
 class InvoiceStatus(enum.Enum):
     pending = "pending"
@@ -22,9 +23,7 @@ class Invoices(db.Model):
     created_at = db.Column(db.Date, default=date.today, nullable=False)
     due_date = db.Column(db.Date, nullable=False)
     status = db.Column(
-        db.Enum(InvoiceStatus),
-        nullable=False,
-        default=InvoiceStatus.pending
+        db.Enum(InvoiceStatus), nullable=False, default=InvoiceStatus.pending
     )
 
     # --- Relationships ---
@@ -32,14 +31,14 @@ class Invoices(db.Model):
     service = db.relationship("Services", back_populates="invoices")
 
     # --- Data Validations ---
-    @validates('amount')
+    @validates("amount")
     def validate_amount(self, key, value):
         """Ensures the invoice amount is a positive integer."""
         if not isinstance(value, int) or value <= 0:
             raise ValueError("Amount must be a positive integer.")
         return value
 
-    @validates('due_date')
+    @validates("due_date")
     def validate_due_date(self, key, due_date_value):
         """Ensures the due date is not in the past."""
         creation_date = self.created_at if self.created_at else date.today()

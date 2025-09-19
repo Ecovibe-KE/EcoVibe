@@ -2,6 +2,7 @@ from datetime import date
 from sqlalchemy.orm import validates
 from . import db
 
+
 class Services(db.Model):
     __tablename__ = "services"
 
@@ -10,7 +11,7 @@ class Services(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.String(50), nullable=False)
-    price = db.Column(db.String(50), nullable=False) # Modeled as String per schema
+    price = db.Column(db.String(50), nullable=False)  # Modeled as String per schema
     created_at = db.Column(db.Date, default=date.today, nullable=False)
     updated_at = db.Column(db.Date, onupdate=date.today)
     admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
@@ -22,7 +23,7 @@ class Services(db.Model):
     admin = db.relationship("Users", back_populates="services")
 
     # --- Data Validations ---
-    @validates('name', 'description', 'duration')
+    @validates("name", "description", "duration")
     def validate_not_empty(self, key, value):
         """Ensures that key text fields are not empty."""
         # .strip() removes whitespace from the beginning and end
@@ -30,7 +31,7 @@ class Services(db.Model):
             raise ValueError(f"{key.capitalize()} cannot be empty.")
         return value.strip()
 
-    @validates('price')
+    @validates("price")
     def validate_price(self, key, price_str):
         """
         Validates that the price string is a positive number,

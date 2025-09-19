@@ -7,20 +7,23 @@ from enum import Enum as PyEnum
 from . import db
 import re
 
+
 class Role(PyEnum):
     CLIENT = "client"
     ADMIN = "admin"
     SUPER_ADMIN = "super_admin"
+
 
 class AccountStatus(PyEnum):
     ACTIVE = "active"
     SUSPENDED = "suspended"
     INACTIVE = "inactive"
 
+
 class User(db.Model):
-    
+
     __tablename__ = "users"
-    
+
     id = db.Column(db.Integer, primary_key=True)
     industry = db.Column(db.String(80), nullable=False)
     full_name = db.Column(db.String(80), nullable=False)
@@ -28,11 +31,13 @@ class User(db.Model):
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
     role = db.Column(db.Enum(Role), nullable=False, default=Role.CLIENT)
     profile_image_url = db.Column(db.String(200), nullable=True)
-    account_status = db.Column(db.Enum(AccountStatus), nullable=False, default=AccountStatus.INACTIVE)
+    account_status = db.Column(
+        db.Enum(AccountStatus), nullable=False, default=AccountStatus.INACTIVE
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        nullable=False
+        nullable=False,
     )
     updated_at = db.Column(
         db.DateTime(timezone=True),
@@ -41,9 +46,8 @@ class User(db.Model):
         nullable=False,
     )
     password_hash = db.Column(db.String(255), nullable=False)
-    
-    documents = db.relationship("Document", back_populates="admin")
 
+    documents = db.relationship("Document", back_populates="admin")
 
     def __repr__(self):
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
@@ -62,11 +66,14 @@ class User(db.Model):
             "role": self.role.value,  # Role as string (client/admin/super_admin)
             "account_status": self.account_status.value,  # Account status as string
             "industry": self.industry,  # Industry field
-            "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,  # ISO timestamp for last update
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),  # ISO timestamp for creation
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at else None
+            ),  # ISO timestamp for last update
             "profile_image_url": self.profile_image_url,  # Profile picture URL
         }
-
 
     def to_safe_dict(self):
         """
@@ -80,11 +87,15 @@ class User(db.Model):
             "role": self.role.value,  # Role as string
             "account_status": self.account_status.value,  # Account status as string
             "industry": self.industry,  # Industry field
-            "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,  # ISO timestamp for last update
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),  # ISO timestamp for creation
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at else None
+            ),  # ISO timestamp for last update
             "profile_image_url": self.profile_image_url,  # Profile picture URL
         }
-    
+
     documents = db.relationship("Document", back_populates="user")
     services = db.relationship("Services", back_populates="user", lazy=True)
     client_tickets = db.relationship("Ticket", back_populates="user")
@@ -111,6 +122,7 @@ class User(db.Model):
     @validates("phone_number")
     def validate_phone(self, _key, number):
         import phonenumbers
+
         try:
             parsed = phonenumbers.parse(number, None)
         except phonenumbers.NumberParseException as e:
@@ -162,5 +174,7 @@ class User(db.Model):
         if url:
             parsed = urlparse(url)
             if not all([parsed.scheme in ("http", "https"), parsed.netloc]):
-                raise ValueError("Invalid profile image URL. Must start with http:// or https://")
+                raise ValueError(
+                    "Invalid profile image URL. Must start with http:// or https://"
+                )
         return url

@@ -1,8 +1,9 @@
 from . import db
 
+
 class Token(db.Model):
     __tablename__ = "tokens"
-    
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     created_at = db.Column(db.Date, nullable=False)
@@ -20,9 +21,11 @@ class Token(db.Model):
         """
         return {
             "id": self.id,  # Primary key
-            "user_id": self.user_id, 
-            "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
-            "value": self.value, 
+            "user_id": self.user_id,
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),  # ISO timestamp for creation
+            "value": self.value,
         }
 
     def __repr__(self):

@@ -1,0 +1,11 @@
+# Comma-separated list of files/directories to ignore
+exclude =
+    .git,
+    __pycache__,
+    docs/,
+    old_code/,
+    venv/,
+    build/,
+    dist/,
+    *.egg-info
+     .venv/

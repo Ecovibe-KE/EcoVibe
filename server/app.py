@@ -10,13 +10,27 @@ load_dotenv()
 
 migrate = Migrate()
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_prefixed_env()
 
     db.init_app(app)
     migrate.init_app(app, db)
-    from .models import blogs,bookings,comment,document,invoices,newsletter_subscribers,payments,services,ticket_messages,tickets,tokens,user
+    from .models import (
+        blogs,
+        bookings,
+        comment,
+        document,
+        invoices,
+        newsletter_subscribers,
+        payments,
+        services,
+        ticket_messages,
+        tickets,
+        tokens,
+        user,
+    )
 
     register_routes(app)
 
