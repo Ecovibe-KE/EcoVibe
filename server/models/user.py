@@ -118,8 +118,6 @@ class User(db.Model):
             raise ValueError(
                 f"Invalid role: {role}. Must be one of: {', '.join([r.value for r in Role])}"
             )
-
-
     
     @validates("account_status")
     def validate_account_status(self, key, status):
