@@ -57,7 +57,7 @@ function App() {
   }, [logEvent]);
 
   return (
-    <Router>
+   
       <div className="app-container d-flex flex-column min-vh-100">
         <NavBar />
         <div className="flex-grow-1">
@@ -85,7 +85,7 @@ function App() {
         {/* ✅ Safe Footer Wrapper */}
         <FooterWrapper />
       </div>
-    </Router>
+   
   );
 }
 

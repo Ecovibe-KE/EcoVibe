@@ -23,7 +23,8 @@ const socialIconStyle = {
 const footerStyle = {
   backgroundColor: "#d6f5d6", 
   padding: "1.5rem 0",
-  marginTop: "3rem",
+  marginTop: "auto",
+  width: "100%"
 };
 
 const Footer = ({ pageType }) => {
