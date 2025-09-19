@@ -8,24 +8,28 @@ from enum import Enum as PyEnum
 from . import db
 import re
 
+
 class Role(PyEnum):
     CLIENT = "client"
     ADMIN = "admin"
     SUPER_ADMIN = "super_admin"
+
 
 class AccountStatus(PyEnum):
     ACTIVE = "active"
     SUSPENDED = "suspended"
     INACTIVE = "inactive"
 
+
 class User(db.Model):
-    
+
     __tablename__ = "users"
-    
 
     __table_args__ = (
         CheckConstraint("length(trim(industry)) > 0", name="check_industry_not_empty"),
-        CheckConstraint("length(trim(full_name)) > 0", name="check_full_name_not_empty"),
+        CheckConstraint(
+            "length(trim(full_name)) > 0", name="check_full_name_not_empty"
+        ),
     )
     id = db.Column(db.Integer, primary_key=True)
     industry = db.Column(db.String(80), nullable=False)
@@ -34,11 +38,13 @@ class User(db.Model):
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
     role = db.Column(db.Enum(Role), nullable=False, default=Role.CLIENT)
     profile_image_url = db.Column(db.String(200), nullable=True)
-    account_status = db.Column(db.Enum(AccountStatus), nullable=False, default=AccountStatus.INACTIVE)
+    account_status = db.Column(
+        db.Enum(AccountStatus), nullable=False, default=AccountStatus.INACTIVE
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        nullable=False
+        nullable=False,
     )
     updated_at = db.Column(
         db.DateTime(timezone=True),
@@ -47,7 +53,7 @@ class User(db.Model):
         nullable=False,
     )
     password_hash = db.Column(db.String(255), nullable=False)
-    
+
     documents = db.relationship("Document", back_populates="user")
 
     def __repr__(self):
@@ -72,7 +78,6 @@ class User(db.Model):
             "profile_image_url": self.profile_image_url,
         }
 
-
     def to_safe_dict(self):
         """
         Convert the User model into a "safe" dictionary representation.
@@ -89,9 +94,6 @@ class User(db.Model):
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "profile_image_url": self.profile_image_url,
         }
-
-
-
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -110,6 +112,7 @@ class User(db.Model):
     @validates("phone_number")
     def validate_phone(self, _key, number):
         import phonenumbers
+
         try:
             parsed = phonenumbers.parse(number, None)
         except phonenumbers.NumberParseException as e:
@@ -161,5 +164,7 @@ class User(db.Model):
         if url:
             parsed = urlparse(url)
             if not all([parsed.scheme in ("http", "https"), parsed.netloc]):
-                raise ValueError("Invalid profile image URL. Must start with http:// or https://")
+                raise ValueError(
+                    "Invalid profile image URL. Must start with http:// or https://"
+                )
         return url

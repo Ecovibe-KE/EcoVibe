@@ -2,13 +2,14 @@ from flask import Flask
 from flask_migrate import Migrate
 from .routes import register_routes
 from .models import db
-from . import models 
+from . import models
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 migrate = Migrate()
+
 
 def create_app():
     app = Flask(__name__)

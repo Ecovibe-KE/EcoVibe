@@ -82,5 +82,3 @@
 #     res2 = client.post("/api/register", json=payload2)
 #     assert res2.status_code == 409
 #     assert res2.get_json() == {"error": "Email already exists."}
-
-

@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 import re
 
 # Create the blueprint
-user_bp = Blueprint('user', __name__)
+user_bp = Blueprint("user", __name__)
 
 
 # Helper function to validate password
@@ -21,19 +21,17 @@ def _is_valid_password(password: str) -> bool:
     return True
 
 
-@user_bp.route('/register', methods=['POST'])
+@user_bp.route("/register", methods=["POST"])
 def register_user():
     payload = request.get_json(silent=True)
     if payload is None:
         return jsonify({"error": "Invalid JSON format"}), 400
-
 
     full_name = str(payload.get("full_name", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
     password = payload.get("password")
     industry = str(payload.get("industry", "")).strip()
     phone_number = str(payload.get("phone_number", "")).strip()
-
 
     if not full_name:
         print("ERROR: full_name is empty")
@@ -46,28 +44,28 @@ def register_user():
         return jsonify({"error": "phone_number cannot be empty"}), 400
 
     email = email_raw.lower()
-    
+
     if not _is_valid_password(password):
-       return jsonify({"error": "Invalid input."}), 400
+        return jsonify({"error": "Invalid input."}), 400
 
     existing = db.session.query(User).filter(db.func.lower(User.email) == email).first()
     if existing:
-       return jsonify({"error": "Email already exists."}), 409
-    
+        return jsonify({"error": "Email already exists."}), 409
+
     try:
         user = User(
-            full_name= full_name,
+            full_name=full_name,
             email=email,
             industry=industry,
             phone_number=phone_number,
         )
-        
+
         user.set_password(password)
 
         db.session.add(user)
-        
+
         db.session.commit()
-        
+
         return jsonify({"message": "Account created successfully."}), 201
 
     except ValueError as e:
