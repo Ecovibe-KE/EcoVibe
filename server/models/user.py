@@ -25,7 +25,7 @@ class User(db.Model):
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
     role = db.Column(db.Enum(Role), nullable=False, default=Role.CLIENT)
     profile_image = db.Column(db.String(200), nullable=True)
-    account_status = db.Column(db.Enum(AccountStatus), nullable=False, default=AccountStatus.ACTIVE)
+    account_status = db.Column(db.Enum(AccountStatus), nullable=False, default=AccountStatus.INACTIVE)
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -42,32 +42,43 @@ class User(db.Model):
     def __repr__(self):
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "full_name": self.full_name,
-            "email": self.email,
-            "phone_number": self.phone_number,
-            "role": self.role.value,
-            "account_status": self.account_status.value,
-            "industry": self.industry,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "profile_image_url": self.profile_image_url,
-        }
+def to_dict(self):
+    """
+    Convert the full User model into a dictionary representation.
+    Includes sensitive fields like email and phone_number, so use carefully.
+    Useful for internal logic or admin APIs where full data is needed.
+    """
+    return {
+        "id": self.id,  # Primary key
+        "full_name": self.full_name,  # User's full name
+        "email": self.email,  # Email (sensitive, don’t expose to everyone)
+        "phone_number": self.phone_number,  # Phone number (sensitive)
+        "role": self.role.value,  # Role as string (client/admin/super_admin)
+        "account_status": self.account_status.value,  # Account status as string
+        "industry": self.industry,  # Industry field
+        "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
+        "updated_at": self.updated_at.isoformat() if self.updated_at else None,  # ISO timestamp for last update
+        "profile_image_url": self.profile_image_url,  # Profile picture URL
+    }
 
 
-    def to_safe_dict(self):
-        return {
-            "id": self.id,
-            "full_name": self.full_name,
-            "role": self.role.value,
-            "account_status": self.account_status.value,
-            "industry": self.industry,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "profile_image_url": self.profile_image_url,
-        }
+def to_safe_dict(self):
+    """
+    Convert the User model into a "safe" dictionary representation.
+    Excludes sensitive fields like email and phone_number.
+    Useful when returning user data to clients (e.g., public API responses).
+    """
+    return {
+        "id": self.id,  # Primary key
+        "full_name": self.full_name,  # User's full name
+        "role": self.role.value,  # Role as string
+        "account_status": self.account_status.value,  # Account status as string
+        "industry": self.industry,  # Industry field
+        "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
+        "updated_at": self.updated_at.isoformat() if self.updated_at else None,  # ISO timestamp for last update
+        "profile_image_url": self.profile_image_url,  # Profile picture URL
+    }
+
 
 
 
@@ -87,14 +98,14 @@ class User(db.Model):
 
     @validates("phone_number")
     def validate_phone(self, _key, number):
-        import phone_numbers
+        import phonenumbers
         try:
-            parsed = phone_numbers.parse(number, None)  # set default region if desired, e.g., "KE"
-        except phone_numbers.NumberParseException as e:
+            parsed = phonenumbers.parse(number, None)
+        except phonenumbers.NumberParseException as e:
             raise ValueError(str(e)) from e
-        if not phone_numbers.is_valid_number(parsed):
+        if not phonenumbers.is_valid_number(parsed):
             raise ValueError("Invalid phone number.")
-        return phone_numbers.format_number(parsed, phone_numbers.PhoneNumberFormat.E164)
+        return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
 
     @validates("full_name")
     def validate_name(self, key, name):
