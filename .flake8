@@ -1,7 +1,10 @@
+[flake8]
 # Comma-separated list of directories to ignore
+max-line-length = 88
 exclude =
     server/.git,
     server/__pycache__,
     server/.venv,
+    server/migrations,
 ignore = 
     F401

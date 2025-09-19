@@ -1,12 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const { logEvent } = useAnalytics();
@@ -23,12 +19,15 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/playground" element={<Playground />} />
-        <Route path="/" element={
-          <div className="container-fluid">
-            <p>Welcome to Ecovibe</p>
-            <p>Something good is coming soon!</p>
-          </div>
-        } />
+        <Route
+          path="/"
+          element={
+            <div className="container-fluid">
+              <p>Welcome to Ecovibe</p>
+              <p>Something good is coming soon!</p>
+            </div>
+          }
+        />
       </Routes>
     </>
   );

@@ -1,4 +1,4 @@
-import React, {useId} from "react";
+import React, { useId } from "react";
 import PropTypes from "prop-types";
 
 /**
@@ -123,7 +123,8 @@ const Input = ({
   const ariaDescribedBy = [];
   if (error) ariaDescribedBy.push(`${id}-error`);
   if (success && !error) ariaDescribedBy.push(`${id}-success`);
-  const describedBy = ariaDescribedBy.length > 0 ? ariaDescribedBy.join(" ") : undefined;
+  const describedBy =
+    ariaDescribedBy.length > 0 ? ariaDescribedBy.join(" ") : undefined;
 
   return (
     <div className={`mb-3 ${className}`}>
@@ -146,8 +147,8 @@ const Input = ({
           e.target.style.borderColor = error
             ? "#dc3545"
             : success && !error
-            ? "#28a745"
-            : "#ced4da";
+              ? "#28a745"
+              : "#ced4da";
           e.target.style.boxShadow = "none";
         }}
         disabled={disabled}
