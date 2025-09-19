@@ -1,8 +1,7 @@
 from flask import Flask
 import os
 from .models import db  # SQLAlchemy instance
-from flask_restful import Api
-from .routes.user import Register
+from .routes.user import bp
 
 
 def create_app():
@@ -13,13 +12,14 @@ def create_app():
     if database_url:
         app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     else:
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/edith/Ecovibe/EcoVibe/server/app.db"
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/edith/EcoVibe/server/app.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Init extensions
     db.init_app(app)
-    api = Api(app)
-    api.add_resource(Register, "/api/register")
+
+    # Register blueprint
+    app.register_blueprint(bp, url_prefix="/api")
 
     @app.route("/")
     def home():
@@ -31,7 +31,6 @@ def create_app():
     return app
 
 
-app = create_app()
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app = create_app()
+    app.run(debug=True, port=5555)
