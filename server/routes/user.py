@@ -10,7 +10,7 @@ bp = Blueprint('register', __name__)
 
 # Helper function to validate password
 def _is_valid_password(password: str) -> bool:
-    if not isinstance(password, str):
+    if not isinstance(password, str) or not password.strip():
         return False
     if len(password) < 8:
         return False
