@@ -8,6 +8,8 @@ pytest = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 werkzeug = "*"
+python-dotenv = "*"
+email-validator = "*"
 
 [dev-packages]
 flask = "==3.0.3"

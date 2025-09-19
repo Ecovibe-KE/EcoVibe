@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 import re
 
 # Create the blueprint
-bp = Blueprint('register', __name__)
+user_bp = Blueprint('user', __name__)
 
 
 # Helper function to validate password
@@ -21,7 +21,7 @@ def _is_valid_password(password: str) -> bool:
     return True
 
 
-@bp.route('/register', methods=['POST'])
+@user_bp.route('/register', methods=['POST'])
 def register_user():
     try:
         payload = request.get_json(force=True, silent=False)
@@ -29,22 +29,22 @@ def register_user():
         return jsonify({"error": "Invalid JSON format", "details": str(e)}), 400
 
 
-    full_name = str(payload.get("fullname", "")).strip()
+    full_name = str(payload.get("full_name", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
     password = payload.get("password")
     industry = str(payload.get("industry", "")).strip()
-    phone_number = str(payload.get("phoneNumber", "")).strip()
+    phone_number = str(payload.get("phone_number", "")).strip()
 
 
     if not full_name:
-        print("ERROR: fullname is empty")
-        return jsonify({"error": "fullname cannot be empty"}), 400
+        print("ERROR: full_name is empty")
+        return jsonify({"error": "full_name cannot be empty"}), 400
     if not industry:
         print("ERROR: industry is empty")
         return jsonify({"error": "industry cannot be empty"}), 400
     if not phone_number:
-        print("ERROR: phoneNumber is empty")
-        return jsonify({"error": "phoneNumber cannot be empty"}), 400
+        print("ERROR: phone_number is empty")
+        return jsonify({"error": "phone_number cannot be empty"}), 400
 
     email = email_raw.lower()
     
