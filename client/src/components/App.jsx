@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
@@ -35,7 +35,7 @@ function App() {
   }, [logEvent]);
 
   return (
-    <Router>
+    <>
       <NavBar />
       <Routes>
         <Route path="/playground" element={<Playground />} />
@@ -43,7 +43,7 @@ function App() {
         <Route path="/client" element={<ClientPage />} />
       </Routes>
       <FooterWrapper />
-    </Router>
+    </>
   );
 }
 

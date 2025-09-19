@@ -66,6 +66,11 @@ button {
   text-decoration: none;
 }
 
+.nav-link:hover {
+  color: #f5a030 !important;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

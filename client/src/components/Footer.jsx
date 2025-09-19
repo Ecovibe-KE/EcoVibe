@@ -2,17 +2,12 @@ import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 
-// Inline styles to avoid missing CSS file
+// Inline styles
 const footerStyle = {
   backgroundColor: "#d6f5d6", // light green
   color: "black",
   padding: "1.5rem 0",
-  marginTop: "3rem",
-};
-
-const socialIconStyle = {
-  color: "black",
-  marginRight: "0.75rem",
+  marginTop: "Auto",
 };
 
 const buttonStyle = {
@@ -30,29 +25,22 @@ const buttonHoverStyle = {
 
 const Footer = ({ pageType }) => {
   return (
-    <footer className="custom-footer">
-      <Container fluid className="p-0">
-        <Row className="text-center text-md-start mx-0">
-          <Col md={3} className="mb-3">
+    <footer style={footerStyle}>
+      <Container fluid className="p-3">
+        <Row className="text-center text-md-start mt-3" style={{ minHeight: "150px" }}>
+          <Col
+            md={3}
+            className="mb-5 d-flex flex-column justify-content-end"
+            style={{ height: "100%" }}
+          >
             <img
               src="/EcovibeLogo.png"
               alt="EcoVibe Logo"
-              className="img-fluid mb-2"
+              width="80%"
+              height="80%"
+              className="img-fluid mb-3"
             />
           </Col>
-      <Container fluid className="p-3">
-<Row className="text-center text-md-start mt-3" style={{ minHeight: '150px' }}>
-  <Col
-    md={3}
-    className="mb-5 d-flex flex-column justify-content-end"
-    style={{ height: '100%' }}
-  >
-    <img
-      src="/EcovibeLogo.png"
-      alt="EcoVibe Logo" width="80%" height="80%"
-      className="img-fluid mb-3"
-    />
-  </Col>
 
           {pageType === "landing" && (
             <>
@@ -80,8 +68,8 @@ const Footer = ({ pageType }) => {
                   size="sm"
                   className="mb-2 join-btn"
                   href="/login"
-                  onMouseOver={e => Object.assign(e.target.style, buttonHoverStyle)}
-                  onMouseOut={e => Object.assign(e.target.style, buttonStyle)}
+                  onMouseOver={(e) => Object.assign(e.target.style, buttonHoverStyle)}
+                  onMouseOut={(e) => Object.assign(e.target.style, buttonStyle)}
                 >
                   Login
                 </Button>
