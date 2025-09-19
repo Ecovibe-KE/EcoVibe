@@ -5,6 +5,16 @@ import Navbar from 'react-bootstrap/Navbar';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { NavLink } from 'react-router-dom';
 
+/**
+ * Responsive navigation bar component for the site.
+ *
+ * Renders a Bootstrap Navbar that expands at the "lg" breakpoint and uses an offcanvas menu on smaller viewports.
+ * Displays the site logo ("/EcovibeLogo.png", alt "EcoVibe Logo") as a brand link to "/home", primary navigation links to
+ * "/", "/about", "/services", "/blog", and "/contact", and a "Get Started" button linking to "/signup". The offcanvas panel
+ * is placed on the right ("end") and is toggled via the Navbar.Toggle control.
+ *
+ * @return {JSX.Element} The NavBar React element.
+ */
 function NavBar() {
     const size = "lg"
     return (

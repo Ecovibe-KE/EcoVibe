@@ -11,6 +11,14 @@ import {
 import Contact from "./Contact.jsx";
 import {ToastContainer} from "react-toastify";
 
+/**
+ * Root application component that sets up navigation, triggers an analytics screen view, and mounts global UI chrome.
+ *
+ * Renders the top navigation bar, route mappings for Home, Playground, and Contact pages, and a configured ToastContainer for notifications.
+ * On mount (and when the analytics `logEvent` reference changes) it logs a `"screen_view"` event with `{ firebase_screen: "Home Page", firebase_screen_class: "App" }`.
+ *
+ * @returns {JSX.Element} The app's root JSX tree.
+ */
 function App() {
     const {logEvent} = useAnalytics();
 
