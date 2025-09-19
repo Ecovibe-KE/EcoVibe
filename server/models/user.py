@@ -1,6 +1,7 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 from email_validator import validate_email, EmailNotValidError
 from datetime import timezone, datetime
+from sqlalchemy import CheckConstraint
 from sqlalchemy.orm import validates
 from urllib.parse import urlparse
 from enum import Enum as PyEnum
@@ -18,13 +19,21 @@ class AccountStatus(PyEnum):
     INACTIVE = "inactive"
 
 class User(db.Model):
+    
+    __tablename__ = "users"
+    
+
+    _table_args__ = (
+        CheckConstraint("length(trim(industry)) > 0", name="check_industry_not_empty"),
+        CheckConstraint("length(trim(full_name)) > 0", name="check_full_name_not_empty"),
+    )
     id = db.Column(db.Integer, primary_key=True)
     industry = db.Column(db.String(80), nullable=False)
     full_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
     role = db.Column(db.Enum(Role), nullable=False, default=Role.CLIENT)
-    profile_image = db.Column(db.String(200), nullable=True)
+    profile_image_url = db.Column(db.String(200), nullable=True)
     account_status = db.Column(db.Enum(AccountStatus), nullable=False, default=AccountStatus.INACTIVE)
     created_at = db.Column(
         db.DateTime(timezone=True),
@@ -38,46 +47,48 @@ class User(db.Model):
         nullable=False,
     )
     password_hash = db.Column(db.String(255), nullable=False)
+    
+    documents = db.relationship("Document", back_populates="user")
 
     def __repr__(self):
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
 
-def to_dict(self):
-    """
-    Convert the full User model into a dictionary representation.
-    Includes sensitive fields like email and phone_number, so use carefully.
-    Useful for internal logic or admin APIs where full data is needed.
-    """
-    return {
-        "id": self.id,  # Primary key
-        "full_name": self.full_name,  # User's full name
-        "email": self.email,  # Email (sensitive, don’t expose to everyone)
-        "phone_number": self.phone_number,  # Phone number (sensitive)
-        "role": self.role.value,  # Role as string (client/admin/super_admin)
-        "account_status": self.account_status.value,  # Account status as string
-        "industry": self.industry,  # Industry field
-        "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
-        "updated_at": self.updated_at.isoformat() if self.updated_at else None,  # ISO timestamp for last update
-        "profile_image_url": self.profile_image_url,  # Profile picture URL
-    }
+    def to_dict(self):
+        """
+        Convert the full User model into a dictionary representation.
+        Includes sensitive fields like email and phone_number, so use carefully.
+        Useful for internal logic or admin APIs where full data is needed.
+        """
+        return {
+            "id": self.id,
+            "full_name": self.full_name,
+            "email": self.email,
+            "phone_number": self.phone_number,
+            "role": self.role.value,
+            "account_status": self.account_status.value,
+            "industry": self.industry,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "profile_image_url": self.profile_image_url,
+        }
 
 
-def to_safe_dict(self):
-    """
-    Convert the User model into a "safe" dictionary representation.
-    Excludes sensitive fields like email and phone_number.
-    Useful when returning user data to clients (e.g., public API responses).
-    """
-    return {
-        "id": self.id,  # Primary key
-        "full_name": self.full_name,  # User's full name
-        "role": self.role.value,  # Role as string
-        "account_status": self.account_status.value,  # Account status as string
-        "industry": self.industry,  # Industry field
-        "created_at": self.created_at.isoformat() if self.created_at else None,  # ISO timestamp for creation
-        "updated_at": self.updated_at.isoformat() if self.updated_at else None,  # ISO timestamp for last update
-        "profile_image_url": self.profile_image_url,  # Profile picture URL
-    }
+    def to_safe_dict(self):
+        """
+        Convert the User model into a "safe" dictionary representation.
+        Excludes sensitive fields like email and phone_number.
+        Useful when returning user data to clients (e.g., public API responses).
+        """
+        return {
+            "id": self.id,
+            "full_name": self.full_name,
+            "role": self.role.value,
+            "account_status": self.account_status.value,
+            "industry": self.industry,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "profile_image_url": self.profile_image_url,
+        }
 
 
 
@@ -87,7 +98,7 @@ def to_safe_dict(self):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     @validates("email")
     def validate_email_field(self, key, address):
         try:
@@ -112,13 +123,13 @@ def to_safe_dict(self):
         if not name.strip():
             raise ValueError("Full name cannot be empty")
         return name
-    
+
     @validates("industry")
     def validate_industry(self, key, industry):
         if not industry.strip():
             raise ValueError("Industry cannot be empty")
         return industry
-    
+
     @validates("role")
     def validate_role(self, key, role):
         if not role:
@@ -131,7 +142,7 @@ def to_safe_dict(self):
             raise ValueError(
                 f"Invalid role: {role}. Must be one of: {', '.join([r.value for r in Role])}"
             )
-    
+
     @validates("account_status")
     def validate_account_status(self, key, status):
         if not status:

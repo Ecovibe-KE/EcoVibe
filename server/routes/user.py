@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from server.models.user import db, User
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -23,10 +23,9 @@ def _is_valid_password(password: str) -> bool:
 
 @user_bp.route('/register', methods=['POST'])
 def register_user():
-    try:
-        payload = request.get_json(force=True, silent=False)
-    except Exception as e:
-        return jsonify({"error": "Invalid JSON format", "details": str(e)}), 400
+    payload = request.get_json(silent=True)
+    if payload is None:
+        return jsonify({"error": "Invalid JSON format"}), 400
 
 
     full_name = str(payload.get("full_name", "")).strip()
@@ -76,8 +75,3 @@ def register_user():
     except IntegrityError:
         db.session.rollback()
         return {"error": "Email or phone number already exists."}, 400
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": "User creation failed", "details": str(e)}), 500
-         
-    
