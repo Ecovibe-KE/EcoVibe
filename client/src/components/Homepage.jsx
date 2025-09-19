@@ -48,7 +48,7 @@ const Homepage = () =>{
                 />
                 <Card.ImgOverlay className="d-flex flex-column justify-content-center align-items-center text-center">
                     <h1 className="display-4 display-md-3 display-lg-2 fw-normal mb-5" style={{fontSize:60}}>ECOVIBE KENYA</h1>
-                    <p className="lead lh-1 fw-bold fst-italic" style={{maxWidth:"700px", fontSize: "36px"}}>Leading the way in offering cutting-edge solutions for sustainable development. we provice expert consultancy services and keep your up to date with the evolving ESG landscape</p>
+                    <p className="lead lh-1 fw-bold fst-italic" style={{maxWidth:"700px", fontSize: "36px"}}>Leading the way in offering cutting-edge solutions for sustainable development. We provide expert consultancy services and keep you up to date with the evolving ESG landscape. </p>
                     <div className="d-flex flex-row gap-2">
                         <Link to={"/services"}>
                             <Button color="#37B137" hoverColor="none" className="rounded-pill px-4 text-white fs-5 fst-italic fw-bold">
