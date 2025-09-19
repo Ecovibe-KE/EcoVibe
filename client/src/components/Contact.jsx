@@ -87,17 +87,6 @@ function Contact() {
     return (
         <div>
             <div className="container">
-                <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                />
                 <div className="container my-5">
                     <div className="text-center mb-5">
                         <h1 className="display-5 fw-bold mb-3" style={{color: "#535353"}}>

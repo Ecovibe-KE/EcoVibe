@@ -78,12 +78,6 @@ describe('Contact Component', () => {
         expect(screen.getByRole('button', {name: /Send Message/i})).toBeInTheDocument();
     });
 
-    // test('renders contact information Heading', () => {
-    //     render(<Contact/>);
-    //     expect(screen.getByText(/Get in touch/i)).toBeInTheDocument();
-    //     expect(screen.getByText(/Multiple ways you can connect with us/i)).toBeInTheDocument();
-    // });
-
     test('renders contact information', () => {
         render(<Contact/>);
 
