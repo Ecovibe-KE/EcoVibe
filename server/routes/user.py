@@ -34,17 +34,9 @@ def register_user():
     except Exception as e:
         return jsonify({"error": "Invalid JSON format", "details": str(e)}), 400
 
-
     if not isinstance(payload, dict):
         print("ERROR: Payload is not a dict")
         return jsonify({"error": "Payload must be a JSON object"}), 400
-
-    
-    required_fields = ["fullname", "email", "password", "industry", "phoneNumber"]
-    missing_fields = [field for field in required_fields if field not in payload]
-    if missing_fields:
-        print(f"ERROR: Missing fields: {missing_fields}")
-        return jsonify({"error": "Missing required fields", "missing": missing_fields}), 400
 
     
     full_name = str(payload.get("fullname", "")).strip()
@@ -65,15 +57,10 @@ def register_user():
         return jsonify({"error": "phoneNumber cannot be empty"}), 400
 
     email = email_raw.lower()
-    if not 
-        return jsonify({"error": "Invalid email format"}), 400
-
     
     if not _is_valid_password(password):
         print(f"ERROR: Password validation failed")
         return jsonify({"error": "Password must be at least 8 characters with uppercase and digit"}), 400
-
-
 
     try:
         user = User(
