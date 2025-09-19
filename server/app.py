@@ -1,11 +1,10 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from .routes import register_routes
+from .models import db
 from . import models 
 import os
 
-db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
@@ -16,9 +15,6 @@ def create_app():
     migrate.init_app(app, db)
 
     register_routes(app)
-
-    with app.app_context():
-        db.create_all()
 
     return app
 
