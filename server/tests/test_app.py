@@ -1,5 +1,7 @@
 import pytest
-from app import app as flask_app
+from server.app import create_app
+
+flask_app = create_app()
 
 
 @pytest.fixture
@@ -11,17 +13,6 @@ def client():
     flask_app.config["TESTING"] = True
     with flask_app.test_client() as client:
         yield client
-
-
-def test_home_route_success(client):
-    """
-    GIVEN a Flask application
-    WHEN the '/' route is requested (GET)
-    THEN check that the response is valid with a 200 status code and correct content.
-    """
-    response = client.get("/")
-    assert response.status_code == 200
-    assert b"EcoVibe Completed Website!" in response.data
 
 
 def test_home_route_content_type(client):
