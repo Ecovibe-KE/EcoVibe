@@ -21,14 +21,8 @@ def _is_valid_password(password: str) -> bool:
     return True
 
 
-@bp.route('/register', methods=['GET'])
-def register_info():
-    return jsonify({"message": "Send a POST with fullname, lastName, email, password, industry, phoneNumber."}), 200
-
-
 @bp.route('/register', methods=['POST'])
 def register_user():
-    # Get the payload
     try:
         payload = request.get_json(force=True, silent=False)
     except Exception as e:
@@ -55,7 +49,6 @@ def register_user():
     email = email_raw.lower()
     
     if not _is_valid_password(password):
-        print(f"ERROR: Password validation failed")
         return jsonify({"error": "Password must be at least 8 characters with uppercase and digit"}), 400
 
     try:
@@ -65,9 +58,7 @@ def register_user():
             industry=industry,
             phone_number=phone_number,
         )
-        print("User object created successfully")
         
-        print("Setting password...")
         user.set_password(password)
 
         db.session.add(user)
