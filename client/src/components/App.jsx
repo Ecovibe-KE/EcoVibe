@@ -1,3 +1,4 @@
+import Homepage from './Homepage';
 import { useEffect, useMemo } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from "../hooks/useAnalytics";
@@ -5,7 +6,7 @@ import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // ✅ Added required CSS import
+import "react-toastify/dist/ReactToastify.css"; 
 import Footer from "./Footer.jsx";
 
 // Landing Page Component
@@ -43,7 +44,7 @@ function FooterWrapper() {
 }
 
 function App() {
-  const { logEvent } = useAnalytics() || {}; // ✅ Safe destructure (avoids undefined)
+  const { logEvent } = useAnalytics() || {}; 
 
   useEffect(() => {
     if (logEvent) {
