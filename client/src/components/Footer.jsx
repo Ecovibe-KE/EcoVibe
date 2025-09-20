@@ -1,133 +1,123 @@
 import React from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 
-const buttonStyle = {
-  color: "white",
-  backgroundColor: "#37b137",
-  borderColor: "#37b137",
-  marginBottom: "0.5rem",
-};
-
-const buttonHoverStyle = {
-  color: "#37b137",
-  backgroundColor: "white",
-  borderColor: "#37b137",
-};
-
-const socialIconStyle = {
-  color: "black",
-  marginRight: "0.75rem",
-};
-
 const footerStyle = {
-  backgroundColor: "#d6f5d6", 
-  padding: "1.5rem 0",
+  backgroundColor: "#ffffff",
+  padding: "2rem 1rem 1rem 1rem",
   marginTop: "auto",
-  width: "100%"
+  width: "100%",
+};
+
+const topRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  marginBottom: "1.5rem",
+  gap: "1rem",
+};
+
+const logoStyle = {
+  maxWidth: "180px",
+};
+
+const navLinksContainer = {
+  display: "flex",
+  gap: "2rem",
+  fontWeight: "500",
+  flexWrap: "wrap",
+};
+
+const socialIconsContainer = {
+  display: "flex",
+  gap: "1rem",
+  marginTop: "0.5rem",
+};
+
+const hrStyle = {
+  border: "none",
+  borderTop: "2px solid #37b137",
+  margin: "0 0 1rem 0",
+};
+
+const bottomRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  flexWrap: "wrap",
+  fontSize: "0.9rem",
+  gap: "1rem",
+};
+
+const legalLinksContainer = {
+  display: "flex",
+  gap: "1.5rem",
+  flexWrap: "wrap",
+};
+
+// Inline styles for links where needed
+const legalLinkStyle = {
+  textDecoration: "none",
+  color: "#37b137",
+  fontWeight: "500",
 };
 
 const Footer = ({ pageType }) => {
+  const isLandingFooter =
+    ["landing", "blog", "services", "about", "contact"].includes(pageType);
+
+  if (!isLandingFooter) return null;
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer style={footerStyle}>
       <Container>
-        <Row className="text-center text-md-start">
-          <Col md={3} className="mb-3">
-            <img
-              src="/EcovibeLogo.png"
-              alt="EcoVibe Logo"
-              className="img-fluid mb-2"
-            />
-          </Col>
+        {/* Top Row */}
+        <div style={topRowStyle}>
+          {/* Logo */}
+          <img
+            src="/EcovibeLogo.png"
+            alt="EcoVibe Logo"
+            style={logoStyle}
+          />
 
-          {pageType === "landing" && (
-            <>
-              <Col md={3} className="mb-3">
-                <h6 className="text-uppercase fw-bold">Quick Links</h6>
-                <ul className="list-unstyled">
-                  <li><a href="/about" className="nav-link">About Us</a></li>
-                  <li><a href="/services" className="nav-link">Services</a></li>
-                  <li><a href="/contact" className="nav-link">Contact</a></li>
-                </ul>
-              </Col>
+          {/* Nav Links */}
+          <div style={navLinksContainer}>
+            <a href="/about" className="nav-link">Quick Links</a>
+            <a href="/blog" className="nav-link">Blogs</a>
+            <a href="/login" className="nav-link">Login</a>
+          </div>
 
-              <Col md={3} className="mb-3">
-                <h6 className="text-uppercase fw-bold">Blogs</h6>
-                <ul className="list-unstyled">
-                  <li><a href="/blog" className="nav-link">Latest Posts</a></li>
-                  <li><a href="/blog/categories" className="nav-link">Categories</a></li>
-                </ul>
-              </Col>
+          {/* Social Icons */}
+          <div style={socialIconsContainer}>
+            <a href="https://www.instagram.com/ecovibekenya/" target="_blank" rel="noopener noreferrer">
+              <FaInstagram size={20} color="black" />
+            </a>
+            <a href="https://www.linkedin.com/company/ecovibe-kenya/" target="_blank" rel="noopener noreferrer">
+              <FaLinkedin size={20} color="black" />
+            </a>
+          </div>
+        </div>
 
-              <Col md={3} className="mb-3">
-                <h6 className="text-uppercase fw-bold">Join Us</h6>
-                <Button
-                  style={buttonStyle}
-                  size="sm"
-                  href="/login"
-                  onMouseOver={e => Object.assign(e.target.style, buttonHoverStyle)}
-                  onMouseOut={e => Object.assign(e.target.style, buttonStyle)}
-                >
-                  Login
-                </Button>
-                <div>
-                  <a
-                    href="https://www.instagram.com/ecovibe"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={socialIconStyle}
-                  >
-                    <FaInstagram size={20} />
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/company/ecovibe-ke"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "black" }}
-                  >
-                    <FaLinkedin size={20} />
-                  </a>
-                </div>
-              </Col>
-            </>
-          )}
+        {/* Green Line */}
+        <hr style={hrStyle} />
 
-          {pageType === "client" && (
-            <>
-              <Col md={6} className="mb-3">
-                <h6 className="text-uppercase fw-bold">Legal & Policy</h6>
-                <ul className="list-unstyled">
-                  <li><a href="/refund-policy" className="nav-link">Refund / Cancellation Policy</a></li>
-                  <li><a href="/privacy-policy" className="nav-link">Privacy Policy</a></li>
-                  <li><a href="/terms" className="nav-link">Terms & Conditions</a></li>
-                </ul>
-              </Col>
+        {/* Bottom Row */}
+        <div style={bottomRowStyle}>
+          <small style={{ color: "#37b137" }}>
+            © {currentYear} EcoVibe Kenya. All rights reserved.
+          </small>
 
-              <Col md={3} className="mb-3 text-center text-md-start">
-                <h6 className="text-uppercase fw-bold">Follow Us</h6>
-                <a
-                  href="https://www.instagram.com/ecovibe"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={socialIconStyle}
-                >
-                  <FaInstagram size={20} />
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/ecovibe-ke"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "black" }}
-                >
-                  <FaLinkedin size={20} />
-                </a>
-              </Col>
-            </>
-          )}
-        </Row>
-
-        <div className="text-center mt-3">
-          <small>&copy; 2025 Ecovibe Kenya. All rights reserved.</small>
+          <div style={legalLinksContainer}>
+            <a href="/privacy-policy" className="legal-link" style={legalLinkStyle}>
+              Privacy Policy
+            </a>
+            <a href="/terms" className="legal-link" style={legalLinkStyle}>
+              Terms and Conditions
+            </a>
+          </div>
         </div>
       </Container>
     </footer>

@@ -84,39 +84,16 @@ button {
   }
 }
 
-.custom-footer {
-  width: 100%;
-  background-color:#37b137;
-  color: white;
-  margin-top: auto;
+.legal-link {
+  color: #37b137;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.custom-footer {
-  width: 100%;
-  background-color: #d1f7d1;
-  color: black;
-  margin-top: auto;
+.legal-link:hover {
+  color: #f5a030 !important;
 }
 
-.social-icon {
-  color: black;      
-  transition: color 0.3s;
-}
 
-.social-icon:hover {
-  color: #f5a030;    
-}
-
-.join-btn {
-  color: white;
-  background-color: #333; 
-  border: none;
-  transition: all 0.3s;
-}
-
-.join-btn:hover {
-  color: #f5a030;          
-  background-color: #222;  
-}
 
 
