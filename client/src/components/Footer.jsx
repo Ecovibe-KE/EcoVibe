@@ -1,6 +1,9 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
+import "../css/Footer.css";
+
+
 
 
 const footerStyle = {
@@ -57,7 +60,6 @@ const legalLinksContainer = {
   flexWrap: "wrap",
 };
 
-// Inline styles for links where needed
 const legalLinkStyle = {
   textDecoration: "none",
   color: "#37b137",
