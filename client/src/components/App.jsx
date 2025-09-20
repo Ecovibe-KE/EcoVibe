@@ -1,3 +1,4 @@
+import Homepage from './Homepage';
 import { useEffect } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
@@ -5,6 +6,7 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route } from "react-router-dom";
+import AboutUs from '../pages/AboutUs.jsx';
 
 function App() {
   const { logEvent } = useAnalytics();
@@ -19,6 +21,13 @@ function App() {
   return (
     <>
       <NavBar />
+      <Routes>
+        <Route path="/playground" element={<Playground />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/" element={<Homepage />} />
+        <Route path="/about" element={<AboutUs />} />
+      </Routes>
+
       {/*Reusable toast*/}
       <ToastContainer
         position="top-right"

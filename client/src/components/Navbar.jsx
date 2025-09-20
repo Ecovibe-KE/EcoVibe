@@ -10,7 +10,7 @@ function NavBar() {
   return (
     <>
       {
-        <Navbar expand={size} className="mx-0 mx-md-5">
+        <Navbar expand={size} className="mx-0 mx-md-5 my-2">
           <Container fluid className="d-flex justify-content-between align-items-center flex-nowrap">
             <Navbar.Brand as={NavLink} to="/home">
               <img src="/EcovibeLogo.png" alt="EcoVibe Logo" className="d-inline-block img-fluid" style={{ maxWidth: "250px", height: "auto" }} />
@@ -25,7 +25,7 @@ function NavBar() {
               </Offcanvas.Header>
               <Offcanvas.Body>
                 <Nav className="justify-content-end flex-grow-1 pe-3">
-                  <Nav.Link as={NavLink} to="/home" className="mx-3 fw-bold nav-link">Home</Nav.Link>
+                  <Nav.Link as={NavLink} to="/" className="mx-3 fw-bold nav-link">Home</Nav.Link>
                   <Nav.Link as={NavLink} to="/about" className="mx-3 fw-bold nav-link">About</Nav.Link>
                   <Nav.Link as={NavLink} to="/services" className="mx-3 fw-bold nav-link">Services</Nav.Link>
                   <Nav.Link as={NavLink} to="/blog" className="mx-3 fw-bold nav-link">Blog</Nav.Link>

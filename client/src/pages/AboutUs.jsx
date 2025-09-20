@@ -1,4 +1,3 @@
-import NavBar from "../components/Navbar"
 import AboutUsPartition from "../components/AboutUsPartition"
 
 function AboutUs() {
@@ -71,7 +70,6 @@ function AboutUs() {
 
     return (
         <>
-            <NavBar></NavBar>
             <section>
                 <div className="container-fluid p-lg-5">
                     <div className="row g-0 align-items-center">
