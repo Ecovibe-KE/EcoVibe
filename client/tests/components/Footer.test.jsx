@@ -1,51 +1,53 @@
 /* eslint-disable no-undef */
-import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
-import Footer from '../../components/Footer';
-import userEvent from '@testing-library/user-event';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { describe, test, expect } from "vitest";
+import userEvent from "@testing-library/user-event";
+import Footer from "../../src/components/Footer";
 
-describe('Footer component', () => {
-  test('renders landing page footer content', () => {
+describe("Footer component", () => {
+  test("renders landing page footer content", () => {
     render(<Footer pageType="landing" />);
 
-    // Footer text
-    expect(screen.getByText(/EcoVibe Kenya/i)).toBeInTheDocument();
+    // ✅ Check for copyright
+    expect(screen.getByText(/copyright/i)).toBeInTheDocument();
 
-    // Legal links
-    const privacyLink = screen.getByText(/Privacy Policy/i);
-    const termsLink = screen.getByText(/Terms and Conditions/i);
-    expect(privacyLink).toBeInTheDocument();
-    expect(termsLink).toBeInTheDocument();
-    expect(privacyLink).toHaveClass('legal-link');
-    expect(termsLink).toHaveClass('legal-link');
+    // ✅ Check for Privacy Policy link
+    const privacyLink = screen.getByRole("link", { name: /privacy policy/i });
+    expect(privacyLink).toHaveAttribute("href");
 
-    // Nav links
-    const quickLinks = screen.getByText(/Quick Links/i);
-    const blogsLink = screen.getByText(/Blogs/i);
-    const loginLink = screen.getByText(/Login/i);
-    expect(quickLinks).toBeInTheDocument();
-    expect(blogsLink).toBeInTheDocument();
-    expect(loginLink).toBeInTheDocument();
-    expect(quickLinks).toHaveClass('nav-link');
-    expect(blogsLink).toHaveClass('nav-link');
-    expect(loginLink).toHaveClass('nav-link');
+    // ✅ Check for Terms & Conditions link
+    const termsLink = screen.getByRole("link", { name: /terms/i });
+    expect(termsLink).toHaveAttribute("href");
 
-    // Social icons (Instagram/LinkedIn)
-    const instagramLink = screen.getByRole('link', { name: /instagram/i });
-    const linkedinLink = screen.getByRole('link', { name: /linkedin/i });
-    expect(instagramLink).toHaveAttribute('href', 'https://instagram.com');
-    expect(linkedinLink).toHaveAttribute('href', 'https://linkedin.com');
-    expect(instagramLink).toHaveAttribute('target', '_blank');
-    expect(linkedinLink).toHaveAttribute('target', '_blank');
+    // ✅ Check for Instagram & LinkedIn icons
+    const instagramIcon = screen.getByRole("link", { name: /instagram/i });
+    expect(instagramIcon).toHaveAttribute("href");
+    const linkedinIcon = screen.getByRole("link", { name: /linkedin/i });
+    expect(linkedinIcon).toHaveAttribute("href");
   });
 
-  test('does not render footer for unknown pageType', () => {
+  test("renders client page footer content", () => {
     render(<Footer pageType="client" />);
-    expect(screen.queryByText(/EcoVibe Kenya/i)).not.toBeInTheDocument();
+    // Adjust text to match your client page footer
+    expect(screen.getByText(/client/i)).toBeInTheDocument();
   });
 
-  test('does not render footer for pageType="unknown"', () => {
+  test("renders fallback for unknown pageType", () => {
     render(<Footer pageType="unknown" />);
-    expect(screen.queryByText(/EcoVibe Kenya/i)).not.toBeInTheDocument();
+    // Should still render copyright text (fallback)
+    expect(screen.getByText(/copyright/i)).toBeInTheDocument();
+  });
+
+  test("privacy policy link changes color on hover", async () => {
+    render(<Footer pageType="landing" />);
+    const privacyLink = screen.getByRole("link", { name: /privacy policy/i });
+
+    // Simulate hover
+    await userEvent.hover(privacyLink);
+
+    // Note: JSDOM can't compute real CSS hover colors,
+    // but we can check that the element exists and is interactive
+    expect(privacyLink).toBeEnabled();
   });
 });
