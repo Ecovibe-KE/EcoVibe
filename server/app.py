@@ -1,26 +1,42 @@
-import os
-import sys
-from pathlib import Path
-from flask_cors import CORS
-
-# from server.routes import register_routes
-current_dir = Path(__file__).parent
-parent_dir = current_dir.parent
-sys.path.insert(0, str(parent_dir))
 from flask import Flask
+from flask_migrate import Migrate
+from routes import register_routes
+from models import db
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+migrate = Migrate()
+
 
 def create_app():
     app = Flask(__name__)
     app.config.from_prefixed_env()
-    CORS(app)
 
+    db.init_app(app)
+    migrate.init_app(app, db)
+    from models import (
+        blogs,
+        bookings,
+        comment,
+        document,
+        invoices,
+        newsletter_subscribers,
+        payments,
+        services,
+        ticket_messages,
+        tickets,
+        tokens,
+        user,
+    )
+
+    register_routes(app)
 
     return app
-app = create_app()
-
-from routes.contact import contact_bp
-app.register_blueprint(contact_bp)
 
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5555)))
