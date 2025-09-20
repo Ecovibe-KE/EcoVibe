@@ -48,7 +48,7 @@ function Contact() {
             console.log('Form submitted:', formData);
                 // toast.success('Thank you for your message! We will get back to you within 24 hours.');
 
-            const response = await fetch("http://localhost:5555/api/contact", {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_ENDPOINT}/api/contact`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(formData)

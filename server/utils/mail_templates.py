@@ -82,3 +82,5 @@ def send_contact_email(to_email, email_type, data):
     print(f'body {body}')
     # Send email using HTML format
     return send_email(to_email, subject, body, is_html=True)
+
+
