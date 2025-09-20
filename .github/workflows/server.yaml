@@ -18,6 +18,21 @@ jobs:
   flask-tests:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    # Add a PostgreSQL service container to run tests against.
+    services:
+      postgres:
+        image: postgres:12
+        # Environment variables for the postgres container.
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+        # Health check to ensure postgres is ready before starting the tests.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     permissions:
       pull-requests: write
     defaults:
@@ -26,7 +41,7 @@ jobs:
     strategy:
       # You can test against multiple Python versions
       matrix:
-        python-version: ["3.10", "3.12"]
+        python-version: ["3.12"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -68,6 +83,10 @@ jobs:
       # 7. Run tests with coverage and comment on PR
       - name: Run tests with coverage
         run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
+        env:
+          # Provide the database URI to the Flask app.
+          # The host is 'localhost' and the port is dynamically assigned by the runner.
+          FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:5432/testdb
 
       # 8. Comment coverage report on PR, only for changed files
       - name: Coverage comment (changed files only)

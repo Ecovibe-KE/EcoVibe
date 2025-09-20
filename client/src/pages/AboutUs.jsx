@@ -1,5 +1,4 @@
 import NavBar from "../components/Navbar"
-// import AboutUsCard from "../components/AboutUsCard"
 import AboutUsPartition from "../components/AboutUsPartition"
 
 function AboutUs() {
@@ -70,14 +69,6 @@ function AboutUs() {
         )
     }
 
-    // function displayContent(contentArray) {
-    //     return contentArray.map(({ imageSourceName, heading, paragraphContent }, index) => {
-    //         return (
-    //             <AboutUsCard key={index} imageSourceName={imageSourceName} heading={heading} paragraphContent={paragraphContent} ></AboutUsCard>
-    //         )
-    //     })
-    // }
-
     return (
         <>
             <NavBar></NavBar>
@@ -101,20 +92,7 @@ function AboutUs() {
             <section className="text-bg-light text-center p-4">
                 {displayPage(missionVision, missionVisionContent)}
                 {displayPage(coreValues, coreValueContent, screenSetting)}
-                {displayPage(meetOurTeam, meetOurTeamContent, screenSetting, "", "card-img-top rounded-top-5")}
-                {/* <article className="container mb-5">
-                    <h2 className="mb-5 fw-semibold display-6 about-underline">Mission & Vision</h2>
-                    <div className=" row row-cols-1 row-cols-md-2 g-5 justify-content-center">
-                        {displayContent(missionVisionContent)}
-                    </div>
-                </article>
-
-                <article className="container">
-                    <h2 className="mb-5 fw-semibold display-6 about-underline">Our Core Values</h2>
-                    <div className=" row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
-                        {displayContent(coreValueContent)}
-                    </div>
-                </article> */}
+                {displayPage(meetOurTeam, meetOurTeamContent, screenSetting, "", "card-img-top rounded-top-5 image-fixed-height")}
             </section>
         </>
     )
