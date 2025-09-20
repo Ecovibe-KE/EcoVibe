@@ -5,6 +5,7 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route } from "react-router-dom";
+import Dashboard from "./Dashboard.jsx";
 
 function App() {
   const { logEvent } = useAnalytics();
@@ -44,6 +45,7 @@ function App() {
         draggable
         pauseOnHover
       />
+      <Dashboard />
     </>
   );
 }
