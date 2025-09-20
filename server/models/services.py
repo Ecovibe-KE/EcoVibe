@@ -11,7 +11,7 @@ class Services(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.String(50), nullable=False)
-    price = db.Column(db.String(50), nullable=False)  # Modeled as String per schema
+    price = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.Date, default=date.today, nullable=False)
     updated_at = db.Column(db.Date, onupdate=date.today)
     admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)

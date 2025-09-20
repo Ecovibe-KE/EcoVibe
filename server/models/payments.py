@@ -9,7 +9,6 @@ class PaymentMethod(PyEnum):
     MPESA = "mpesa"
     CASH = "cash"
 
-
 class Payments(db.Model):
     __tablename__ = "payments"
 
