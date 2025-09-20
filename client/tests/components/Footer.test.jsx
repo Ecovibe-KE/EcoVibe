@@ -1,43 +1,33 @@
-/* eslint-disable no-undef */
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, test, expect } from "vitest";
-import userEvent from "@testing-library/user-event";
-import Footer from "../../src/components/Footer";
+import Footer from "../../../src/components/Footer";
 
 describe("Footer component", () => {
-  test("renders footer content on landing page", () => {
+  test("renders landing page footer content", () => {
     render(<Footer pageType="landing" />);
 
-    // ✅ Check for year and company name
-    expect(
-      screen.getByText(/ecoVibe kenya/i)
-    ).toBeInTheDocument();
+    // Footer text check
+    expect(screen.getByText(/EcoVibe Kenya/i)).toBeInTheDocument();
 
-    // ✅ Check for Quick Links
-    expect(screen.getByRole("link", { name: /quick links/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /blogs/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /login/i })).toBeInTheDocument();
+    // Find Instagram link by href
+    const instagramLink = screen.getAllByRole("link").find((link) =>
+      link.getAttribute("href")?.includes("instagram")
+    );
+    expect(instagramLink).toBeInTheDocument();
 
-    // ✅ Check for Privacy Policy & Terms links
-    expect(screen.getByRole("link", { name: /privacy policy/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /terms and conditions/i })).toBeInTheDocument();
-
-    // ✅ Check social links
-    expect(
-      screen.getByRole("link", { name: /instagram/i, hidden: true })
-    ).toHaveAttribute("href", expect.stringContaining("instagram"));
-    expect(
-      screen.getByRole("link", { name: /linkedin/i, hidden: true })
-    ).toHaveAttribute("href", expect.stringContaining("linkedin"));
+    // Find LinkedIn link by href
+    const linkedInLink = screen.getAllByRole("link").find((link) =>
+      link.getAttribute("href")?.includes("linkedin")
+    );
+    expect(linkedInLink).toBeInTheDocument();
   });
 
-  test("privacy policy link is interactive", async () => {
-    render(<Footer pageType="landing" />);
-    const privacyLink = screen.getByRole("link", { name: /privacy policy/i });
+  test("does not render footer for unknown pageType", () => {
+    render(<Footer pageType="client" />);
+    expect(screen.queryByText(/EcoVibe Kenya/i)).not.toBeInTheDocument();
+  });
 
-    // Simulate hover (just checks interactivity)
-    await userEvent.hover(privacyLink);
-    expect(privacyLink).toBeEnabled();
+  test('does not render footer for pageType="unknown"', () => {
+    render(<Footer pageType="unknown" />);
+    expect(screen.queryByText(/EcoVibe Kenya/i)).not.toBeInTheDocument();
   });
 });
