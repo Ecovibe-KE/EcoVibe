@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import PropTypes from "prop-types";
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
 /**
  * Unified Button component with support for both standard and action buttons.
@@ -73,10 +74,10 @@ const Button = ({
   };
 
   const actionVariantMap = {
-    add: 'success',
-    update: 'warning',
-    delete: 'danger',
-    view: 'dark',
+    add: "success",
+    update: "warning",
+    delete: "danger",
+    view: "dark",
   };
 
   // Determine if this is an action button
@@ -117,7 +118,7 @@ const Button = ({
   // Action button styles (using Bootstrap-like variants)
   const actionStyles = {
     ...baseStyles,
-    margin: '2.5px',
+    margin: "2.5px",
   };
 
   // Determine button size class
@@ -127,12 +128,14 @@ const Button = ({
   let actionVariantClass = "";
   if (isActionButton) {
     const variantBase = actionVariantMap[action];
-    actionVariantClass = outline ? `btn-outline-${variantBase}` : `btn-${variantBase}`;
+    actionVariantClass = outline
+      ? `btn-outline-${variantBase}`
+      : `btn-${variantBase}`;
   }
 
   // Render action button
   if (isActionButton) {
-    const visibleIcon = showIcon ? (icon || actionIcons[action]) : null;
+    const visibleIcon = showIcon ? icon || actionIcons[action] : null;
 
     return (
       <button
@@ -148,7 +151,9 @@ const Button = ({
         onMouseOver={(e) => {
           if (!disabled) {
             e.target.style.backgroundColor = outline ? btnColor : btnHoverColor;
-            e.target.style.borderColor = outline ? btnHoverColor : btnHoverColor;
+            e.target.style.borderColor = outline
+              ? btnHoverColor
+              : btnHoverColor;
             e.target.style.color = outline ? "#fff" : "#fff";
           }
         }}
@@ -162,7 +167,7 @@ const Button = ({
         {...props}
       >
         {visibleIcon}
-        <span style={{marginLeft: visibleIcon ? '5px' : '0'}}>{label}</span>
+        <span style={{ marginLeft: visibleIcon ? "5px" : "0" }}>{label}</span>
       </button>
     );
   }
@@ -240,5 +245,4 @@ Button.propTypes = {
   icon: PropTypes.element,
 };
 
-export { Button as ActionButton };
 export default Button;
