@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 
+
 const footerStyle = {
   backgroundColor: "#ffffff",
   padding: "2rem 1rem 1rem 1rem",

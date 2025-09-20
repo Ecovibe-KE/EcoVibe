@@ -49,3 +49,7 @@ jobs:
       - name: Run tests
         # The 'npm test' command is standard for running tests
         run: npm test
+
+      # 5. Build project (Vite build)
+      - name: Build project
+        run: npm run build
