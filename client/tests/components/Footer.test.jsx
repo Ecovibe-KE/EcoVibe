@@ -1,9 +1,9 @@
 // client/tests/components/Footer.test.jsx
 
-import React from "react"; // ✅ Required for JSX
+import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Footer from "../../../src/components/footer.jsx"; // ✅ Adjust path carefully
+import Footer from "../../src/components/Footer.jsx"; // ✅ fixed path
 
 describe("Footer component", () => {
   afterEach(() => {
@@ -12,8 +12,6 @@ describe("Footer component", () => {
 
   test("renders landing page footer content", () => {
     render(<Footer pageType="landing" />);
-
-    // Example check: Update text to match your real footer content
     expect(screen.getByText(/EcoVibe Kenya/i)).toBeInTheDocument();
   });
 
