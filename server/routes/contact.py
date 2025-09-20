@@ -74,10 +74,10 @@ def send_emails_in_background(data):
     try:
         # Send admin notification
         admin_email = os.getenv("ADMIN_EMAIL", SMTP_USER)
-        message1 = send_contact_email(admin_email, 'admin', data)
+        send_contact_email(admin_email, 'admin', data)
 
         # Send user confirmation
-        message2 = send_contact_email(data['email'], 'client', data)
+        send_contact_email(data['email'], 'client', data)
     except Exception as e:
         print(f"Error sending emails: {e}")
 

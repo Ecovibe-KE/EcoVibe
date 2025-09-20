@@ -1,4 +1,4 @@
-from .contact import *
+from .contact import contact_bp
 from .user import user_bp
 
 def register_routes(app):

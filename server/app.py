@@ -2,13 +2,13 @@ import sys
 import os
 from pathlib import Path
 
+from flask import Flask
+from flask_cors import CORS
+from flask_migrate import Migrate
 current_dir = Path(__file__).parent
 parent_dir = current_dir.parent
 sys.path.insert(0, str(parent_dir))
 
-from flask import Flask
-from flask_cors import CORS
-from flask_migrate import Migrate
 from routes import register_routes
 from models import db
 
