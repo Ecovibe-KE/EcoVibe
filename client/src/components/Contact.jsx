@@ -46,9 +46,9 @@ function Contact() {
         try {
             // TODO: VALENTINE HANDLE BACKEND LOGIC
             console.log('Form submitted:', formData);
-                toast.success('Thank you for your message! We will get back to you within 24 hours.');
+                // toast.success('Thank you for your message! We will get back to you within 24 hours.');
 
-            const response = await fetch("/api/contact", {
+            const response = await fetch("http://localhost:5555/api/contact", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(formData)
