@@ -24,8 +24,8 @@ function App() {
                 <Route path="/playground" element={<Playground/>}/>
                 <Route path="/contact" element={<Contact/>}/>
                 <Route path="/" element={<Homepage/>  }/>
-
-
+                <Route path="/home" element={<Homepage/>  }/>
+                <Route path="/dashboard" element={<Dashboard/>}/>
             </Routes>
             {/*Reusable toast*/}
             <ToastContainer
