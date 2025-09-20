@@ -1,14 +1,14 @@
-# contact.py
 import logging
 import os
+import re
 import threading
 
-from flask import Blueprint, request, jsonify
-import re
-from flask_restful import Api, Resource
-from server.utils.mail_templates import send_contact_email
-from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
+from email_validator import validate_email, EmailNotValidError
+from flask import Blueprint, request, jsonify
+from flask_restful import Api, Resource
+
+from server.utils.mail_templates import send_contact_email
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -32,12 +32,22 @@ class ContactListResource(Resource):
             if not data:
                 return {"error": "No data provided"}, 400
 
-            sanitized_data = {key: sanitize_input(value) for key, value in data.items() if isinstance(value, str)}
+            sanitized_data = {
+                key: sanitize_input(value)
+                for key, value in data.items()
+                if isinstance(value, str)
+            }
 
             required_fields = ['name', 'phone', 'industry', 'email', 'message']
-            missing_fields = [field for field in required_fields if not sanitized_data.get(field)]
+            missing_fields = [
+                field for field in required_fields
+                if not sanitized_data.get(field)
+            ]
             if missing_fields:
-                return {"error": f"Missing required fields: {', '.join(missing_fields)}"}, 400
+                return {
+                    "error": f"Missing required fields: {', '.join(missing_fields)}"
+                }, 400
+
             try:
                 validate_email(sanitized_data['email'])
             except EmailNotValidError:
@@ -53,17 +63,26 @@ class ContactListResource(Resource):
 
             if len(sanitized_data.get('name', '')) > 100:
                 return {"error": "Name too long"}, 400
+
             name = data.get("name")
             industry = data.get("industry")
             email = data.get("email")
             phone = data.get("phone")
             message = data.get("message")
+
             print(name, industry, email, phone, message)
-            email_thread = threading.Thread(target=send_emails_in_background, args=(data,))
+            email_thread = threading.Thread(
+                target=send_emails_in_background,
+                args=(data,)
+            )
             email_thread.daemon = True  # Thread will be killed when main thread exits
             email_thread.start()
+
             return {
-                "message": "Contact form submitted successfully. You will receive a confirmation email shortly."}, 200
+                "message": "Contact form submitted successfully. "
+                           "You will receive a confirmation email shortly."
+            }, 200
+
         except Exception as e:
             logger.error(f"Unexpected error in send_contact_form: {str(e)}")
             return {"error": "Internal server error"}, 500
@@ -80,6 +99,7 @@ def send_emails_in_background(data):
         send_contact_email(data['email'], 'client', data)
     except Exception as e:
         print(f"Error sending emails: {e}")
+
 
 def validate_phone(phone):
     """Basic phone number validation"""

@@ -5,16 +5,14 @@ from pathlib import Path
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
+from models import db
+from dotenv import load_dotenv
+
 current_dir = Path(__file__).parent
 parent_dir = current_dir.parent
 sys.path.insert(0, str(parent_dir))
 
 from routes import register_routes
-from models import db
-
-
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
