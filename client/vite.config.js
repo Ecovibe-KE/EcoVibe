@@ -8,6 +8,10 @@ export default defineConfig({
     globals: true,
     setupFiles: './tests/setup.js',
     environment: 'jsdom',
+
+    include: ['src/tests/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+
+    
     coverage: {
       provider: 'istanbul',
       include: ['src/**/*.{test,spec}.{js,jsx}'],
