@@ -3,7 +3,7 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Footer from "../../src/components/Footer.jsx"; // ✅ fixed path
+import Footer from "../../src/components/Footer.jsx"; 
 
 describe("Footer component", () => {
   afterEach(() => {
