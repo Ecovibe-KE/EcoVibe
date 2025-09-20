@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_migrate import Migrate
-from .routes import register_routes
-from .models import db
+from routes import register_routes
+from models import db
 
 import os
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
-    from .models import (
+    from models import (
         blogs,
         bookings,
         comment,
