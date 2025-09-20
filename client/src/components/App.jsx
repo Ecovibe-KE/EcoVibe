@@ -6,6 +6,11 @@ import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route } from "react-router-dom";
 
+// ✅ Add these imports (correct path based on your structure)
+import Login from "../pages/Login";
+import Logout from "../pages/Logout";
+import PasswordReset from "../pages/PasswordReset";
+
 function App() {
   const { logEvent } = useAnalytics();
 
@@ -22,6 +27,12 @@ function App() {
       <Routes>
         <Route path="/playground" element={<Playground />} />
         <Route path="/contact" element={<Contact />} />
+
+        {/* ✅ Now these will work */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+
         <Route
           path="/"
           element={
@@ -32,6 +43,7 @@ function App() {
           }
         />
       </Routes>
+
       {/*Reusable toast*/}
       <ToastContainer
         position="top-right"
@@ -47,4 +59,5 @@ function App() {
     </>
   );
 }
+
 export default App;
