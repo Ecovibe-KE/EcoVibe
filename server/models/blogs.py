@@ -34,7 +34,7 @@ class Blog(db.Model):
 
     # --- Relationships ---
     # This assumes you have an 'Admin' model with a 'blogs' back-populating relationship
-    admin = db.relationship("Admin", back_populates="blogs")
+    admin = db.relationship("User", back_populates="blogs")
     comments = db.relationship("Comment", back_populates="blog")
 
     # --- Validations ---

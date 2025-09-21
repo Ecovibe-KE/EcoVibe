@@ -29,7 +29,7 @@ class Bookings(db.Model):
     updated_at = db.Column(db.Date, onupdate=date.today)
 
     # --- Relationships ---
-    client = db.relationship("Users", back_populates="bookings")
+    client = db.relationship("User", back_populates="bookings")
     service = db.relationship("Services", back_populates="bookings")
 
     # --- Data Validations ---
