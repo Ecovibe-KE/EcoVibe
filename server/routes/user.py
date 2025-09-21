@@ -24,6 +24,21 @@ def _is_valid_password(password: str) -> bool:
 
 @user_bp.route("/register", methods=["POST"])
 def register_user():
+    """
+    Register a new user from JSON payload and persist to the database.
+    
+    Validates required fields (full_name, industry, phone_number), normalizes email to lowercase,
+    enforces password policy, checks uniqueness of email (case-insensitive) and phone number,
+    creates the User record, and commits it to the database.
+    
+    Returns:
+        A Flask response tuple (JSON, status_code):
+          - 201: Account created successfully.
+          - 400: Invalid/missing JSON payload, validation failures (empty required fields or invalid password),
+                 or a ValueError raised during user creation (message returned in JSON).
+          - 409: Email or phone number already exists.
+          - 500: Database integrity error (generic message; detailed error logged on the server).
+    """
     payload = request.get_json(silent=True)
     if payload is None:
         return jsonify({"error": "Invalid JSON format"}), 400

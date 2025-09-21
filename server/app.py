@@ -11,6 +11,20 @@ migrate = Migrate()
 
 
 def create_app(config_name="development"):
+    """
+    Create and configure a Flask application instance.
+    
+    Parameters:
+        config_name (str): Configuration profile to use. If "testing", the app uses
+            the FLASK_TEST_SQLALCHEMY_DATABASE_URI environment variable and enables
+            Flask's TESTING mode; otherwise configuration is loaded from
+            environment variables using Flask's prefixed env loader.
+    
+    Returns:
+        flask.Flask: A configured Flask application with the SQLAlchemy extension
+        initialized, Flask-Migrate bound, application models imported, and routes
+        registered.
+    """
     app = Flask(__name__)
     if config_name == "testing":
         app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(

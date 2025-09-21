@@ -54,17 +54,33 @@ def run_migrations_offline():
 
 
 def run_migrations_online():
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
+    """
+    Run database migrations in online mode.
+    
+    Creates/uses the application's SQLAlchemy Engine to open a live connection, configures the Alembic context with the app's metadata and migration configuration, and runs migrations inside a transaction.
+    
+    Notes:
+    - Uses current_app.extensions['migrate'].db.get_engine() to obtain the connectable and merges in configure_args from the migrate extension.
+    - Suppresses generation of an empty autogenerate migration script: when autogenerate is enabled and the generated upgrade operations are empty, the migration directive list is cleared.
     """
 
     # this callback is used to prevent an auto-migration from being generated
     # when there are no changes to the schema
     # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
     def process_revision_directives(context, revision, directives):
+        """
+        Alembic callback that suppresses generation of empty autogenerate revisions.
+        
+        When Alembic is run with autogenerate enabled, inspects the first directive's
+        `upgrade_ops`; if there are no schema changes, clears the `directives` list
+        to prevent creating an empty migration file and logs that no changes were detected.
+        
+        Parameters:
+            context: Alembic migration context (provided by Alembic when invoking the callback).
+            revision: Revision identifier passed by Alembic (unused).
+            directives: List of migration script directives; this function may mutate it
+                (clears the list to cancel emitting a migration).
+        """
         if getattr(config.cmd_opts, 'autogenerate', False):
             script = directives[0]
             if script.upgrade_ops.is_empty():

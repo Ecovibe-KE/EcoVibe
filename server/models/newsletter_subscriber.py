@@ -17,7 +17,19 @@ class NewsletterSubscriber(db.Model):
     @validates("email")
     def validate_and_normalize_email(self, key, email_address):
         """
-        Validates email format and normalizes it to lowercase.
+        Validate and normalize an email address for storage.
+        
+        Checks that email_address is non-empty and matches a basic email pattern, then returns a lowercased version for consistent storage and uniqueness checks.
+        
+        Parameters:
+            key (str): ORM attribute name (unused by this validator).
+            email_address (str): The email address to validate and normalize.
+        
+        Returns:
+            str: The normalized (lowercased) email address.
+        
+        Raises:
+            ValueError: If email_address is empty or does not match a valid email format.
         """
         if not email_address:
             raise ValueError("Email address cannot be empty.")
