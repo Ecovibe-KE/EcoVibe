@@ -47,7 +47,21 @@ class Ticket(db.Model):
 
     # --- Serialization ---
     def to_dict(self):
-        """Converts the ticket object to a dictionary."""
+        """
+        Return a serializable dictionary representation of the Ticket.
+        
+        Includes the ticket's id, client_id, admin_id, subject, status (string value of the TicketStatus enum), and created_at as an ISO 8601 timestamp.
+        
+        Returns:
+            dict: {
+                "id": int,
+                "client_id": int,
+                "admin_id": int,
+                "subject": str,
+                "status": str,
+                "created_at": str
+            }
+        """
         return {
             "id": self.id,
             "client_id": self.client_id,

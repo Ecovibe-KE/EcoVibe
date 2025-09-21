@@ -61,20 +61,55 @@ class User(db.Model):
 
     @property
     def password(self):
+        """
+        Password property getter that is intentionally write-only.
+        
+        Attempting to read this property always raises an AttributeError to prevent exposing plaintext passwords.
+        Use the `set_password` method to set a password and `check_password` to verify one.
+        
+        Raises:
+            AttributeError: Always raised to indicate the password is write-only.
+        """
         raise AttributeError("Password is write-only.")
 
     @password.setter
     def password(self, password):
+        """
+        Setter for the write-only `password` property.
+        
+        Validates the provided plain-text password against the model's password policy and stores the resulting hash on the instance.
+        
+        Parameters:
+            password (str): Plain-text password to validate and hash.
+        """
         self.set_password(password)
 
     def __repr__(self):
+        """
+        Return an unambiguous developer-facing string representation of the User.
+        
+        The string includes the user's `id`, `full_name`, and `role` value in the format:
+        "<User id={id} name={full_name} role={role}>".
+        """
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
 
     def to_dict(self):
         """
-        Convert the full User model into a dictionary representation.
-        Includes sensitive fields like email and phone_number, so use carefully.
-        Useful for internal logic or admin APIs where full data is needed.
+        Return a complete dictionary representation of the User, including sensitive fields.
+        
+        Returns a dict containing all stored User attributes suitable for internal use or admin APIs. The dictionary includes:
+        - id (int)
+        - full_name (str)
+        - email (str) — sensitive
+        - phone_number (str) — sensitive
+        - role (str) — role name (e.g., "CLIENT", "ADMIN", "SUPER_ADMIN")
+        - account_status (str) — status name (e.g., "ACTIVE", "SUSPENDED", "INACTIVE")
+        - industry (str)
+        - created_at (str|None) — ISO 8601 timestamp or None if not set
+        - updated_at (str|None) — ISO 8601 timestamp or None if not set
+        - profile_image_url (str|None)
+        
+        Note: This representation exposes sensitive fields (email, phone_number); only use where full access is appropriate.
         """
         return {
             "id": self.id,  # Primary key
@@ -95,9 +130,27 @@ class User(db.Model):
 
     def to_safe_dict(self, include_email=False, include_phone=False):
         """
-        Convert the User model into a "safe" dictionary representation.
-        Excludes sensitive fields like email and phone_number.
-        Useful when returning user data to clients (e.g., public API responses).
+        Return a "safe" dictionary representation of the User suitable for public responses.
+        
+        By default this omits sensitive contact fields (email and phone_number). Set
+        include_email and/or include_phone to True to include those fields.
+        
+        Parameters:
+            include_email (bool): If True, include the user's email in the returned dict.
+            include_phone (bool): If True, include the user's phone_number in the returned dict.
+        
+        Returns:
+            dict: A mapping containing keys:
+                - id (int)
+                - full_name (str)
+                - role (str): Role name (e.g., "CLIENT", "ADMIN").
+                - account_status (str): Account status name (e.g., "ACTIVE").
+                - industry (str)
+                - created_at (str|None): ISO 8601 timestamp or None.
+                - updated_at (str|None): ISO 8601 timestamp or None.
+                - profile_image_url (str|None)
+                - email (str) [optional]
+                - phone_number (str) [optional]
         """
         data = {
             "id": self.id,  # Primary key
@@ -139,6 +192,21 @@ class User(db.Model):
 
     @staticmethod
     def validate_password(password: str):
+        """
+        Validate that a plaintext password meets the application's strength policy.
+        
+        Checks:
+        - non-empty string
+        - minimum length 8
+        - contains at least one uppercase letter
+        - contains at least one digit
+        
+        Parameters:
+            password (str): Plaintext password to validate.
+        
+        Raises:
+            ValueError: If the password is empty or fails any policy check (message describes the specific violation).
+        """
         if not isinstance(password, str) or not password.strip():
             raise ValueError("Password is required")
         if len(password) < 8:
@@ -149,10 +217,30 @@ class User(db.Model):
             raise ValueError("Password must contain at least one digit")
 
     def set_password(self, password):
+        """
+        Set the user's password after validating it and storing its secure hash.
+        
+        Validates the provided plaintext password against the model's password policy and stores a salted hash in the instance's `password_hash` field.
+        
+        Parameters:
+            password (str): Plaintext password to validate and hash.
+        
+        Raises:
+            ValueError: If the password does not meet validation requirements.
+        """
         self.validate_password(password)
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """
+        Return True if the provided plaintext password matches the stored password hash.
+        
+        Parameters:
+            password (str): Plaintext password to verify against the user's stored hash.
+        
+        Returns:
+            bool: True if the password matches the stored hash, False otherwise.
+        """
         return check_password_hash(self.password_hash, password)
 
     @validates("email")
@@ -165,6 +253,14 @@ class User(db.Model):
 
     @validates("phone_number")
     def validate_phone(self, _key, number):
+        """
+        Validate and normalize a phone number to E.164 format.
+        
+        Parses the provided number as an international number if it starts with '+', otherwise parses it using the Kenya ("KE") default region. Returns the normalized E.164 string (e.g. '+254712345678').
+        
+        Raises:
+            ValueError: if the number cannot be parsed or is not a valid phone number.
+        """
         import phonenumbers
         try:
             # If the number starts with "+", parse it as international
@@ -185,6 +281,19 @@ class User(db.Model):
 
     @validates("full_name")
     def validate_name(self, key, name):
+        """
+        Validate that a user's full name is not empty or only whitespace.
+        
+        Parameters:
+            key (str): attribute name being validated (unused).
+            name (str): the full name value to validate.
+        
+        Returns:
+            str: the original `name` if valid.
+        
+        Raises:
+            ValueError: if `name` is empty or contains only whitespace.
+        """
         if not name.strip():
             raise ValueError("Full name cannot be empty")
         return name
@@ -197,6 +306,18 @@ class User(db.Model):
 
     @validates("role")
     def validate_role(self, key, role):
+        """
+        Validate and normalize a role value to the Role enum.
+        
+        Accepts either a Role enum member or a string name/value that can be converted to Role.
+        Returns the corresponding Role enum. Raises ValueError if the role is empty or not one of the allowed Role values.
+        Parameters:
+            role: A Role member or a string representing a Role.
+        Returns:
+            Role: The validated Role enum member.
+        Raises:
+            ValueError: If `role` is empty or cannot be converted to a valid Role.
+        """
         if not role:
             raise ValueError("Role cannot be empty")
         if isinstance(role, Role):
@@ -211,6 +332,23 @@ class User(db.Model):
 
     @validates("account_status")
     def validate_account_status(self, key, status):
+        """
+        Validate and normalize an account status value to an AccountStatus enum.
+        
+        If `status` is already an AccountStatus, it is returned unchanged. If `status` is a string matching
+        one of the enum members, the corresponding AccountStatus is returned. Raises ValueError if `status`
+        is empty or cannot be converted to a valid AccountStatus.
+        
+        Parameters:
+            key: The mapped attribute name being validated (unused by this validator).
+            status: The value to validate and convert to AccountStatus.
+        
+        Returns:
+            AccountStatus: The validated enum member.
+        
+        Raises:
+            ValueError: If `status` is empty or not a valid AccountStatus.
+        """
         if not status:
             raise ValueError("Account status cannot be empty")
         if isinstance(status, AccountStatus):
@@ -225,6 +363,21 @@ class User(db.Model):
 
     @validates("profile_image_url")
     def validate_profile_image_url(self, key, url):
+        """
+        Validate and normalize a profile image URL.
+        
+        Checks that a provided URL (if non-empty) uses http or https, has a network location, and points to a file with an allowed image extension (jpg, jpeg, png, gif, webp). Returns the original URL unchanged when valid.
+        
+        Parameters:
+            key (str): Attribute/key name being validated (unused by this validator but kept for SQLAlchemy validator signature).
+            url (str | None): The URL to validate. If falsy, it is returned unchanged.
+        
+        Returns:
+            str | None: The validated URL (unchanged) or the original falsy value.
+        
+        Raises:
+            ValueError: If the URL has an unsupported scheme or missing netloc, or if the path does not end with a permitted image file extension.
+        """
         if url:
             parsed = urlparse(url)
 

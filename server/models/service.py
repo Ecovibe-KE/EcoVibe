@@ -49,7 +49,17 @@ class Service(db.Model):
 
     # --- Serialization ---
     def to_dict(self):
-      """Converts the model instance to a dictionary."""
+      """
+      Return a dictionary representation of the Service model.
+      
+      Includes scalar fields (id, name, description, duration, price, admin_id, currency)
+      and timestamp fields `created_at` / `updated_at` converted to ISO 8601 strings
+      or None when not set.
+      
+      Returns:
+          dict: Mapping of field names to their values. Date fields are ISO-formatted
+          strings when present.
+      """
       return {
         "id": self.id,
         "name": self.name,

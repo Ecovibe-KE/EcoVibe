@@ -31,11 +31,32 @@ class CashTransaction(db.Model):
     
     @validates("amount")
     def validate_amount(self, key, amount):
+        """
+        Validate that the `amount` is a positive integer.
+        
+        Parameters:
+            key (str): ORM field name being validated (unused by this validator).
+            amount (int): The payment amount to validate.
+        
+        Returns:
+            int: The same `amount` value when valid.
+        
+        Raises:
+            ValueError: If `amount` is not an int or is less than or equal to zero.
+        """
         if not isinstance(amount, int) or amount <= 0:
             raise ValueError("Cash amount must be a positive integer.")
         return amount
     
     def to_dict(self):
+        """
+        Return a serializable dictionary representation of this CashTransaction.
+        
+        Includes id, amount, received_by, currency, and ISO 8601 strings for payment_date and created_at.
+        
+        Returns:
+            dict: Keys: "id", "amount", "received_by", "payment_date", "created_at", "currency".
+        """
         return {
             "id": self.id,
             "amount": self.amount,
@@ -93,7 +114,20 @@ class MpesaTransaction(db.Model):
         return phone_number
 
     def to_dict(self):
-        """Return a dictionary representation of the model."""
+        """
+        Serialize the MpesaTransaction into a JSON-serializable dictionary.
+        
+        Returns a dict with the transaction's primary fields:
+        - id (int)
+        - amount (int)
+        - payment_date (str): ISO 8601 formatted datetime
+        - created_at (str): ISO 8601 formatted datetime
+        - transaction_code (str)
+        - paid_by (str)
+        - currency (str)
+        
+        Datetime fields are guaranteed present and are converted with .isoformat().
+        """
         # Simplified date formatting as the fields are non-nullable.
         return {
             "id": self.id,
@@ -126,8 +160,19 @@ class Payment(db.Model):
 
     def to_dict(self):
         """
-        Serializes the Payment and dynamically fetches and embeds the
-        details of the specific payment method used.
+        Return a serializable dictionary for this Payment, embedding related transaction metadata when available.
+        
+        If payment_method_id is set, the method attempts to load the corresponding MpesaTransaction (when payment_method is MPESA) or CashTransaction (when payment_method is CASH) and include its serialized data under the "metadata" key. If no related transaction exists or payment_method_id is not set, "metadata" will be an empty dict.
+        
+        Returns:
+            dict: {
+                "id": int,
+                "invoice_id": int,
+                "payment_method": str,        # enum value (e.g., "MPESA" or "CASH")
+                "payment_method_id": int | None,
+                "created_at": str,           # ISO 8601 timestamp
+                "metadata": dict             # serialized transaction payload or {}
+            }
         """
         payment_entity = {}
         # Only query if there is a related entity ID

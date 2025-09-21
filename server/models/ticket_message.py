@@ -29,7 +29,22 @@ class TicketMessage(db.Model):
     # --- Validation ---
     @validates("body")
     def validate_body(self, key, body):
-        """Ensures the message body is not empty."""
+        """
+        Validate that the message body is non-empty and not only whitespace.
+        
+        Called by SQLAlchemy when assigning the `body` attribute. Raises ValueError if
+        `body` is None, an empty string, or contains only whitespace.
+        
+        Parameters:
+            key (str): The mapped attribute name (typically "body"); provided by SQLAlchemy.
+            body (str): The message text to validate.
+        
+        Returns:
+            str: The validated `body` string.
+        
+        Raises:
+            ValueError: If `body` is empty or contains only whitespace.
+        """
         if not body or not body.strip():
             raise ValueError("Message body cannot be empty or contain only whitespace.")
         return body
