@@ -3,9 +3,6 @@ import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import "../css/Footer.css";
 
-
-
-
 const footerStyle = {
   backgroundColor: "#ffffff",
   padding: "2rem 1rem 1rem 1rem",
@@ -95,10 +92,20 @@ const Footer = ({ pageType }) => {
 
           {/* Social Icons */}
           <div style={socialIconsContainer}>
-            <a href="https://www.instagram.com/ecovibekenya/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.instagram.com/ecovibekenya/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+            >
               <FaInstagram size={20} color="black" />
             </a>
-            <a href="https://www.linkedin.com/company/ecovibe-kenya/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.linkedin.com/company/ecovibe-kenya/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
               <FaLinkedin size={20} color="black" />
             </a>
           </div>

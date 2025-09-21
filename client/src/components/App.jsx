@@ -37,7 +37,6 @@ function FooterWrapper() {
     [location.pathname]
   );
 
-  // ✅ Log to console to help debugging
   console.log("Rendering FooterWrapper with pageType:", pageType);
 
   return <Footer pageType={pageType} />;
@@ -82,8 +81,6 @@ function App() {
           draggable
           pauseOnHover
         />
-
-        {/* ✅ Safe Footer Wrapper */}
         <FooterWrapper />
       </div>
    

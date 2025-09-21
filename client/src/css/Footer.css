@@ -1,10 +1,12 @@
 .legal-link {
-  color: #37b137;
-  text-decoration: none;
+  color: var(--link-legal, #37b137);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 120ms ease-in-out, text-decoration-color 120ms;
   font-weight: 500;
 }
 
-.legal-link:hover {
-  color: #f5a030 !important;
+.legal-link:visited {
+  color: var(--link-legal-visited, #2e8e2e);
 }
-
