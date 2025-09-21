@@ -65,7 +65,7 @@ describe('App component', () => {
 
     // Check if it was called with the specific event
     expect(mockLogEvent).toHaveBeenCalledWith('screen_view', {
-      firebase_screen: 'Home Page',
+      firebase_screen: '/',
       firebase_screen_class: 'App',
     });
   });
