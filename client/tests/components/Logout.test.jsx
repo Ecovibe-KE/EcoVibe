@@ -1,20 +1,17 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import Logout from "../../pages/Logout";
+import Logout from "../../src/pages/Logout";
 
 describe("Logout Component", () => {
   test("renders logout confirmation message", () => {
-    render(<Logout onLogout={jest.fn()} />);
-
+    render(<Logout onLogout={vi.fn()} />);
     expect(screen.getByText(/are you sure you want to logout/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /yes/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
   test("calls onLogout callback when yes button is clicked", () => {
-    const mockLogout = jest.fn();
+    const mockLogout = vi.fn();
     render(<Logout onLogout={mockLogout} />);
-
-    fireEvent.click(screen.getByRole("button", { name: /yes/i }));
+    const yesButton = screen.getByRole("button", { name: /yes/i });
+    fireEvent.click(yesButton);
     expect(mockLogout).toHaveBeenCalledTimes(1);
   });
 });

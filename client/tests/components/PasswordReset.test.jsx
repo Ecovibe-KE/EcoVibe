@@ -1,19 +1,22 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import PasswordReset from "../../pages/PasswordReset";
+import PasswordReset from "../../src/pages/PasswordReset";
 
 describe("PasswordReset Component", () => {
   test("renders email input and reset button", () => {
-    render(<PasswordReset />);
-
+    render(<PasswordReset onReset={vi.fn()} />);
     expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /send reset link/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset password/i })).toBeInTheDocument();
   });
 
-  test("allows user to type email", () => {
-    render(<PasswordReset />);
+  test("allows user to type email and submit", () => {
+    const mockReset = vi.fn();
+    render(<PasswordReset onReset={mockReset} />);
     const emailInput = screen.getByPlaceholderText(/email address/i);
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
-    fireEvent.change(emailInput, { target: { value: "testuser@example.com" } });
-    expect(emailInput.value).toBe("testuser@example.com");
+    const resetButton = screen.getByRole("button", { name: /reset password/i });
+    fireEvent.click(resetButton);
+
+    expect(mockReset).toHaveBeenCalledWith("test@example.com");
   });
 });
