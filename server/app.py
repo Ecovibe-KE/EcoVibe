@@ -11,9 +11,15 @@ load_dotenv()
 migrate = Migrate()
 
 
-def create_app():
+def create_app(config_name="development"):
     app = Flask(__name__)
-    app.config.from_prefixed_env()
+    if config_name == "testing":
+        app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+            "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
+        )
+        app.config["TESTING"] = True
+    else:
+        app.config.from_prefixed_env()
 
     db.init_app(app)
     migrate.init_app(app, db)

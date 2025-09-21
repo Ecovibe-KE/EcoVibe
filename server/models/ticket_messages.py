@@ -21,7 +21,7 @@ class TicketMessage(db.Model):
     )
 
     # --- Relationships ---
-    ticket = db.relationship("Ticket", back_populates="ticket_messages")
+    ticket = db.relationship("Ticket", back_populates="messages")
     sender = db.relationship("User", back_populates="ticket_messages")
 
     # --- Validation ---
