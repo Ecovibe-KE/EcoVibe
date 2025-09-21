@@ -1,16 +1,15 @@
-import React from 'react';
 import {render, screen, fireEvent} from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { describe, it, expect } from 'vitest';
 import Input from '../../src/utils/Input';
 
 describe('Input Component', () => {
-    test('renders basic input without label', () => {
+    it('renders basic input without label', () => {
         render(<Input/>);
         const inputElement = screen.getByRole('textbox');
         expect(inputElement).toBeInTheDocument();
     });
 
-    test('renders input with label', () => {
+    it('renders input with label', () => {
         render(<Input label="Test Label"/>);
         const labelElement = screen.getByText('Test Label');
         const inputElement = screen.getByRole('textbox');
@@ -20,20 +19,20 @@ describe('Input Component', () => {
         expect(labelElement).toHaveAttribute('for', inputElement.id);
     });
 
-    test('applies custom id when provided', () => {
+    it('applies custom id when provided', () => {
         render(<Input id="custom-id"/>);
         const inputElement = screen.getByRole('textbox');
         expect(inputElement).toHaveAttribute('id', 'custom-id');
     });
 
-    test('generates unique id when not provided', () => {
+    it('generates unique id when not provided', () => {
         render(<Input/>);
         const inputElement = screen.getByRole('textbox');
         expect(inputElement).toHaveAttribute('id');
         expect(inputElement.id).not.toBe('');
     });
 
-    test('shows error message and applies error styles', () => {
+    it('shows error message and applies error styles', () => {
         render(<Input error="Test error"/>);
         const errorElement = screen.getByText('Test error');
         const inputElement = screen.getByRole('textbox');
@@ -45,7 +44,7 @@ describe('Input Component', () => {
         expect(inputElement).toHaveAttribute('aria-invalid', 'true');
     });
 
-    test('shows success message and applies success styles when no error', () => {
+    it('shows success message and applies success styles when no error', () => {
         render(<Input success="Test success"/>);
         const successElement = screen.getByText('Test success');
         const inputElement = screen.getByRole('textbox');
@@ -57,7 +56,7 @@ describe('Input Component', () => {
         expect(inputElement).not.toHaveAttribute('aria-invalid');
     });
 
-    test('error takes precedence over success', () => {
+    it('error takes precedence over success', () => {
         render(<Input error="Test error" success="Test success"/>);
         const errorElement = screen.getByText('Test error');
         const successElement = screen.queryByText('Test success');
@@ -69,7 +68,7 @@ describe('Input Component', () => {
         expect(inputElement).not.toHaveClass('is-valid');
     });
 
-    test('applies correct aria-describedby attribute', () => {
+    it('applies correct aria-describedby attribute', () => {
         render(<Input error="Test error"/>);
         const inputElement = screen.getByRole('textbox');
         const errorElement = screen.getByText('Test error');
@@ -77,7 +76,7 @@ describe('Input Component', () => {
         expect(inputElement).toHaveAttribute('aria-describedby', errorElement.id);
     });
 
-    test('applies aria-describedby with both error and success when both exist', () => {
+    it('applies aria-describedby with both error and success when both exist', () => {
         render(<Input error="Test error" success="Test success"/>);
         const inputElement = screen.getByRole('textbox');
         const errorElement = screen.getByText('Test error');
@@ -85,7 +84,7 @@ describe('Input Component', () => {
         expect(inputElement).toHaveAttribute('aria-describedby', errorElement.id);
     });
 
-    test('applies correct focus styles for error state', () => {
+    it('applies correct focus styles for error state', () => {
         render(<Input error="Test error"/>);
         const inputElement = screen.getByRole('textbox');
 
@@ -98,7 +97,7 @@ describe('Input Component', () => {
         expect(inputElement.style.boxShadow).toBe('none');
     });
 
-    test('applies correct focus styles for success state', () => {
+    it('applies correct focus styles for success state', () => {
         render(<Input success="Test success"/>);
         const inputElement = screen.getByRole('textbox');
 
@@ -111,7 +110,7 @@ describe('Input Component', () => {
         expect(inputElement.style.boxShadow).toBe('none');
     });
 
-    test('applies correct focus styles for default state', () => {
+    it('applies correct focus styles for default state', () => {
         render(<Input/>);
         const inputElement = screen.getByRole('textbox');
 
@@ -124,13 +123,13 @@ describe('Input Component', () => {
         expect(inputElement.style.boxShadow).toBe('none');
     });
 
-    test('applies disabled state', () => {
+    it('applies disabled state', () => {
         render(<Input disabled/>);
         const inputElement = screen.getByRole('textbox');
         expect(inputElement).toBeDisabled();
     });
 
-    test('applies custom size classes', () => {
+    it('applies custom size classes', () => {
         const {rerender} = render(<Input size="sm"/>);
         let inputElement = screen.getByRole('textbox');
         expect(inputElement).toHaveClass('form-control-sm');
@@ -140,14 +139,14 @@ describe('Input Component', () => {
         expect(inputElement).toHaveClass('form-control-lg');
     });
 
-    test('passes through additional props', () => {
+    it('passes through additional props', () => {
         render(<Input placeholder="Enter text" data-testid="custom-input"/>);
         const inputElement = screen.getByPlaceholderText('Enter text');
         expect(inputElement).toBeInTheDocument();
         expect(inputElement).toHaveAttribute('data-testid', 'custom-input');
     });
 
-    test('applies custom className to wrapper', () => {
+    it('applies custom className to wrapper', () => {
         render(<Input className="custom-wrapper"/>);
         const wrapperElement = screen.getByRole('textbox').closest('div');
         expect(wrapperElement).toHaveClass('custom-wrapper');

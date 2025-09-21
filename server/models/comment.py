@@ -6,8 +6,8 @@ class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text, nullable=False)
-    client_id = db.Column(db.Integer, nullable=False)
-    blog_id = db.Column(db.Integer, nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    blog_id = db.Column(db.Integer, db.ForeignKey("blogs.id"), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime)
 

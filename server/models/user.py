@@ -47,7 +47,6 @@ class User(db.Model):
     )
     password_hash = db.Column(db.String(255), nullable=False)
 
-    documents = db.relationship("Document", back_populates="admin")
 
     def __repr__(self):
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
@@ -96,14 +95,20 @@ class User(db.Model):
             "profile_image_url": self.profile_image_url,  # Profile picture URL
         }
 
-    documents = db.relationship("Document", back_populates="user")
-    services = db.relationship("Services", back_populates="user", lazy=True)
-    client_tickets = db.relationship("Ticket", back_populates="user")
-    admin_tickets = db.relationship("Ticket", back_populates="user")
-    invoices = db.relationship("Invoices", back_populates="user", lazy=True)
-    ticket_messages = db.relationship("TicketMessages", back_populates="user")
+    documents = db.relationship("Document", back_populates="admin")
+    services = db.relationship("Services", back_populates="admin", lazy=True)
+    client_tickets = db.relationship(
+        "Ticket", foreign_keys="Ticket.client_id", back_populates="client"
+    )
+    admin_tickets = db.relationship(
+        "Ticket", foreign_keys="Ticket.assigned_admin_id", back_populates="admin"
+    )
+    invoices = db.relationship("Invoices", back_populates="client", lazy=True)
+    ticket_messages = db.relationship("TicketMessage", back_populates="sender")
     tokens = db.relationship("Token", back_populates="user")
     comments = db.relationship("Comment", back_populates="client")
+    blogs = db.relationship("Blog", back_populates="admin")
+    bookings = db.relationship("Bookings", back_populates="client", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -124,7 +129,10 @@ class User(db.Model):
         import phonenumbers
 
         try:
-            parsed = phonenumbers.parse(number, None)
+            # We assume 'KE' as the default region.
+            # For a production environment, it would be better to get the region
+            # from the user's profile or the request context.
+            parsed = phonenumbers.parse(number, "KE")
         except phonenumbers.NumberParseException as e:
             raise ValueError(str(e)) from e
         if not phonenumbers.is_valid_number(parsed):
