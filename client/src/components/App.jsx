@@ -50,16 +50,16 @@ function App() {
               <main role="main" className="flex-fill bg-light overflow-auto">
                 <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
-                  <Route path="/dashboard/*" element={<Dashboard />} />
-                  <Route path="/bookings/*" element={<Bookings />} />
-                  <Route path="/resources/*" element={<Resources />} />
-                  <Route path="/profile/*" element={<Profile />} />
-                  <Route path="/payments/*" element={<Payments />} />
-                  <Route path="/blog/*" element={<Blog />} />
-                  <Route path="/services/*" element={<Services />} />
-                  <Route path="/about/*" element={<About />} />
-                  <Route path="/users/*" element={<Users />} />
-                  <Route path="/tickets/*" element={<Tickets />} />
+                  <Route path="/dashboard/*" element={<p>Dashboard</p>} />
+                  <Route path="/bookings/*" element={<p>Bookings</p>} />
+                  <Route path="/resources/*" element={<p>Resources</p>} />
+                  <Route path="/profile/*" element={<p>Profile</p>}  />
+                  <Route path="/payments/*" element={<p>Payments</p>}  />
+                  <Route path="/blog/*" element={<p>Blog</p>}  />
+                  <Route path="/services/*" element={<p>Services</p>}  />
+                  <Route path="/about/*" element={<p>About</p>}  />
+                  <Route path="/users/*" element={<p>Users</p>}  />
+                  <Route path="/tickets/*" element={<p>Tickets</p>}  />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
                 </Suspense>
