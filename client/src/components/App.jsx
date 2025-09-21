@@ -34,10 +34,10 @@ function App() {
 
   useEffect(() => {
     logEvent("screen_view", {
-      firebase_screen: "Home Page",
+      firebase_screen: location.pathname || "/",
       firebase_screen_class: "App",
     });
-  }, [logEvent]);
+  }, [logEvent, location.pathname]);
     return (
         <>
           {/* Public routes - show NavBar */}
@@ -50,23 +50,23 @@ function App() {
               <main role="main" className="flex-fill bg-light overflow-auto">
                 <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/bookings" element={<Bookings />} />
-                  <Route path="/resources" element={<Resources />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/payments" element={<Payments />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/services" element={<Services />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/tickets" element={<Tickets />} />
+                  <Route path="/dashboard/*" element={<Dashboard />} />
+                  <Route path="/bookings/*" element={<Bookings />} />
+                  <Route path="/resources/*" element={<Resources />} />
+                  <Route path="/profile/*" element={<Profile />} />
+                  <Route path="/payments/*" element={<Payments />} />
+                  <Route path="/blog/*" element={<Blog />} />
+                  <Route path="/services/*" element={<Services />} />
+                  <Route path="/about/*" element={<About />} />
+                  <Route path="/users/*" element={<Users />} />
+                  <Route path="/tickets/*" element={<Tickets />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
                 </Suspense>
               </main>
            </div>
           ) : (
-           /* Dashboard and public routes - normal layout */
+           /* Public routes - normal layout */
           <Suspense fallback={<div className="p-4">Loading…</div>}>
           <Routes>
             <Route path="/playground" element={<Playground />} />
