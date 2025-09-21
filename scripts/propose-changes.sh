@@ -23,6 +23,8 @@ if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "develop" ]]; then
   exit 1
 fi
 
+
+
 # --- 3. Lint and Format Backend (Python/Flask) ---
 echo "💅 Formatting Python code with Black..."
 black server/
@@ -55,7 +57,29 @@ if ! (cd client && npx eslint "src/**/*.{js,jsx,ts,tsx}"); then
 fi
 echo "✅ Frontend code looks good."
 
-# --- 5. Git Commit ---
+# --- 5. Run Tests ---
+echo "🏃 Running server-side tests..."
+if ! (cd server && pytest tests/); then
+    echo "------------------------------------------------"
+    echo "🔥 Server tests failed."
+    echo "Please fix the issues above and try again."
+    echo "You could also check whether the correct environment and its variables are set."
+    echo "------------------------------------------------"
+    exit 1
+fi
+echo "✅ Server tests passed."
+
+echo "🏃 Running client-side tests..."
+if ! (cd client && npm test); then
+    echo "------------------------------------------------"
+    echo "🔥 Client tests failed."
+    echo "Please fix the issues above and try again."
+    echo "------------------------------------------------"
+    exit 1
+fi
+echo "✅ Client tests passed."
+
+# --- 6. Git Commit ---
 echo "➕ Staging changes..."
 git add .
 
@@ -66,15 +90,15 @@ else
   git commit -m "$COMMIT_MESSAGE"
 fi
 
-# --- 6. Sync with remote 'develop' ---
+# --- 7. Sync with remote 'develop' ---
 echo "🔄 Syncing with 'develop' branch from origin..."
 git pull origin develop
 
-# --- 7. Git Push ---
+# --- 8. Git Push ---
 echo "🚀 Pushing changes to remote..."
 git push origin "$CURRENT_BRANCH"
 
-# --- 8. Final Instructions ---
+# --- 9. Final Instructions ---
 echo ""
 echo "================================================================"
 echo "✅ Successfully pushed '$CURRENT_BRANCH' to remote."

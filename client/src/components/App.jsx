@@ -1,4 +1,4 @@
-import Homepage from './Homepage';
+import Homepage from "./Homepage";
 import { useEffect } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
@@ -16,30 +16,27 @@ function App() {
       firebase_screen_class: "App",
     });
   }, [logEvent]);
-    return (
-        <>
-            <NavBar/>
-            <Routes>
-                <Route path="/playground" element={<Playground/>}/>
-                <Route path="/contact" element={<Contact/>}/>
-                <Route path="/" element={<Homepage/>  }/>
-
-
-            </Routes>
-            {/*Reusable toast*/}
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
-        </>
-    );
-
+  return (
+    <>
+      <NavBar />
+      <Routes>
+        <Route path="/playground" element={<Playground />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/" element={<Homepage />} />
+      </Routes>
+      {/*Reusable toast*/}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </>
+  );
 }
 export default App;

@@ -47,7 +47,6 @@ class User(db.Model):
     )
     password_hash = db.Column(db.String(255), nullable=False)
 
-
     def __repr__(self):
         return f"<User id={self.id} name={self.full_name} role={self.role.value}>"
 
