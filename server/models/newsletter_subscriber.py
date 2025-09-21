@@ -4,7 +4,7 @@ from sqlalchemy.orm import validates
 import re
 
 
-class NewsletterSubscribers(db.Model):
+class NewsletterSubscriber(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(254), unique=True, nullable=False)
     subscription_date = db.Column(

@@ -14,13 +14,13 @@ class Service(db.Model):
     price = db.Column(db.String(50), nullable=False)  # Modeled as String per schema
     created_at = db.Column(db.Date, default=date.today, nullable=False)
     updated_at = db.Column(db.Date, onupdate=date.today)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     currency = db.Column(db.String(10), nullable=False, default="KES")
 
     # --- Relationships ---
     invoices = db.relationship("Invoice", back_populates="service")
     bookings = db.relationship("Booking", back_populates="service")
-    user = db.relationship("User", back_populates="services")
+    admin = db.relationship("User", foreign_keys=[admin_id], back_populates="services")
 
     # --- Data Validations ---
     @validates("name", "description", "duration")
@@ -56,7 +56,7 @@ class Service(db.Model):
         "description": self.description,
         "duration": self.duration,
         "price": self.price,
-        "user_id": self.user_id,   # <-- fixed
+        "admin_id": self.admin_id,   
         "currency": self.currency,
         "created_at": self.created_at.isoformat() if self.created_at else None,
         "updated_at": self.updated_at.isoformat() if self.updated_at else None,

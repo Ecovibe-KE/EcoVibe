@@ -123,7 +123,7 @@ class User(db.Model):
         return data
 
     documents = db.relationship("Document", back_populates="admin")
-    services = db.relationship("Service", back_populates="user", lazy=True)
+    services = db.relationship("Service", back_populates="admin")
     client_tickets = db.relationship(   "Ticket",back_populates="client",foreign_keys="Ticket.client_id")
 
     admin_tickets = db.relationship( "Ticket",back_populates="admin",foreign_keys="Ticket.admin_id")

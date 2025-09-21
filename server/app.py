@@ -17,17 +17,17 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     from models import (
-        blogs,
-        bookings,
+        blog,
+        booking,
         comment,
         document,
-        invoices,
-        newsletter_subscribers,
-        payments,
-        services,
-        ticket_messages,
-        tickets,
-        tokens,
+        invoice,
+        newsletter_subscriber,
+        payment,
+        service,
+        ticket_message,
+        ticket,
+        token,
         user,
     )
 
