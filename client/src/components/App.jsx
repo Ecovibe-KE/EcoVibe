@@ -8,16 +8,6 @@ import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
-const Dashboard = lazy(() => import("./Dashboard.jsx"));
-const About = lazy(() => import("./About.jsx"));
-const Blog = lazy(() => import("./Blog.jsx"));
-const Bookings = lazy(() => import("./Bookings.jsx"));
-const Payments = lazy(() => import("./Payments.jsx"));
-const Services = lazy(() => import("./Services.jsx"));
-const Tickets = lazy(() => import("./Tickets.jsx"));
-const Profile = lazy(() => import("./Profile.jsx"));
-const Resources = lazy(() => import("./Resources.jsx"));
-const Users = lazy(() => import("./Users.jsx"));
 
 function App() {
   const { logEvent } = useAnalytics();
