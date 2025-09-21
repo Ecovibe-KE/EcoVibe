@@ -1,22 +1,23 @@
 import Homepage from "./Homepage";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
-import Dashboard from "./Dashboard.jsx";
-import About from "./About.jsx";
-import Blog from "./Blog.jsx";
-import Bookings from "./Bookings.jsx";
-import Payments from "./Payments.jsx";
-import Services from "./Services.jsx";
-import Tickets from "./Tickets.jsx";
-import Profile from "./Profile.jsx";
-import Resources from "./Resources.jsx";
-import Users from "./Users.jsx";
 import { ToastContainer } from "react-toastify";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+
+const Dashboard = lazy(() => import("./Dashboard.jsx"));
+const About = lazy(() => import("./About.jsx"));
+const Blog = lazy(() => import("./Blog.jsx"));
+const Bookings = lazy(() => import("./Bookings.jsx"));
+const Payments = lazy(() => import("./Payments.jsx"));
+const Services = lazy(() => import("./Services.jsx"));
+const Tickets = lazy(() => import("./Tickets.jsx"));
+const Profile = lazy(() => import("./Profile.jsx"));
+const Resources = lazy(() => import("./Resources.jsx"));
+const Users = lazy(() => import("./Users.jsx"));
 
 function App() {
   const { logEvent } = useAnalytics();
@@ -46,7 +47,8 @@ function App() {
           {isManagementRoute ? (
             <div className="d-flex vh-100">
              <NavPanel />
-             <div className="flex-fill bg-light overflow-auto">
+              <main role="main" className="flex-fill bg-light overflow-auto">
+                <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/bookings" element={<Bookings />} />
@@ -58,18 +60,22 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route path="/users" element={<Users />} />
                   <Route path="/tickets" element={<Tickets />} />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
-              </div>
+                </Suspense>
+              </main>
            </div>
           ) : (
            /* Dashboard and public routes - normal layout */
+          <Suspense fallback={<div className="p-4">Loading…</div>}>
           <Routes>
-           <Route path="/playground" element={<Playground />} />
-           <Route path="/contact" element={<Contact />} />
+            <Route path="/playground" element={<Playground />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/" element={<Homepage />} />
-           <Route path="/home" element={<Homepage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/home" element={<Homepage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
          </Routes>
+         </Suspense>
       )}
             {/*Reusable toast*/}
             <ToastContainer
