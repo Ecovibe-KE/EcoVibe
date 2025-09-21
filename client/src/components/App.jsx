@@ -44,11 +44,11 @@ function App() {
           {isPublicRoute && <NavBar />}
 
           {/* Management routes - show NavPanel layout */}
+          <Suspense fallback={<div className="p-4">Loading…</div>}>
           {isManagementRoute ? (
             <div className="d-flex vh-100">
              <NavPanel />
               <main role="main" className="flex-fill bg-light overflow-auto">
-                <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
                   <Route path="/dashboard/*" element={<Dashboard />} />
                   <Route path="/bookings/*" element={<Bookings />} />
@@ -62,21 +62,18 @@ function App() {
                   <Route path="/tickets/*" element={<Tickets />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
-                </Suspense>
               </main>
            </div>
           ) : (
            /* Public routes - normal layout */
-          <Suspense fallback={<div className="p-4">Loading…</div>}>
           <Routes>
+            <Route index element={<Homepage />} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/" element={<Homepage />} />
             <Route path="/home" element={<Homepage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
          </Routes>
-         </Suspense>
       )}
+          </Suspense>
             {/*Reusable toast*/}
             <ToastContainer
                 position="top-right"
