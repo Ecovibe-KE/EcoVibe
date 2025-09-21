@@ -2,9 +2,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from routes import register_routes
 from models import db
-
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 

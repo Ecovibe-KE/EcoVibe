@@ -6,12 +6,13 @@ import re
 
 class NewsletterSubscribers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(254), unique=True, nullable=False)
     subscription_date = db.Column(
-        db.DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
+    db.DateTime(timezone=True),
+    server_default=db.func.now(),
+    nullable=False,
+     )
+
 
     @validates("email")
     def validate_and_normalize_email(self, key, email_address):

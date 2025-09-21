@@ -10,55 +10,7 @@ class PaymentMethod(PyEnum):
     CASH = "cash"
 
 
-class Payments(db.Model):
-    __tablename__ = "payments"
-
-    id = db.Column(db.Integer, primary_key=True)
-    invoice_id = db.Column(db.Integer, db.ForeignKey("invoices.id"), nullable=False)
-    payment_method = db.Column(
-        db.Enum(PaymentMethod), nullable=False, default=PaymentMethod.MPESA
-    )
-    payment_method_id = db.Column(db.Integer, nullable=True)
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-
-    # Relationship (assuming an "Invoices" model exists)
-    invoice = db.relationship("Invoices", back_populates="payments")
-
-    def to_dict(self):
-        """
-        Serializes the Payment and dynamically fetches and embeds the
-        details of the specific payment method used.
-        """
-        payment_entity = {}
-        # Only query if there is a related entity ID
-        if self.payment_method_id:
-            if self.payment_method == PaymentMethod.MPESA:
-                # Find the related M-Pesa transaction by its ID
-                transaction = MpesaTransactions.query.get(self.payment_method_id)
-                if transaction:
-                    payment_entity = transaction.to_dict()
-            elif self.payment_method == PaymentMethod.CASH:
-                # Find the related Cash transaction by its ID
-                transaction = CashTransactions.query.get(self.payment_method_id)
-                if transaction:
-                    payment_entity = transaction.to_dict()
-
-        return {
-            "id": self.id,
-            "invoice_id": self.invoice_id,
-            "payment_method": self.payment_method.value,
-            "payment_method_id": self.payment_method_id,
-            # Simplified as it's non-nullable
-            "created_at": self.created_at.isoformat(),
-            "metadata": payment_entity,
-        }
-
-
-class CashTransactions(db.Model):
+class CashTransaction(db.Model):
     """Example model for cash payment details."""
 
     __tablename__ = "cash_transactions"
@@ -76,7 +28,13 @@ class CashTransactions(db.Model):
         nullable=False,
     )
     currency = db.Column(db.String(10), nullable=False, default="KES")
-
+    
+    @validates("amount")
+    def validate_amount(self, key, amount):
+        if not isinstance(amount, int) or amount <= 0:
+            raise ValueError("Cash amount must be a positive integer.")
+        return amount
+    
     def to_dict(self):
         return {
             "id": self.id,
@@ -86,9 +44,11 @@ class CashTransactions(db.Model):
             "created_at": self.created_at.isoformat(),
             "currency": self.currency,
         }
+    
 
 
-class MpesaTransactions(db.Model):
+class MpesaTransaction(db.Model):
+    __tablename__ = "mpesa_transactions"
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
     payment_date = db.Column(
@@ -143,4 +103,52 @@ class MpesaTransactions(db.Model):
             "transaction_code": self.transaction_code,
             "paid_by": self.paid_by,
             "currency": self.currency,
+        }
+
+
+class Payment(db.Model):
+    __tablename__ = "payments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_id = db.Column(db.Integer, db.ForeignKey("invoices.id"), nullable=False)
+    payment_method = db.Column(
+        db.Enum(PaymentMethod), nullable=False, default=PaymentMethod.MPESA
+    )
+    payment_method_id = db.Column(db.Integer, nullable=True)
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    # Relationship (assuming an "Invoice" model exists)
+    invoice = db.relationship("Invoice", back_populates="payments")
+
+    def to_dict(self):
+        """
+        Serializes the Payment and dynamically fetches and embeds the
+        details of the specific payment method used.
+        """
+        payment_entity = {}
+        # Only query if there is a related entity ID
+        if self.payment_method_id:
+            if self.payment_method == PaymentMethod.MPESA:
+                # Find the related M-Pesa transaction by its ID
+                transaction = MpesaTransaction.query.get(self.payment_method_id)
+                if transaction:
+                    payment_entity = transaction.to_dict()
+            elif self.payment_method == PaymentMethod.CASH:
+                # Find the related Cash transaction by its ID
+                transaction = CashTransaction.query.get(self.payment_method_id)
+                if transaction:
+                    payment_entity = transaction.to_dict()
+
+        return {
+            "id": self.id,
+            "invoice_id": self.invoice_id,
+            "payment_method": self.payment_method.value,
+            "payment_method_id": self.payment_method_id,
+            # Simplified as it's non-nullable
+            "created_at": self.created_at.isoformat(),
+            "metadata": payment_entity,
         }

@@ -17,7 +17,7 @@ class Ticket(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    assigned_admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     subject = db.Column(db.String(255), nullable=False)
     status = db.Column(db.Enum(TicketStatus), nullable=False, default=TicketStatus.OPEN)
 
@@ -29,17 +29,13 @@ class Ticket(db.Model):
 
     # --- Relationships ---
     # Explicitly define foreign_keys for relationships pointing to the same table (User)
-    client = db.relationship(
-        "User", foreign_keys=[client_id], back_populates="client_tickets"
-    )
-    admin = db.relationship(
-        "User", foreign_keys=[assigned_admin_id], back_populates="admin_tickets"
-    )
+    client = db.relationship("User", back_populates="client_tickets", foreign_keys=[client_id])
+    admin = db.relationship("User", back_populates="admin_tickets", foreign_keys=[admin_id])
 
     # Correctly point to the TicketMessage model and cascade deletes
     messages = db.relationship(
-        "TicketMessage", back_populates="ticket", cascade="all, delete-orphan"
-    )
+    "TicketMessage", back_populates="ticket", cascade="all, delete-orphan"
+     )
 
     # --- Validation ---
     @validates("subject")
@@ -55,7 +51,7 @@ class Ticket(db.Model):
         return {
             "id": self.id,
             "client_id": self.client_id,
-            "assigned_admin_id": self.assigned_admin_id,
+            "admin_id": self.admin_id,
             "subject": self.subject,
             "status": self.status.value,
             "created_at": self.created_at.isoformat(),
