@@ -1,12 +1,12 @@
-import React from 'react';
-import NavPanel from './NavPanel';
+import React from "react";
 
 const Dashboard = () => {
-    return (
-        <div>
-            <NavPanel />
-        </div>
-    );
+  return (
+    <div className="p-4">
+      <h1>Dashboard</h1>
+      <p>This is the dashboard page.</p>
+    </div>
+  );
 };
 
 export default Dashboard;
