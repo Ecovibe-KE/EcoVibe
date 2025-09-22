@@ -39,9 +39,7 @@ class TicketMessage(db.Model):
         Validate that the message body is non-empty and not only whitespace.
         """
         if not body or not body.strip():
-            raise ValueError(
-                "Message body cannot be empty or contain only whitespace."
-            )
+            raise ValueError("Message body cannot be empty or contain only whitespace.")
         return body
 
     # --- Serialization ---
@@ -52,9 +50,7 @@ class TicketMessage(db.Model):
             "ticket_id": self.ticket_id,
             "sender_id": self.sender_id,
             "body": self.body,
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
         }
 
     def __repr__(self):

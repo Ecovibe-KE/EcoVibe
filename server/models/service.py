@@ -54,9 +54,7 @@ class Service(db.Model):
             if price_value <= 0:
                 raise ValueError("Price must be a positive number.")
         except (ValueError, TypeError):
-            raise ValueError(
-                f"Price must be a valid number, but got '{price_str}'."
-            )
+            raise ValueError(f"Price must be a valid number, but got '{price_str}'.")
         return price_str.strip()
 
     # --- Serialization ---
@@ -76,10 +74,6 @@ class Service(db.Model):
             "price": self.price,
             "admin_id": self.admin_id,
             "currency": self.currency,
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
-            "updated_at": (
-                self.updated_at.isoformat() if self.updated_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
+            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
         }

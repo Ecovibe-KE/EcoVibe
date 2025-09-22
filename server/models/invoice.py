@@ -29,8 +29,9 @@ class Invoice(db.Model):
     # --- Relationships ---
     client = db.relationship("User", back_populates="invoices")
     service = db.relationship("Service", back_populates="invoices")
-    payments = db.relationship("Payment", back_populates="invoice", cascade="all, delete-orphan")
-    
+    payments = db.relationship(
+        "Payment", back_populates="invoice", cascade="all, delete-orphan"
+    )
 
     # --- Data Validations ---
     @validates("amount")

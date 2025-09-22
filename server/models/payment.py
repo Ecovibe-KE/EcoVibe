@@ -80,14 +80,8 @@ class MpesaTransaction(db.Model):
     def validate_transaction_code(self, key, code_to_check):
         """Validate M-Pesa transaction code format."""
         # Assuming 10-character uppercase alphanumeric M-Pesa code
-        if not (
-            code_to_check
-            and code_to_check.isalnum()
-            and len(code_to_check) == 10
-        ):
-            raise ValueError(
-                "Transaction code must be 10 alphanumeric characters."
-            )
+        if not (code_to_check and code_to_check.isalnum() and len(code_to_check) == 10):
+            raise ValueError("Transaction code must be 10 alphanumeric characters.")
         return code_to_check.upper()
 
     @validates("paid_by")
@@ -96,8 +90,7 @@ class MpesaTransaction(db.Model):
         # Kenyan format 254xxxxxxxxx
         if not re.match(r"^254\d{9}$", phone_number):
             raise ValueError(
-                "'paid_by' must be a valid phone number "
-                "in the format 254xxxxxxxxx."
+                "'paid_by' must be a valid phone number " "in the format 254xxxxxxxxx."
             )
         return phone_number
 

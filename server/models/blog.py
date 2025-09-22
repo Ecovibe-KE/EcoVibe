@@ -68,9 +68,7 @@ class Blog(db.Model):
         otherwise returns the value with surrounding whitespace removed.
         """
         if not value or not value.strip():
-            raise ValueError(
-                f"{key.replace('_', ' ').capitalize()} cannot be empty."
-            )
+            raise ValueError(f"{key.replace('_', ' ').capitalize()} cannot be empty.")
         return value.strip()
 
     @validates("likes", "views")

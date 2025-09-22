@@ -77,9 +77,7 @@ def register_user():
     if db.session.query(User).filter(func.lower(User.email) == email).first():
         return jsonify({"error": f"Email '{email}' already exists."}), 409
 
-    if db.session.query(User).filter(
-        User.phone_number == phone_number
-    ).first():
+    if db.session.query(User).filter(User.phone_number == phone_number).first():
         return jsonify({"error": f"Phone '{phone_number}' already exists."}), 409
 
     try:

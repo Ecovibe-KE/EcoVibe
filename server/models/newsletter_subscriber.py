@@ -30,9 +30,7 @@ class NewsletterSubscriber(db.Model):
             r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
             email_address,
         ):
-            raise ValueError(
-                f"'{email_address}' is not a valid email address format."
-            )
+            raise ValueError(f"'{email_address}' is not a valid email address format.")
 
         # Normalize the email to lowercase. This ensures the 'unique' constraint
         # works correctly regardless of casing (e.g., prevents storing

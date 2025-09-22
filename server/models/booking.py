@@ -71,19 +71,11 @@ class Booking(db.Model):
             "booking_date": (
                 self.booking_date.isoformat() if self.booking_date else None
             ),
-            "start_time": (
-                self.start_time.isoformat() if self.start_time else None
-            ),
-            "end_time": (
-                self.end_time.isoformat() if self.end_time else None
-            ),
+            "start_time": (self.start_time.isoformat() if self.start_time else None),
+            "end_time": (self.end_time.isoformat() if self.end_time else None),
             "status": self.status.value if self.status else None,
             "client_id": self.client_id,
             "service_id": self.service_id,
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
-            "updated_at": (
-                self.updated_at.isoformat() if self.updated_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
+            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
         }
