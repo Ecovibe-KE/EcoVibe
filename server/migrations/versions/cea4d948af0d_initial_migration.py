@@ -1,8 +1,8 @@
-"""Initial Migration
+"""initial migration
 
-Revision ID: 7ddc0114075f
+Revision ID: cea4d948af0d
 Revises:
-Create Date: 2025-09-20 00:22:53.904695
+Create Date: 2025-09-22 00:14:35.090627
 
 """
 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "7ddc0114075f"
+revision = "cea4d948af0d"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,16 +30,6 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "comments",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("description", sa.Text(), nullable=False),
-        sa.Column("client_id", sa.Integer(), nullable=False),
-        sa.Column("blog_id", sa.Integer(), nullable=False),
-        sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
         "mpesa_transactions",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("amount", sa.Integer(), nullable=False),
@@ -52,10 +42,15 @@ def upgrade():
         sa.UniqueConstraint("transaction_code"),
     )
     op.create_table(
-        "newsletter_subscribers",
+        "newsletter_subscriber",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("email", sa.String(length=120), nullable=False),
-        sa.Column("subscription_date", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("email", sa.String(length=254), nullable=False),
+        sa.Column(
+            "subscription_date",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email"),
     )
@@ -68,7 +63,7 @@ def upgrade():
         sa.Column("phone_number", sa.String(length=20), nullable=False),
         sa.Column(
             "role",
-            sa.Enum("CLIENT", "ADMIN", "SUPER_ADMIN", name="role"),
+            sa.Enum("CLIENT", "ADMIN", "SUPER_ADMIN", name="role_enum"),
             nullable=False,
         ),
         sa.Column("profile_image_url", sa.String(length=200), nullable=True),
@@ -81,14 +76,23 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("password_hash", sa.String(length=255), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("email"),
-        sa.UniqueConstraint("phone_number"),
+        sa.UniqueConstraint("email", name="uq_user_email"),
+        sa.UniqueConstraint("phone_number", name="uq_user_phone_number"),
+    )
+    op.create_index(op.f("ix_users_email"), "users", ["email"], unique=False)
+    op.create_index(
+        op.f("ix_users_phone_number"), "users", ["phone_number"], unique=False
     )
     op.create_table(
         "blogs",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("date_created", sa.Date(), nullable=False),
-        sa.Column("date_updated", sa.Date(), nullable=True),
+        sa.Column(
+            "date_created",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column("date_updated", sa.DateTime(timezone=True), nullable=True),
         sa.Column("title", sa.String(length=255), nullable=False),
         sa.Column("likes", sa.Integer(), nullable=True),
         sa.Column("views", sa.Integer(), nullable=True),
@@ -143,7 +147,7 @@ def upgrade():
         "tickets",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("client_id", sa.Integer(), nullable=False),
-        sa.Column("assigned_admin_id", sa.Integer(), nullable=True),
+        sa.Column("admin_id", sa.Integer(), nullable=False),
         sa.Column("subject", sa.String(length=255), nullable=False),
         sa.Column(
             "status",
@@ -152,7 +156,7 @@ def upgrade():
         ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(
-            ["assigned_admin_id"],
+            ["admin_id"],
             ["users.id"],
         ),
         sa.ForeignKeyConstraint(
@@ -165,7 +169,7 @@ def upgrade():
         "tokens",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("created_at", sa.Date(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("value", sa.String(), nullable=True),
         sa.Column("expiry_time", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -178,8 +182,8 @@ def upgrade():
         "bookings",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("booking_date", sa.Date(), nullable=False),
-        sa.Column("start_time", sa.DateTime(), nullable=False),
-        sa.Column("end_time", sa.DateTime(), nullable=False),
+        sa.Column("start_time", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("end_time", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
             "status",
             sa.Enum(
@@ -189,8 +193,13 @@ def upgrade():
         ),
         sa.Column("client_id", sa.Integer(), nullable=False),
         sa.Column("service_id", sa.Integer(), nullable=False),
-        sa.Column("created_at", sa.Date(), nullable=False),
-        sa.Column("updated_at", sa.Date(), nullable=True),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(
             ["client_id"],
             ["users.id"],
@@ -198,6 +207,29 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["service_id"],
             ["services.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
+        "comments",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("description", sa.Text(), nullable=False),
+        sa.Column("client_id", sa.Integer(), nullable=False),
+        sa.Column("blog_id", sa.Integer(), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["blog_id"],
+            ["blogs.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["client_id"],
+            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -266,15 +298,17 @@ def downgrade():
     op.drop_table("payments")
     op.drop_table("ticket_messages")
     op.drop_table("invoices")
+    op.drop_table("comments")
     op.drop_table("bookings")
     op.drop_table("tokens")
     op.drop_table("tickets")
     op.drop_table("services")
     op.drop_table("documents")
     op.drop_table("blogs")
+    op.drop_index(op.f("ix_users_phone_number"), table_name="users")
+    op.drop_index(op.f("ix_users_email"), table_name="users")
     op.drop_table("users")
-    op.drop_table("newsletter_subscribers")
+    op.drop_table("newsletter_subscriber")
     op.drop_table("mpesa_transactions")
-    op.drop_table("comments")
     op.drop_table("cash_transactions")
     # ### end Alembic commands ###

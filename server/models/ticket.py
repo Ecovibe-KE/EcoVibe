@@ -16,10 +16,22 @@ class Ticket(db.Model):
     __tablename__ = "tickets"
 
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    assigned_admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    client_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+    )
+    admin_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+    )
     subject = db.Column(db.String(255), nullable=False)
-    status = db.Column(db.Enum(TicketStatus), nullable=False, default=TicketStatus.OPEN)
+    status = db.Column(
+        db.Enum(TicketStatus),
+        nullable=False,
+        default=TicketStatus.OPEN,
+    )
 
     created_at = db.Column(
         db.DateTime(timezone=True),
@@ -30,15 +42,21 @@ class Ticket(db.Model):
     # --- Relationships ---
     # Explicitly define foreign_keys for relationships pointing to the same table (User)
     client = db.relationship(
-        "User", foreign_keys=[client_id], back_populates="client_tickets"
+        "User",
+        back_populates="client_tickets",
+        foreign_keys=[client_id],
     )
     admin = db.relationship(
-        "User", foreign_keys=[assigned_admin_id], back_populates="admin_tickets"
+        "User",
+        back_populates="admin_tickets",
+        foreign_keys=[admin_id],
     )
 
     # Correctly point to the TicketMessage model and cascade deletes
     messages = db.relationship(
-        "TicketMessage", back_populates="ticket", cascade="all, delete-orphan"
+        "TicketMessage",
+        back_populates="ticket",
+        cascade="all, delete-orphan",
     )
 
     # --- Validation ---
@@ -51,16 +69,20 @@ class Ticket(db.Model):
 
     # --- Serialization ---
     def to_dict(self):
-        """Converts the ticket object to a dictionary."""
+        """
+        Return a serializable dictionary representation of the Ticket.
+        """
         return {
             "id": self.id,
             "client_id": self.client_id,
-            "assigned_admin_id": self.assigned_admin_id,
+            "admin_id": self.admin_id,
             "subject": self.subject,
             "status": self.status.value,
             "created_at": self.created_at.isoformat(),
         }
 
     def __repr__(self):
-        return f"<Ticket id={self.id} subject='{
-            self.subject}' status='{self.status.value}'>"
+        return (
+            f"<Ticket id={self.id} subject='{self.subject}' "
+            f"status='{self.status.value}'>"
+        )

@@ -7,8 +7,16 @@ class TicketMessage(db.Model):
     __tablename__ = "ticket_messages"
 
     id = db.Column(db.Integer, primary_key=True)
-    ticket_id = db.Column(db.Integer, db.ForeignKey("tickets.id"), nullable=False)
-    sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    ticket_id = db.Column(
+        db.Integer,
+        db.ForeignKey("tickets.id"),
+        nullable=False,
+    )
+    sender_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+    )
 
     # Use db.Text for potentially long message bodies
     body = db.Column(db.Text, nullable=False)
@@ -27,7 +35,9 @@ class TicketMessage(db.Model):
     # --- Validation ---
     @validates("body")
     def validate_body(self, key, body):
-        """Ensures the message body is not empty."""
+        """
+        Validate that the message body is non-empty and not only whitespace.
+        """
         if not body or not body.strip():
             raise ValueError("Message body cannot be empty or contain only whitespace.")
         return body
@@ -40,7 +50,7 @@ class TicketMessage(db.Model):
             "ticket_id": self.ticket_id,
             "sender_id": self.sender_id,
             "body": self.body,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
         }
 
     def __repr__(self):
