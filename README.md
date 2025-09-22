@@ -177,6 +177,7 @@ For the client-side application to connect to Firebase, you will need to create 
 
     ```bash
     VITE_FIREBASE_API_KEY=your-firebase-api-key
+    VITE_API_BASE_URL=http://localhost:5000/api
     ```
 
 The staging environment client can be found here: `https://ecovibe-staging.web.app/`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
