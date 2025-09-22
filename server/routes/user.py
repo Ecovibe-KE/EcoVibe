@@ -132,19 +132,57 @@ def register_user():
         db.session.rollback()
         # Log with traceback and map known UNIQUE violations to 409
         current_app.logger.exception("IntegrityError while registering user")
-        
+
         constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "") or ""
-        
+
         msg = (str(e.orig) or "").lower()
-        
+
         if constraint in {"uq_user_email", "uq_user_phone_number"}:
             field = "Email" if "email" in constraint else "Phone number"
-            return jsonify({"status": "error", "message": f"{field} already exists.", "data": None}), 409
-        
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": f"{field} already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
         if ("unique" in msg or "duplicate" in msg) and "email" in msg:
-            return jsonify({"status": "error", "message": "Email already exists.", "data": None}), 409
-        
-        if ("unique" in msg or "duplicate" in msg) and ("phone" in msg or "phone_number" in msg):
-            return jsonify({"status": "error", "message": "Phone number already exists.", "data": None}), 409
-        
-        return jsonify({"status": "error", "message": "Database integrity error. Check server logs.", "data": None}), 500
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Email already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
+        if ("unique" in msg or "duplicate" in msg) and (
+            "phone" in msg or "phone_number" in msg
+        ):
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Phone number already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Database integrity error. Check server logs.",
+                    "data": None,
+                }
+            ),
+            500,
+        )
