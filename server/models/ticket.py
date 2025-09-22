@@ -16,10 +16,22 @@ class Ticket(db.Model):
     __tablename__ = "tickets"
 
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    client_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+    )
+    admin_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+    )
     subject = db.Column(db.String(255), nullable=False)
-    status = db.Column(db.Enum(TicketStatus), nullable=False, default=TicketStatus.OPEN)
+    status = db.Column(
+        db.Enum(TicketStatus),
+        nullable=False,
+        default=TicketStatus.OPEN,
+    )
 
     created_at = db.Column(
         db.DateTime(timezone=True),
@@ -29,13 +41,23 @@ class Ticket(db.Model):
 
     # --- Relationships ---
     # Explicitly define foreign_keys for relationships pointing to the same table (User)
-    client = db.relationship("User", back_populates="client_tickets", foreign_keys=[client_id])
-    admin = db.relationship("User", back_populates="admin_tickets", foreign_keys=[admin_id])
+    client = db.relationship(
+        "User",
+        back_populates="client_tickets",
+        foreign_keys=[client_id],
+    )
+    admin = db.relationship(
+        "User",
+        back_populates="admin_tickets",
+        foreign_keys=[admin_id],
+    )
 
     # Correctly point to the TicketMessage model and cascade deletes
     messages = db.relationship(
-    "TicketMessage", back_populates="ticket", cascade="all, delete-orphan"
-     )
+        "TicketMessage",
+        back_populates="ticket",
+        cascade="all, delete-orphan",
+    )
 
     # --- Validation ---
     @validates("subject")
@@ -49,18 +71,6 @@ class Ticket(db.Model):
     def to_dict(self):
         """
         Return a serializable dictionary representation of the Ticket.
-        
-        Includes the ticket's id, client_id, admin_id, subject, status (string value of the TicketStatus enum), and created_at as an ISO 8601 timestamp.
-        
-        Returns:
-            dict: {
-                "id": int,
-                "client_id": int,
-                "admin_id": int,
-                "subject": str,
-                "status": str,
-                "created_at": str
-            }
         """
         return {
             "id": self.id,
@@ -72,5 +82,7 @@ class Ticket(db.Model):
         }
 
     def __repr__(self):
-        return f"<Ticket id={self.id} subject='{
-            self.subject}' status='{self.status.value}'>"
+        return (
+            f"<Ticket id={self.id} subject='{self.subject}' "
+            f"status='{self.status.value}'>"
+        )
