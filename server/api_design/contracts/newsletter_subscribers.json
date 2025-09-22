@@ -1,0 +1,66 @@
+[
+  {
+    "endpoint": "/api/newsletter-subscribers",
+    "method": "GET",
+    "description": "Retrieve all newsletter subscribers.",
+    "responses": {
+      "200": { "$ref": "../examples/newsletter_subscribers/list.200.json" }
+    }
+  },
+  {
+    "endpoint": "/api/newsletter-subscribers/:id",
+    "method": "GET",
+    "description": "Retrieve a subscriber by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/newsletter_subscribers/get.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/newsletter-subscribers",
+    "method": "POST",
+    "description": "Subscribe a new email address to the newsletter.",
+    "request": {
+      "body": {
+        "email": "string (required, valid email, unique)"
+      }
+    },
+    "responses": {
+      "201": { "$ref": "../examples/newsletter_subscribers/post.201.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "409": { "$ref": "../examples/errors/409.json" }
+    }
+  },
+  {
+    "endpoint": "/api/newsletter-subscribers/:id",
+    "method": "PUT",
+    "description": "Update a subscriber's email.",
+    "request": {
+      "params": { "id": "string" },
+      "body": {
+        "email": "string (optional, valid email, unique)"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/newsletter_subscribers/put.200.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "404": { "$ref": "../examples/errors/404.json" },
+      "409": { "$ref": "../examples/errors/409.json" }
+    }
+  },
+  {
+    "endpoint": "/api/newsletter-subscribers/:id",
+    "method": "DELETE",
+    "description": "Unsubscribe by removing a subscriber by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/newsletter_subscribers/delete.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]
