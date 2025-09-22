@@ -10,7 +10,6 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
-  
   },
   "dependencies": {
     "@emotion/styled": "^11.14.1",
