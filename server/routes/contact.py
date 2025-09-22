@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 contact_bp = Blueprint("contact", __name__)
 
 api = Api(contact_bp)
-FLASK_ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
-FLASK_SMTP_USER = os.getenv("SMTP_USER")
+FLASK_ADMIN_EMAIL = os.getenv("FLASK_ADMIN_EMAIL")
+FLASK_SMTP_USER = os.getenv("FLASK_SMTP_USER")
 
 
 class ContactListResource(Resource):
@@ -83,7 +83,7 @@ def send_emails_in_background(data):
     """Background function to send emails"""
     try:
         # Send admin notification
-        admin_email = os.getenv("ADMIN_EMAIL", FLASK_SMTP_USER)
+        admin_email = os.getenv("FLASK_ADMIN_EMAIL", FLASK_SMTP_USER)
         send_contact_email(admin_email, "admin", data)
 
         # Send user confirmation
