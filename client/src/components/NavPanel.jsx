@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
+
 import '../css/NavPanel.css';
 import home from '../assets/home.png';
 import bookings from '../assets/bookings.png';
@@ -14,14 +15,10 @@ import users from '../assets/users.png';
 import tickets from '../assets/tickets.png';
 
 const NavPanel = () => {
-  const location = useLocation();
-
-  const isDashboardActive =
-    location.pathname === '/' || location.pathname === '/dashboard';
 
   const linkClass = ({ isActive }) =>
     `d-flex align-items-center p-2 rounded mb-1 ${
-      isActive ? 'custom-text bg-opacity-15 text-warning' : 'text-dark'
+      isActive ? 'active-text bg-opacity-15 ' : 'inactive-text'
     } text-decoration-none`;
 
   return (
@@ -35,12 +32,14 @@ const NavPanel = () => {
       {/* Header */}
       <Container fluid className="p-3 border-bottom flex-shrink-0">
         <div className="d-flex align-items-center">
-          <img
+          <Link to="/home">
+            <img
             src="/EcovibeLogo.png"
             alt="EcoVibe Logo"
             className="img-fluid"
             style={{ maxHeight: '60px' }}
           />
+          </Link>
         </div>
       </Container>
 
@@ -54,15 +53,7 @@ const NavPanel = () => {
           >
             MAIN
           </h6>
-          <NavLink
-            to="/dashboard"
-            className={`d-flex align-items-center p-2 rounded mb-1 ${
-              isDashboardActive
-                ? 'custom-text bg-opacity-15 text-warning'
-                : 'text-dark'
-            } text-decoration-none`}
-            style={{ fontSize: '15px' }}
-          >
+          <NavLink to="/dashboard/main" className={linkClass} style={{ fontSize: '15px' }}>
             <img
               src={home}
               alt="Home"
@@ -82,47 +73,47 @@ const NavPanel = () => {
             MANAGEMENT MODULES
           </h6>
 
-          <NavLink to="/bookings" className={linkClass}>
+          <NavLink to="/dashboard/bookings" className={linkClass}>
             <img src={bookings} alt="Bookings" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Bookings</span>
           </NavLink>
 
-          <NavLink to="/resources" className={linkClass}>
+          <NavLink to="/dashboard/resources" className={linkClass}>
             <img src={resources} alt="Resources" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Resource Center</span>
           </NavLink>
 
-          <NavLink to="/profile" className={linkClass}>
+          <NavLink to="/dashboard/profile" className={linkClass}>
             <img src={profile} alt="Profile" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Profile</span>
           </NavLink>
 
-          <NavLink to="/payments" className={linkClass}>
+          <NavLink to="/dashboard/payments" className={linkClass}>
             <img src={payments} alt="Payments" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Payment History</span>
           </NavLink>
 
-          <NavLink to="/blog" className={linkClass}>
+          <NavLink to="/dashboard/blog" className={linkClass}>
             <img src={blog} alt="Blog" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Blog Management</span>
           </NavLink>
 
-          <NavLink to="/services" className={linkClass}>
+          <NavLink to="/dashboard/services" className={linkClass}>
             <img src={services} alt="Services" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Service Management</span>
           </NavLink>
 
-          <NavLink to="/mgmtabout" className={linkClass}>
+          <NavLink to="/dashboard/about" className={linkClass}>
             <img src={about} alt="About Us" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>About Us Management</span>
           </NavLink>
 
-          <NavLink to="/users" className={linkClass}>
+          <NavLink to="/dashboard/users" className={linkClass}>
             <img src={users} alt="User Management" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>User Management</span>
           </NavLink>
 
-          <NavLink to="/tickets" className={linkClass}>
+          <NavLink to="/dashboard/tickets" className={linkClass}>
             <img src={tickets} alt="Tickets" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>Tickets</span>
           </NavLink>

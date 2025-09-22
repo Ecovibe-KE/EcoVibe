@@ -1,7 +1,14 @@
 /*extras for navpanel*/
-.custom-text {
+.active-text {
   font-weight: bold;
   font-size: 15px;
   letter-spacing: 0.5px;
-  background-color: rgba(245, 171, 229, 0.234);
+  background-color: #ece5dd;
+  color : #F0A235
+}
+.inactive-text {
+  font-weight: bold;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color : rgb(36, 137, 16);
 }
