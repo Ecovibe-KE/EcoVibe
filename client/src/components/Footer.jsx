@@ -2,9 +2,65 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import "../css/Footer.css";
-import { NavLink } from "react-router-dom";
 
+const footerStyle = {
+  backgroundColor: "#ffffff",
+  padding: "2rem 1rem 1rem 1rem",
+  marginTop: "auto",
+  width: "100%",
+};
 
+const topRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  marginBottom: "1.5rem",
+  gap: "1rem",
+};
+
+const logoStyle = {
+  maxWidth: "180px",
+};
+
+const navLinksContainer = {
+  display: "flex",
+  gap: "2rem",
+  fontWeight: "500",
+  flexWrap: "wrap",
+};
+
+const socialIconsContainer = {
+  display: "flex",
+  gap: "1rem",
+  marginTop: "0.5rem",
+};
+
+const hrStyle = {
+  border: "none",
+  borderTop: "2px solid #37b137", 
+  margin: "0 0 1rem 0",
+};
+
+const bottomRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  flexWrap: "wrap",
+  fontSize: "0.9rem",
+  gap: "1rem",
+};
+
+const legalLinksContainer = {
+  display: "flex",
+  gap: "1.5rem",
+  flexWrap: "wrap",
+};
+
+const legalLinkStyle = {
+  textDecoration: "none",
+  color: "#37b137", 
+};
 
 const Footer = ({ pageType }) => {
   const isLandingFooter =
@@ -28,9 +84,9 @@ const Footer = ({ pageType }) => {
 
           {/* Nav Links */}
           <div style={navLinksContainer}>
-            <NavLink to="/about" className="nav-link">Quick Links</NavLink>
-            <NavLink to="/blog" className="nav-link">Blogs</NavLink>
-            <NavLink to="/login" className="nav-link">Login</NavLink>
+            <a href="/about" className="nav-link">Quick Links</a>
+            <a href="/blog" className="nav-link">Blogs</a>
+            <a href="/login" className="nav-link">Login</a>
           </div>
 
           {/* Social Icons */}
@@ -59,11 +115,9 @@ const Footer = ({ pageType }) => {
 
         {/* Bottom Row */}
         <div style={bottomRowStyle}>
-          <p style={{ 
-            color: "#37b137",fontSize: "1rem", fontWeight: "600"
-             }}>
+          <small style={{ color: "#37b137" }}> 
             © {currentYear} EcoVibe Kenya. All rights reserved.
-          </p>
+          </small>
 
           <div style={legalLinksContainer}>
             <a href="/privacy-policy" className="legal-link" style={legalLinkStyle}>

@@ -2,8 +2,8 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import Footer from "../../src/components/Footer.jsx";
-
 
 describe("Footer component", () => {
   afterEach(() => {
@@ -11,7 +11,11 @@ describe("Footer component", () => {
   });
 
   test("renders landing page footer content", () => {
-    render(<Footer pageType="landing" />);
+    render(
+      <MemoryRouter>
+        <Footer pageType="landing" />
+      </MemoryRouter>
+    );
 
     // Logo
     const logo = screen.getByAltText(/EcoVibe Logo/i);
@@ -30,14 +34,13 @@ describe("Footer component", () => {
     expect(instaLink).toHaveAttribute("target", "_blank");
     expect(instaLink).toHaveAttribute("rel", expect.stringContaining("noopener"));
     expect(instaLink).toHaveAttribute("rel", expect.stringContaining("noreferrer"));
-    
+
     const linkedinLink = screen.getByRole("link", {
       name: /linkedin/i,
     });
     expect(linkedinLink).toHaveAttribute("target", "_blank");
     expect(linkedinLink).toHaveAttribute("rel", expect.stringContaining("noopener"));
     expect(linkedinLink).toHaveAttribute("rel", expect.stringContaining("noreferrer"));
-    
 
     expect(instaLink).toHaveAttribute(
       "href",
@@ -60,7 +63,12 @@ describe("Footer component", () => {
   });
 
   test("does not render footer for non-landing page types", () => {
-    render(<Footer pageType="dashboard" />);
-    expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument();
+    render(
+      <MemoryRouter>
+        <Footer pageType="dashboard" />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
   });
 });

@@ -1,12 +1,12 @@
-import Homepage from './Homepage';
+import Homepage from "./Homepage";
 import { useEffect, useMemo } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; 
+import "react-toastify/dist/ReactToastify.css";
 import About from "./About";
 import Blog from "./Blog";
 import Footer from "./Footer.jsx";
@@ -39,13 +39,16 @@ function FooterWrapper() {
     [location.pathname]
   );
 
-  if (import.meta.env?.MODE === 'development') {
+  if (import.meta.env?.MODE === "development") {
     // eslint-disable-next-line no-console
     console.debug("Rendering FooterWrapper with pageType:", pageType);
+  }
+
+  return <Footer pageType={pageType} />;
 }
 
 function App() {
-  const { logEvent } = useAnalytics() || {}; 
+  const { logEvent } = useAnalytics() || {};
 
   useEffect(() => {
     if (logEvent) {
@@ -59,35 +62,34 @@ function App() {
   }, [logEvent]);
 
   return (
-   
-      <div className="app-container d-flex flex-column min-vh-100">
-        <NavBar />
-        <div className="flex-grow-1">
-          <Routes>
-            <Route path="/playground" element={<Playground />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/client" element={<ClientPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blog" element={<Blog />} /> 
-            <Route path="/" element={<LandingPage />} />
-          </Routes>
-        </div>
-
-        {/* Toast Notifications (safe, won't crash app if imported correctly) */}
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-        <FooterWrapper />
+    <div className="app-container d-flex flex-column min-vh-100">
+      <NavBar />
+      <div className="flex-grow-1">
+        <Routes>
+          <Route path="/playground" element={<Playground />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/client" element={<ClientPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/" element={<LandingPage />} />
+        </Routes>
       </div>
-   
+
+      {/* Toast Notifications */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <FooterWrapper />
+    </div>
   );
 }
+
 export default App;
