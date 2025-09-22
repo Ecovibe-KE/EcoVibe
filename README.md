@@ -53,6 +53,7 @@ graph TD
 │   ├── tests/          # Contains the client-side tests.
 │   └── public/         # Contains the public assets.
 ├── server/
+│   ├── api_design/     # Contains the api design files.
 │   ├── models/         # Contains the database models.
 │   ├── routes/         # Contains the API routes.
 │   └── tests/          # Contains the server-side tests.

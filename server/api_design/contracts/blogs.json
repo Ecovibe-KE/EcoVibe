@@ -1,0 +1,67 @@
+[
+  {
+    "endpoint": "/api/blogs",
+    "method": "GET",
+    "description": "Retrieve all blog posts.",
+    "responses": {
+      "200": { "$ref": "../examples/blogs/list.200.json" }
+    }
+  },
+  {
+    "endpoint": "/api/blogs/:id",
+    "method": "GET",
+    "description": "Retrieve a blog post by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/blogs/get.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/blogs",
+    "method": "POST",
+    "description": "Create a new blog post.",
+    "request": {
+      "body": {
+        "title": "string (required)",
+        "content": "string (required)"
+      }
+    },
+    "responses": {
+      "201": { "$ref": "../examples/blogs/post.201.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "403": { "$ref": "../examples/errors/403.json" }
+    }
+  },
+  {
+    "endpoint": "/api/blogs/:id",
+    "method": "PUT",
+    "description": "Update a blog post.",
+    "request": {
+      "params": { "id": "string" },
+      "body": {
+        "title": "string (optional)",
+        "content": "string (optional)"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/blogs/put.200.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/blogs/:id",
+    "method": "DELETE",
+    "description": "Delete a blog post by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/blogs/delete.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]

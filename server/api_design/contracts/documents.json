@@ -1,0 +1,50 @@
+[
+  {
+    "endpoint": "/api/documents",
+    "method": "GET",
+    "description": "Retrieve all documents.",
+    "responses": {
+      "200": { "$ref": "../examples/documents/list.200.json" }
+    }
+  },
+  {
+    "endpoint": "/api/documents/:id",
+    "method": "GET",
+    "description": "Retrieve a document by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/documents/get.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/documents",
+    "method": "POST",
+    "description": "Upload a new document (file).",
+    "request": {
+      "body": {
+        "file": "binary file (required)",
+        "admin_id": "integer (required, must exist in users)"
+      }
+    },
+    "responses": {
+      "201": { "$ref": "../examples/documents/post.201.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "403": { "$ref": "../examples/errors/403.json" }
+    }
+  },
+  {
+    "endpoint": "/api/documents/:id",
+    "method": "DELETE",
+    "description": "Delete a document by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/documents/delete.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]
