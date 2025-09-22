@@ -82,7 +82,9 @@ jobs:
 
       # 7. Run tests with coverage and comment on PR
       - name: Run tests with coverage
-        run: pipenv run pytest --cov=. tests/ | tee pytest-coverage.txt
+        run: |
+          set -o pipefail
+          pipenv run pytest --cov=. tests/ | tee pytest-coverage.txt
         env:
           # Provide the database URI to the Flask app.
           # The host is 'localhost' and the port is dynamically assigned by the runner.

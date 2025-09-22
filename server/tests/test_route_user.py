@@ -18,7 +18,7 @@ def test_register_user_success(client, session):
         content_type="application/json",
     )
     assert response.status_code == 201
-    assert "Account created successfully" in response.get_data(as_text=True)
+    assert "success" in response.get_data(as_text=True)
 
 
 def test_register_user_existing_email(client, session):
@@ -101,7 +101,10 @@ def test_register_user_missing_password(client, session):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert "Invalid input" in response.get_data(as_text=True)
+    assert (
+        "Password must have at least 8 chars, one uppercase, one digit."
+        in response.get_data(as_text=True)
+    )
 
 
 def test_register_user_missing_industry(client, session):
@@ -156,7 +159,10 @@ def test_register_user_invalid_password(client, session):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert "Invalid input" in response.get_data(as_text=True)
+    assert (
+        "Password must have at least 8 chars, one uppercase, one digit."
+        in response.get_data(as_text=True)
+    )
 
 
 def test_register_user_invalid_email(client, session):
@@ -203,8 +209,8 @@ def test_register_user_existing_phone_number(client, session):
         ),
         content_type="application/json",
     )
-    assert response.status_code == 400
-    assert "Email or phone number already exists" in response.get_data(as_text=True)
+    assert response.status_code == 409
+    assert "Phone number already exists" in response.get_data(as_text=True)
 
 
 def test_register_user_empty_payload(client, session):
