@@ -5,7 +5,7 @@ import "../css/Footer.css";
 
 const footerStyle = {
   backgroundColor: "#ffffff",
-  padding: "2rem 1rem 1rem 1rem",
+  padding: "2rem 1rem",
   marginTop: "auto",
   width: "100%",
 };
@@ -15,8 +15,8 @@ const topRowStyle = {
   alignItems: "center",
   justifyContent: "space-between",
   flexWrap: "wrap",
-  marginBottom: "1.5rem",
   gap: "1rem",
+  width: "100%",
 };
 
 const logoStyle = {
@@ -28,6 +28,8 @@ const navLinksContainer = {
   gap: "2rem",
   fontWeight: "500",
   flexWrap: "wrap",
+  flexGrow: 1,
+  justifyContent: "center",
 };
 
 const socialIconsContainer = {
@@ -38,8 +40,8 @@ const socialIconsContainer = {
 
 const hrStyle = {
   border: "none",
-  borderTop: "2px solid #37b137", 
-  margin: "0 0 1rem 0",
+  borderTop: "2px solid #37b137",
+  margin: "1rem 0",
 };
 
 const bottomRowStyle = {
@@ -49,6 +51,7 @@ const bottomRowStyle = {
   flexWrap: "wrap",
   fontSize: "0.9rem",
   gap: "1rem",
+  width: "100%",
 };
 
 const legalLinksContainer = {
@@ -59,7 +62,7 @@ const legalLinksContainer = {
 
 const legalLinkStyle = {
   textDecoration: "none",
-  color: "#37b137", 
+  color: "#37b137",
 };
 
 const Footer = ({ pageType }) => {
@@ -72,15 +75,11 @@ const Footer = ({ pageType }) => {
 
   return (
     <footer style={footerStyle}>
-      <Container>
+      <Container fluid className="p-0">
         {/* Top Row */}
         <div style={topRowStyle}>
           {/* Logo */}
-          <img
-            src="/EcovibeLogo.png"
-            alt="EcoVibe Logo"
-            style={logoStyle}
-          />
+          <img src="/EcovibeLogo.png" alt="EcoVibe Logo" style={logoStyle} />
 
           {/* Nav Links */}
           <div style={navLinksContainer}>
@@ -115,7 +114,7 @@ const Footer = ({ pageType }) => {
 
         {/* Bottom Row */}
         <div style={bottomRowStyle}>
-          <small style={{ color: "#37b137" }}> 
+          <small style={{ color: "#37b137" }}>
             © {currentYear} EcoVibe Kenya. All rights reserved.
           </small>
 
