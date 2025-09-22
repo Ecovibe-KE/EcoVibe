@@ -24,16 +24,21 @@ FLASK_SMTP_REPLY_EMAIL = os.getenv("FLASK_SMTP_REPLY_EMAIL")
 ENVIRONMENT = os.getenv("FLASK_DEBUG")
 IS_DEBUG = ENVIRONMENT == "1"
 
+
 # Debug logging function that only runs in debug mode
 def debug_log(message, *args):
     if IS_DEBUG:
         logger.debug(message, *args)
 
+
 if IS_DEBUG:
     logger.debug(f"SMTP_SERVER: {FLASK_SMTP_SERVER}")
     logger.debug(f"SMTP_PORT: {FLASK_SMTP_PORT}")
     logger.debug(f"SMTP_USER: {FLASK_SMTP_USER}")
-    logger.debug(f"SMTP_PASS: {'*' * len(FLASK_SMTP_PASS) if FLASK_SMTP_PASS else 'None'}")
+    logger.debug(
+        f"SMTP_PASS: {'*' * len(FLASK_SMTP_PASS) if FLASK_SMTP_PASS else 'None'}"
+    )
+
 
 def send_email(to_email: str, subject: str, body: str, is_html=False):
     """Send an email with logging for debugging."""
@@ -60,7 +65,9 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
                 debug_log("Sending email to %s", to_email)
                 server.sendmail(FLASK_SMTP_USER, to_email, msg.as_string())
         else:
-            debug_log("Using SMTP with STARTTLS for %s:%s", FLASK_SMTP_SERVER, FLASK_SMTP_PORT)
+            debug_log(
+                "Using SMTP with STARTTLS for %s:%s", FLASK_SMTP_SERVER, FLASK_SMTP_PORT
+            )
             with smtplib.SMTP(FLASK_SMTP_SERVER, FLASK_SMTP_PORT) as server:
                 server.starttls()
                 debug_log("Logging in as %s", FLASK_SMTP_USER)
