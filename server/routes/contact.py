@@ -53,7 +53,7 @@ class ContactListResource(Resource):
                 return {"error": "Invalid email format"}, 400
 
             # Validate phone number
-            if not is_valid_phone(sanitized_data['phone']):
+            if not is_valid_phone(sanitized_data["phone"]):
                 return {"error": "Invalid phone number format"}, 400
 
             # Set length limits
@@ -97,7 +97,6 @@ def send_emails_in_background(data):
         send_contact_email(data["email"], "client", data)
     except Exception as e:
         print(f"Error sending emails: {e}")
-
 
 
 def sanitize_input(input_string):
