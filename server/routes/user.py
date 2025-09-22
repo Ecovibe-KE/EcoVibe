@@ -26,18 +26,19 @@ def _is_valid_password(password: str) -> bool:
 def register_user():
     """
     Register a new user from JSON payload and persist to the database.
-    
-    Validates required fields (full_name, industry, phone_number), normalizes email to lowercase,
-    enforces password policy, checks uniqueness of email (case-insensitive) and phone number,
-    creates the User record, and commits it to the database.
-    
+
+    Validates required fields (full_name, industry, phone_number), normalizes
+    email to lowercase, enforces password policy, checks uniqueness of email
+    (case-insensitive) and phone number, creates the User record, and commits
+    it to the database.
+
     Returns:
         A Flask response tuple (JSON, status_code):
           - 201: Account created successfully.
-          - 400: Invalid/missing JSON payload, validation failures (empty required fields or invalid password),
-                 or a ValueError raised during user creation (message returned in JSON).
+          - 400: Invalid/missing JSON payload, validation failures, or a
+                 ValueError raised during user creation.
           - 409: Email or phone number already exists.
-          - 500: Database integrity error (generic message; detailed error logged on the server).
+          - 500: Database integrity error (detailed error logged on server).
     """
     payload = request.get_json(silent=True)
     if payload is None:
@@ -60,13 +61,25 @@ def register_user():
     email = email_raw.lower()
 
     if not _is_valid_password(password):
-        return jsonify({"error": "Password must have at least 8 chars, one uppercase, one digit."}), 400
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "Password must have at least 8 chars, "
+                        "one uppercase, one digit."
+                    )
+                }
+            ),
+            400,
+        )
 
     # --- Uniqueness checks ---
     if db.session.query(User).filter(func.lower(User.email) == email).first():
         return jsonify({"error": f"Email '{email}' already exists."}), 409
 
-    if db.session.query(User).filter(User.phone_number == phone_number).first():
+    if db.session.query(User).filter(
+        User.phone_number == phone_number
+    ).first():
         return jsonify({"error": f"Phone '{phone_number}' already exists."}), 409
 
     try:
@@ -88,6 +101,9 @@ def register_user():
         return jsonify({"error": str(e)}), 400
     except IntegrityError as e:
         db.session.rollback()
-        # 👇 log the *actual DB constraint that failed*
+        # Log the *actual DB constraint that failed*
         current_app.logger.error(f"IntegrityError: {e}")
-        return jsonify({"error": "Database integrity error. Check server logs."}), 500
+        return (
+            jsonify({"error": "Database integrity error. Check server logs."}),
+            500,
+        )

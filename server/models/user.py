@@ -22,7 +22,6 @@ class AccountStatus(PyEnum):
 
 
 class User(db.Model):
-
     __tablename__ = "users"
 
     __mapper_args__ = {"eager_defaults": True}
@@ -227,14 +226,18 @@ class User(db.Model):
             parsed = urlparse(url)
             if not all([parsed.scheme in ("http", "https"), parsed.netloc]):
                 raise ValueError(
-                    "Invalid profile image URL. Must start with http:// or https://"
+                    "Invalid profile image URL. "
+                    "Must start with http:// or https://"
                 )
             valid_exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
             path_ext = (
-                parsed.path.lower().rsplit(".", 1)[-1] if "." in parsed.path else None
+                parsed.path.lower().rsplit(".", 1)[-1]
+                if "." in parsed.path
+                else None
             )
             if not path_ext or f".{path_ext}" not in valid_exts:
                 raise ValueError(
-                    "Profile image must be a valid image file (jpg, png, gif, webp)"
+                    "Profile image must be a valid image file "
+                    "(jpg, png, gif, webp)"
                 )
         return url
