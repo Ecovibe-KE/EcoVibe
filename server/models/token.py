@@ -6,7 +6,9 @@ class Token(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    created_at = db.Column(db.Date, nullable=False)
+    created_at = db.Column(
+        db.DateTime(timezone=True), nullable=False, default=db.func.now()
+    )
     value = db.Column(db.String)
     expiry_time = db.Column(db.DateTime)
 

@@ -1,10 +1,9 @@
 import enum
-from datetime import date
+from datetime import datetime, timezone
 from sqlalchemy.orm import validates
 from . import db
 
 
-# Define an Enum for the 'type' column to ensure consistent values
 class BlogType(enum.Enum):
     ARTICLE = "article"
     NEWSLETTER = "newsletter"
@@ -15,48 +14,77 @@ class BlogType(enum.Enum):
 class Blog(db.Model):
     __tablename__ = "blogs"
 
-    # --- Schema Columns ---
     id = db.Column(db.Integer, primary_key=True)
-    date_created = db.Column(db.Date, default=date.today, nullable=False)
-    date_updated = db.Column(db.Date, onupdate=date.today)
+    date_created = db.Column(
+        db.DateTime(timezone=True),
+        server_default=db.func.now(),
+        nullable=False,
+    )
+    date_updated = db.Column(
+        db.DateTime(timezone=True),
+        onupdate=db.func.now(),
+    )
     title = db.Column(db.String(255), nullable=False)
     likes = db.Column(db.Integer, default=0)
     views = db.Column(db.Integer, default=0)
-    image = db.Column(db.String(255), nullable=False)  # For URL or file path
+    image = db.Column(db.String(255), nullable=False)
     category = db.Column(db.String(100), nullable=False)
     author_name = db.Column(db.String(100), nullable=False)
-    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    content = db.Column(
-        db.Text, nullable=False
-    )  # Switched to Text for long-form content
+    admin_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+    )
+    content = db.Column(db.Text, nullable=False)
     reading_duration = db.Column(db.String(50), nullable=False)
-    type = db.Column(db.Enum(BlogType), default=BlogType.ARTICLE, nullable=False)
+    type = db.Column(
+        db.Enum(BlogType),
+        default=BlogType.ARTICLE,
+        nullable=False,
+    )
 
     # --- Relationships ---
-    # This assumes you have an 'Admin' model with a 'blogs' back-populating relationship
     admin = db.relationship("User", back_populates="blogs")
     comments = db.relationship("Comment", back_populates="blog")
 
     # --- Validations ---
     @validates(
-        "title", "category", "author_name", "reading_duration", "content", "image"
+        "title",
+        "category",
+        "author_name",
+        "reading_duration",
+        "content",
+        "image",
     )
     def validate_not_empty(self, key, value):
-        """Ensures that essential text fields are not empty or just whitespace."""
+        """
+        Validate that a string field is not empty or only whitespace,
+        stripping surrounding whitespace.
+
+        This validator is intended for use with SQLAlchemy's @validates
+        on string-like columns (e.g., title, category, author_name,
+        reading_duration, content, image). It raises ValueError if the
+        provided value is None, empty, or contains only whitespace,
+        otherwise returns the value with surrounding whitespace removed.
+        """
         if not value or not value.strip():
             raise ValueError(f"{key.replace('_', ' ').capitalize()} cannot be empty.")
         return value.strip()
 
     @validates("likes", "views")
     def validate_non_negative(self, key, value):
-        """Ensures that counters like 'likes' and 'views' are not negative."""
+        """
+        Validate that a numeric field value is not negative.
+        """
         if value is not None and value < 0:
-            raise ValueError(f"{key.capitalize()} cannot be a negative number.")
+            raise ValueError(f"{key.capitalize()} cannot be negative.")
         return value
 
     # --- Serialization ---
     def to_dict(self):
-        """Converts the blog post object into a JSON-friendly dictionary."""
+        """
+        Return a JSON-serializable dictionary representation of the Blog.
+        """
         return {
             "id": self.id,
             "date_created": (
