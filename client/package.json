@@ -8,9 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "start": "vite"
+    "test": "vitest run"
+  
   },
   "dependencies": {
     "@emotion/styled": "^11.14.1",
