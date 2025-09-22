@@ -53,7 +53,7 @@ function App() {
   ];
 
   const isManagementRoute = managementRoutes.some((route) =>
-    location.pathname.startsWith(route)
+    location.pathname.startsWith(route),
   );
 
   // Analytics event
@@ -83,10 +83,16 @@ function App() {
                 <Route path="/payments/*" element={<p>Payments</p>} />
                 <Route path="/blog/*" element={<p>Blog</p>} />
                 <Route path="/services/*" element={<p>Services</p>} />
-                <Route path="/mgmtabout/*" element={<p>About (management)</p>} />
+                <Route
+                  path="/mgmtabout/*"
+                  element={<p>About (management)</p>}
+                />
                 <Route path="/users/*" element={<p>Users</p>} />
                 <Route path="/tickets/*" element={<p>Tickets</p>} />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                <Route
+                  path="*"
+                  element={<Navigate to="/dashboard" replace />}
+                />
               </Routes>
             </Suspense>
           </main>

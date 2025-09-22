@@ -4,7 +4,9 @@
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
   text-decoration-color: currentColor;
-  transition: color 120ms ease-in-out, text-decoration-color 120ms;
+  transition:
+    color 120ms ease-in-out,
+    text-decoration-color 120ms;
   font-weight: 500;
 }
 
@@ -12,5 +14,3 @@
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
-
-

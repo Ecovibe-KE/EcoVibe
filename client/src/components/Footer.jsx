@@ -66,8 +66,13 @@ const legalLinkStyle = {
 };
 
 const Footer = ({ pageType }) => {
-  const isLandingFooter =
-    ["landing", "blog", "services", "about", "contact"].includes(pageType);
+  const isLandingFooter = [
+    "landing",
+    "blog",
+    "services",
+    "about",
+    "contact",
+  ].includes(pageType);
 
   if (!isLandingFooter) return null;
 
@@ -83,9 +88,15 @@ const Footer = ({ pageType }) => {
 
           {/* Nav Links */}
           <div style={navLinksContainer}>
-            <a href="/about" className="nav-link">Quick Links</a>
-            <a href="/blog" className="nav-link">Blogs</a>
-            <a href="/login" className="nav-link">Login</a>
+            <a href="/about" className="nav-link">
+              Quick Links
+            </a>
+            <a href="/blog" className="nav-link">
+              Blogs
+            </a>
+            <a href="/login" className="nav-link">
+              Login
+            </a>
           </div>
 
           {/* Social Icons */}
@@ -119,7 +130,11 @@ const Footer = ({ pageType }) => {
           </small>
 
           <div style={legalLinksContainer}>
-            <a href="/privacy-policy" className="legal-link" style={legalLinkStyle}>
+            <a
+              href="/privacy-policy"
+              className="legal-link"
+              style={legalLinkStyle}
+            >
               Privacy Policy
             </a>
             <a href="/terms" className="legal-link" style={legalLinkStyle}>
