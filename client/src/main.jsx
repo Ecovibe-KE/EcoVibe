@@ -6,10 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import App from "./components/App.jsx";
 
-createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <StrictMode>
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
       <App />
-    </StrictMode>
-  </BrowserRouter>,
+    </BrowserRouter>
+  </StrictMode>,
 );
