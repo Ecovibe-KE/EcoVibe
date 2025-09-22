@@ -202,7 +202,7 @@ class User(db.Model):
             return Role(role)
         except ValueError:
             raise ValueError(
-                f"Invalid role: {role}. Must be one of: " +
+                f"Invalid role: {role}. Must be one of: "
                 f"{', '.join([r.value for r in Role])}"
             )
 
@@ -216,10 +216,9 @@ class User(db.Model):
             return AccountStatus(status)
         except ValueError:
             raise ValueError(
-                f"Invalid account status: {status}. Must be one of: " +
+                f"Invalid account status: {status}. Must be one of: "
                 f"{', '.join([s.value for s in AccountStatus])}"
             )
-
 
     @validates("profile_image_url")
     def validate_profile_image_url(self, key, url):
