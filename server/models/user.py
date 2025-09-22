@@ -9,6 +9,7 @@ from . import db
 import re
 from utils.phone_validation import validate_phone_number
 
+
 class Role(PyEnum):
     CLIENT = "client"
     ADMIN = "admin"
