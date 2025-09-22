@@ -2,11 +2,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from email_validator import validate_email, EmailNotValidError
 from datetime import timezone, datetime
 from sqlalchemy.orm import validates
-from sqlalchemy import UniqueConstraint, func, text
+from sqlalchemy import UniqueConstraint
 from urllib.parse import urlparse
 from enum import Enum as PyEnum
 from . import db
-import re
 
 
 class Role(PyEnum):
@@ -83,8 +82,12 @@ class User(db.Model):
             "role": self.role.value,
             "account_status": self.account_status.value,
             "industry": self.industry,
-            "created_at": (self.created_at.isoformat() if self.created_at else None),
-            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at else None
+            ),
             "profile_image_url": self.profile_image_url,
         }
 
@@ -96,8 +99,12 @@ class User(db.Model):
             "role": self.role.value,
             "account_status": self.account_status.value,
             "industry": self.industry,
-            "created_at": (self.created_at.isoformat() if self.created_at else None),
-            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at else None
+            ),
             "profile_image_url": self.profile_image_url,
         }
         if include_email:
@@ -109,14 +116,10 @@ class User(db.Model):
     documents = db.relationship("Document", back_populates="admin")
     services = db.relationship("Service", back_populates="admin")
     client_tickets = db.relationship(
-        "Ticket",
-        back_populates="client",
-        foreign_keys="Ticket.client_id",
+        "Ticket", back_populates="client", foreign_keys="Ticket.client_id"
     )
     admin_tickets = db.relationship(
-        "Ticket",
-        back_populates="admin",
-        foreign_keys="Ticket.admin_id",
+        "Ticket", back_populates="admin", foreign_keys="Ticket.admin_id"
     )
     invoices = db.relationship("Invoice", back_populates="client", lazy=True)
     ticket_messages = db.relationship("TicketMessage", back_populates="sender")
@@ -169,7 +172,9 @@ class User(db.Model):
             raise ValueError(str(e)) from e
         if not phonenumbers.is_valid_number(parsed):
             raise ValueError("Invalid phone number.")
-        return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+        return phonenumbers.format_number(
+            parsed, phonenumbers.PhoneNumberFormat.E164
+        )
 
     @validates("full_name")
     def validate_name(self, key, name):
@@ -217,14 +222,17 @@ class User(db.Model):
             parsed = urlparse(url)
             if not all([parsed.scheme in ("http", "https"), parsed.netloc]):
                 raise ValueError(
-                    "Invalid profile image URL. " "Must start with http:// or https://"
+                    "Invalid profile image URL. Must start with http:// or https://"
                 )
             valid_exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
             path_ext = (
-                parsed.path.lower().rsplit(".", 1)[-1] if "." in parsed.path else None
+                parsed.path.lower().rsplit(".", 1)[-1]
+                if "." in parsed.path
+                else None
             )
             if not path_ext or f".{path_ext}" not in valid_exts:
                 raise ValueError(
-                    "Profile image must be a valid image file " "(jpg, png, gif, webp)"
+                    "Profile image must be a valid image file "
+                    "(jpg, png, gif, webp)"
                 )
         return url
