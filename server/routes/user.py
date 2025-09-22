@@ -41,9 +41,12 @@ def register_user():
     """
     payload = request.get_json(silent=True)
     if payload is None:
-        return jsonify(
-            {"status": "error", "message": "Invalid JSON format", "data": None}
-        ), 400
+        return (
+            jsonify(
+                {"status": "error", "message": "Invalid JSON format", "data": None}
+            ),
+            400,
+        )
 
     full_name = str(payload.get("full_name", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
@@ -53,50 +56,76 @@ def register_user():
 
     # --- Validation ---
     if not full_name:
-        return jsonify(
-            {"status": "error", "message": "full_name cannot be empty", "data": None}
-        ), 400
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "full_name cannot be empty",
+                    "data": None,
+                }
+            ),
+            400,
+        )
     if not industry:
-        return jsonify(
-            {"status": "error", "message": "industry cannot be empty", "data": None}
-        ), 400
+        return (
+            jsonify(
+                {"status": "error", "message": "industry cannot be empty", "data": None}
+            ),
+            400,
+        )
     if not phone_number:
-        return jsonify(
-            {"status": "error", "message": "phone_number cannot be empty", "data": None}
-        ), 400
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "phone_number cannot be empty",
+                    "data": None,
+                }
+            ),
+            400,
+        )
 
     email = email_raw.lower()
 
     if not _is_valid_password(password):
-        return jsonify(
-            {
-                "status": "error",
-                "message": (
-                    "Password must have at least 8 chars, "
-                    "one uppercase, one digit."
-                ),
-                "data": None,
-            }
-        ), 400
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": (
+                        "Password must have at least 8 chars, "
+                        "one uppercase, one digit."
+                    ),
+                    "data": None,
+                }
+            ),
+            400,
+        )
 
     # --- Uniqueness checks ---
     if db.session.query(User).filter(func.lower(User.email) == email).first():
-        return jsonify(
-            {
-                "status": "error",
-                "message": f"Email '{email}' already exists.",
-                "data": None,
-            }
-        ), 409
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"Email '{email}' already exists.",
+                    "data": None,
+                }
+            ),
+            409,
+        )
 
     if db.session.query(User).filter(User.phone_number == phone_number).first():
-        return jsonify(
-            {
-                "status": "error",
-                "message": f"Phone '{phone_number}' already exists.",
-                "data": None,
-            }
-        ), 409
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"Phone '{phone_number}' already exists.",
+                    "data": None,
+                }
+            ),
+            409,
+        )
 
     try:
         user = User(
@@ -110,27 +139,31 @@ def register_user():
         db.session.add(user)
         db.session.commit()
 
-        return jsonify(
-            {
-                "status": "success",
-                "message": "Client registered successfully",
-                "data": user.to_safe_dict(include_email=True, include_phone=True),
-            }
-        ), 201
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Client registered successfully",
+                    "data": user.to_safe_dict(include_email=True, include_phone=True),
+                }
+            ),
+            201,
+        )
 
     except ValueError as e:
         db.session.rollback()
-        return jsonify(
-            {"status": "error", "message": str(e), "data": None}
-        ), 400
+        return jsonify({"status": "error", "message": str(e), "data": None}), 400
     except IntegrityError as e:
         db.session.rollback()
         # Log the actual DB constraint that failed
         current_app.logger.error(f"IntegrityError: {e}")
-        return jsonify(
-            {
-                "status": "error",
-                "message": "Database integrity error. Check server logs.",
-                "data": None,
-            }
-        ), 500
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Database integrity error. Check server logs.",
+                    "data": None,
+                }
+            ),
+            500,
+        )

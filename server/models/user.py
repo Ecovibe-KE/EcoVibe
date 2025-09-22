@@ -82,12 +82,8 @@ class User(db.Model):
             "role": self.role.value,
             "account_status": self.account_status.value,
             "industry": self.industry,
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
-            "updated_at": (
-                self.updated_at.isoformat() if self.updated_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
+            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
             "profile_image_url": self.profile_image_url,
         }
 
@@ -99,12 +95,8 @@ class User(db.Model):
             "role": self.role.value,
             "account_status": self.account_status.value,
             "industry": self.industry,
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
-            "updated_at": (
-                self.updated_at.isoformat() if self.updated_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
+            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
             "profile_image_url": self.profile_image_url,
         }
         if include_email:
@@ -172,9 +164,7 @@ class User(db.Model):
             raise ValueError(str(e)) from e
         if not phonenumbers.is_valid_number(parsed):
             raise ValueError("Invalid phone number.")
-        return phonenumbers.format_number(
-            parsed, phonenumbers.PhoneNumberFormat.E164
-        )
+        return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
 
     @validates("full_name")
     def validate_name(self, key, name):
@@ -226,13 +216,10 @@ class User(db.Model):
                 )
             valid_exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
             path_ext = (
-                parsed.path.lower().rsplit(".", 1)[-1]
-                if "." in parsed.path
-                else None
+                parsed.path.lower().rsplit(".", 1)[-1] if "." in parsed.path else None
             )
             if not path_ext or f".{path_ext}" not in valid_exts:
                 raise ValueError(
-                    "Profile image must be a valid image file "
-                    "(jpg, png, gif, webp)"
+                    "Profile image must be a valid image file " "(jpg, png, gif, webp)"
                 )
         return url
