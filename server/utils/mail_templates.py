@@ -3,7 +3,7 @@ from .mail_config import send_email
 
 def send_contact_email(to_email, email_type, data):
     """Send contact form email based on type (admin or user)"""
-    print(f'data {data}')
+    print(f"data {data}")
     # Admin email template
     admin_template = f"""
         <!DOCTYPE html>
@@ -120,16 +120,16 @@ def send_contact_email(to_email, email_type, data):
         """
 
     # Choose template based on email type
-    if email_type == 'admin':
+    if email_type == "admin":
         subject = f"New Contact Form Submission from {data['name']}"
         body = admin_template
     else:  # user confirmation
         subject = "Thank You for Contacting Us"
         body = user_template
 
-    print(f'email_type {email_type}')
-    print(f'to_email {to_email}')
-    print(f'subject {subject}')
-    print(f'body {body}')
+    print(f"email_type {email_type}")
+    print(f"to_email {to_email}")
+    print(f"subject {subject}")
+    print(f"body {body}")
     # Send email using HTML format
     return send_email(to_email, subject, body, is_html=True)

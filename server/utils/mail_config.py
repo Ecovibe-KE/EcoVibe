@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(message)s"
+    level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s"
 )
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -52,7 +51,9 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
                 logger.debug("Sending email to %s", to_email)
                 server.sendmail(FLASK_SMTP_USER, to_email, msg.as_string())
         else:
-            logger.debug("Using SMTP with STARTTLS for %s:%s", FLASK_SMTP_SERVER, FLASK_SMTP_PORT)
+            logger.debug(
+                "Using SMTP with STARTTLS for %s:%s", FLASK_SMTP_SERVER, FLASK_SMTP_PORT
+            )
             with smtplib.SMTP(FLASK_SMTP_SERVER, FLASK_SMTP_PORT) as server:
                 server.starttls()
                 logger.debug("Logging in as %s", FLASK_SMTP_USER)
