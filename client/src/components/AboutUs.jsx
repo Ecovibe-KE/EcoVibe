@@ -1,4 +1,5 @@
 import AboutUsPartition from "../components/AboutUsPartition"
+import "../css/aboutus.css"
 
 function AboutUs() {
 
@@ -9,12 +10,12 @@ function AboutUs() {
 
     const missionVisionContent = [
         {
-            imageSourceName: "Target",
+            imageSourceName: "Target.png",
             heading: "Our Mission",
             paragraphContent: missionText
         },
         {
-            imageSourceName: "Eye",
+            imageSourceName: "Eye.png",
             heading: "Our Vision",
             paragraphContent: missionText
         }
@@ -22,17 +23,17 @@ function AboutUs() {
 
     const coreValueContent = [
         {
-            imageSourceName: "Target",
+            imageSourceName: "Target.png",
             heading: "Innovation",
             paragraphContent: missionText
         },
         {
-            imageSourceName: "Target",
+            imageSourceName: "Target.png",
             heading: "Innovation",
             paragraphContent: missionText
         },
         {
-            imageSourceName: "Target",
+            imageSourceName: "Target.png",
             heading: "Innovation",
             paragraphContent: missionText
         }
@@ -40,17 +41,17 @@ function AboutUs() {
 
     const meetOurTeamContent = [
         {
-            imageSourceName: "ceo",
+            imageSourceName: "ceo.png",
             heading: "Sharon Maina",
             paragraphContent: "CEO & Founder"
         },
         {
-            imageSourceName: "creativeDirector",
+            imageSourceName: "creativeDirector.png",
             heading: "Sarah Williams",
             paragraphContent: "Creative Director"
         },
         {
-            imageSourceName: "leadDeveloper",
+            imageSourceName: "leadDeveloper.png",
             heading: "Joseph David",
             paragraphContent: "Lead Developer"
         }

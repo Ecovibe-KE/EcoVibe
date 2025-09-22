@@ -1,4 +1,5 @@
 import AboutUsCard from "./AboutUsCard"
+import "../css/aboutus.css"
 
 function AboutUsPartition({ title, contentArray, extraSetting, padding, customClass }) {
     return (

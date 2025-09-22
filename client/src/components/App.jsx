@@ -6,7 +6,7 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route } from "react-router-dom";
-import AboutUs from '../pages/AboutUs.jsx';
+import AboutUs from "./AboutUs.jsx"
 
 function App() {
   const { logEvent } = useAnalytics();
