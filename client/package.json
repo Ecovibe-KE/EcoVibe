@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run"
-  
   },
   "dependencies": {
     "@emotion/styled": "^11.14.1",
