@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "message": "Document updated successfully",
+  "data": {
+    "id": 12,
+    "admin_id": 1,
+    "description": "Quarterly financial report (corrected)",
+    "file_path": "/uploads/reports/q1-2025-v2.pdf",
+    "created_at": "2025-09-20T14:00:00Z"
+  }
+}

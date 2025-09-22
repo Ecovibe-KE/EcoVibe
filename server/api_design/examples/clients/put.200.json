@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "message": "Client updated successfully",
+  "data": {
+    "id": 1,
+    "full_name": "Alice Johnson",
+    "email": "alice.j@example.com",
+    "phone_number": "+254712345678",
+    "role": "client",
+    "account_status": "active",
+    "industry": "Technology",
+    "created_at": "2025-09-21T15:00:00Z",
+    "updated_at": "2025-09-21T18:00:00Z",
+    "profile_image_url": "https://example.com/images/alice.png"
+  }
+}
