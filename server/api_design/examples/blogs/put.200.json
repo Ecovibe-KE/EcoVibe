@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "message": "Blog updated successfully",
+  "data": {
+    "id": 1,
+    "title": "How to Scale Your API (Updated)",
+    "likes": 25,
+    "views": 300,
+    "image": "https://example.com/images/api-guide-updated.png",
+    "category": "Technology",
+    "author_name": "Jane Doe",
+    "admin_id": 7,
+    "content": "This updated tutorial now includes caching strategies.",
+    "reading_duration": "12 minutes",
+    "type": "tutorial",
+    "date_created": "2025-09-20",
+    "date_updated": "2025-09-21"
+  }
+}
