@@ -17,9 +17,7 @@ import tickets from '../assets/tickets.png';
 const NavPanel = () => {
 
   const linkClass = ({ isActive }) =>
-    `d-flex align-items-center p-2 rounded mb-1 ${
-      isActive ? 'active-text bg-opacity-15 ' : 'inactive-text'
-    } text-decoration-none`;
+    `d-flex align-items-center p-2 rounded mb-1 ${isActive ? 'active-link' : 'inactive-link'} text-decoration-none`;
 
   return (
     <div

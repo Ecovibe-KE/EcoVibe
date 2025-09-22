@@ -1,13 +1,13 @@
 /*extras for navpanel*/
-.active-text {
+.active-link {
   font-weight: bold;
   font-size: 15px;
   letter-spacing: 0.5px;
   background-color: #ece5dd;
   color : #F0A235
 }
-.inactive-text {
-  font-weight: bold;
+.inactive-link {
+  font-weight: normal;
   font-size: 15px;
   letter-spacing: 0.5px;
   color : rgb(36, 137, 16);

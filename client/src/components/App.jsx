@@ -13,11 +13,8 @@ function App() {
   const { logEvent } = useAnalytics();
   const location = useLocation();
 
-  const managementRoutes = ['/dashboard/main','/dashboard/bookings','/dashboard/resources','/dashboard/profile','/dashboard/payments','/dashboard/blog','/dashboard/services','/dashboard/about','/dashboard/users','/dashboard/tickets'];
 
-  const isManagementRoute = managementRoutes.some(route =>
-  location.pathname.startsWith(route)
-  );
+  const isManagementRoute = location.pathname.startsWith('/dashboard');
 
   useEffect(() => {
     logEvent("screen_view", {
@@ -38,6 +35,7 @@ function App() {
                 <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
                   <Route path="/dashboard/main" element={<p>Dashboard</p>} />
+                  <Route path="/dashboard" element={<Navigate to="/dashboard/main" replace />} />
                   <Route path="/dashboard/bookings/*" element={<p>Bookings</p>} />
                   <Route path="/dashboard/resources/*" element={<p>Resources</p>} />
                   <Route path="/dashboard/profile/*" element={<p>Profile</p>}  />
@@ -47,7 +45,7 @@ function App() {
                   <Route path="/dashboard/about/*" element={<p>About (management)</p>}  />
                   <Route path="/dashboard/users/*" element={<p>Users</p>}  />
                   <Route path="/dashboard/tickets/*" element={<p>Tickets</p>}  />
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="*" element={<Navigate to="/dashboard/main" replace />} />
                 </Routes>
                 </Suspense>
               </main>
