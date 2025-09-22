@@ -8,22 +8,14 @@ const BASE_URL = "http://localhost:5000/api";
 
 describe('user service', () => {
   it('should create a user successfully', async () => {
-    server.use(
-      http.post(BASE_URL + ENDPOINTS.register, () => {
-        return new HttpResponse(
-          { message: 'User created successfully'},
-          { status: 201 }
-        );
-      })
-    );
     const clientData = { username: 'testuser', password: 'password' };
     const response = await createUser(clientData);
-    expect(response).toBeTruthy();
+    expect(response.message).toBe('User created successfully');
   });
 
   it('should handle server errors', async () => {
     server.use(
-      http.post(BASE_URL + ENDPOINTS.register, () => {
+      http.post(`${BASE_URL}${ENDPOINTS.register}`, () => {
         return new HttpResponse(
           null, 
           { status: 500, statusText: 'Internal Server Error' }
@@ -31,6 +23,6 @@ describe('user service', () => {
       })
     );
     const clientData = { username: 'testuser', password: 'password' };
-    await expect(createUser(clientData)).rejects.toThrow();
+    await expect(createUser(clientData)).rejects.toBe('Request failed with status code 500');
   });
 });
