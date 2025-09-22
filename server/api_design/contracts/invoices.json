@@ -1,0 +1,69 @@
+[
+  {
+    "endpoint": "/api/invoices",
+    "method": "GET",
+    "description": "Retrieve all invoices.",
+    "responses": {
+      "200": { "$ref": "../examples/invoices/list.200.json" }
+    }
+  },
+  {
+    "endpoint": "/api/invoices/:id",
+    "method": "GET",
+    "description": "Retrieve an invoice by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/invoices/get.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/invoices",
+    "method": "POST",
+    "description": "Create a new invoice.",
+    "request": {
+      "body": {
+        "amount": "integer (required, must be positive)",
+        "client_id": "integer (required, must exist in users)",
+        "service_id": "integer (required, must exist in services)",
+        "due_date": "date (required, must not be in the past)"
+      }
+    },
+    "responses": {
+      "201": { "$ref": "../examples/invoices/post.201.json" },
+      "400": { "$ref": "../examples/errors/400.json" }
+    }
+  },
+  {
+    "endpoint": "/api/invoices/:id",
+    "method": "PUT",
+    "description": "Update an existing invoice.",
+    "request": {
+      "params": { "id": "string" },
+      "body": {
+        "amount": "integer (optional, must be positive)",
+        "due_date": "date (optional, must not be before creation date)",
+        "status": "enum: [pending, paid, overdue, cancelled] (optional)"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/invoices/put.200.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/invoices/:id",
+    "method": "DELETE",
+    "description": "Delete an invoice by ID.",
+    "request": {
+      "params": { "id": "string" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/invoices/delete.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]

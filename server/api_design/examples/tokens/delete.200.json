@@ -1,0 +1,7 @@
+{
+  "status": "success",
+  "message": "Token deleted successfully",
+  "data": {
+    "id": 3
+  }
+}

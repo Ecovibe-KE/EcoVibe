@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "message": "Blog post created successfully",
+  "data": {
+    "id": 2,
+    "title": "Announcing Our New Newsletter",
+    "likes": 0,
+    "views": 0,
+    "image": "https://example.com/images/newsletter.png",
+    "category": "Company News",
+    "author_name": "John Smith",
+    "admin_id": 7,
+    "content": "We're excited to announce our new monthly newsletter...",
+    "reading_duration": "5 minutes",
+    "type": "newsletter",
+    "date_created": "2025-09-20",
+    "date_updated": null
+  }
+}

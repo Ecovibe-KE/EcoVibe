@@ -3,7 +3,6 @@ from models import db
 from models.user import User
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-import re
 
 # Create the blueprint
 user_bp = Blueprint("user", __name__)
@@ -42,7 +41,12 @@ def register_user():
     """
     payload = request.get_json(silent=True)
     if payload is None:
-        return jsonify({"error": "Invalid JSON format"}), 400
+        return (
+            jsonify(
+                {"status": "error", "message": "Invalid JSON format", "data": None}
+            ),
+            400,
+        )
 
     full_name = str(payload.get("full_name", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
@@ -52,11 +56,34 @@ def register_user():
 
     # --- Validation ---
     if not full_name:
-        return jsonify({"error": "full_name cannot be empty"}), 400
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "full_name cannot be empty",
+                    "data": None,
+                }
+            ),
+            400,
+        )
     if not industry:
-        return jsonify({"error": "industry cannot be empty"}), 400
+        return (
+            jsonify(
+                {"status": "error", "message": "industry cannot be empty", "data": None}
+            ),
+            400,
+        )
     if not phone_number:
-        return jsonify({"error": "phone_number cannot be empty"}), 400
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "phone_number cannot be empty",
+                    "data": None,
+                }
+            ),
+            400,
+        )
 
     email = email_raw.lower()
 
@@ -64,21 +91,16 @@ def register_user():
         return (
             jsonify(
                 {
-                    "error": (
+                    "status": "error",
+                    "message": (
                         "Password must have at least 8 chars, "
                         "one uppercase, one digit."
-                    )
+                    ),
+                    "data": None,
                 }
             ),
             400,
         )
-
-    # --- Uniqueness checks ---
-    if db.session.query(User).filter(func.lower(User.email) == email).first():
-        return jsonify({"error": f"Email '{email}' already exists."}), 409
-
-    if db.session.query(User).filter(User.phone_number == phone_number).first():
-        return jsonify({"error": f"Phone '{phone_number}' already exists."}), 409
 
     try:
         user = User(
@@ -92,16 +114,75 @@ def register_user():
         db.session.add(user)
         db.session.commit()
 
-        return jsonify({"message": "Account created successfully."}), 201
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Client registered successfully",
+                    "data": user.to_safe_dict(include_email=True, include_phone=True),
+                }
+            ),
+            201,
+        )
 
     except ValueError as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"status": "error", "message": str(e), "data": None}), 400
     except IntegrityError as e:
         db.session.rollback()
-        # Log the actual DB constraint that failed
-        current_app.logger.error(f"IntegrityError: {e}")
+        # Log with traceback and map known UNIQUE violations to 409
+        current_app.logger.exception("IntegrityError while registering user")
+
+        constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "") or ""
+
+        msg = (str(e.orig) or "").lower()
+
+        if constraint in {"uq_user_email", "uq_user_phone_number"}:
+            field = "Email" if "email" in constraint else "Phone number"
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": f"{field} already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
+        if ("unique" in msg or "duplicate" in msg) and "email" in msg:
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Email already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
+        if ("unique" in msg or "duplicate" in msg) and (
+            "phone" in msg or "phone_number" in msg
+        ):
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Phone number already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
         return (
-            jsonify({"error": "Database integrity error. Check server logs."}),
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Database integrity error. Check server logs.",
+                    "data": None,
+                }
+            ),
             500,
         )
