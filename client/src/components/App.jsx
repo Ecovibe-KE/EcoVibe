@@ -12,6 +12,8 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import About from "./About.jsx";
 import Blog from "./Blog.jsx";
+import PrivacyPolicy from "./PrivacyPolicy.jsx";
+import Terms from "./Terms.jsx";
 import Footer from "./Footer.jsx";
 
 // Footer Wrapper to detect page type
@@ -82,6 +84,8 @@ function App() {
                 <Route path="/profile/*" element={<p>Profile</p>} />
                 <Route path="/payments/*" element={<p>Payments</p>} />
                 <Route path="/blog/*" element={<p>Blog</p>} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route path="/services/*" element={<p>Services</p>} />
                 <Route
                   path="/mgmtabout/*"
