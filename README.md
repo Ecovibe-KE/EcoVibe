@@ -179,7 +179,8 @@ For the client-side application to connect to Firebase, you will need to create 
     VITE_FIREBASE_API_KEY=your-firebase-api-key
     ```
 
-The staging environment client can be found here: `https://ecovibe-staging.web.app/`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
+The develop environmentclient can be found here: `[https://ecovibe-staging.web.app/](https://ecovibe-develop.netlify.app/)`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
+The staging environment client can be found here: `[https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/)`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
 
 ### Server-Side
 
