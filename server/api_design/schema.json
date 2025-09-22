@@ -11,11 +11,7 @@
       "type": ["string", "null"]
     },
     "data": {
-      "oneOf": [
-        { "type": "object" },
-        { "type": "array" },
-        { "type": "null" }
-      ]
+      "oneOf": [{ "type": "object" }, { "type": "array" }, { "type": "null" }]
     }
   },
   "required": ["status", "data"],
