@@ -61,7 +61,6 @@ function App() {
           <Route path="/playground" element={<Playground />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/home" element={<Homepage />} />
-          <Route path="/about" element={<p>About(Public)</p>} />
           <Route path="*" element={<Navigate to="/home" replace />} />
           <Route path="/about" element={<AboutUs />} />
         </Routes>
