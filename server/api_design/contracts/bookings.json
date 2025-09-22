@@ -1,0 +1,73 @@
+[
+  {
+    "endpoint": "/api/bookings",
+    "method": "GET",
+    "description": "Retrieve all bookings.",
+    "responses": {
+      "200": { "$ref": "../examples/bookings/list.200.json" }
+    }
+  },
+  {
+    "endpoint": "/api/bookings/:id",
+    "method": "GET",
+    "description": "Retrieve booking details by ID.",
+    "request": {
+      "params": { "id": "integer" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/bookings/get.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/bookings",
+    "method": "POST",
+    "description": "Create a new booking.",
+    "request": {
+      "body": {
+        "booking_date": "string (ISO date)",
+        "start_time": "string (ISO datetime)",
+        "end_time": "string (ISO datetime)",
+        "status": "string (pending | confirmed | completed | cancelled)",
+        "client_id": "integer",
+        "service_id": "integer"
+      }
+    },
+    "responses": {
+      "201": { "$ref": "../examples/bookings/post.201.json" },
+      "400": { "$ref": "../examples/errors/400.json" }
+    }
+  },
+  {
+    "endpoint": "/api/bookings/:id",
+    "method": "PUT",
+    "description": "Update an existing booking.",
+    "request": {
+      "params": { "id": "integer" },
+      "body": {
+        "booking_date": "string (ISO date, optional)",
+        "start_time": "string (ISO datetime, optional)",
+        "end_time": "string (ISO datetime, optional)",
+        "status": "string (optional)",
+        "client_id": "integer (optional)",
+        "service_id": "integer (optional)"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/bookings/put.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/bookings/:id",
+    "method": "DELETE",
+    "description": "Delete an existing booking.",
+    "request": {
+      "params": { "id": "integer" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/bookings/delete.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]

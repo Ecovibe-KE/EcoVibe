@@ -119,7 +119,7 @@ def send_contact_email(to_email, email_type, data):
         """
 
     # Choose template based on email type
-    if email_type == 'admin':
+    if email_type == "admin":
         subject = f"New Contact Form Submission from {data['name']}"
         body = admin_template
     else:  # user confirmation

@@ -1,0 +1,22 @@
+{
+  "400": {
+    "description": "Bad Request – Validation failed",
+    "example": { "$ref": "../examples/errors/400.json" }
+  },
+  "401": {
+    "description": "Unauthorized – Missing or invalid token",
+    "example": { "$ref": "../examples/errors/401.json" }
+  },
+  "404": {
+    "description": "Not Found – Resource missing",
+    "example": { "$ref": "../examples/errors/404.json" }
+  },
+  "409": {
+    "description": "Conflict – Resource conflict (e.g. duplicate email)",
+    "example": { "$ref": "../examples/errors/409.json" }
+  },
+  "500": {
+    "description": "Internal Server Error",
+    "example": { "$ref": "../examples/errors/500.json" }
+  }
+}

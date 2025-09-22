@@ -2,7 +2,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from email_validator import validate_email, EmailNotValidError
 from datetime import timezone, datetime
 from sqlalchemy.orm import validates
-from sqlalchemy import UniqueConstraint, func, text
+from sqlalchemy import UniqueConstraint
 from urllib.parse import urlparse
 from enum import Enum as PyEnum
 from . import db
@@ -109,14 +109,10 @@ class User(db.Model):
     documents = db.relationship("Document", back_populates="admin")
     services = db.relationship("Service", back_populates="admin")
     client_tickets = db.relationship(
-        "Ticket",
-        back_populates="client",
-        foreign_keys="Ticket.client_id",
+        "Ticket", back_populates="client", foreign_keys="Ticket.client_id"
     )
     admin_tickets = db.relationship(
-        "Ticket",
-        back_populates="admin",
-        foreign_keys="Ticket.admin_id",
+        "Ticket", back_populates="admin", foreign_keys="Ticket.admin_id"
     )
     invoices = db.relationship("Invoice", back_populates="client", lazy=True)
     ticket_messages = db.relationship("TicketMessage", back_populates="sender")
