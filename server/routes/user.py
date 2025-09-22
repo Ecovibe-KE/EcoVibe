@@ -99,7 +99,7 @@ def register_user():
         return jsonify({"error": str(e)}), 400
     except IntegrityError as e:
         db.session.rollback()
-        # Log the *actual DB constraint that failed*
+        # Log the actual DB constraint that failed
         current_app.logger.error(f"IntegrityError: {e}")
         return (
             jsonify({"error": "Database integrity error. Check server logs."}),
