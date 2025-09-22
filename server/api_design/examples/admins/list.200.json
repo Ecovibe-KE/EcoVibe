@@ -1,0 +1,30 @@
+{
+  "status": "success",
+  "message": "Admins retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "full_name": "Admin One",
+      "email": "admin1@example.com",
+      "phone_number": "+254700111222",
+      "role": "admin",
+      "account_status": "active",
+      "industry": "Operations",
+      "created_at": "2025-09-21T12:00:00Z",
+      "updated_at": "2025-09-21T12:00:00Z",
+      "profile_image_url": "https://example.com/images/admin1.png"
+    },
+    {
+      "id": 2,
+      "full_name": "Super Admin",
+      "email": "superadmin@example.com",
+      "phone_number": "+254700333444",
+      "role": "super_admin",
+      "account_status": "active",
+      "industry": "Management",
+      "created_at": "2025-09-21T13:00:00Z",
+      "updated_at": "2025-09-21T13:00:00Z",
+      "profile_image_url": "https://example.com/images/superadmin.jpg"
+    }
+  ]
+}

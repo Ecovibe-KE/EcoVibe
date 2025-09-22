@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "message": "Admin updated successfully",
+  "data": {
+    "id": 1,
+    "full_name": "Admin One Updated",
+    "email": "admin1_updated@example.com",
+    "phone_number": "+254700111222",
+    "role": "admin",
+    "account_status": "active",
+    "industry": "Operations",
+    "created_at": "2025-09-21T12:00:00Z",
+    "updated_at": "2025-09-21T15:00:00Z",
+    "profile_image_url": "https://example.com/images/admin1.png"
+  }
+}

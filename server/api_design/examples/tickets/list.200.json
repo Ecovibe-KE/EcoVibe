@@ -1,0 +1,22 @@
+{
+  "status": "success",
+  "message": "Tickets retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "client_id": 5,
+      "assigned_admin_id": 2,
+      "subject": "Cannot access account",
+      "status": "open",
+      "created_at": "2025-09-21T16:00:00Z"
+    },
+    {
+      "id": 2,
+      "client_id": 6,
+      "assigned_admin_id": 3,
+      "subject": "Billing issue",
+      "status": "in_progress",
+      "created_at": "2025-09-21T16:05:00Z"
+    }
+  ]
+}
