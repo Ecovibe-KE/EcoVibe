@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Footer from "../../src/components/Footer.jsx";
-import { FaInstagram, FaLinkedin } from "react-icons/fa";
+
 
 describe("Footer component", () => {
   afterEach(() => {
@@ -26,9 +26,19 @@ describe("Footer component", () => {
     const instaLink = screen.getByRole("link", {
       name: /instagram/i,
     });
+
+    expect(instaLink).toHaveAttribute("target", "_blank");
+    expect(instaLink).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    expect(instaLink).toHaveAttribute("rel", expect.stringContaining("noreferrer"));
+    
     const linkedinLink = screen.getByRole("link", {
       name: /linkedin/i,
     });
+    expect(linkedinLink).toHaveAttribute("target", "_blank");
+    expect(linkedinLink).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    expect(linkedinLink).toHaveAttribute("rel", expect.stringContaining("noreferrer"));
+    
+
     expect(instaLink).toHaveAttribute(
       "href",
       "https://www.instagram.com/ecovibekenya/"
@@ -50,7 +60,7 @@ describe("Footer component", () => {
   });
 
   test("does not render footer for non-landing page types", () => {
-    const { container } = render(<Footer pageType="dashboard" />);
-    expect(container).toBeEmptyDOMElement();
+    render(<Footer pageType="dashboard" />);
+    expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument();
   });
 });

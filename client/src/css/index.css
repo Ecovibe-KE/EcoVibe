@@ -25,9 +25,15 @@ a:hover {
 html,body, #root {
   height: 100%;
   margin: 0;
+  
+}
+
+#root {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
+
 
 .app-container {
   display: flex;
@@ -37,8 +43,6 @@ html,body, #root {
 
 body {
   margin: 0;
-  display: flex;;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 
@@ -79,6 +83,13 @@ button {
   a:hover {
     color: #747bff;
   }
+
+  a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+
   button {
     background-color: #f9f9f9;
   }

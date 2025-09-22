@@ -3,10 +3,73 @@
   text-decoration: underline;
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
+  text-decoration-color: currentColor;
   transition: color 120ms ease-in-out, text-decoration-color 120ms;
   font-weight: 500;
 }
 
-.legal-link:visited {
-  color: var(--link-legal-visited, #2e8e2e);
+.legal-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
+
+
+const footerStyle = {
+  backgroundColor: "#ffffff",
+  padding: "2rem 1rem 1rem 1rem",
+  marginTop: "auto",
+  width: "100%",
+};
+
+const topRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  marginBottom: "1.5rem",
+  gap: "1rem",
+};
+
+const logoStyle = {
+  maxWidth: "180px",
+};
+
+const navLinksContainer = {
+  display: "flex",
+  gap: "2rem",
+  fontWeight: "500",
+  flexWrap: "wrap",
+};
+
+const socialIconsContainer = {
+  display: "flex",
+  gap: "1rem",
+  marginTop: "0.5rem",
+};
+
+const hrStyle = {
+  border: "none",
+  borderTop: "2px solid #37b137",
+  margin: "0 0 1rem 0",
+};
+
+const bottomRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  flexWrap: "wrap",
+  fontSize: "0.9rem",
+  gap: "1rem",
+};
+
+const legalLinksContainer = {
+  display: "flex",
+  gap: "1.5rem",
+  flexWrap: "wrap",
+};
+
+const legalLinkStyle = {
+  textDecoration: "none",
+  color: "#37b137",
+  fontWeight: "500",
+};

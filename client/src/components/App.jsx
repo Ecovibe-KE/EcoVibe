@@ -7,6 +7,8 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
+import About from "./About";
+import Blog from "./Blog";
 import Footer from "./Footer.jsx";
 
 // Landing Page Component
@@ -37,9 +39,9 @@ function FooterWrapper() {
     [location.pathname]
   );
 
-  console.log("Rendering FooterWrapper with pageType:", pageType);
-
-  return <Footer pageType={pageType} />;
+  if (import.meta.env?.MODE === 'development') {
+    // eslint-disable-next-line no-console
+    console.debug("Rendering FooterWrapper with pageType:", pageType);
 }
 
 function App() {
@@ -65,6 +67,8 @@ function App() {
             <Route path="/playground" element={<Playground />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/client" element={<ClientPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/blog" element={<Blog />} /> 
             <Route path="/" element={<LandingPage />} />
           </Routes>
         </div>
