@@ -9,7 +9,7 @@ from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource
 
 from utils.mail_templates import send_contact_email
-
+from utils.phone_validation import validate_phone_number, is_valid_phone
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s"
@@ -53,7 +53,7 @@ class ContactListResource(Resource):
                 return {"error": "Invalid email format"}, 400
 
             # Validate phone number
-            if not validate_phone(sanitized_data["phone"]):
+            if not is_valid_phone(sanitized_data['phone']):
                 return {"error": "Invalid phone number format"}, 400
 
             # Set length limits
@@ -98,11 +98,6 @@ def send_emails_in_background(data):
     except Exception as e:
         print(f"Error sending emails: {e}")
 
-
-def validate_phone(phone):
-    """Basic phone number validation"""
-    phone_pattern = r"^[\d\s\-\+\(\)]{10,15}$"
-    return re.match(phone_pattern, phone) is not None
 
 
 def sanitize_input(input_string):
