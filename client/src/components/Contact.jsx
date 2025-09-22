@@ -21,7 +21,6 @@ function Contact() {
     useEffect(() => {
         const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
         setSiteKey(key);
-        console.log("reCAPTCHA Site Key:", key ? "Loaded" : "Missing");
 
         if (!key) {
             toast.error('reCAPTCHA site key is missing. Please contact Site Owner.');
@@ -44,10 +43,6 @@ function Contact() {
         }
 
         try {
-            // TODO: VALENTINE HANDLE BACKEND LOGIC
-            console.log('Form submitted:', formData);
-                // toast.success('Thank you for your message! We will get back to you within 24 hours.');
-
             const response = await fetch(`${import.meta.env.VITE_BACKEND_ENDPOINT}/api/contact`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -70,7 +65,6 @@ function Contact() {
             });
             recaptchaRef.current.reset();
         } catch (error) {
-            console.error('Error submitting form:', error);
             toast.error('An error occurred. Please try again.');
             // Reset form and reCAPTCHA
             setFormData({
