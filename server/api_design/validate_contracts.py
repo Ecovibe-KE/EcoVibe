@@ -27,7 +27,9 @@ def resolve_ref(ref):
             raise ValueError(f"Missing fragment '{fragment}' in {file_path}")
         node = catalog[fragment]
         if "example" not in node or "$ref" not in node["example"]:
-            raise ValueError(f"Fragment {fragment} missing example.$ref in {file_path}")
+            raise ValueError(
+                f"Fragment {fragment} missing example.$ref in {file_path}"
+            )
         return resolve_ref(node["example"]["$ref"])
     else:
         full_path = os.path.join(EXAMPLES_DIR, ref)
@@ -52,14 +54,32 @@ def validate_contract(contract_file):
                     # Try auto-locate
                     model = endpoint.get("model")
                     verb = endpoint.get("method").lower()
-                    example_path = os.path.join(EXAMPLES_DIR, model, f"{verb}.{status_code}.json") if model else None
+                    example_path = (
+                        os.path.join(
+                            EXAMPLES_DIR,
+                            model,
+                            f"{verb}.{status_code}.json",
+                        )
+                        if model
+                        else None
+                    )
                     if not example_path or not os.path.exists(example_path):
-                        print(f"  ⚠️ No example or $ref for {endpoint['method']} {endpoint['endpoint']} [{status_code}]")
+                        print(
+                            f"  ⚠️ No example or $ref for "
+                            f"{endpoint['method']} {endpoint['endpoint']} "
+                            f"[{status_code}]"
+                        )
                         continue
                 # If we reach here, the example exists and is valid
-                print(f"  ✅ {endpoint['method']} {endpoint['endpoint']} [{status_code}]")
+                print(
+                    f"  ✅ {endpoint['method']} "
+                    f"{endpoint['endpoint']} [{status_code}]"
+                )
             except Exception as e:
-                print(f"  ❌ {endpoint['method']} {endpoint['endpoint']} [{status_code}] -> {e}")
+                print(
+                    f"  ❌ {endpoint['method']} "
+                    f"{endpoint['endpoint']} [{status_code}] -> {e}"
+                )
 
     print(f"Done with {contract_file}\n")
 
