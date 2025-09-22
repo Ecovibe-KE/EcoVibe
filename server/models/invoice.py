@@ -12,7 +12,7 @@ class InvoiceStatus(enum.Enum):
     cancelled = "cancelled"
 
 
-class Invoices(db.Model):
+class Invoice(db.Model):
     __tablename__ = "invoices"
 
     # --- Schema Columns ---
@@ -27,8 +27,11 @@ class Invoices(db.Model):
     )
 
     # --- Relationships ---
-    client = db.relationship("Users", back_populates="invoices")
-    service = db.relationship("Services", back_populates="invoices")
+    client = db.relationship("User", back_populates="invoices")
+    service = db.relationship("Service", back_populates="invoices")
+    payments = db.relationship(
+        "Payment", back_populates="invoice", cascade="all, delete-orphan"
+    )
 
     # --- Data Validations ---
     @validates("amount")

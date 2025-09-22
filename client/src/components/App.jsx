@@ -1,4 +1,4 @@
-import Homepage from './Homepage';
+import Homepage from "./Homepage";
 import { useEffect } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
