@@ -20,7 +20,7 @@ class Services(db.Model):
     # --- Relationships ---
     invoices = db.relationship("Invoices", back_populates="service")
     bookings = db.relationship("Bookings", back_populates="service")
-    admin = db.relationship("Users", back_populates="services")
+    admin = db.relationship("User", back_populates="services")
 
     # --- Data Validations ---
     @validates("name", "description", "duration")

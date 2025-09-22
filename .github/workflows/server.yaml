@@ -82,10 +82,11 @@ jobs:
 
       # 7. Run tests with coverage and comment on PR
       - name: Run tests with coverage
-        run: pipenv run pytest --cov=. tests/ > pytest-coverage.txt
+        run: pipenv run pytest --cov=. tests/ | tee pytest-coverage.txt
         env:
           # Provide the database URI to the Flask app.
           # The host is 'localhost' and the port is dynamically assigned by the runner.
+          FLASK_TEST_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:5432/testdb
           FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:5432/testdb
 
       # 8. Comment coverage report on PR, only for changed files

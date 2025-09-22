@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import Button from "../../src/utils/Button";
 
 vi.mock('@mui/icons-material/Add', () => ({ default: () => <span data-testid="add-icon" /> }));
