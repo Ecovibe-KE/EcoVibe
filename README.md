@@ -177,6 +177,9 @@ For the client-side application to connect to Firebase, you will need to create 
 
     ```bash
     VITE_FIREBASE_API_KEY=your-firebase-api-key
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY=your-google-recaptcha-site-key
+    VITE_SERVER_BASE_URL=THE-URL-THE-SERVER-IS-RUNNING-ON
+   
     ```
 
 The staging environment client can be found here: `https://ecovibe-staging.web.app/`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
@@ -190,6 +193,13 @@ The server-side application uses Flask's prefixed environment variables. The rec
 
     ```bash
     FLASK_DEBUG=1
+    FLASK_CORS_ALLOWED_ORIGINS= # Comma-separated list of allowed origins for CORS
+    FLASK_SMTP_REPLY_EMAIL= # Email address that will appear as the reply-to address
+    FLASK_SMTP_SERVER= # SMTP server hostname (e.g., smtp.gmail.com, smtp.office365.com)
+    FLASK_SMTP_PORT= # SMTP server port (e.g., 587 for TLS, 465 for SSL)
+    FLASK_SMTP_USER= # SMTP authentication username
+    FLASK_ADMIN_EMAIL= # Admin email address for system notifications and contact
+    FLASK_SMTP_PASS= # SMTP authentication password
     ```
 
     Any other configuration your app needs should be added here as well.

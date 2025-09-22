@@ -43,7 +43,7 @@ function Contact() {
         }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_ENDPOINT}/api/contact`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/api/contact`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(formData)
