@@ -1,4 +1,4 @@
-from server.utils.mail_config import send_email
+from .mail_config import send_email
 
 
 def send_contact_email(to_email, email_type, data):

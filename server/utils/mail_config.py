@@ -14,17 +14,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 load_dotenv()
 # Loading configs from environment variables
-SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 465))
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASS = os.getenv("SMTP_PASS")
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
-SMTP_REPLY_EMAIL = os.getenv("SMTP_REPLY_EMAIL")
+FLASK_SMTP_SERVER = os.getenv("FLASK_SMTP_SERVER")
+FLASK_SMTP_PORT = int(os.getenv("FLASK_SMTP_PORT", 465))
+FLASK_SMTP_USER = os.getenv("FLASK_SMTP_USER")
+FLASK_SMTP_PASS = os.getenv("FLASK_SMTP_PASS")
+FLASK_ADMIN_EMAIL = os.getenv("FLASK_ADMIN_EMAIL")
+FLASK_SMTP_REPLY_EMAIL = os.getenv("FLASK_SMTP_REPLY_EMAIL")
 
-logger.debug(f"SMTP_SERVER: {SMTP_SERVER}")
-logger.debug(f"SMTP_PORT: {SMTP_PORT}")
-logger.debug(f"SMTP_USER: {SMTP_USER}")
-logger.debug(f"SMTP_PASS: {'*' * len(SMTP_PASS) if SMTP_PASS else 'None'}")
+logger.debug(f"SMTP_SERVER: {FLASK_SMTP_SERVER}")
+logger.debug(f"SMTP_PORT: {FLASK_SMTP_PORT}")
+logger.debug(f"SMTP_USER: {FLASK_SMTP_USER}")
+logger.debug(f"SMTP_PASS: {'*' * len(FLASK_SMTP_PASS) if FLASK_SMTP_PASS else 'None'}")
 
 
 def send_email(to_email: str, subject: str, body: str, is_html=False):
@@ -32,10 +32,10 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
     try:
         logger.debug("Preparing email...")
         msg = MIMEMultipart()
-        msg["From"] = SMTP_USER
+        msg["From"] = FLASK_SMTP_USER
         msg["To"] = to_email
         msg["Subject"] = subject
-        msg["Reply-To"] = SMTP_REPLY_EMAIL
+        msg["Reply-To"] = FLASK_SMTP_REPLY_EMAIL
 
         # Attach body as HTML or plain text
         if is_html:
@@ -43,26 +43,28 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
         else:
             msg.attach(MIMEText(body, "plain"))
 
-        if SMTP_PORT == 465:
-            logger.debug("Using SMTP_SSL for %s:%s", SMTP_SERVER, SMTP_PORT)
-            server = smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT)
+        # Create the server inside the context manager
+        if FLASK_SMTP_PORT == 465:
+            logger.debug("Using SMTP_SSL for %s:%s", FLASK_SMTP_SERVER, FLASK_SMTP_PORT)
+            with smtplib.SMTP_SSL(FLASK_SMTP_SERVER, FLASK_SMTP_PORT) as server:
+                logger.debug("Logging in as %s", FLASK_SMTP_USER)
+                server.login(FLASK_SMTP_USER, FLASK_SMTP_PASS)
+                logger.debug("Sending email to %s", to_email)
+                server.sendmail(FLASK_SMTP_USER, to_email, msg.as_string())
         else:
-            logger.debug("Using SMTP with STARTTLS for %s:%s", SMTP_SERVER, SMTP_PORT)
-            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-            server.starttls()
-
-        with server:
-            logger.debug("Logging in as %s", SMTP_USER)
-            server.login(SMTP_USER, SMTP_PASS)
-            logger.debug("Sending email to %s", to_email)
-            server.sendmail(SMTP_USER, to_email, msg.as_string())
+            logger.debug("Using SMTP with STARTTLS for %s:%s", FLASK_SMTP_SERVER, FLASK_SMTP_PORT)
+            with smtplib.SMTP(FLASK_SMTP_SERVER, FLASK_SMTP_PORT) as server:
+                server.starttls()
+                logger.debug("Logging in as %s", FLASK_SMTP_USER)
+                server.login(FLASK_SMTP_USER, FLASK_SMTP_PASS)
+                logger.debug("Sending email to %s", to_email)
+                server.sendmail(FLASK_SMTP_USER, to_email, msg.as_string())
 
         logger.info("Email successfully sent to %s", to_email)
         return True, "Email sent successfully"
     except smtplib.SMTPAuthenticationError as e:
         logger.error(f"SMTP Authentication failed: {e}")
         return False, f"Authentication failed: {str(e)}"
-
     except smtplib.SMTPException as e:
         logger.error(f"SMTP error occurred: {e}")
         return False, f"SMTP error: {str(e)}"

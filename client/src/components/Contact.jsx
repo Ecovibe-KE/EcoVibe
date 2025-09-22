@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from "react";
 import Button from "../utils/Button.jsx";
 import Input from "../utils/Input.jsx";
-import {toast, ToastContainer} from 'react-toastify';
+import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReCAPTCHA from "react-google-recaptcha";
 

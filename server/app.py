@@ -11,7 +11,7 @@ load_dotenv()
 migrate = Migrate()
 
 
-def create_app(config_name="development"):
+def create_app(config_name="testing"):
     """
     Create and configure a Flask application instance.
 
@@ -53,7 +53,8 @@ def create_app(config_name="development"):
     )
 
     register_routes(app)
-    CORS(app)
+    origins = os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",")
+    CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
     return app
 
 
