@@ -63,13 +63,6 @@ class ContactListResource(Resource):
             if len(sanitized_data.get("name", "")) > 100:
                 return {"error": "Name too long"}, 400
 
-            name = data.get("name")
-            industry = data.get("industry")
-            email = data.get("email")
-            phone = data.get("phone")
-            message = data.get("message")
-
-            print(name, industry, email, phone, message)
             email_thread = threading.Thread(
                 target=send_emails_in_background, args=(data,)
             )
