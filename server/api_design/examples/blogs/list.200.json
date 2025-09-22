@@ -1,0 +1,36 @@
+{
+  "status": "success",
+  "message": "Blogs retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "title": "How to Style Hair",
+      "category": "Tutorial",
+      "author_name": "Admin User",
+      "reading_duration": "5 mins",
+      "type": "tutorial",
+      "date_created": "2025-09-20",
+      "date_updated": null,
+      "likes": 10,
+      "views": 150,
+      "image": "https://example.com/images/blog1.png",
+      "admin_id": 1,
+      "content": "Step by step guide..."
+    },
+    {
+      "id": 2,
+      "title": "Newsletter Tips",
+      "category": "Newsletter",
+      "author_name": "Admin User",
+      "reading_duration": "3 mins",
+      "type": "newsletter",
+      "date_created": "2025-09-21",
+      "date_updated": null,
+      "likes": 5,
+      "views": 75,
+      "image": "https://example.com/images/blog2.png",
+      "admin_id": 1,
+      "content": "How to write engaging newsletters..."
+    }
+  ]
+}
