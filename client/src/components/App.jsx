@@ -1,5 +1,5 @@
 import Homepage from "./Homepage";
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, Suspense, } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
@@ -13,14 +13,11 @@ function App() {
   const { logEvent } = useAnalytics();
   const location = useLocation();
 
-  // Routes that should show the regular NavBar (public routes)
-  const publicRoutes = ['/', '/home', '/playground', '/contact'];
-  
-  // Routes that should show NavPanel (management routes)  
-  const managementRoutes = ['/dashboard','/bookings', '/resources', '/profile', '/payments', '/blog', '/services', '/about', '/users', '/tickets'];
-  
-  const isPublicRoute = publicRoutes.includes(location.pathname);
-  const isManagementRoute = managementRoutes.includes(location.pathname);
+  const managementRoutes = ['/dashboard','/bookings','/resources','/profile','/payments','/blog','/services','/mgmtabout','/users','/tickets'];
+
+  const isManagementRoute = managementRoutes.some(route =>
+  location.pathname.startsWith(route)
+  );
 
   useEffect(() => {
     logEvent("screen_view", {
@@ -30,8 +27,8 @@ function App() {
   }, [logEvent, location.pathname]);
     return (
         <>
-          {/* Public routes - show NavBar */}
-          {isPublicRoute && <NavBar />}
+          {/*  Non-management paths - show NavBar*/}
+          {!isManagementRoute && <NavBar />}
 
           {/* Management routes - show NavPanel layout */}
           {isManagementRoute ? (
@@ -47,7 +44,7 @@ function App() {
                   <Route path="/payments/*" element={<p>Payments</p>}  />
                   <Route path="/blog/*" element={<p>Blog</p>}  />
                   <Route path="/services/*" element={<p>Services</p>}  />
-                  <Route path="/about/*" element={<p>About</p>}  />
+                  <Route path="/mgmtabout/*" element={<p>About (management)</p>}  />
                   <Route path="/users/*" element={<p>Users</p>}  />
                   <Route path="/tickets/*" element={<p>Tickets</p>}  />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -62,6 +59,7 @@ function App() {
             <Route path="/playground" element={<Playground />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/home" element={<Homepage />} />
+            <Route path="/about" element={<p>About(Public)</p>} />
             <Route path="*" element={<Navigate to="/home" replace />} />
          </Routes>
       )}

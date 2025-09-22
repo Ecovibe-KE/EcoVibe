@@ -112,7 +112,7 @@ const NavPanel = () => {
             <span>Service Management</span>
           </NavLink>
 
-          <NavLink to="/about" className={linkClass}>
+          <NavLink to="/mgmtabout" className={linkClass}>
             <img src={about} alt="About Us" className="me-3" style={{ width: '20px', height: '20px' }} />
             <span>About Us Management</span>
           </NavLink>
