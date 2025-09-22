@@ -15,7 +15,6 @@ flask-cors = "*"
 phonenumbers = "==9.0.14"
 psycopg2-binary = "*"
 pytest = "*"
-pymysql = "*"
 
 [dev-packages]
 pytest = "==8.2.2"
