@@ -3,8 +3,9 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../server';
 import { createUser } from '../../../src/api/services/user';
 import { ENDPOINTS } from '../../../src/api/endpoints';
+import api from '../../../src/api/axiosConfig';
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = String(api.defaults.baseURL || "").replace(/\/$/, "");
 
 describe('user service', () => {
   it('should create a user successfully', async () => {

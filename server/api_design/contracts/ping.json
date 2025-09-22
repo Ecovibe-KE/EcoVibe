@@ -4,7 +4,7 @@
     "method": "GET",
     "description": "Ping server",
     "responses": {
-      "200": { "$ref": "../examples/services/ping.200.json" }
+      "200": { "$ref": "../examples/ping/ping.200.json" }
     }
   }
 ]
