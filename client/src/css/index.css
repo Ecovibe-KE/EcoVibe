@@ -70,7 +70,7 @@ button {
 }
 
 .nav-link:hover {
-  color: var(--color-link-hover);
+  color: #f5a030;
 }
 
 @media (prefers-color-scheme: light) {
