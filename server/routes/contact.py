@@ -12,13 +12,12 @@ from utils.mail_templates import send_contact_email
 
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(message)s"
+    level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # Create the blueprint
-contact_bp = Blueprint('contact', __name__)
+contact_bp = Blueprint("contact", __name__)
 
 api = Api(contact_bp)
 FLASK_ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
@@ -39,10 +38,9 @@ class ContactListResource(Resource):
                 if isinstance(value, str)
             }
 
-            required_fields = ['name', 'phone', 'industry', 'email', 'message']
+            required_fields = ["name", "phone", "industry", "email", "message"]
             missing_fields = [
-                field for field in required_fields
-                if not sanitized_data.get(field)
+                field for field in required_fields if not sanitized_data.get(field)
             ]
             if missing_fields:
                 return {
@@ -50,19 +48,19 @@ class ContactListResource(Resource):
                 }, 400
 
             try:
-                validate_email(sanitized_data['email'])
+                validate_email(sanitized_data["email"])
             except EmailNotValidError:
                 return {"error": "Invalid email format"}, 400
 
             # Validate phone number
-            if not validate_phone(sanitized_data['phone']):
+            if not validate_phone(sanitized_data["phone"]):
                 return {"error": "Invalid phone number format"}, 400
 
             # Set length limits
-            if len(sanitized_data.get('message', '')) > 1000:
+            if len(sanitized_data.get("message", "")) > 1000:
                 return {"error": "Message too long"}, 400
 
-            if len(sanitized_data.get('name', '')) > 100:
+            if len(sanitized_data.get("name", "")) > 100:
                 return {"error": "Name too long"}, 400
 
             name = data.get("name")
@@ -73,15 +71,14 @@ class ContactListResource(Resource):
 
             print(name, industry, email, phone, message)
             email_thread = threading.Thread(
-                target=send_emails_in_background,
-                args=(data,)
+                target=send_emails_in_background, args=(data,)
             )
             email_thread.daemon = True  # Thread will be killed when main thread exits
             email_thread.start()
 
             return {
                 "message": "Contact form submitted successfully. "
-                           "You will receive a confirmation email shortly."
+                "You will receive a confirmation email shortly."
             }, 200
 
         except Exception as e:
@@ -94,17 +91,17 @@ def send_emails_in_background(data):
     try:
         # Send admin notification
         admin_email = os.getenv("ADMIN_EMAIL", FLASK_SMTP_USER)
-        send_contact_email(admin_email, 'admin', data)
+        send_contact_email(admin_email, "admin", data)
 
         # Send user confirmation
-        send_contact_email(data['email'], 'client', data)
+        send_contact_email(data["email"], "client", data)
     except Exception as e:
         print(f"Error sending emails: {e}")
 
 
 def validate_phone(phone):
     """Basic phone number validation"""
-    phone_pattern = r'^[\d\s\-\+\(\)]{10,15}$'
+    phone_pattern = r"^[\d\s\-\+\(\)]{10,15}$"
     return re.match(phone_pattern, phone) is not None
 
 
@@ -113,7 +110,7 @@ def sanitize_input(input_string):
     if not isinstance(input_string, str):
         return ""
     # Remove potentially dangerous characters
-    return re.sub(r'[<>"\'%;()&]', '', input_string).strip()
+    return re.sub(r'[<>"\'%;()&]', "", input_string).strip()
 
 
-api.add_resource(ContactListResource, '/contact')
+api.add_resource(ContactListResource, "/contact")
