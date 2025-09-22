@@ -26,7 +26,7 @@ function App() {
         <Route path="/playground" element={<Playground />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* ✅ Now these will work */}
+       
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/password-reset" element={<PasswordReset />} />
