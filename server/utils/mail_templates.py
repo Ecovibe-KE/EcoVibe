@@ -156,18 +156,27 @@ def send_verification_email(to_email, user_name, verify_link):
             }}
             .button {{
                 display: inline-block;
-                padding: 10px 20px;
+                padding: 12px 24px;
                 font-size: 16px;
-                background-color: #1e62db;
-                color: white;
+                background-color: #37B137;
+                color: white !important;
                 text-decoration: none;
-                border-radius: 5px;
+                border-radius: 6px;
+                font-weight: bold;
             }}
             .footer {{
                 text-align: center;
                 padding: 20px;
                 font-size: 12px;
                 color: #666;
+            }}
+            .link-box {{
+                margin-top: 20px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                background-color: #f9f9f9;
+                word-wrap: break-word;
+                font-size: 14px;
             }}
         </style>
     </head>
@@ -178,9 +187,18 @@ def send_verification_email(to_email, user_name, verify_link):
         <div class="content">
             <p>Dear {user_name},</p>
             <p>Thank you for registering with EcoVibe. Please verify your email
-            by clicking the link below:</p>
-            <p>{verify_link}</p>
+            by clicking the button below:</p>
+
+            <p style="text-align:center;">
+                <a href="{verify_link}" class="button">Verify Account</a>
+            </p>
+
             <p>This link will expire in 24 hours.</p>
+
+            <p>If the button above doesn’t work, copy and paste this link
+            into your browser:</p>
+            <div class="link-box">{verify_link}</div>
+
             <p>If you did not register, you can safely ignore this email.</p>
         </div>
         <div class="footer">
