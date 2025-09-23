@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_cors import CORS
-from routes import register_routes
-from models import db
+from .routes import register_routes
+from .models import db
 from dotenv import load_dotenv
 import os
 
@@ -11,7 +11,7 @@ load_dotenv()
 migrate = Migrate()
 
 
-def create_app(config_name="development"):
+def create_app(config_name="testing"):
     """
     Create and configure a Flask application instance.
 
@@ -37,7 +37,7 @@ def create_app(config_name="development"):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    from models import (
+    from .models import (
         blog,
         booking,
         comment,

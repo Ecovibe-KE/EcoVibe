@@ -1,5 +1,5 @@
 import json
-from models.user import User
+from ..models.user import User
 
 
 def test_register_user_success(client, session):

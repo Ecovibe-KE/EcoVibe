@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
-from models import db
-from models.user import User
+from ..models import db
+from ..models.user import User
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
