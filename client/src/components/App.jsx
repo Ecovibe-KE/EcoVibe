@@ -1,4 +1,4 @@
-import Homepage from "./components/Homepage"; // ✅ Corrected path
+import Homepage from "./Homepage"; 
 import { useEffect, Suspense } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
@@ -7,15 +7,17 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import Login from "../pages/Login";
+import Logout from "../pages/Logout"; 
+import PasswordReset from "../pages/ForgotPassword";
+import Footer from "./Footer"; // points to the stub
 
-import Login from "./pages/Login";
-import Logout from "./pages/Logout"; // We might replace with a button + context
-import PasswordReset from "./pages/PasswordReset";
 
 // ✅ NEW AUTH IMPORTS
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ClientDashboard from "./pages/ClientDashboard";
+import { AuthProvider } from "../context/AuthContext";
+import ProtectedRoute from "./ProtectedRoute";
+import ClientDashboard from "../pages/ClientDashboard";
+import ForgotPassword from "../pages/ForgotPassword";
 
 function App() {
   const { logEvent } = useAnalytics();
@@ -84,7 +86,7 @@ function App() {
             {/* ✅ AUTH ROUTES */}
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/forgot-password" element={<PasswordReset />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/client-dashboard"
               element={
