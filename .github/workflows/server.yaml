@@ -22,6 +22,8 @@ jobs:
     services:
       postgres:
         image: postgres:12
+        ports:
+          - 5432/tcp
         # Environment variables for the postgres container.
         env:
           POSTGRES_USER: testuser
@@ -82,13 +84,17 @@ jobs:
 
       # 7. Run tests with coverage and comment on PR
       - name: Run tests with coverage
-        run: pipenv run pytest --cov=. tests/ | tee pytest-coverage.txt
+        run: |
+          set -o pipefail
+          pipenv run pytest --cov=. tests/ | tee pytest-coverage.txt
         env:
           # Provide the database URI to the Flask app.
           # The host is 'localhost' and the port is dynamically assigned by the runner.
-          FLASK_TEST_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:5432/testdb
-          FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:5432/testdb
-
+          FLASK_TEST_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:${{ job.services.postgres.ports['5432'] }}/testdb
+          FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:${{ job.services.postgres.ports['5432'] }}/testdb
+          FLASK_CORS_ALLOWED_ORIGINS: "*"
+          FLASK_ENV: testing
+          FLASK_API: /api
       # 8. Comment coverage report on PR, only for changed files
       - name: Coverage comment (changed files only)
         if: github.event_name == 'pull_request'
