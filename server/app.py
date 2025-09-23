@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from routes import register_routes
 from models import db
@@ -52,7 +53,8 @@ def create_app(config_name="development"):
     )
 
     register_routes(app)
-
+    origins = os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",")
+    CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
     return app
 
 
