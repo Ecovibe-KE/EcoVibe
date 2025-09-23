@@ -23,8 +23,8 @@ const NavPanel = () => {
     <div
       className="vh-100 border-end d-flex flex-column"
       style={{
-        width: '280px',
-        background: 'linear-gradient(180deg, #F5E6D3 0%, #E8F5E8 100%)',
+        width: "280px",
+        background: "linear-gradient(180deg, #F5E6D3 0%, #E8F5E8 100%)",
       }}
     >
       {/* Header */}
@@ -35,7 +35,7 @@ const NavPanel = () => {
             src="/EcovibeLogo.png"
             alt="EcoVibe Logo"
             className="img-fluid"
-            style={{ maxHeight: '60px' }}
+            style={{ maxHeight: "60px" }}
           />
           </Link>
         </div>
@@ -47,7 +47,7 @@ const NavPanel = () => {
         <div className="mb-3">
           <h6
             className="text-muted fw-bold text-uppercase mb-2"
-            style={{ fontSize: '14px', letterSpacing: '0.5px' }}
+            style={{ fontSize: "14px", letterSpacing: "0.5px" }}
           >
             MAIN
           </h6>
@@ -56,7 +56,7 @@ const NavPanel = () => {
               src={home}
               alt="Home"
               className="me-2"
-              style={{ width: '18px', height: '18px' }}
+              style={{ width: "18px", height: "18px" }}
             />
             <span>Dashboard</span>
           </NavLink>
@@ -66,7 +66,7 @@ const NavPanel = () => {
         <div>
           <h6
             className="text-muted fw-bold text-uppercase mb-2"
-            style={{ fontSize: '15px', letterSpacing: '0.5px' }}
+            style={{ fontSize: "15px", letterSpacing: "0.5px" }}
           >
             MANAGEMENT MODULES
           </h6>

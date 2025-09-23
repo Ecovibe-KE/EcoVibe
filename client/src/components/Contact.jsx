@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import Button from "../utils/Button.jsx";
 import Input from "../utils/Input.jsx";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReCAPTCHA from "react-google-recaptcha";
+import { sendContactMessage } from "../api/services/contact.js";
 
 function Contact() {
   const recaptchaRef = useRef();
@@ -21,7 +22,6 @@ function Contact() {
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
-    console.log("reCAPTCHA Site Key:", key ? "Loaded" : "Missing");
 
     if (!key) {
       toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
@@ -46,28 +46,10 @@ function Contact() {
     }
 
     try {
-      // TODO: VALENTINE HANDLE BACKEND LOGIC
-      console.log("Form submitted:", formData);
+      await sendContactMessage(formData);
       toast.success(
         "Thank you for your message! We will get back to you within 24 hours.",
       );
-
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        toast.success(
-          "Thank you for your message! We will get back to you within 24 hours.",
-        );
-      } else {
-        toast.error(
-          result.message || "There was an error submitting your form.",
-        );
-      }
       // Reset form and reCAPTCHA
       setFormData({
         name: "",
@@ -78,8 +60,7 @@ function Contact() {
       });
       recaptchaRef.current.reset();
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(error.message || "There was an error submitting your form.");
       // Reset form and reCAPTCHA
       setFormData({
         name: "",
