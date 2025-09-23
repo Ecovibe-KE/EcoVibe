@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const UserManagement = () => {
-  return <div>User Management</div>;
+  return <div>UserManagement</div>;
 };
 
 export default UserManagement;
