@@ -10,7 +10,7 @@ import NavPanel from "./NavPanel.jsx";
 import Homepage from "./Homepage.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
-import About from "./About.jsx";
+import AboutUs from "./AboutUs.jsx";
 import Blog from "./Blog.jsx";
 import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import Terms from "./Terms.jsx";
@@ -108,7 +108,7 @@ function App() {
           <Route path="/home" element={<Homepage />} />
           <Route path="/playground" element={<Playground />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
