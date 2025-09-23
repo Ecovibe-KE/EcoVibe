@@ -6,7 +6,7 @@ from . import db
 class Service(db.Model):
     __tablename__ = "services"
 
-    # --- Schema Columns ---
+    # ---- Schema Columns ----
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255), nullable=False)
