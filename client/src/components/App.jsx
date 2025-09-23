@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
+import AboutUs from "./AboutUs.jsx"
 
 function App() {
   const { logEvent } = useAnalytics();
