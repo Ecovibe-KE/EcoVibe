@@ -3,6 +3,6 @@ import api from "../axiosConfig";
 
 // Ping service
 export const getPing = async () => {
-  const response = await api.get(ENDPOINTS.PING);
+  const response = await api.get(ENDPOINTS.ping);
   return response.data;
 };
