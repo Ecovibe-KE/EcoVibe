@@ -14,7 +14,7 @@ gunicorn = "==22.0.0"
 phonenumbers = "==9.0.14"
 psycopg2-binary = "*"
 flask_restful = "*"
-
+flask-cors = "*"
 
 [dev-packages]
 pytest = "==8.2.2"
