@@ -1,7 +1,13 @@
+import os
+
 from .contact import contact_bp
 from .user import user_bp
+from dotenv import load_dotenv
 
-API = "/api"
+
+FLASK_API = os.getenv("FLASK_API")
+
+API = FLASK_API
 
 
 def register_routes(app):

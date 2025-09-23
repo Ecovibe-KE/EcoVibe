@@ -200,6 +200,7 @@ The server-side application uses Flask's prefixed environment variables. The rec
     FLASK_SMTP_USER= # SMTP authentication username
     FLASK_ADMIN_EMAIL= # Admin email address for system notifications and contact
     FLASK_SMTP_PASS= # SMTP authentication password
+    FLASK_API= # API route prefix (e.g., "/api" - all routes will be prefixed with this)
     ```
 
     Any other configuration your app needs should be added here as well.
