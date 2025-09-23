@@ -1,5 +1,5 @@
 import Homepage from "./Homepage";
-import React, { useEffect, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
@@ -9,28 +9,13 @@ import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
-import AboutUs from "./AboutUs.jsx"
+import AboutUs from "./AboutUs.jsx";
 
 function App() {
   const { logEvent } = useAnalytics();
   const location = useLocation();
 
-  const managementRoutes = [
-    "/dashboard",
-    "/bookings",
-    "/resources",
-    "/profile",
-    "/payments",
-    "/blog",
-    "/services",
-    "/mgmtabout",
-    "/users",
-    "/tickets",
-  ];
-
-  const isManagementRoute = managementRoutes.some((route) =>
-    location.pathname.startsWith(route),
-  );
+  const isManagementRoute = location.pathname.startsWith('/dashboard');
 
   useEffect(() => {
     logEvent("screen_view", {
@@ -38,14 +23,14 @@ function App() {
       firebase_screen_class: "App",
     });
   }, [logEvent, location.pathname]);
+
   return (
     <>
-      {/*  Non-management paths - show NavBar*/}
+      {/* Non-management routes - show NavBar */}
       {!isManagementRoute && <NavBar />}
 
       {/* Management routes - show NavPanel layout */}
       {isManagementRoute ? (
-        // Your main layout component
         <div className="d-flex vh-100">
           <NavPanel />
           <div className="flex-fill d-flex flex-column">
@@ -57,23 +42,17 @@ function App() {
             >
               <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
-                  <Route path="/dashboard/*" element={<p>Dashboard</p>} />
-                  <Route path="/bookings/*" element={<p>Bookings</p>} />
-                  <Route path="/resources/*" element={<p>Resources</p>} />
-                  <Route path="/profile/*" element={<p>Profile</p>} />
-                  <Route path="/payments/*" element={<p>Payments</p>} />
-                  <Route path="/blog/*" element={<p>Blog</p>} />
-                  <Route path="/services/*" element={<p>Services</p>} />
-                  <Route
-                    path="/mgmtabout/*"
-                    element={<p>About (management)</p>}
-                  />
-                  <Route path="/users/*" element={<UserManagement />} />
-                  <Route path="/tickets/*" element={<p>Tickets</p>} />
-                  <Route
-                    path="*"
-                    element={<Navigate to="/dashboard" replace />}
-                  />
+                  <Route path="/dashboard" element={<p>Dashboard Main</p>} />
+                  <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
+                  <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                  <Route path="/dashboard/profile" element={<p>Profile</p>} />
+                  <Route path="/dashboard/payments" element={<p>Payments</p>} />
+                  <Route path="/dashboard/blog" element={<p>Blog</p>} />
+                  <Route path="/dashboard/services" element={<p>Services</p>} />
+                  <Route path="/dashboard/about" element={<p>About (management)</p>} />
+                  <Route path="/dashboard/users" element={<UserManagement />} />
+                  <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
+                  <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </Suspense>
             </main>
@@ -86,11 +65,12 @@ function App() {
           <Route path="/playground" element={<Playground />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/home" element={<Homepage />} />
-          <Route path="/about" element={<p>About(Public)</p>} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}
-      {/*Reusable toast*/}
+
+      {/* Reusable toast */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
