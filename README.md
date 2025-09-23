@@ -11,6 +11,7 @@ Welcome to EcoVibe, a web application designed to promote eco-friendly living an
 - [Tools Used](#tools-used)
 - [Setup Instructions](#setup-instructions)
 - [Environment Variables](#environment-variables)
+- [Environment URLs](#environment-urls)
 - [Local Development Checks](#local-development-checks)
 - [Running MegaLinter Locally](#running-megalinter-locally)
 - [Makefile Usage](#makefile-usage)
@@ -172,46 +173,137 @@ For any sensitive information or configuration that should not be hardcoded, env
 
 ### Client-Side
 
-For the client-side application to connect to Firebase, you will need to create a `.env` file in the `client` directory.
+The client-side application uses Vite for environment configuration. Settings are managed through `.env` files located in the `client/` directory.
 
-1. Create a new file named `.env` in the `client` directory.
-2. Add the following line to the `.env` file, replacing `your-firebase-api-key` with your actual Firebase API key:
+The application supports the following environments:
 
-    ```bash
-    VITE_FIREBASE_API_KEY=your-firebase-api-key
-    VITE_REACT_APP_RECAPTCHA_SITE_KEY=your-google-recaptcha-site-key
-    VITE_SERVER_BASE_URL=THE-URL-THE-SERVER-IS-RUNNING-ON
-   
+- **`local`**: (`development`) For local development.
+- **`develop`**: (`integration`) Contains all features merged into the `develop` branch.
+- **`staging`**: For intermediate builds before a release.
+- **`production`**: The live application.
+
+1. **Create environment files:**
+    You will need to create the following files in the `client/` directory:
+    - `.env.development` (for local development)
+    - `.env.integration` (for the develop environment)
+    - `.env.staging` (for the staging environment)
+    - `.env.production` (for the production environment)
+
+2. **Add variables:**
+    In each file, define the necessary environment variables. The variable names should be the same across all files, but their values will differ.
+
+    **Example for `.env.development` (local):**
+
+    ```ini
+    # Used for local development
+    VITE_SERVER_BASE_URL=http://127.0.0.1:5555
+    VITE_FIREBASE_API_KEY=your-dev-firebase-api-key
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY=your-dev-google-recaptcha-site-key
     ```
 
--The staging environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-staging.web.app/), remember to update the server to point to this endpoint in the appropriate places.
+    **Example for `.env.integration` (develop):**
 
-The staging environment client can be found here: [https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/). Remember to update the server to point to this endpoint in the appropriate places, and ensure CORS settings are configured on the server.
+    ```ini
+    # Used for the develop environment
+    VITE_SERVER_BASE_URL=https://ecovibe-develop.up.railway.app
+    VITE_FIREBASE_API_KEY=your-dev-firebase-api-key
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY=your-dev-google-recaptcha-site-key
+    ```
+
+    **Example for `.env.staging`:**
+
+    ```ini
+    # Used for the staging environment
+    VITE_SERVER_BASE_URL=https://ecovibe-staging.onrender.com/
+    VITE_FIREBASE_API_KEY=your-staging-firebase-api-key
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY=your-staging-google-recaptcha-site-key
+    ```
+
+    **Example for `.env.production`:**
+
+    ```ini
+    # Used for the production environment
+    VITE_SERVER_BASE_URL=https://your-production-api-url.com/
+    VITE_FIREBASE_API_KEY=your-production-firebase-api-key
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY=your-production-google-recaptcha-site-key
+    ```
 
 ### Server-Side
 
-The server-side application uses Flask's prefixed environment variables. The recommended way to manage these is with a `.flaskenv` file in the `server` directory.
+The server-side application configuration is managed through a single `.env` file in the `server` directory. This file defines the settings for all environments. The active environment is determined by the `FLASK_APP_ENV` variable.
 
-1. Create a new file named `.flaskenv` in the `server` directory.
-2. Add your configuration variables to this file, prefixed with `FLASK_`. For example, to run the application in debug mode, you would add:
+The application supports the following environments:
 
-    ```bash
-    FLASK_DEBUG=1
-    FLASK_CORS_ALLOWED_ORIGINS= # Comma-separated list of allowed origins for CORS
-    FLASK_SMTP_REPLY_EMAIL= # Email address that will appear as the reply-to address
-    FLASK_SMTP_SERVER= # SMTP server hostname (e.g., smtp.gmail.com, smtp.office365.com)
-    FLASK_SMTP_PORT= # SMTP server port (e.g., 587 for TLS, 465 for SSL)
-    FLASK_SMTP_USER= # SMTP authentication username
-    FLASK_ADMIN_EMAIL= # Admin email address for system notifications and contact
-    FLASK_SMTP_PASS= # SMTP authentication password
-    FLASK_API= # API route prefix (e.g., "/api" - all routes will be prefixed with this)
-    ```
+- **`development`**: For local development.
+- **`testing`**: For running tests.
+- **`integration`**: Contains all features merged into the `develop` branch.
+- **`staging`**: For intermediate builds before a release.
+- **`production`**: The live application.
 
-    Any other configuration your app needs should be added here as well.
+1. Create a new file named `.env` in the `server` directory.
+2. Add your configuration variables to this file. The active environment is determined by the `FLASK_APP_ENV` variable.
 
-All merges to `develop` on the server can be found here: [`https://ecovibe-develop.up.railway.app`](https://ecovibe-develop.up.railway.app)
+Here is an example structure for your `.env` file.
 
-The staging environment api can be found here: [`https://ecovibe-staging.onrender.com/`](https://ecovibe-staging.onrender.com/), remember to update the client to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the client.
+```ini
+# -- Environment Selection --
+# Sets the active environment. Options: development, testing, integration, staging, production
+FLASK_APP_ENV=development
+
+# -- Secret Key --
+# Generate a secure secret key. You can use: openssl rand -hex 32
+FLASK_SECRET_KEY='a_very_long_and_random_secret_key'
+
+# -- Database URIs --
+# Used when FLASK_APP_ENV=development
+FLASK_SQLALCHEMY_DATABASE_URI='postgresql://user:pass@localhost/ecovibe_dev'
+
+# Used when FLASK_APP_ENV=testing
+FLASK_TEST_SQLALCHEMY_DATABASE_URI='postgresql://user:pass@localhost/ecovibe_test'
+
+# Used when FLASK_APP_ENV=integration
+FLASK_INTEGRATION_DATABASE_URI='postgresql://user:pass@integration_host/ecovibe_integration'
+
+# Used when FLASK_APP_ENV=staging
+FLASK_STAGING_DATABASE_URI='postgresql://user:pass@staging_host/ecovibe_staging'
+
+# Used when FLASK_APP_ENV=production
+FLASK_PROD_DATABASE_URI='postgresql://user:pass@production_host/ecovibe_prod'
+
+# -- CORS Origins --
+FLASK_CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+# -- Other Flask Variables --
+FLASK_SMTP_REPLY_EMAIL= # Email address that will appear as the reply-to address
+FLASK_SMTP_SERVER= # SMTP server hostname (e.g., smtp.gmail.com, smtp.office365.com)
+FLASK_SMTP_PORT= # SMTP server port (e.g., 587 for TLS, 465 for SSL)
+FLASK_SMTP_USER= # SMTP authentication username
+FLASK_ADMIN_EMAIL= # Admin email address for system notifications and contact
+FLASK_SMTP_PASS= # SMTP authentication password
+FLASK_API= # API route prefix (e.g., "/api" - all routes will be prefixed with this)
+```
+
+## Environment URLs
+
+### Client URLs
+
+| Environment | URL |
+| :--- | :--- |
+| Local | <http://localhost:5173> |
+| Develop | [https://ecovibe-develop.netlify.app/](https://ecovibe-develop.netlify.app/) |
+| Staging | [https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/) |
+| Production | Not Deployed |
+
+### Server URLs
+
+| Environment | URL |
+| :--- | :--- |
+| Local | <http://localhost:5555> |
+| Develop | [https://ecovibe-develop.up.railway.app](https://ecovibe-develop.up.railway.app) |
+| Staging | [https://ecovibe-staging.onrender.com/](https://ecovibe-staging.onrender.com/) |
+| Production | Not Deployed |
+
+Remember to update the client to point to the correct server URL in the appropriate places, and ensure CORS settings are configured on the server.
 
 ## Local Development Checks
 
@@ -307,12 +399,15 @@ This command automates the process of preparing your code for a pull request. It
 4. **Frontend Linting & Formatting**:
     - Formats JavaScript/React code in the `client/` directory using `prettier`.
     - Lints and fixes issues in the frontend code with `eslint`.
-5. **Commits Changes**:
+5. **Run Tests**:
+    - Runs server-side tests with `pytest`.
+    - Runs client-side tests with `npm test`.
+6. **Commits Changes**:
     - Stages all modified files (`git add .`).
     - Commits the changes with your provided message.
-6. **Syncs with Remote**: Pulls the latest changes from the `develop` branch to keep your branch up-to-date.
-7. **Pushes to GitHub**: Pushes your feature branch to the remote repository.
-8. **Next Steps**: Reminds you to create a pull request on GitHub.
+7. **Syncs with Remote**: Pulls the latest changes from the `develop` branch to keep your branch up-to-date.
+8. **Pushes to GitHub**: Pushes your feature branch to the remote repository.
+9. **Next Steps**: Reminds you to create a pull request on GitHub.
 
 ### Example
 

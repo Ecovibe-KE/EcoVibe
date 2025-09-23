@@ -101,3 +101,10 @@ instance/
 .idea/
 *.swp
 *.swo
+
+
+.env
+.env.production
+.env.development
+.env.integration
+.env.staging

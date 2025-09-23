@@ -3,37 +3,31 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from routes import register_routes
 from models import db
-from dotenv import load_dotenv
+from config import config_by_name
 import os
-
-load_dotenv()
 
 migrate = Migrate()
 
 
-def create_app(config_name="development"):
+def create_app(config_name=None):
     """
     Create and configure a Flask application instance.
 
     Parameters:
-        config_name (str): Configuration profile to use. If "testing", the app uses
-            the FLASK_TEST_SQLALCHEMY_DATABASE_URI environment variable and enables
-            Flask's TESTING mode; otherwise configuration is loaded from
-            environment variables using Flask's prefixed env loader.
+        config_name (str): Optional: The configuration profile to use ('development',
+            'staging', 'production', 'testing'). If not provided, it defaults to the
+            value of the FLASK_APP_ENV environment variable, or 'development'.
 
     Returns:
-        flask.Flask: A configured Flask application with the SQLAlchemy extension
-        initialized, Flask-Migrate bound, application models imported, and routes
-        registered.
+        flask.Flask: A configured Flask application.
     """
+    if config_name is None:
+        config_name = os.getenv("FLASK_APP_ENV", "development")
+
     app = Flask(__name__)
-    if config_name == "testing":
-        app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-            "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
-        )
-        app.config["TESTING"] = True
-    else:
-        app.config.from_prefixed_env()
+
+    # Load configuration from the config object
+    app.config.from_object(config_by_name[config_name])
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -53,7 +47,8 @@ def create_app(config_name="development"):
     )
 
     register_routes(app)
-    origins = os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",")
+    # Use the origins from the config object
+    origins = app.config["FLASK_CORS_ALLOWED_ORIGINS"]
     CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
     return app
 
