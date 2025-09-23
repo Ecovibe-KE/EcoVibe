@@ -37,7 +37,7 @@ def create_app(config_name="development"):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    from .models import (
+    from models import (
         blog,
         booking,
         comment,
