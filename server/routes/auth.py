@@ -1,29 +1,28 @@
-from flask_restful import Resource
-from flask_jwt_extended import decode_token
-from models import db, User
-from models.user import AccountStatus
-from flask import Blueprint, request
+# routes/auth.py (verify resource)
+
+from flask import Blueprint
+from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+from models import db
+from models.user import User, AccountStatus
 
 auth_bp = Blueprint("auth", __name__)
+api = Api(auth_bp)
 
-class VerifyAccount(Resource):
+
+class VerifyResource(Resource):
+    @jwt_required()   # expects Authorization: Bearer <token>
     def post(self):
-        data = request.get_json(silent=True) or {}
-        token = data.get("token")
-
-        if not token:
-            return {"status": "error", "message": "token is required"}, 400
-
+        """Verify account using the JWT token in Authorization header"""
         try:
-            decoded = decode_token(token)
-            if decoded.get("purpose") != "account_verification":
-                return {"status": "error", "message": "invalid token"}, 400
+            # identity was set as str(user.id) in register
+            user_id = get_jwt_identity()
+            user_id = int(user_id)  # cast back to int for DB
         except Exception:
-            return {"status": "error", "message": "invalid or expired token"}, 400
+            return {"status": "error", "message": "invalid or expired token"}, 401
 
-        user_id = decoded["sub"]
         user = User.query.get(user_id)
-
         if not user:
             return {"status": "error", "message": "user not found"}, 404
 
@@ -36,5 +35,4 @@ class VerifyAccount(Resource):
         return {"status": "success", "message": "account verified successfully"}, 200
 
 
-
-auth_bp.add_resource(VerifyAccount, "/verify")
+api.add_resource(VerifyResource, "/verify")

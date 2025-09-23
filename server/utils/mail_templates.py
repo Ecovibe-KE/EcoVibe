@@ -128,3 +128,66 @@ def send_contact_email(to_email, email_type, data):
 
     # Send email using HTML format
     return send_email(to_email, subject, body, is_html=True)
+
+
+
+def send_verification_email(to_email, user_name, verify_link):
+    """Send account verification email to a new user"""
+    subject = "Verify Your EcoVibe Account"
+
+    body = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }}
+            .header {{
+                background-color: #37B137;
+                color: white;
+                padding: 20px;
+                text-align: center;
+            }}
+            .content {{
+                padding: 20px;
+            }}
+            .button {{
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #1e62db;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+            }}
+            .footer {{
+                text-align: center;
+                padding: 20px;
+                font-size: 12px;
+                color: #666;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Verify Your Account</h1>
+        </div>
+        <div class="content">
+            <p>Dear {user_name},</p>
+            <p>Thank you for registering with EcoVibe. Please verify your email
+            by clicking the link below:</p>
+            <p>{verify_link}</p>
+            <p>This link will expire in 24 hours.</p>
+            <p>If you did not register, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message. Please do not reply.</p>
+        </div>
+    </body>
+    </html>
+    """
+
+    return send_email(to_email, subject, body, is_html=True)
