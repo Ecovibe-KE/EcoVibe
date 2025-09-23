@@ -7,6 +7,7 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import AboutUs from "./AboutUs.jsx"
 
 function App() {
   const { logEvent } = useAnalytics();
@@ -75,7 +76,7 @@ function App() {
           <Route path="/playground" element={<Playground />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/home" element={<Homepage />} />
-          <Route path="/about" element={<p>About(Public)</p>} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}
