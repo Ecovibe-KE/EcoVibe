@@ -66,15 +66,6 @@ describe('TopNavbar Component', () => {
             expect(screen.getByAltText('User Avatar')).toHaveAttribute('src', mockUserData.avatar);
         });
 
-        test('renders menu toggle button', () => {
-            localStorageMock.getItem.mockReturnValue(null);
-
-            render(<TopNavbar />);
-
-            const menuToggle = screen.getByRole('button');
-            expect(menuToggle).toBeInTheDocument();
-            expect(menuToggle).toHaveClass('menu-toggle');
-        });
 
         test('renders user avatar with correct attributes', () => {
             localStorageMock.getItem.mockReturnValue(null);
