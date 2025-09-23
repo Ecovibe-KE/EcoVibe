@@ -60,7 +60,9 @@ const Header = ({ title, userName, userRole, userImage }) => {
           />
           <div style={{ textAlign: "right" }}>
             <p style={{ margin: 0, fontWeight: "600" }}>{userName}</p>
-            <span style={{ fontSize: "0.8rem", color: "#888" }}>{userRole}</span>
+            <span style={{ fontSize: "0.8rem", color: "#888" }}>
+              {userRole}
+            </span>
           </div>
         </div>
 

@@ -22,7 +22,11 @@ const Footer = ({ pageType }) => {
         {/* Top Row */}
         <div className="footer-top-row">
           {/* Logo */}
-          <img src="/EcovibeLogo.png" alt="EcoVibe Logo" className="footer-logo" />
+          <img
+            src="/EcovibeLogo.png"
+            alt="EcoVibe Logo"
+            className="footer-logo"
+          />
 
           {/* Nav Links */}
           <div className="footer-nav-links">
@@ -45,7 +49,7 @@ const Footer = ({ pageType }) => {
               rel="noopener noreferrer"
               aria-label="Instagram"
             >
-              <FaInstagram size={20}color="black"/>
+              <FaInstagram size={20} color="black" />
             </a>
             <a
               href="https://www.linkedin.com/company/ecovibe-kenya/"
@@ -53,7 +57,7 @@ const Footer = ({ pageType }) => {
               rel="noopener noreferrer"
               aria-label="LinkedIn"
             >
-              <FaLinkedin size={20} color="black"/>
+              <FaLinkedin size={20} color="black" />
             </a>
           </div>
         </div>
