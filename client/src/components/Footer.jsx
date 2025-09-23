@@ -3,68 +3,6 @@ import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import "../css/Footer.css";
 
-const footerStyle = {
-  backgroundColor: "#ffffff",
-  padding: "2rem 1rem",
-  marginTop: "auto",
-  width: "100%",
-};
-
-const topRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  flexWrap: "wrap",
-  gap: "1rem",
-  width: "100%",
-};
-
-const logoStyle = {
-  maxWidth: "180px",
-};
-
-const navLinksContainer = {
-  display: "flex",
-  gap: "2rem",
-  fontWeight: "500",
-  flexWrap: "wrap",
-  flexGrow: 1,
-  justifyContent: "center",
-};
-
-const socialIconsContainer = {
-  display: "flex",
-  gap: "1rem",
-  marginTop: "0.5rem",
-};
-
-const hrStyle = {
-  border: "none",
-  borderTop: "2px solid #37b137",
-  margin: "1rem 0",
-};
-
-const bottomRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  flexWrap: "wrap",
-  fontSize: "0.9rem",
-  gap: "1rem",
-  width: "100%",
-};
-
-const legalLinksContainer = {
-  display: "flex",
-  gap: "1.5rem",
-  flexWrap: "wrap",
-};
-
-const legalLinkStyle = {
-  textDecoration: "none",
-  color: "#37b137",
-};
-
 const Footer = ({ pageType }) => {
   const isLandingFooter = [
     "landing",
@@ -79,15 +17,15 @@ const Footer = ({ pageType }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer style={footerStyle}>
+    <footer className="footer">
       <Container fluid className="p-0">
         {/* Top Row */}
-        <div style={topRowStyle}>
+        <div className="footer-top-row">
           {/* Logo */}
-          <img src="/EcovibeLogo.png" alt="EcoVibe Logo" style={logoStyle} />
+          <img src="/EcovibeLogo.png" alt="EcoVibe Logo" className="footer-logo" />
 
           {/* Nav Links */}
-          <div style={navLinksContainer}>
+          <div className="footer-nav-links">
             <a href="/about" className="nav-link">
               Quick Links
             </a>
@@ -100,14 +38,14 @@ const Footer = ({ pageType }) => {
           </div>
 
           {/* Social Icons */}
-          <div style={socialIconsContainer}>
+          <div className="footer-social-icons">
             <a
               href="https://www.instagram.com/ecovibekenya/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
             >
-              <FaInstagram size={20} color="black" />
+              <FaInstagram size={20} />
             </a>
             <a
               href="https://www.linkedin.com/company/ecovibe-kenya/"
@@ -115,29 +53,23 @@ const Footer = ({ pageType }) => {
               rel="noopener noreferrer"
               aria-label="LinkedIn"
             >
-              <FaLinkedin size={20} color="black" />
+              <FaLinkedin size={20} />
             </a>
           </div>
         </div>
 
         {/* Green Line */}
-        <hr style={hrStyle} />
+        <hr className="footer-hr" />
 
         {/* Bottom Row */}
-        <div style={bottomRowStyle}>
-          <small style={{ color: "#37b137" }}>
-            © {currentYear} EcoVibe Kenya. All rights reserved.
-          </small>
+        <div className="footer-bottom-row">
+          <small>© {currentYear} EcoVibe Kenya. All rights reserved.</small>
 
-          <div style={legalLinksContainer}>
-            <a
-              href="/privacy-policy"
-              className="legal-link"
-              style={legalLinkStyle}
-            >
+          <div className="footer-legal-links">
+            <a href="/privacy-policy" className="legal-link">
               Privacy Policy
             </a>
-            <a href="/terms" className="legal-link" style={legalLinkStyle}>
+            <a href="/terms" className="legal-link">
               Terms and Conditions
             </a>
           </div>
