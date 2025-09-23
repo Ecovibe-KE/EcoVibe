@@ -94,7 +94,7 @@ jobs:
           FLASK_SQLALCHEMY_DATABASE_URI: postgresql://testuser:testpassword@localhost:${{ job.services.postgres.ports['5432'] }}/testdb
           FLASK_CORS_ALLOWED_ORIGINS: "*"
           FLASK_ENV: testing
-
+          FLASK_API: /api
       # 8. Comment coverage report on PR, only for changed files
       - name: Coverage comment (changed files only)
         if: github.event_name == 'pull_request'
