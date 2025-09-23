@@ -1,6 +1,7 @@
 import json
 from models.user import User
 
+
 # Register resouce tests
 def test_register_user_success(client, session):
     """Test user registration with valid data."""
