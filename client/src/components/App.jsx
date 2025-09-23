@@ -1,38 +1,86 @@
-import { useState, useEffect } from 'react'
-import { useAnalytics } from '../hooks/useAnalytics';
-import { ActionButton } from '../utils/Button';
-import NavBar from './Navbar';
+import Homepage from "./Homepage";
+import { useEffect, Suspense, } from "react";
+import { useAnalytics } from "../hooks/useAnalytics";
+import NavBar from "./Navbar.jsx";
+import NavPanel from "./NavPanel.jsx";
+import Playground from "./Playground.jsx";
+import Contact from "./Contact.jsx";
+import { ToastContainer } from "react-toastify";
+import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
+import AboutUs from "./AboutUs.jsx"
 
 function App() {
-  // 1. Get the logEvent function from the hook
   const { logEvent } = useAnalytics();
+  const location = useLocation();
 
-  // 2. Log a screen_view event when the component mounts
+  const isManagementRoute = location.pathname.startsWith('/dashboard');
+
   useEffect(() => {
     logEvent("screen_view", {
-      firebase_screen: "Home Page",
+      firebase_screen: location.pathname || "/",
       firebase_screen_class: "App",
     });
-  }, [logEvent]); // Add logEvent to dependency array
+  }, [logEvent, location.pathname]);
 
-  const [count, setCount] = useState(0);
 
-  return (
-    <>
-      <NavBar></NavBar>
-      <p>Welcome to Ecovibe</p>
-      <p onClick={() => setCount(count + 1)}>Something good is coming soon!</p>
-      <p>This is a sample of how to use the custom buttons</p>
+    return (
+        <>
+          {/*  Non-management paths - show NavBar*/}
+          {!isManagementRoute && <NavBar />}
 
-      <div>
-        <ActionButton label="Add Item" action="add" variant="solid" showIcon={false} onClick={() => setCount(count + 1)} />
-        <ActionButton label="Update Item" action="update" variant="outlined" onClick={() => setCount(count + 1)} />
-        <ActionButton label="Delete Item" action="delete" variant="solid" onClick={() => setCount(count - 1)} />
-        <ActionButton label="View Item" action="view" variant="outlined" onClick={() => alert(`Current count is ${count}`)} />
-      </div>
+          {/* Management routes - show NavPanel layout */}
+          {isManagementRoute ? (
+            <div className="d-flex vh-100">
+             <NavPanel />
+              <main role="main" className="flex-fill bg-light overflow-auto">
+                <Suspense fallback={<div className="p-4">Loading…</div>}>
+                <Routes>
+                  <Route path="/dashboard" element={<Outlet />}> 
+                   <Route path="main" element={<p>Dashboard</p>} />
+                   <Route index element={<Navigate to="main" replace />} />
+                   <Route path="bookings/*" element={<p>Bookings</p>} />
+                   <Route path="resources/*" element={<p>Resources</p>} />
+                   <Route path="profile/*" element={<p>Profile</p>}  />
+                   <Route path="payments/*" element={<p>Payments</p>}  />
+                   <Route path="blog/*" element={<p>Blog</p>}  />
+                   <Route path="services/*" element={<p>Services</p>}  />
+                   <Route path="about/*" element={<p>About (management)</p>}  />
+                   <Route path="users/*" element={<p>Users</p>}  />
+                   <Route path="tickets/*" element={<p>Tickets</p>}  />
+                   <Route path="*" element={<Navigate to="main" replace />} />
+                  </Route>
+                </Routes>
+                </Suspense>
+              </main>
+           </div>
+          ) : (
 
-    </>
-  );
+        /* Public routes - normal layout */
+        <Routes>
+          <Route index element={<Homepage />} />
+          <Route path="/playground" element={<Playground />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/home" element={<Homepage />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
+
+
+      )}
+            {/*Reusable toast*/}
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+        </>
+    );
+
 }
-
 export default App;
