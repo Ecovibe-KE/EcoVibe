@@ -1,88 +1,88 @@
 /* TopNavbar.css */
 .topbar {
-    background-color: white;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-    height: 70px;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 280px; /* Same width as your NavPanel */
-    right: 0;
-    z-index: 1000;
+  background-color: white;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  height: 70px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 280px; /* Same width as your NavPanel */
+  right: 0;
+  z-index: 1000;
 }
 
 .topbar-left {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #5a5c69;
-    margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #5a5c69;
+  margin: 0;
 }
 
 .topbar-right {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .user-profile {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 30px;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 30px;
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
-    border: 2px solid #e3e6f0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 2px solid #e3e6f0;
 }
 
 .user-info {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-name {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #5a5c69;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #5a5c69;
 }
 
 .user-role {
-    font-size: 0.8rem;
-    color: #858796;
+  font-size: 0.8rem;
+  color: #858796;
 }
 
 .menu-toggle {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #5a5c69;
-    margin-right: 15px;
-    display: none; /* Hidden by default, show on mobile */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #5a5c69;
+  margin-right: 15px;
+  display: none; /* Hidden by default, show on mobile */
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .topbar {
-        left: 0;
-    }
+  .topbar {
+    left: 0;
+  }
 
-    .menu-toggle {
-        display: block;
-    }
+  .menu-toggle {
+    display: block;
+  }
 
-    .user-info {
-        display: none;
-    }
+  .user-info {
+    display: none;
+  }
 }
