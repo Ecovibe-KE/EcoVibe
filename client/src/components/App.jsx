@@ -6,7 +6,7 @@ import NavPanel from "./NavPanel.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
 
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
               <main role="main" className="flex-fill bg-light overflow-auto">
                 <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
-                  <Route path="/dashboard"> 
+                  <Route path="/dashboard" element={<Outlet />}> 
                    <Route path="main" element={<p>Dashboard</p>} />
                    <Route index element={<Navigate to="main" replace />} />
                    <Route path="bookings/*" element={<p>Bookings</p>} />
