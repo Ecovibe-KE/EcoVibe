@@ -1,0 +1,10 @@
+[
+  {
+    "endpoint": "/api/ping",
+    "method": "GET",
+    "description": "Ping server",
+    "responses": {
+      "200": { "$ref": "../examples/ping/ping.200.json" }
+    }
+  }
+]
