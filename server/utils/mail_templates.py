@@ -130,7 +130,6 @@ def send_contact_email(to_email, email_type, data):
     return send_email(to_email, subject, body, is_html=True)
 
 
-
 def send_verification_email(to_email, user_name, verify_link):
     """Send account verification email to a new user"""
     subject = "Verify Your EcoVibe Account"

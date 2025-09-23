@@ -1,23 +1,23 @@
 .about-underline {
-    background-image: linear-gradient(to right, #37b137 0 0);
-    /* Color of the underline */
-    background-position: bottom center;
-    /* Position of the underline */
-    background-size: 9% 2px;
-    /* Adjust length (80%) and thickness (2px) */
-    background-repeat: no-repeat;
-    padding-bottom: 4px;
-    /* Adjust vertical offset */
+  background-image: linear-gradient(to right, #37b137 0 0);
+  /* Color of the underline */
+  background-position: bottom center;
+  /* Position of the underline */
+  background-size: 9% 2px;
+  /* Adjust length (80%) and thickness (2px) */
+  background-repeat: no-repeat;
+  padding-bottom: 4px;
+  /* Adjust vertical offset */
 }
 
 .icon-sm {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
 .image-fixed-height {
-    height: 350px;
-    overflow: hidden;
-    object-fit: cover;
+  height: 350px;
+  overflow: hidden;
+  object-fit: cover;
 }

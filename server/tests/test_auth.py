@@ -87,7 +87,6 @@ def test_verify_invalid_token(client):
     assert "segments" in msg or "invalid" in msg
 
 
-
 def test_verify_already_verified(client, db):
     user = User(
         full_name="Already Verified",
@@ -104,10 +103,13 @@ def test_verify_already_verified(client, db):
         identity=str(user.id),
         additional_claims={"purpose": "account_verification"},
     )
-    headers = {"Authorization": f"Bearer {token}", }
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
     resp = client.post("/api/verify", headers=headers)
     assert resp.status_code == 200
     assert "already verified" in resp.get_json()["message"]
+
 
 def test_verify_token_wrong_purpose(client, db):
     user = User(

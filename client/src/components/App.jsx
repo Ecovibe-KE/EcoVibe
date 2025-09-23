@@ -7,7 +7,7 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import VerifyPage from "./Verify.jsx"; 
+import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import AboutUs from "./AboutUs.jsx";
@@ -16,7 +16,7 @@ function App() {
   const { logEvent } = useAnalytics();
   const location = useLocation();
 
-  const isManagementRoute = location.pathname.startsWith('/dashboard');
+  const isManagementRoute = location.pathname.startsWith("/dashboard");
 
   useEffect(() => {
     logEvent("screen_view", {
@@ -45,15 +45,24 @@ function App() {
                 <Routes>
                   <Route path="/dashboard" element={<p>Dashboard Main</p>} />
                   <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
-                  <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                  <Route
+                    path="/dashboard/resources"
+                    element={<p>Resources</p>}
+                  />
                   <Route path="/dashboard/profile" element={<p>Profile</p>} />
                   <Route path="/dashboard/payments" element={<p>Payments</p>} />
                   <Route path="/dashboard/blog" element={<p>Blog</p>} />
                   <Route path="/dashboard/services" element={<p>Services</p>} />
-                  <Route path="/dashboard/about" element={<p>About (management)</p>} />
+                  <Route
+                    path="/dashboard/about"
+                    element={<p>About (management)</p>}
+                  />
                   <Route path="/dashboard/users" element={<UserManagement />} />
                   <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                  <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
+                  <Route
+                    path="/dashboard/*"
+                    element={<Navigate to="/dashboard" replace />}
+                  />
                 </Routes>
               </Suspense>
             </main>

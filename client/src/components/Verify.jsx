@@ -17,9 +17,13 @@ function VerifyPage() {
     }
 
     axios
-      .post("http://127.0.0.1:5555/api/verify", {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      .post(
+        "http://127.0.0.1:5555/api/verify",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       .then((res) => {
         setStatus("success");
         setMessage(res.data.message || "Account verified successfully!");
@@ -38,7 +42,9 @@ function VerifyPage() {
 
       {status === "success" && (
         <>
-          <h2 style={{ color: "#37b137", fontWeight: "bold" }}>✅ Account Verified!</h2>
+          <h2 style={{ color: "#37b137", fontWeight: "bold" }}>
+            ✅ Account Verified!
+          </h2>
           <p style={{ color: "#333" }}>{message}</p>
           <button
             onClick={() => navigate("/login")}
@@ -50,7 +56,7 @@ function VerifyPage() {
               border: "none",
               borderRadius: "5px",
               cursor: "pointer",
-              fontWeight: "bold"
+              fontWeight: "bold",
             }}
           >
             Go to Login
@@ -60,7 +66,9 @@ function VerifyPage() {
 
       {status === "error" && (
         <>
-          <h2 style={{ color: "#f5a030", fontWeight: "bold" }}>❌ Verification Failed</h2>
+          <h2 style={{ color: "#f5a030", fontWeight: "bold" }}>
+            ❌ Verification Failed
+          </h2>
           <p style={{ color: "#333" }}>{message}</p>
         </>
       )}
