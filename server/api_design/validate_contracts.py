@@ -30,9 +30,7 @@ def resolve_ref(ref):
 
         node = catalog[fragment]
         if "example" not in node or "$ref" not in node["example"]:
-            raise ValueError(
-                f"Fragment {fragment} missing example.$ref in {file_path}"
-            )
+            raise ValueError(f"Fragment {fragment} missing example.$ref in {file_path}")
         return resolve_ref(node["example"]["$ref"])
     else:
         full_path = os.path.join(EXAMPLES_DIR, ref)
@@ -60,9 +58,7 @@ def validate_contract(contract_file, schema):
                     model = endpoint.get("model")
                     verb = method.lower() if method else "get"
                     example_path = (
-                        os.path.join(
-                            EXAMPLES_DIR, model, f"{verb}.{status_code}.json"
-                        )
+                        os.path.join(EXAMPLES_DIR, model, f"{verb}.{status_code}.json")
                         if model
                         else None
                     )

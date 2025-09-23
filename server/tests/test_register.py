@@ -2,6 +2,7 @@ import pytest
 from server.app import create_app
 from server.models.user import db, User
 
+
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     """Create a Flask test client with a temporary SQLite DB."""
@@ -17,6 +18,7 @@ def client(tmp_path, monkeypatch):
     with app.test_client() as client:
         yield client
 
+
 def test_register_success(client):
     """Test successful registration."""
     payload = {
@@ -29,6 +31,7 @@ def test_register_success(client):
     res = client.post("/api/register", json=payload)
     assert res.status_code == 201
     assert res.get_json() == {"message": "Account created successfully."}
+
 
 def test_register_missing_field(client):
     """Test registration with missing fields."""
