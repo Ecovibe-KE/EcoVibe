@@ -1,6 +1,6 @@
 from flask import Flask
-from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_cors import CORS
 from routes import register_routes
 from models import db
 from dotenv import load_dotenv

@@ -168,6 +168,8 @@ This project utilizes the GitFlow workflow to manage development and releases. T
 
 ## Environment Variables
 
+For any sensitive information or configuration that should not be hardcoded, environment variables are used. Below are the instructions for setting up environment variables for both the client and server applications. Ask the `project manager / team lead` for the actual values to use. You can always use dummy values for local development and testing.
+
 ### Client-Side
 
 For the client-side application to connect to Firebase, you will need to create a `.env` file in the `client` directory.
@@ -182,7 +184,9 @@ For the client-side application to connect to Firebase, you will need to create 
    
     ```
 
-The staging environment client can be found here: `https://ecovibe-staging.web.app/`, remember to update the server to point to this endpoint in the appropriate places. Also, remember CORS 😜 settings on the server.
+-The staging environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-staging.web.app/), remember to update the server to point to this endpoint in the appropriate places.
+
+The staging environment client can be found here: [https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/). Remember to update the server to point to this endpoint in the appropriate places, and ensure CORS settings are configured on the server.
 
 ### Server-Side
 
