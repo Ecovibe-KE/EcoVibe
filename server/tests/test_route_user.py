@@ -9,7 +9,7 @@ def test_register_user_success(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
@@ -25,7 +25,7 @@ def test_register_user_existing_email(client, session):
     """Test registration with an existing email."""
     user = User(
         full_name="Jane Doe",
-        email="jane.doe@example.com",
+        email="caro@gmail.com",
         industry="Health",
         phone_number="+254712345679",
     )
@@ -38,7 +38,7 @@ def test_register_user_existing_email(client, session):
         data=json.dumps(
             {
                 "full_name": "Jane Doe",
-                "email": "jane.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "Password123",
                 "industry": "Health",
                 "phone_number": "+254712345670",
@@ -56,7 +56,7 @@ def test_register_user_missing_full_name(client, session):
         "/api/register",
         data=json.dumps(
             {
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
@@ -93,7 +93,7 @@ def test_register_user_missing_password(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
             }
@@ -114,7 +114,7 @@ def test_register_user_missing_industry(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "Password123",
                 "phone_number": "+254712345678",
             }
@@ -132,7 +132,7 @@ def test_register_user_missing_phone_number(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
             }
@@ -150,7 +150,7 @@ def test_register_user_invalid_password(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "short",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
@@ -188,7 +188,7 @@ def test_register_user_existing_phone_number(client, session):
     """Test registration with an existing phone number."""
     user = User(
         full_name="Jane Doe",
-        email="jane.doe@example.com",
+        email="caroll@gmail.com",
         industry="Health",
         phone_number="+254712345678",
     )
@@ -201,7 +201,7 @@ def test_register_user_existing_phone_number(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "caro@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
                 "phone_number": "+254712345678",

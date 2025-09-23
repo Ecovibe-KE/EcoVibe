@@ -6,7 +6,7 @@ from models.user import User, AccountStatus
 def test_register_success(client, db):
     payload = {
         "full_name": "Caroline Majute",
-        "email": "caro@example.com",
+        "email": "caro@gmail.com",
         "password": "SecurePass123",
         "industry": "Tech",
         "phone_number": "0712345678",
@@ -21,7 +21,7 @@ def test_register_success(client, db):
 def test_register_weak_password(client):
     payload = {
         "full_name": "Weak Pass",
-        "email": "weak@example.com",
+        "email": "caro@gmail.com",
         "password": "weak",
         "industry": "Tech",
         "phone_number": "0799999999",
@@ -32,7 +32,7 @@ def test_register_weak_password(client):
 
 
 def test_register_missing_fields(client):
-    payload = {"email": "missing@example.com", "password": "StrongPass1"}
+    payload = {"email": "caro@gmail.com", "password": "StrongPass1"}
     resp = client.post("/api/register", json=payload)
     assert resp.status_code == 400
     # backend now returns field-specific message
@@ -42,7 +42,7 @@ def test_register_missing_fields(client):
 def test_register_duplicate_email(client, db):
     payload = {
         "full_name": "Dup User",
-        "email": "dup@example.com",
+        "email": "caro@gmail.com",
         "password": "StrongPass1",
         "industry": "Finance",
         "phone_number": "0700000000",
@@ -56,7 +56,7 @@ def test_register_duplicate_email(client, db):
 def test_verify_account_success(client, db):
     user = User(
         full_name="Verify User",
-        email="verify@example.com",
+        email="caro@gmail.com",
         industry="Tech",
         phone_number="0711111111",
         account_status=AccountStatus.INACTIVE,
@@ -90,7 +90,7 @@ def test_verify_invalid_token(client):
 def test_verify_already_verified(client, db):
     user = User(
         full_name="Already Verified",
-        email="verified@example.com",
+        email="caro@gmail.com",
         industry="Tech",
         phone_number="0722222222",
         account_status=AccountStatus.ACTIVE,
@@ -114,7 +114,7 @@ def test_verify_already_verified(client, db):
 def test_verify_token_wrong_purpose(client, db):
     user = User(
         full_name="Wrong Purpose",
-        email="wrongpurpose@example.com",
+        email="caro@gmail.com",
         industry="Tech",
         phone_number="0733333333",
         account_status=AccountStatus.INACTIVE,
