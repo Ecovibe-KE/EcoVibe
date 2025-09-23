@@ -6,6 +6,8 @@ from sqlalchemy import UniqueConstraint
 from urllib.parse import urlparse
 from enum import Enum as PyEnum
 from . import db
+import re
+from utils.phone_validation import validate_phone_number
 
 
 class Role(PyEnum):
@@ -152,19 +154,7 @@ class User(db.Model):
 
     @validates("phone_number")
     def validate_phone(self, _key, number):
-        import phonenumbers
-
-        try:
-            parsed = (
-                phonenumbers.parse(number, None)
-                if number.startswith("+")
-                else phonenumbers.parse(number, "KE")
-            )
-        except phonenumbers.NumberParseException as e:
-            raise ValueError(str(e)) from e
-        if not phonenumbers.is_valid_number(parsed):
-            raise ValueError("Invalid phone number.")
-        return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+        return validate_phone_number(number)
 
     @validates("full_name")
     def validate_name(self, key, name):
@@ -212,7 +202,7 @@ class User(db.Model):
             parsed = urlparse(url)
             if not all([parsed.scheme in ("http", "https"), parsed.netloc]):
                 raise ValueError(
-                    "Invalid profile image URL. Must start with http:// or https://"
+                    "Invalid profile image URL. " "Must start with http:// or https://"
                 )
             valid_exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
             path_ext = (
