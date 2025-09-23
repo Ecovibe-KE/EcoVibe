@@ -26,9 +26,6 @@ function TopNavbar() {
   return (
     <nav className="topbar">
       <div className="topbar-left">
-        <button className="menu-toggle" id="sidebarToggle">
-          <i className="bi bi-list"></i>
-        </button>
         <h1 className="page-title">Dashboard</h1>
       </div>
 
