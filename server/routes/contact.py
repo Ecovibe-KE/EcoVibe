@@ -8,8 +8,8 @@ from email_validator import validate_email, EmailNotValidError
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource
 
-from ..utils.mail_templates import send_contact_email
-from ..utils.phone_validation import validate_phone_number, is_valid_phone
+from utils.mail_templates import send_contact_email
+from utils.phone_validation import validate_phone_number, is_valid_phone
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s"
