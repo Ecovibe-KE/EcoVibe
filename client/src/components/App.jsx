@@ -6,7 +6,9 @@ import NavPanel from "./NavPanel.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
-import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import UserManagement from "./admin/UserManagement.jsx";
+import TopNavbar from "./TopNavbar.jsx";
 import AboutUs from "./AboutUs.jsx";
 
 function App() {
@@ -24,16 +26,22 @@ function App() {
 
   return (
     <>
-      {/*  Non-management paths - show NavBar*/}
+      {/* Non-management routes - show NavBar */}
       {!isManagementRoute && <NavBar />}
 
       {/* Management routes - show NavPanel layout */}
       {isManagementRoute ? (
         <div className="d-flex vh-100">
           <NavPanel />
-          <main role="main" className="flex-fill bg-light overflow-auto">
-            <Suspense fallback={<div className="p-4">Loading…</div>}>
-              <Routes>
+          <div className="flex-fill d-flex flex-column">
+            <TopNavbar />
+            <main
+              role="main"
+              className="flex-fill bg-light overflow-auto"
+              style={{ marginTop: "70px" }}
+            >
+              <Suspense fallback={<div className="p-4">Loading…</div>}>
+                              <Routes>
                 <Route path="/dashboard" element={<Outlet />}>
                   <Route path="main" element={<p>Dashboard</p>} />
                   <Route index element={<Navigate to="main" replace />} />
@@ -49,8 +57,9 @@ function App() {
                   <Route path="*" element={<Navigate to="main" replace />} />
                 </Route>
               </Routes>
-            </Suspense>
-          </main>
+              </Suspense>
+            </main>
+          </div>
         </div>
       ) : (
         /* Public routes - normal layout */
@@ -63,7 +72,8 @@ function App() {
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}
-      {/*Reusable toast*/}
+
+      {/* Reusable toast */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -78,4 +88,5 @@ function App() {
     </>
   );
 }
+
 export default App;
