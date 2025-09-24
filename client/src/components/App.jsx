@@ -1,22 +1,67 @@
-import Homepage from "./Homepage";
-import { useEffect, Suspense } from "react";
+import { useEffect, useMemo, Suspense } from "react";
+import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { useAnalytics } from "../hooks/useAnalytics";
+
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
+import Homepage from "./Homepage.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
-import { ToastContainer } from "react-toastify";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import UserManagement from "./admin/userManagement/UserManagement.jsx";
-import TopNavbar from "./TopNavbar.jsx";
 import AboutUs from "./AboutUs.jsx";
+import Blog from "./Blog.jsx";
+import PrivacyPolicy from "./PrivacyPolicy.jsx";
+import Terms from "./Terms.jsx";
+import TopNavbar from "./TopNavbar.jsx";
 
-function App() {
-  const { logEvent } = useAnalytics();
+import Footer from "./Footer.jsx";
+import UserManagement from "./admin/userManagement/UserManagement.jsx";
+
+// Footer Wrapper to detect page type
+function FooterWrapper() {
   const location = useLocation();
 
-  const isManagementRoute = location.pathname.startsWith('/dashboard');
+  const pageType = useMemo(() => {
+    const path = location.pathname.toLowerCase();
+    if (path.startsWith("/about")) return "about";
+    if (path.startsWith("/blog")) return "blog";
+    if (path.startsWith("/services")) return "services";
+    if (path.startsWith("/contact")) return "contact";
+    return "landing";
+  }, [location.pathname]);
 
+  if (import.meta.env?.MODE === "development") {
+    console.debug("Rendering FooterWrapper with pageType:", pageType);
+  }
+
+  return <Footer pageType={pageType} />;
+}
+
+function App() {
+  const location = useLocation();
+  const { logEvent } = useAnalytics();
+
+  // Management routes list
+  const managementRoutes = [
+    "/dashboard",
+    "/bookings",
+    "/resources",
+    "/profile",
+    "/payments",
+    "/blog",
+    "/services",
+    "/mgmtabout",
+    "/users",
+    "/tickets",
+  ];
+
+  const isManagementRoute = managementRoutes.some((route) =>
+    location.pathname.startsWith(route),
+  );
+
+  // Analytics event
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: location.pathname || "/",
@@ -26,51 +71,57 @@ function App() {
 
   return (
     <>
-      {/* Non-management routes - show NavBar */}
+      {/*  Non-management paths - show NavBar*/}
       {!isManagementRoute && <NavBar />}
 
       {/* Management routes - show NavPanel layout */}
       {isManagementRoute ? (
         <div className="d-flex vh-100">
           <NavPanel />
-          <div className="flex-fill d-flex flex-column">
-            <TopNavbar />
-            <main
-              role="main"
-              className="flex-fill bg-light overflow-auto"
-              style={{ marginTop: "70px" }}
-            >
-              <Suspense fallback={<div className="p-4">Loading…</div>}>
-                <Routes>
+          <main role="main" className="flex-fill bg-light overflow-auto">
+            <Suspense fallback={<div className="p-4">Loading…</div>}>
+              <Routes>
+                <Route path="/dashboard" element={<Outlet />}>
                   <Route path="/dashboard" element={<p>Dashboard Main</p>} />
+                  <Route index element={<Navigate to="main" replace />} />
                   <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
-                  <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                  <Route
+                    path="/dashboard/resources"
+                    element={<p>Resources</p>}
+                  />
                   <Route path="/dashboard/profile" element={<p>Profile</p>} />
                   <Route path="/dashboard/payments" element={<p>Payments</p>} />
                   <Route path="/dashboard/blog" element={<p>Blog</p>} />
                   <Route path="/dashboard/services" element={<p>Services</p>} />
-                  <Route path="/dashboard/about" element={<p>About (management)</p>} />
+                  <Route
+                    path="/dashboard/about"
+                    element={<p>About (management)</p>}
+                  />
                   <Route path="/dashboard/users" element={<UserManagement />} />
                   <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                  <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
-              </Suspense>
-            </main>
-          </div>
+                  <Route
+                    path="/dashboard/*"
+                    element={<Navigate to="/dashboard" replace />}
+                  />
+                </Route>
+              </Routes>
+            </Suspense>
+          </main>
         </div>
       ) : (
         /* Public routes - normal layout */
         <Routes>
           <Route index element={<Homepage />} />
+          <Route path="/home" element={<Homepage />} />
           <Route path="/playground" element={<Playground />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/home" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}
 
-      {/* Reusable toast */}
+      {/* Toast Notifications */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -82,6 +133,9 @@ function App() {
         draggable
         pauseOnHover
       />
+
+      {/* Footer */}
+      {!isManagementRoute && <FooterWrapper />}
     </>
   );
 }
