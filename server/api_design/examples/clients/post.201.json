@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "message": "Client registered successfully",
+  "data": {
+    "id": 3,
+    "full_name": "Charlie Brown",
+    "email": "charlie@example.com",
+    "role": "client",
+    "account_status": "inactive",
+    "industry": "Marketing",
+    "created_at": "2025-09-21T17:00:00Z",
+    "updated_at": "2025-09-21T17:00:00Z",
+    "profile_image_url": null
+  }
+}

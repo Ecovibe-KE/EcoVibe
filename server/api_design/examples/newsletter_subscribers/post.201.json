@@ -1,0 +1,9 @@
+{
+  "status": "success",
+  "message": "Subscriber added successfully.",
+  "data": {
+    "id": 3,
+    "email": "charlie@example.net",
+    "subscription_date": "2025-09-20T08:45:00Z"
+  }
+}
