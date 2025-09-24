@@ -152,7 +152,7 @@ const SignUpForm = () => {
                   />
                 </div>
                 <div className="col-6">
-                  <label className="form-label">Industry</label>
+                  <label className="form-label" htmlFor="industry">Industry</label>
                   <select
                     id="industry"
                     name="industry"
@@ -183,7 +183,7 @@ const SignUpForm = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label">Phone number</label>
+                <label className="form-label" htmlFor="phone">Phone number</label>
                 <PhoneInput
                   country={"ke"}
                   containerClass="phone-input-container"
@@ -197,6 +197,7 @@ const SignUpForm = () => {
                     name: "phone",
                     required: true,
                     autoFocus: true,
+                    id: "phone"
                   }}
                 />
               </div>
