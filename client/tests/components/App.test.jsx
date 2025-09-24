@@ -37,6 +37,12 @@ vi.mock("../../src/utils/Button", () => ({
   ),
 }));
 
+// Mock the UserManagement component since it has complex dependencies
+vi.mock('../../src/components/admin/userManagement/UserManagement', () => ({
+  default: () => <div data-testid="user-management-mock">User Management</div>
+}))
+
+
 // Mock window.alert to prevent it from blocking tests and to track calls
 global.alert = vi.fn();
 

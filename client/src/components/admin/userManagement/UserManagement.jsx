@@ -9,7 +9,8 @@ import {
     fetchUsers,
     addUsers,
     editUsers,
-    blockUsers,
+    blockUser,
+    activateUser,
     deleteUsers,
 } from "../../../api/services/usermanagement.js";
 import StatusInfo from "./StatusInfo.jsx";
@@ -150,7 +151,7 @@ const UserManagement = () => {
         if (!selectedUser) return;
 
         try {
-            await blockUsers(selectedUser.id, 'Suspended');
+            await blockUser(selectedUser.id, 'Suspended');
             setUsers((prev) =>
                 prev.map((u) =>
                     u.id === selectedUser.id ? {...u, status: 'Suspended'} : u
@@ -168,7 +169,7 @@ const UserManagement = () => {
         if (!selectedUser) return;
 
         try {
-            await blockUsers(selectedUser.id, 'Active');
+            await activateUser(selectedUser.id, 'Active');
             setUsers((prev) =>
                 prev.map((u) =>
                     u.id === selectedUser.id ? {...u, status: 'Active'} : u

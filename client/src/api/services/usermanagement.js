@@ -26,8 +26,13 @@ export const editUsers = async (userId, userData) => {
 };
 
 // block a user by ID
-export const blockUsers = async (userId, userData) => {
-  const response = await api.patch(`${ENDPOINTS.users}/${userId}`, userData);
+export const blockUser = async (userId) => {
+  const response = await api.patch(`${ENDPOINTS.users}/${userId}`, { status: 'Suspended' });
   return response.data;
 };
 
+// Activate a user by ID
+export const activateUser = async (userId) => {
+  const response = await api.patch(`${ENDPOINTS.users}/${userId}`, { status: 'Active' });
+  return response.data;
+};
