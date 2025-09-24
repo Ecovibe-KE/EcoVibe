@@ -8,9 +8,9 @@ export default defineConfig({
     globals: true,
     setupFiles: './tests/setup.js',
     environment: 'jsdom',
-    coverage: {
+      coverage: {
       provider: 'istanbul',
-      include: ['src/**/*'],
+      include: ['src/**/*.{js,jsx,ts,tsx}'],
       exclude: [
         'src/**/*.d.ts',
         'src/main.jsx'
