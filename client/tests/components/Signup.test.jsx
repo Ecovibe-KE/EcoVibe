@@ -19,11 +19,6 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// 🔹 Mock reCAPTCHA
-vi.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: () => <div data-testid="recaptcha">Mocked reCAPTCHA</div>,
-}));
 
 describe("SignUpForm", () => {
   it("renders form fields and button", () => {
