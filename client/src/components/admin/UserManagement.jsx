@@ -166,7 +166,7 @@ const UserManagement = () => {
     if (!selectedUser) return;
 
     try {
-      await activateUser(selectedUser.id, "Active");
+      await activateUser(selectedUser.id);
       setUsers((prev) =>
         prev.map((u) =>
           u.id === selectedUser.id ? { ...u, status: "Active" } : u,
