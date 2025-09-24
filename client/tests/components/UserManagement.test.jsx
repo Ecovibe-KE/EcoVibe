@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import UserManagement from '../../src/components/admin/UserManagement';
 
 // Mock the dependencies using vi.hoisted to handle the hoisting issue
 const {
@@ -32,7 +31,7 @@ const {
   mockValidatePhone: vi.fn()
 }));
 
-// Mock all the imports that are causing issues
+// Mock all the API services
 vi.mock('../../src/api/services/usermanagement', () => ({
   fetchUsers: mockFetchUsers,
   addUsers: mockAddUsers,
@@ -42,6 +41,7 @@ vi.mock('../../src/api/services/usermanagement', () => ({
   deleteUsers: mockDeleteUsers,
 }));
 
+// Mock react-toastify
 vi.mock('react-toastify', () => ({
   toast: {
     success: mockToastSuccess,
@@ -49,16 +49,17 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
+// Mock validations
 vi.mock('../../src/utils/Validations', () => ({
   validateEmail: mockValidateEmail,
   validateName: mockValidateName,
   validatePhone: mockValidatePhone,
 }));
 
-// Mock Bootstrap CSS to avoid import issues
+// Mock Bootstrap CSS
 vi.mock('bootstrap/dist/css/bootstrap.min.css', () => ({}));
 
-// Create simple mocks for all the modal components
+// Mock the entire user_management directory using absolute paths
 vi.mock('../../src/components/admin/user_management/AddUserModal.jsx', () => ({
   default: vi.fn(({ visible }) =>
     visible ? <div data-testid="add-user-modal">Add User Modal</div> : null
@@ -105,6 +106,9 @@ vi.mock('../../src/utils/Button.jsx', () => ({
     </button>
   )),
 }));
+
+// Now import the component AFTER all mocks are set up
+const UserManagement = await import('../../src/components/admin/UserManagement.jsx').then(module => module.default);
 
 describe('UserManagement Component', () => {
   let localStorageMock;
