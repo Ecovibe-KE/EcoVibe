@@ -36,6 +36,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pipenv
+          cd server
           pipenv install --deploy --ignore-pipfile
 
       # Step 4: Run contract validation
