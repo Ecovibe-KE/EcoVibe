@@ -301,7 +301,7 @@ const SignUpForm = () => {
               </div>
               <div className="">
                 {siteKey ? (
-                  <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
+                  <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} id="recaptcha" />
                 ) : (
                   <div className="alert alert-warning">
                     reCAPTCHA is not configured. Please contact Site Owner.
