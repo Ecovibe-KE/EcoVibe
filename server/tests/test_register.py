@@ -1,24 +1,3 @@
-import pytest
-from app import create_app
-from models.user import db, User
-
-
-@pytest.fixture
-def client(tmp_path, monkeypatch):
-    """Create a Flask test client with a temporary SQLite DB."""
-    db_path = tmp_path / "test.db"
-    monkeypatch.setenv("FLASK_SQLALCHEMY_DATABASE_URI", f"sqlite:///{db_path}")
-
-    app = create_app()
-    app.config.update({"TESTING": True})
-
-    with app.app_context():
-        db.create_all()
-
-    with app.test_client() as client:
-        yield client
-
-
 def test_register_success(client):
     """Test successful registration."""
     payload = {
@@ -29,8 +8,13 @@ def test_register_success(client):
         "phone_number": "0712345678",
     }
     res = client.post("/api/register", json=payload)
+    data = res.get_json()
+
     assert res.status_code == 201
-    assert res.get_json() == {"message": "Account created successfully."}
+    assert data["status"] == "success"
+    assert data["message"] == "Client registered successfully"
+    assert "data" in data
+    assert data["data"]["email"] == "john@example.com"
 
 
 def test_register_missing_field(client):
@@ -43,5 +27,8 @@ def test_register_missing_field(client):
         "phone_number": "0712345678",
     }
     res = client.post("/api/register", json=payload)
+    data = res.get_json()
+
     assert res.status_code == 400
-    assert "error" in res.get_json()
+    assert data["status"] == "error"
+    assert "Password" in data["message"]  # since your API explains what failed
