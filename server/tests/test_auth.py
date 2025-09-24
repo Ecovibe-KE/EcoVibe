@@ -2,6 +2,14 @@ import pytest
 from flask_jwt_extended import create_access_token
 from models.user import User, AccountStatus
 
+@pytest.fixture(autouse=True)
+def patch_email(monkeypatch):
+    """Disable actual email sending for all tests in this file."""
+    monkeypatch.setattr(
+        "utils.mail_templates.send_verification_email",
+        lambda *a, **k: None,  # no-op
+    )
+
 
 def test_register_success(client, db):
     payload = {
@@ -35,7 +43,6 @@ def test_register_missing_fields(client):
     payload = {"email": "caro@gmail.com", "password": "StrongPass1"}
     resp = client.post("/api/register", json=payload)
     assert resp.status_code == 400
-    # backend now returns field-specific message
     assert "full_name cannot be empty" in resp.get_json()["message"]
 
 
@@ -82,7 +89,6 @@ def test_verify_invalid_token(client):
     headers = {"Authorization": "Bearer invalidtoken"}
     resp = client.post("/api/verify", headers=headers)
     assert resp.status_code == 422
-    # accept either JWT's default message or a custom one
     msg = resp.get_json().get("msg", "").lower()
     assert "segments" in msg or "invalid" in msg
 
@@ -103,9 +109,7 @@ def test_verify_already_verified(client, db):
         identity=str(user.id),
         additional_claims={"purpose": "account_verification"},
     )
-    headers = {
-        "Authorization": f"Bearer {token}",
-    }
+    headers = {"Authorization": f"Bearer {token}"}
     resp = client.post("/api/verify", headers=headers)
     assert resp.status_code == 200
     assert "already verified" in resp.get_json()["message"]
