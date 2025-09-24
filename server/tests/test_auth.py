@@ -12,7 +12,6 @@ def patch_email(monkeypatch):
     )
 
 
-
 def test_register_weak_password(client):
     payload = {
         "full_name": "Weak Pass",

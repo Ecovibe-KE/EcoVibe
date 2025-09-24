@@ -8,9 +8,8 @@ def patch_email(monkeypatch):
     """Disable actual email sending for all tests in this file."""
     monkeypatch.setattr(
         "utils.mail_templates.send_verification_email",
-        lambda *a, **k: None,  
+        lambda *a, **k: None,
     )
-
 
 
 def test_register_user_success(client, session):
