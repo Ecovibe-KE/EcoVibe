@@ -1,0 +1,11 @@
+.about-underline {
+  background-image: linear-gradient(to right, #37b137 0 0);
+  /* Color of the underline */
+  background-position: bottom center;
+  /* Position of the underline */
+  background-size: 20% 2px;
+  /* Adjust length (20%) and thickness (2px) */
+  background-repeat: no-repeat;
+  padding-bottom: 4px;
+  /* Adjust vertical offset */
+}
