@@ -71,4 +71,49 @@ describe("Footer component", () => {
 
     expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
   });
+
+  //  Renders for all supported pageTypes
+  test("renders footer for all allowed page types", () => {
+    const pageTypes = ["landing", "blog", "services", "about", "contact"];
+
+    pageTypes.forEach((type) => {
+      render(
+        <MemoryRouter>
+          <Footer pageType={type} />
+        </MemoryRouter>
+      );
+
+      expect(screen.getByRole("contentinfo")).toBeInTheDocument();
+      cleanup(); // reset DOM between renders
+    });
+  });
+
+  //  Checks all navigation link hrefs
+  test("renders nav links with correct href attributes", () => {
+    render(
+      <MemoryRouter>
+        <Footer pageType="landing" />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("link", { name: /Quick Links/i })).toHaveAttribute(
+      "href",
+      "/about"
+    );
+    expect(screen.getByRole("link", { name: /Blogs/i })).toHaveAttribute(
+      "href",
+      "/blog"
+    );
+    expect(screen.getByRole("link", { name: /Login/i })).toHaveAttribute(
+      "href",
+      "/login"
+    );
+    expect(screen.getByRole("link", { name: /Privacy Policy/i })).toHaveAttribute(
+      "href",
+      "/privacy-policy"
+    );
+    expect(
+      screen.getByRole("link", { name: /Terms and Conditions/i })
+    ).toHaveAttribute("href", "/terms");
+  });
 });
