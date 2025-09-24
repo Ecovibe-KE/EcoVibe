@@ -17,7 +17,7 @@ import Terms from "./Terms.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 
 import Footer from "./Footer.jsx";
-import UserManagement from "./admin/userManagement/UserManagement.jsx";
+import UserManagement from "./admin/UserManagement.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {

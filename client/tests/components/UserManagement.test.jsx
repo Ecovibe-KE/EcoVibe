@@ -3,17 +3,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import UserManagement from '../../src/components/admin/userManagement/UserManagement';
-import { fetchUsers, addUsers, editUsers, blockUsers, deleteUsers } from '../../src/api/services/usermanagement';
+import UserManagement from '../../src/components/admin/UserManagement.jsx';
+import { fetchUsers, addUsers, editUsers, blockUser, deleteUsers, activateUser } from '../../src/api/services/usermanagement';
 import { toast } from 'react-toastify';
 
-// Mock the API functions
 vi.mock('../../src/api/services/usermanagement', () => ({
   fetchUsers: vi.fn(),
   addUsers: vi.fn(),
   editUsers: vi.fn(),
-  blockUsers: vi.fn(),
+  blockUser: vi.fn(),
   deleteUsers: vi.fn(),
+  activateUser: vi.fn(),
 }));
 
 // Mock react-toastify
@@ -24,7 +24,6 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
-// Mock child components with proper interaction handling
 vi.mock('../../src/components/admin/userManagement/AddUserModal', () => ({
   default: ({ visible, onSave, onCancel }) =>
     visible ? (
@@ -212,8 +211,9 @@ describe('UserManagement Component', () => {
   test('successfully unblocks a user', async () => {
     const user = userEvent.setup();
     fetchUsers.mockResolvedValue(mockUsers);
-    // Mock the unblock functionality - you might need to adjust this based on your API
-    blockUsers.mockResolvedValue({});
+
+    // Mock the activateUser function for unblocking
+    activateUser.mockResolvedValue({});
 
     render(<UserManagement />);
     await screen.findByText('Jane Smith');
@@ -227,30 +227,52 @@ describe('UserManagement Component', () => {
     await user.click(confirmButton);
 
     await waitFor(() => {
-      // Since you're using blockUsers for both, it should be called
-      expect(blockUsers).toHaveBeenCalled();
+      // Check that activateUser was called for unblocking
+      expect(activateUser).toHaveBeenCalled();
       expect(toast.success).toHaveBeenCalledWith('User Unblocked Successfully!');
     });
   });
 
   test('handles block error', async () => {
+  const user = userEvent.setup();
+  fetchUsers.mockResolvedValue(mockUsers);
+
+  // Change this line - use mockRejectedValue instead of mockResolvedValue
+  blockUser.mockRejectedValue(new Error('Block failed'));
+
+  render(<UserManagement />);
+  await screen.findByText('John Doe');
+
+  // Click block button for active user
+  const blockButtons = screen.getAllByTestId('button-block');
+  const activeBlockButton = blockButtons.find(button => !button.disabled);
+  await user.click(activeBlockButton);
+
+  const confirmButton = screen.getByText('Confirm block');
+  await user.click(confirmButton);
+
+  await waitFor(() => {
+    expect(toast.error).toHaveBeenCalledWith('Failed to block user. Please try again.');
+  });
+});
+
+  test('handles unblock error', async () => {
     const user = userEvent.setup();
     fetchUsers.mockResolvedValue(mockUsers);
-    blockUsers.mockRejectedValue(new Error('Block failed'));
+    activateUser.mockRejectedValue(new Error('Unblock failed'));
 
     render(<UserManagement />);
-    await screen.findByText('John Doe');
+    await screen.findByText('Jane Smith');
 
-    // Click block button for active user
-    const blockButtons = screen.getAllByTestId('button-block');
-    const activeBlockButton = blockButtons.find(button => !button.disabled);
-    await user.click(activeBlockButton);
+    // Click unblock button
+    const unblockButton = screen.getByTestId('button-unblock');
+    await user.click(unblockButton);
 
-    const confirmButton = screen.getByText('Confirm block');
+    const confirmButton = screen.getByText('Confirm unblock');
     await user.click(confirmButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Failed to block user. Please try again.');
+      expect(toast.error).toHaveBeenCalledWith('Failed to unblock user. Please try again.');
     });
   });
 
@@ -271,7 +293,6 @@ describe('UserManagement Component', () => {
     render(<UserManagement />);
     await screen.findByText('John Doe');
 
-    // Test view modal - use the first view button (user action, not the "View All" button)
     const viewButtons = screen.getAllByTestId('button-view');
     const userViewButton = viewButtons[1]; // Skip the "View All" button
     await user.click(userViewButton);
@@ -280,7 +301,6 @@ describe('UserManagement Component', () => {
     // Close view modal
     const closeViewButton = screen.getByText('Close View');
     await user.click(closeViewButton);
-
   });
 
   test('handles pagination correctly', async () => {
@@ -299,7 +319,6 @@ describe('UserManagement Component', () => {
     await screen.findByText('User 1');
 
     // Should show 10 users initially (default page size)
-    // Note: getAllByText will find all instances, so we need to be more specific
     const userNames = screen.getAllByText(/User \d+/);
     expect(userNames.length).toBe(10);
 
@@ -330,6 +349,25 @@ describe('UserManagement Component', () => {
     await user.click(cancelButton);
 
     expect(screen.queryByTestId('block-modal')).not.toBeInTheDocument();
-    expect(blockUsers).not.toHaveBeenCalled();
+    expect(blockUser).not.toHaveBeenCalled();
+  });
+
+  test('cancels unblock operation', async () => {
+    const user = userEvent.setup();
+    fetchUsers.mockResolvedValue(mockUsers);
+
+    render(<UserManagement />);
+    await screen.findByText('Jane Smith');
+
+    // Click unblock button
+    const unblockButton = screen.getByTestId('button-unblock');
+    await user.click(unblockButton);
+
+    // Cancel unblock in modal
+    const cancelButton = screen.getByText('Cancel unblock');
+    await user.click(cancelButton);
+
+    expect(screen.queryByTestId('unblock-modal')).not.toBeInTheDocument();
+    expect(activateUser).not.toHaveBeenCalled();
   });
 });

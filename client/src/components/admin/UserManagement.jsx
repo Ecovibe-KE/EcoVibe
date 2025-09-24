@@ -1,10 +1,10 @@
 import React, {useMemo, useState, useEffect} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Button from "../../../utils/Button.jsx";
-import AddUserModal from "./AddUserModal.jsx";
-import EditUserModal from "./EditUserModal.jsx";
-import DeleteUserModal from "./DeleteUserModal.jsx";
-import ViewUserModal from "./ViewUserModal.jsx";
+import Button from "../../utils/Button.jsx";
+import AddUserModal from "./userManagement/AddUserModal.jsx";
+import EditUserModal from "./userManagement/EditUserModal.jsx";
+import DeleteUserModal from "./userManagement/DeleteUserModal.jsx";
+import ViewUserModal from "./userManagement/ViewUserModal.jsx";
 import {
     fetchUsers,
     addUsers,
@@ -12,15 +12,15 @@ import {
     blockUser,
     activateUser,
     deleteUsers,
-} from "../../../api/services/usermanagement.js";
-import StatusInfo from "./StatusInfo.jsx";
+} from "../../api/services/usermanagement.js";
+import StatusInfo from "./userManagement/StatusInfo.jsx";
 import {
     validateEmail,
     validateName,
     validatePhone,
-} from "../../../utils/Validations.js";
+} from "../../utils/Validations.js";
 import {toast} from "react-toastify";
-import BlockUserModal from "./BlockUserModal.jsx";
+import BlockUserModal from "./userManagement/BlockUserModal.jsx";
 
 const Card = ({children}) => (
     <div className="w-100">
