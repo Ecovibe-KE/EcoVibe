@@ -80,7 +80,7 @@ const Button = ({
     add: "success",
     update: "warning",
     delete: "danger",
-    Block: "light",
+    block: "light",
     view: "dark",
   };
 
