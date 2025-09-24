@@ -14,17 +14,6 @@ import services from "../assets/services.png";
 import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
-import "../css/NavPanel.css";
-import home from "../assets/home.png";
-import bookings from "../assets/bookings.png";
-import profile from "../assets/profile.png";
-import resources from "../assets/resources.png";
-import payments from "../assets/payment.png";
-import blog from "../assets/blog.png";
-import services from "../assets/services.png";
-import about from "../assets/about.png";
-import users from "../assets/users.png";
-import tickets from "../assets/tickets.png";
 
 const NavPanel = () => {
   const [show, setShow] = useState(false);
