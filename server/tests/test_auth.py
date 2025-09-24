@@ -12,20 +12,6 @@ def patch_email(monkeypatch):
     )
 
 
-def test_register_success(client, db):
-    payload = {
-        "full_name": "Caroline Majute",
-        "email": "caro@gmail.com",
-        "password": "SecurePass123",
-        "industry": "Tech",
-        "phone_number": "0712345678",
-    }
-    resp = client.post("/api/register", json=payload)
-    assert resp.status_code == 201
-    data = resp.get_json()
-    assert data["status"] == "success"
-    assert data["data"]["email"] == payload["email"].lower()
-
 
 def test_register_weak_password(client):
     payload = {
@@ -38,27 +24,6 @@ def test_register_weak_password(client):
     resp = client.post("/api/register", json=payload)
     assert resp.status_code == 400
     assert "Password must" in resp.get_json()["message"]
-
-
-def test_register_missing_fields(client):
-    payload = {"email": "caro@gmail.com", "password": "StrongPass1"}
-    resp = client.post("/api/register", json=payload)
-    assert resp.status_code == 400
-    assert "full_name cannot be empty" in resp.get_json()["message"]
-
-
-def test_register_duplicate_email(client, db):
-    payload = {
-        "full_name": "Dup User",
-        "email": "caro@gmail.com",
-        "password": "StrongPass1",
-        "industry": "Finance",
-        "phone_number": "0700000000",
-    }
-    client.post("/api/register", json=payload)
-    resp = client.post("/api/register", json=payload)
-    assert resp.status_code == 409
-    assert "exists" in resp.get_json()["message"]
 
 
 def test_verify_account_success(client, db):

@@ -38,7 +38,7 @@ def create_app(config_name="development"):
         app.config.from_prefixed_env()
 
     # Load  Jwt secret key
-    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret")
+    app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
 
     # Init extensions
     db.init_app(app)
