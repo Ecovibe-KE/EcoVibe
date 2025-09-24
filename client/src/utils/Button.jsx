@@ -3,6 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import AddIcon from "@mui/icons-material/Add";
 import Block from "@mui/icons-material/Block";
+import UnBlock from '@mui/icons-material/SettingsBackupRestore';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
@@ -73,6 +74,7 @@ const Button = ({
     update: <EditIcon />,
     delete: <DeleteForeverIcon />,
     block: <Block />,
+    unblock: <UnBlock />,
     view: <RemoveRedEyeIcon />,
   };
 
@@ -81,6 +83,7 @@ const Button = ({
     update: "warning",
     delete: "danger",
     block: "light",
+    unblock: "light",
     view: "dark",
   };
 

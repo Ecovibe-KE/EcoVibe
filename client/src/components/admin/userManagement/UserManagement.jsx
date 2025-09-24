@@ -32,7 +32,19 @@ const Card = ({children}) => (
     </div>
 );
 
-
+const mockUsers = Array.from({ length: 28 }).map((_, idx) => ({
+  id: idx + 1,
+  name: "John Doe",
+  email: "john@example.com",
+  phone: "+2424242242424",
+  role: "Client",
+  status: idx % 7 === 0 ? "Suspended" : idx % 5 === 0 ? "Inactive" : "Active",
+  profileImage: "https://i.pravatar.cc/100?img=" + ((idx % 70) + 1),
+  createdAt: new Date(2024, idx % 12, (idx % 28) + 1).toISOString(),
+  updatedAt:
+    idx % 3 === 0
+      ? new Date(2025, idx % 12, (idx % 28) + 1).toISOString():null,
+}));
 
 const UserManagement = () => {
     const [page, setPage] = useState(1);
@@ -72,6 +84,7 @@ const UserManagement = () => {
 
             } catch (error) {
                 console.error("Failed to load users:", error);
+                setUsers(mockUsers);
             } finally {
                 setLoading(false);
             }
