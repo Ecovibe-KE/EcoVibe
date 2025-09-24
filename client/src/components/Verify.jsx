@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useSearchParams, useNavigate } from "react-router-dom"; 
+import api from "../api/axiosConfig";
 
 function VerifyPage() {
   const [status, setStatus] = useState("loading");
@@ -16,14 +16,12 @@ function VerifyPage() {
       return;
     }
 
-    axios
-      .post(
-        "http://127.0.0.1:5555/api/verify",
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+
+    // Save token to localStorage so axiosConfig picks it up
+    localStorage.setItem("authToken", token);
+
+    api
+      .post("/verify")
       .then((res) => {
         setStatus("success");
         setMessage(res.data.message || "Account verified successfully!");
