@@ -1,15 +1,21 @@
-from flask import Blueprint, request, jsonify, current_app
-from models import db
-from models.user import User
-from sqlalchemy import func
-from sqlalchemy.exc import IntegrityError
+import os
+import threading
+from datetime import timedelta
 
-# Create the blueprint
+from flask import Blueprint, request, jsonify, current_app
+from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import create_access_token
+from email_validator import validate_email, EmailNotValidError
+
+from models import db
+from models.user import User, AccountStatus
+from utils.mail_templates import send_verification_email
+
 user_bp = Blueprint("user", __name__)
 
 
-# Helper function to validate password
 def _is_valid_password(password: str) -> bool:
+    """Check password length + at least one uppercase + one digit"""
     if not isinstance(password, str) or not password.strip():
         return False
     if len(password) < 8:
@@ -23,38 +29,29 @@ def _is_valid_password(password: str) -> bool:
 
 @user_bp.route("/register", methods=["POST"])
 def register_user():
-    """
-    Register a new user from JSON payload and persist to the database.
-
-    Validates required fields (full_name, industry, phone_number), normalizes
-    email to lowercase, enforces password policy, checks uniqueness of email
-    (case-insensitive) and phone number, creates the User record, and commits
-    it to the database.
-
-    Returns:
-        A Flask response tuple (JSON, status_code):
-          - 201: Account created successfully.
-          - 400: Invalid/missing JSON payload, validation failures, or a
-                 ValueError raised during user creation.
-          - 409: Email or phone number already exists.
-          - 500: Database integrity error (detailed error logged on server).
-    """
     payload = request.get_json(silent=True)
+
+    # Reject if body is missing or malformed JSON
     if payload is None:
         return (
             jsonify(
-                {"status": "error", "message": "Invalid JSON format", "data": None}
+                {
+                    "status": "error",
+                    "message": "Invalid JSON format",
+                    "data": None,
+                }
             ),
             400,
         )
 
+    # Extract + sanitize fields
     full_name = str(payload.get("full_name", "")).strip()
     email_raw = str(payload.get("email", "")).strip()
     password = payload.get("password")
     industry = str(payload.get("industry", "")).strip()
     phone_number = str(payload.get("phone_number", "")).strip()
 
-    # --- Validation ---
+    # Validate required fields individually
     if not full_name:
         return (
             jsonify(
@@ -69,7 +66,11 @@ def register_user():
     if not industry:
         return (
             jsonify(
-                {"status": "error", "message": "industry cannot be empty", "data": None}
+                {
+                    "status": "error",
+                    "message": "industry cannot be empty",
+                    "data": None,
+                }
             ),
             400,
         )
@@ -85,17 +86,29 @@ def register_user():
             400,
         )
 
-    email = email_raw.lower()
-
+    # Validate password strength
     if not _is_valid_password(password):
         return (
             jsonify(
                 {
                     "status": "error",
-                    "message": (
-                        "Password must have at least 8 chars, "
-                        "one uppercase, one digit."
-                    ),
+                    "message": "Password must have at least 8 chars, "
+                    "one uppercase, one digit.",
+                    "data": None,
+                }
+            ),
+            400,
+        )
+
+    # Validate email format
+    try:
+        email = validate_email(email_raw).email.lower()
+    except EmailNotValidError:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "The email address is not valid.",
                     "data": None,
                 }
             ),
@@ -103,84 +116,112 @@ def register_user():
         )
 
     try:
+        # Check for duplicate email/phone before creating user
+        if User.query.filter_by(email=email).first():
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Email already exists",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+        if User.query.filter_by(phone_number=phone_number).first():
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Phone number already exists",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
+        # Create + persist user
         user = User(
             full_name=full_name,
             email=email,
             industry=industry,
             phone_number=phone_number,
+            account_status=AccountStatus.INACTIVE,
         )
         user.set_password(password)
-
         db.session.add(user)
         db.session.commit()
+
+        # Create JWT token for verification link
+        verification_token = create_access_token(
+            identity=str(user.id),
+            expires_delta=timedelta(hours=24),
+            additional_claims={"purpose": "account_verification"},
+        )
+
+        # Build link for frontend verify page
+        frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
+        verify_link = f"{frontend_url}/verify?token={verification_token}"
+
+        # Send email in background thread (non-blocking)
+        threading.Thread(
+            target=send_verification_email,
+            args=(user.email, user.full_name, verify_link),
+            daemon=True,
+        ).start()
 
         return (
             jsonify(
                 {
                     "status": "success",
-                    "message": "Client registered successfully",
-                    "data": user.to_safe_dict(include_email=True, include_phone=True),
+                    "message": "Registration successful. Please check your email "
+                    "to verify your account.",
+                    "data": user.to_safe_dict(
+                        include_email=True,
+                        include_phone=True,
+                    ),
                 }
             ),
             201,
         )
 
     except ValueError as e:
+        # Catch custom validation errors
         db.session.rollback()
-        return jsonify({"status": "error", "message": str(e), "data": None}), 400
-    except IntegrityError as e:
-        db.session.rollback()
-        # Log with traceback and map known UNIQUE violations to 409
-        current_app.logger.exception("IntegrityError while registering user")
-
-        constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "") or ""
-
-        msg = (str(e.orig) or "").lower()
-
-        if constraint in {"uq_user_email", "uq_user_phone_number"}:
-            field = "Email" if "email" in constraint else "Phone number"
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": f"{field} already exists.",
-                        "data": None,
-                    }
-                ),
-                409,
-            )
-
-        if ("unique" in msg or "duplicate" in msg) and "email" in msg:
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "Email already exists.",
-                        "data": None,
-                    }
-                ),
-                409,
-            )
-
-        if ("unique" in msg or "duplicate" in msg) and (
-            "phone" in msg or "phone_number" in msg
-        ):
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "Phone number already exists.",
-                        "data": None,
-                    }
-                ),
-                409,
-            )
-
         return (
             jsonify(
                 {
                     "status": "error",
-                    "message": "Database integrity error. Check server logs.",
+                    "message": str(e),
+                    "data": None,
+                }
+            ),
+            400,
+        )
+
+    except IntegrityError:
+        # Extra safeguard for race conditions on duplicates
+        db.session.rollback()
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Email or phone number already exists.",
+                    "data": None,
+                }
+            ),
+            409,
+        )
+
+    except Exception:
+        # Unexpected issues (DB down, etc.)
+        db.session.rollback()
+        current_app.logger.exception("Unexpected error during registration")
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Server error",
                     "data": None,
                 }
             ),
