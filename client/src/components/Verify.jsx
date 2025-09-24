@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"; 
 import api from "../api/axiosConfig";
+import Button from "../components/Button"; 
 
 function VerifyPage() {
   const [status, setStatus] = useState("loading");
@@ -16,8 +17,6 @@ function VerifyPage() {
       return;
     }
 
-
-    // Save token to localStorage so axiosConfig picks it up
     localStorage.setItem("authToken", token);
 
     api
@@ -44,21 +43,11 @@ function VerifyPage() {
             ✅ Account Verified!
           </h2>
           <p style={{ color: "#333" }}>{message}</p>
-          <button
-            onClick={() => navigate("/login")}
-            style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              backgroundColor: "#f5a030",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
+
+        
+          <Button onClick={() => navigate("/login")} color="#f5a030">
             Go to Login
-          </button>
+          </Button>
         </>
       )}
 
