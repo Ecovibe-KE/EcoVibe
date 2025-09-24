@@ -2,6 +2,7 @@ import pytest
 from flask_jwt_extended import create_access_token
 from models.user import User, AccountStatus
 
+
 @pytest.fixture(autouse=True)
 def patch_email(monkeypatch):
     """Disable actual email sending for all tests in this file."""

@@ -2,6 +2,7 @@ import json
 import pytest
 from models.user import User
 
+
 @pytest.fixture(autouse=True)
 def patch_email(monkeypatch):
     """Disable actual email sending for all tests in this file."""
@@ -9,6 +10,8 @@ def patch_email(monkeypatch):
         "utils.mail_templates.send_verification_email",
         lambda *a, **k: None,  # no-op
     )
+
+
 # Register resouce tests
 def test_register_user_success(client, session):
     """Test user registration with valid data."""
