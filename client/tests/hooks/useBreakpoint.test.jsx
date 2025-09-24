@@ -1,6 +1,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import useBreakpoint from "../hooks/useBreakpoint";
+import useBreakpoint from "../../src/hooks/useBreakpoint";
+
 
 describe("useBreakpoint hook", () => {
   const resizeWindow = (width) => {
