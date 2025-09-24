@@ -14,6 +14,9 @@ import AboutUs from "./AboutUs.jsx";
 import Blog from "./Blog.jsx";
 import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import Terms from "./Terms.jsx";
+import UserManagement from "./admin/UserManagement.jsx";
+import TopNavbar from "./TopNavbar.jsx";
+
 import Footer from "./Footer.jsx";
 
 // Footer Wrapper to detect page type
@@ -79,18 +82,18 @@ function App() {
             <Suspense fallback={<div className="p-4">Loading…</div>}>
               <Routes>
                 <Route path="/dashboard" element={<Outlet />}>
-                  <Route path="main" element={<p>Dashboard</p>} />
+                  <Route path="/dashboard" element={<p>Dashboard Main</p>} />
                   <Route index element={<Navigate to="main" replace />} />
-                  <Route path="bookings/*" element={<p>Bookings</p>} />
-                  <Route path="resources/*" element={<p>Resources</p>} />
-                  <Route path="profile/*" element={<p>Profile</p>} />
-                  <Route path="payments/*" element={<p>Payments</p>} />
-                  <Route path="blog/*" element={<p>Blog</p>} />
-                  <Route path="services/*" element={<p>Services</p>} />
-                  <Route path="about/*" element={<p>About (management)</p>} />
-                  <Route path="users/*" element={<p>Users</p>} />
-                  <Route path="tickets/*" element={<p>Tickets</p>} />
-                  <Route path="*" element={<Navigate to="main" replace />} />
+                  <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
+                  <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                  <Route path="/dashboard/profile" element={<p>Profile</p>} />
+                  <Route path="/dashboard/payments" element={<p>Payments</p>} />
+                  <Route path="/dashboard/blog" element={<p>Blog</p>} />
+                  <Route path="/dashboard/services" element={<p>Services</p>} />
+                  <Route path="/dashboard/about" element={<p>About (management)</p>} />
+                  <Route path="/dashboard/users" element={<UserManagement />} />
+                  <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
+                  <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
                 </Route>
               </Routes>
             </Suspense>
@@ -127,5 +130,6 @@ function App() {
     </>
   );
 }
+
 
 export default App;
