@@ -229,6 +229,9 @@ const NavPanel = () => {
               variant="light"
               onClick={handleShow}
               className="d-lg-none position-fixed shadow-sm"
+              aria-label="Open navigation menu"
+              aria-controls="navpanel-offcanvas"
+              aria-expanded={show}
               style={{
                 top: "75px",
                 left: "15px",
@@ -242,10 +245,10 @@ const NavPanel = () => {
                 transition: "all 0.3s ease",
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = "rgba(245, 230, 211, 0.95)";
+                e.currentTarget.style.backgroundColor = "rgba(245, 230, 211, 0.95)";
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
               }}
             >
               <div
@@ -288,6 +291,7 @@ const NavPanel = () => {
 
           {/* Offcanvas sliding panel */}
           <Offcanvas
+            id="navpanel-offcanvas"
             show={show}
             onHide={handleClose}
             placement="start"

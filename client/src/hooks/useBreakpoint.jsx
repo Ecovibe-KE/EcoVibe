@@ -5,10 +5,15 @@ const useBreakpoint = (breakpoint = "lg") => {
   const breakpoints = { sm: 576, md: 768, lg: 992, xl: 1200, xxl: 1400 };
   const bp = breakpoints[breakpoint] || 992;
 
-  const [isUp, setIsUp] = useState(window.innerWidth >= bp);
+  const getIsUp = () =>
+    typeof window !== "undefined" ? window.innerWidth >= bp : false;
+  const [isUp, setIsUp] = useState(getIsUp);
 
   useEffect(() => {
-    const handleResize = () => setIsUp(window.innerWidth >= bp);
+    const handleResize = () =>
+      setIsUp(typeof window !== "undefined" && window.innerWidth >= bp);
+    // Recalculate once on mount or when `bp` changes
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [bp]);
