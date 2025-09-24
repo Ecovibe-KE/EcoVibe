@@ -83,7 +83,7 @@ def test_register_user_missing_email(client, session):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert "An email address must have an @-sign." in response.get_data(as_text=True)
+    assert "The email address is not valid." in response.get_data(as_text=True)
 
 
 def test_register_user_missing_password(client, session):
@@ -181,7 +181,7 @@ def test_register_user_invalid_email(client, session):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert "An email address must have an @-sign." in response.get_data(as_text=True)
+    assert "The email address is not valid." in response.get_data(as_text=True)
 
 
 def test_register_user_existing_phone_number(client, session):
