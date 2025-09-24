@@ -1,39 +1,60 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_cors import CORS
 from routes import register_routes
 from models import db
-
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 migrate = Migrate()
 
 
-def create_app():
+def create_app(config_name="development"):
+    """
+    Create and configure a Flask application instance.
+
+    Parameters:
+        config_name (str): Configuration profile to use. If "testing", the app uses
+            the FLASK_TEST_SQLALCHEMY_DATABASE_URI environment variable and enables
+            Flask's TESTING mode; otherwise configuration is loaded from
+            environment variables using Flask's prefixed env loader.
+
+    Returns:
+        flask.Flask: A configured Flask application with the SQLAlchemy extension
+        initialized, Flask-Migrate bound, application models imported, and routes
+        registered.
+    """
     app = Flask(__name__)
-    app.config.from_prefixed_env()
+    if config_name == "testing":
+        app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+            "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
+        )
+        app.config["TESTING"] = True
+    else:
+        app.config.from_prefixed_env()
 
     db.init_app(app)
     migrate.init_app(app, db)
     from models import (
-        blogs,
-        bookings,
+        blog,
+        booking,
         comment,
         document,
-        invoices,
-        newsletter_subscribers,
-        payments,
-        services,
-        ticket_messages,
-        tickets,
-        tokens,
+        invoice,
+        newsletter_subscriber,
+        payment,
+        service,
+        ticket_message,
+        ticket,
+        token,
         user,
     )
 
     register_routes(app)
-
+    origins = os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",")
+    CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
     return app
 
 

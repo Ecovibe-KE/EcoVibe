@@ -5,7 +5,7 @@ import { getAnalytics } from "firebase/analytics";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ,
   authDomain: "moto-tracker-57f25.firebaseapp.com",
   databaseURL: "https://moto-tracker-57f25-default-rtdb.firebaseio.com",
   projectId: "moto-tracker-57f25",

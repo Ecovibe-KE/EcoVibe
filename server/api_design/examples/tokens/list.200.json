@@ -1,0 +1,17 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "user_id": 7,
+      "created_at": "2025-09-20T10:15:30Z",
+      "expiry_time": "2025-10-20T10:15:30Z"
+    },
+    {
+      "id": 2,
+      "user_id": 8,
+      "created_at": "2025-09-21T12:45:00Z",
+      "expiry_time": "2025-10-21T12:45:00Z"
+    }
+  ]
+}
