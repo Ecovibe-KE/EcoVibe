@@ -1,7 +1,13 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 
-const BlockUserModal = ({ visible, user, type = "block", onCancel, onConfirm }) => {
+const BlockUserModal = ({
+  visible,
+  user,
+  type = "block",
+  onCancel,
+  onConfirm,
+}) => {
   if (!visible || !user) return null;
 
   const isBlockAction = type === "block";
@@ -34,7 +40,9 @@ const BlockUserModal = ({ visible, user, type = "block", onCancel, onConfirm }) 
           ></button>
         </div>
         <div className="p-3">
-          <p className="mb-2">You are about to {actionDescription} this user:</p>
+          <p className="mb-2">
+            You are about to {actionDescription} this user:
+          </p>
           <div
             className="border rounded p-2 mb-3"
             style={{ background: "#f8fafc" }}
