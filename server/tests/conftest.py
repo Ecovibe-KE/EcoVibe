@@ -1,6 +1,7 @@
 import pytest
 from app import create_app, db as _db
 
+
 @pytest.fixture(autouse=True)
 def patch_email(monkeypatch):
     """Disable actual email sending for all tests in this file."""
