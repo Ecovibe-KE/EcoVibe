@@ -35,7 +35,6 @@ def create_app(config_name="development"):
     else:
         app.config.from_prefixed_env()
 
-    print
     db.init_app(app)
     migrate.init_app(app, db)
     from models import (
