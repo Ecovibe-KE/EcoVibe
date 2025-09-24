@@ -2,9 +2,7 @@ import { useEffect, useMemo, Suspense } from "react";
 import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useAnalytics } from "../hooks/useAnalytics";
-
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
 import Homepage from "./Homepage.jsx";
@@ -16,7 +14,8 @@ import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import Terms from "./Terms.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
-
+import Login from "./Login.jsx";
+import Button from "../utils/Button.jsx";
 import Footer from "./Footer.jsx";
 
 // Footer Wrapper to detect page type
@@ -29,6 +28,7 @@ function FooterWrapper() {
     if (path.startsWith("/blog")) return "blog";
     if (path.startsWith("/services")) return "services";
     if (path.startsWith("/contact")) return "contact";
+    if (path.startsWith("/login")) return "landing";
     return "landing";
   }, [location.pathname]);
 
@@ -117,6 +117,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}
