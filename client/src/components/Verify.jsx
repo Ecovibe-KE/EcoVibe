@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"; 
-import api from "../api/axiosConfig";
 import Button from "../utils/Button"; 
+import { verifyAccount } from "../api/services/auth"; 
+
 
 function VerifyPage() {
   const [status, setStatus] = useState("loading");
@@ -19,17 +20,18 @@ function VerifyPage() {
 
     localStorage.setItem("authToken", token);
 
-    api
-      .post("/verify")
+     verifyAccount()
       .then((res) => {
         setStatus("success");
-        setMessage(res.data.message || "Account verified successfully!");
+        setMessage(res.message || "Account verified successfully!");
       })
       .catch((err) => {
         setStatus("error");
-        setMessage(err.response?.data?.message || "Verification failed.");
+        setMessage(err.message || "Verification failed.");
       });
   }, [searchParams]);
+
+   
 
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
