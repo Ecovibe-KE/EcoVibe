@@ -4,9 +4,9 @@ on:
   # Run on pull requests when API design files change
   pull_request:
     paths:
-      - "server/api_design/contracts/**"     # Contracts definitions
-      - "server/api_design/examples/**"      # Example payloads
-      - "server/api_design/schema.json"      # Shared schema
+      - "server/api_design/contracts/**" # Contracts definitions
+      - "server/api_design/examples/**" # Example payloads
+      - "server/api_design/schema.json" # Shared schema
       - "server/api_design/validate_contracts.py" # Validation script
 
   # Also run automatically when pushing to main/develop,
@@ -18,7 +18,7 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest  # Standard GitHub-hosted Linux runner
+    runs-on: ubuntu-latest # Standard GitHub-hosted Linux runner
 
     steps:
       # Step 1: Pull down the repo contents
@@ -29,7 +29,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"  # Keep in sync with project requirements
+          python-version: "3.12" # Keep in sync with project requirements
 
       # Step 3: Install dependencies
       # Using pipenv to match our local dev environment exactly
