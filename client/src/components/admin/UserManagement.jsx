@@ -1,12 +1,12 @@
 import React, {useMemo, useState, useEffect} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "../../utils/Button.jsx";
-import AddUserModal from "./user_management/AddUserModal.jsx";
-import EditUserModal from "./user_management/EditUserModal.jsx";
-import DeleteUserModal from "./user_management/DeleteUserModal.jsx";
-import ViewUserModal from "./user_management/ViewUserModal.jsx";
-import BlockUserModal from "./user_management/BlockUserModal.jsx";
-import StatusInfo from "./user_management/StatusInfo.jsx";
+import AddUserModal from "./AddUserModal.jsx";
+import EditUserModal from "./EditUserModal.jsx";
+import DeleteUserModal from "./DeleteUserModal.jsx";
+import ViewUserModal from "./ViewUserModal.jsx";
+import BlockUserModal from "./BlockUserModal.jsx";
+import StatusInfo from "./StatusInfo.jsx";
 import {
     fetchUsers,
     addUsers,
