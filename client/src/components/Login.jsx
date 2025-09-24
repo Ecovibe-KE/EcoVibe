@@ -21,7 +21,6 @@ const Login = () => {
     if (!key) {
       toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
     }
-
   }, []);
 
   const handleChange = (e) => {
@@ -56,7 +55,9 @@ const Login = () => {
       <div className="login-image">
         <div className="login-branding-overlay">
           <h1 className="login-brand-title">ECOVIBE</h1>
-          <p className="login-brand-subtitle">Empowering Sustainable Solutions</p>
+          <p className="login-brand-subtitle">
+            Empowering Sustainable Solutions
+          </p>
         </div>
         <img
           src="/Empower.png"
