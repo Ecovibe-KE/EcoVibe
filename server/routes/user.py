@@ -188,6 +188,26 @@ def register_user():
     except ValueError as e:
         # Catch custom validation errors
         db.session.rollback()
+        return jsonify({"status": "error", "message": str(e), "data": None}), 400
+    except IntegrityError as e:
+        db.session.rollback()
+        current_app.logger.exception("IntegrityError while registering user")
+
+        constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "")
+
+        if constraint in {"uq_user_email", "uq_user_phone_number"}:
+            field = "Email" if "email" in constraint else "Phone number"
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": f"{field} already exists.",
+                        "data": None,
+                    }
+                ),
+                409,
+            )
+
         return (
             jsonify(
                 {

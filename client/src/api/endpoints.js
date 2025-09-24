@@ -6,7 +6,7 @@ export const ENDPOINTS = {
   // Contact
   contact: "/contact",
   //verify
-  verify: "/verify", 
+  verify: "/verify",
 
   // Add more endpoints as needed here
 };

@@ -1,29 +1,32 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "API Response Schema",
-  "type": "object",
-  "properties": {
-    "status": {
-      "type": "string",
-      "enum": ["success", "error"]
-    },
-    "message": {
-      "type": ["string", "null"]
-    },
-    "data": {
-      "oneOf": [{ "type": "object" }, { "type": "array" }, { "type": "null" }]
-    }
-  },
-  "required": ["status", "data"],
-  "allOf": [
+  "oneOf": [
     {
-      "if": {
-        "properties": { "status": { "const": "error" } }
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "message": { "type": ["string", "null"] },
+        "data": {
+          "oneOf": [
+            { "type": "object" },
+            { "type": "array" },
+            { "type": "null" }
+          ]
+        }
       },
-      "then": {
-        "required": ["message"]
-      }
+      "required": ["status", "data"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "error" },
+        "message": { "type": ["string", "null"] },
+        "data": { "type": "null" }
+      },
+      "required": ["status", "message", "data"],
+      "additionalProperties": false
     }
-  ],
-  "additionalProperties": false
+  ]
 }
