@@ -32,6 +32,7 @@ const {
   mockValidatePhone: vi.fn()
 }));
 
+// Mock all the imports that are causing issues
 vi.mock('../../src/api/services/usermanagement', () => ({
   fetchUsers: mockFetchUsers,
   addUsers: mockAddUsers,
@@ -54,37 +55,51 @@ vi.mock('../../src/utils/Validations', () => ({
   validatePhone: mockValidatePhone,
 }));
 
-vi.mock('../../src/components/admin/user_management/AddUserModal', () => ({
-  default: ({ visible }) => visible ? <div data-testid="add-user-modal">Add User Modal</div> : null,
+// Mock Bootstrap CSS to avoid import issues
+vi.mock('bootstrap/dist/css/bootstrap.min.css', () => ({}));
+
+// Create simple mocks for all the modal components
+vi.mock('../../src/components/admin/user_management/AddUserModal.jsx', () => ({
+  default: vi.fn(({ visible }) =>
+    visible ? <div data-testid="add-user-modal">Add User Modal</div> : null
+  ),
 }));
 
-vi.mock('../../src/components/admin/user_management/EditUserModal', () => ({
-  default: ({ visible }) => visible ? <div data-testid="edit-user-modal">Edit User Modal</div> : null,
+vi.mock('../../src/components/admin/user_management/EditUserModal.jsx', () => ({
+  default: vi.fn(({ visible }) =>
+    visible ? <div data-testid="edit-user-modal">Edit User Modal</div> : null
+  ),
 }));
 
-vi.mock('../../src/components/admin/user_management/DeleteUserModal', () => ({
-  default: ({ visible }) => visible ? <div data-testid="delete-user-modal">Delete User Modal</div> : null,
+vi.mock('../../src/components/admin/user_management/DeleteUserModal.jsx', () => ({
+  default: vi.fn(({ visible }) =>
+    visible ? <div data-testid="delete-user-modal">Delete User Modal</div> : null
+  ),
 }));
 
-vi.mock('../../src/components/admin/user_management/ViewUserModal', () => ({
-  default: ({ visible }) => visible ? <div data-testid="view-user-modal">View User Modal</div> : null,
+vi.mock('../../src/components/admin/user_management/ViewUserModal.jsx', () => ({
+  default: vi.fn(({ visible }) =>
+    visible ? <div data-testid="view-user-modal">View User Modal</div> : null
+  ),
 }));
 
-vi.mock('../../src/components/admin/user_management/BlockUserModal', () => ({
-  default: ({ visible }) => visible ? <div data-testid="block-user-modal">Block User Modal</div> : null,
+vi.mock('../../src/components/admin/user_management/BlockUserModal.jsx', () => ({
+  default: vi.fn(({ visible }) =>
+    visible ? <div data-testid="block-user-modal">Block User Modal</div> : null
+  ),
 }));
 
-vi.mock('../../src/components/admin/user_management/StatusInfo', () => ({
-  default: ({ status }) => <span data-testid="status-info">{status}</span>,
+vi.mock('../../src/components/admin/user_management/StatusInfo.jsx', () => ({
+  default: vi.fn(({ status }) => <span data-testid="status-info">{status}</span>),
 }));
 
-// Fixed Button mock - simpler approach
-vi.mock('../../src/utils/Button', () => ({
-  default: vi.fn(({ label, onClick, action, disabled }) => (
+// Mock Button component
+vi.mock('../../src/utils/Button.jsx', () => ({
+  default: vi.fn(({ label, onClick, disabled }) => (
     <button
-      data-testid={`button-${action || label.toLowerCase().replace(/\s+/g, '-')}`}
       onClick={onClick}
       disabled={disabled}
+      data-testid={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
     >
       {label}
     </button>
@@ -107,6 +122,11 @@ describe('UserManagement Component', () => {
     };
     global.localStorage = localStorageMock;
     localStorageMock.getItem.mockReturnValue('Admin'); // Default role
+
+    // Setup validation mocks to return empty strings (no errors)
+    mockValidateEmail.mockReturnValue('');
+    mockValidateName.mockReturnValue('');
+    mockValidatePhone.mockReturnValue('');
   });
 
   test('renders component with loading state initially', async () => {
@@ -170,10 +190,7 @@ describe('UserManagement Component', () => {
     expect(screen.getByText('098-765-4321')).toBeInTheDocument();
     expect(screen.getByText('Admin')).toBeInTheDocument();
 
-    // Debug: Log what buttons are actually rendered
-    console.log('All buttons:', screen.getAllByRole('button').map(btn => btn.textContent));
-
-    // Check if action buttons are rendered - use text content instead of testid
+    // Check if action buttons are rendered by their text content
     expect(screen.getByText('Add User')).toBeInTheDocument();
     expect(screen.getByText('View All')).toBeInTheDocument();
   });
