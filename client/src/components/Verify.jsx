@@ -18,9 +18,9 @@ function VerifyPage() {
       return;
     }
 
-    localStorage.setItem("authToken", token);
+   
 
-     verifyAccount()
+     verifyAccount(token)
       .then((res) => {
         setStatus("success");
         setMessage(res.message || "Account verified successfully!");
