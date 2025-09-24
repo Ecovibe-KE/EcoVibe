@@ -1,6 +1,6 @@
 import pytest
-from server.app import create_app
-from server.models.user import db, User
+from app import create_app
+from models.user import db, User
 
 
 @pytest.fixture

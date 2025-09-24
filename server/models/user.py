@@ -6,11 +6,8 @@ from sqlalchemy import UniqueConstraint
 from urllib.parse import urlparse
 from enum import Enum as PyEnum
 from . import db
-<<<<<<< HEAD
-=======
 import re
 from utils.phone_validation import validate_phone_number
->>>>>>> origin/develop
 
 
 class Role(PyEnum):
