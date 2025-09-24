@@ -1,105 +1,51 @@
 import React, { useState } from "react";
-import Button from "./utils/Button.jsx";
-import Input from "./utils/Input.jsx";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../css/forgotPassword.css";
+import { Button, Form } from "react-bootstrap";
 
 const ForgotPassword = () => {
-  const [formData, setFormData] = useState({
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!formData.newPassword || !formData.confirmPassword) {
-      toast.error("Please fill out both fields.");
-      return;
-    }
-
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    // ✅ Call API to reset password here
-    console.log("Password reset with:", formData.newPassword);
-    toast.success("Password reset successful! Please log in.");
-    setFormData({ newPassword: "", confirmPassword: "" });
+    // Placeholder for backend API call
+    console.log("Password reset link sent to:", email);
   };
 
   return (
-    <div className="auth-wrapper">
-      {/* Left side: Image + Branding */}
-      <div className="auth-image">
+    <div className="d-flex vh-100">
+      {/* Left Section */}
+      <div className="d-flex flex-column justify-content-center align-items-center flex-1 bg-dark text-white p-5">
+        <h1>ECOVIBE</h1>
+        <p>Empowering Sustainable Solutions</p>
         <img
-          src="/assets/login-side-image.png"
+          src="/Empower.png"
           alt="EcoVibe Illustration"
-          className="auth-image-img"
+          className="img-fluid mt-3"
+          style={{ maxHeight: "300px" }}
         />
-        <div className="auth-branding">
-          <h1 className="auth-brand-title">ECOVIBE</h1>
-          <p className="auth-brand-subtitle">
-            Empowering Sustainable Solutions
-          </p>
-        </div>
       </div>
 
-      {/* Right side: Forgot Password Form */}
-      <div className="auth-container">
-        <div className="auth-card">
-          <h2 className="mb-4" style={{ fontWeight: "bold" }}>
-            Forgot Password
-          </h2>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <Input
-                type="password"
-                name="newPassword"
-                label="New Password"
-                value={formData.newPassword}
-                onChange={handleChange}
+      {/* Right Section */}
+      <div className="d-flex flex-column justify-content-center align-items-center flex-1 p-5">
+        <div className="w-100" style={{ maxWidth: "400px" }}>
+          <h2 className="mb-4">Forgot Password</h2>
+          <p>Enter your email to receive a password reset link.</p>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </div>
-
-            <div className="mb-4">
-              <Input
-                type="password"
-                name="confirmPassword"
-                label="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              className="w-100"
-              borderRadius="10rem"
-              color="#37B137"
-              textColor="#fff"
-            >
-              RESET PASSWORD
+            </Form.Group>
+            <Button variant="success" type="submit" className="w-100">
+              Send Reset Link
             </Button>
-          </form>
+          </Form>
         </div>
       </div>
-
-      <ToastContainer />
     </div>
   );
 };

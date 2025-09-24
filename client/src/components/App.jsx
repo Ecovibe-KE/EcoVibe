@@ -17,6 +17,7 @@ import TopNavbar from "./TopNavbar.jsx";
 import Login from "./Login.jsx";
 import Button from "../utils/Button.jsx";
 import Footer from "./Footer.jsx";
+import Header from "./Header.jsx"; // ✅ NEW: Header for logged-in pages
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -61,6 +62,9 @@ function App() {
     location.pathname.startsWith(route),
   );
 
+  // Detect logged-in user
+  const isLoggedIn = Boolean(localStorage.getItem("authToken")); // Replace with your real auth logic
+
   // Analytics event
   useEffect(() => {
     logEvent("screen_view", {
@@ -71,14 +75,20 @@ function App() {
 
   return (
     <>
-      {/*  Non-management paths - show NavBar*/}
-      {!isManagementRoute && <NavBar />}
+      {/* Show NavBar only for public pages */}
+      {!isManagementRoute && !isLoggedIn && <NavBar />}
+
+      {/* Show Header only for logged-in users (client/admin dashboard) */}
+      {isLoggedIn && !isManagementRoute && <Header userType="client" />}
 
       {/* Management routes - show NavPanel layout */}
       {isManagementRoute ? (
         <div className="d-flex vh-100">
           <NavPanel />
           <main role="main" className="flex-fill bg-light overflow-auto">
+            {/* Admin Header */}
+            <Header userType="admin" />
+
             <Suspense fallback={<div className="p-4">Loading…</div>}>
               <Routes>
                 <Route path="/dashboard" element={<Outlet />}>
@@ -135,8 +145,8 @@ function App() {
         pauseOnHover
       />
 
-      {/* Footer */}
-      {!isManagementRoute && <FooterWrapper />}
+      {/* Footer - hide for logged-in areas */}
+      {!isManagementRoute && !isLoggedIn && <FooterWrapper />}
     </>
   );
 }

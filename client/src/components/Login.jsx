@@ -3,47 +3,41 @@ import Button from "../utils/Button.jsx";
 import Input from "../utils/Input.jsx";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link } from "react-router-dom";
-import "../css/login.css";
+import styles from "../css/Login.module.css"; 
 
 const Login = () => {
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
-    if (!key) {
-      toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
-    }
+    if (!key) toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!recaptchaRef.current) {
-      toast.error("reCAPTCHA not loaded. Please refresh and try again.");
-      return;
-    }
-
     try {
-      const token = await recaptchaRef.current.executeAsync();
-      recaptchaRef.current.reset();
-      console.log("Logging in with:", { ...formData, token });
-      toast.success("Login successful! Redirecting...");
+      console.log("🔧 [TEST MODE] Skipping reCAPTCHA validation");
+      console.log("Logging in with:", formData);
+
+      if (formData.email && formData.password) {
+        localStorage.setItem("authToken", "dummy_token_123");
+        toast.success("Login successful! Redirecting...");
+        setTimeout(() => (window.location.href = "/dashboard"), 1200);
+      } else {
+        toast.error("Please enter email and password.");
+      }
     } catch (err) {
       console.error("Login failed:", err);
       toast.error("Login failed. Please try again.");
@@ -51,74 +45,70 @@ const Login = () => {
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-image">
-        <div className="login-branding-overlay">
-          <h1 className="login-brand-title">ECOVIBE</h1>
-          <p className="login-brand-subtitle">
-            Empowering Sustainable Solutions
-          </p>
-        </div>
-        <img
-          src="/Empower.png"
-          alt="EcoVibe Illustration"
-          className="login-image-img"
-        />
+    <div className={styles.wrapper}>
+      {/* Left Section */}
+      <div className={styles.leftSection}>
+        <h1 className={styles.brandTitle}>ECOVIBE</h1>
+        <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
+        <img src="/Empower.png" alt="EcoVibe Illustration" className="img-fluid mt-3" style={{ width: "400px", height: "auto" }}/>
       </div>
 
-      <div className="login-container">
-        <div className="login-card">
+      {/* Right Section */}
+      <div className={styles.rightSection}>
+        <div className={styles.loginCard}>
           <form onSubmit={handleSubmit}>
-            <h2 className="login-heading">Log In</h2>
+            <h2 className="text-left mb-4 text-dark" style={{ fontSize: "40px" }}>Log In</h2>
 
-            <div className="mb-4">
-              <Input
-                type="email"
-                name="email"
-                label="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+            <div className="mb-3">
+             <Input 
+  type="email" 
+  name="email" 
+  label="Email Address" 
+  value={formData.email} 
+  onChange={handleChange} 
+  required 
+  autoComplete="new-email"   // prevent Chrome autofill
+  spellCheck={false}
+/>
             </div>
 
-            <div className="mb-4">
-              <Input
-                type="password"
-                name="password"
-                label="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+            <div className="mb-3">
+              <Input 
+  type="password" 
+  name="password" 
+  label="Password" 
+  value={formData.password} 
+  onChange={handleChange} 
+  required 
+  autoComplete="new-password"  // prevent Chrome autofill
+  spellCheck={false}
+/>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-3">
               {siteKey ? (
                 <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} size="normal" />
               ) : (
-                <div className="alert alert-warning">
-                  reCAPTCHA not configured.
-                </div>
+                <div className="alert alert-warning">reCAPTCHA not configured.</div>
               )}
             </div>
+<div className={styles.loginActions}>
+  <Button
+    type="submit"
+    size="16px"
+    className={`btn btn-success ${styles.loginButton}`}
+    borderRadius="10rem"
+  >
+    Login
+  </Button>
 
-            <div className="login-actions">
-              <Button
-                type="submit"
-                size="lg"
-                className="login-btn"
-                borderRadius="10rem"
-                color="#37B137"
-              >
-                Login
-              </Button>
+  <Link to="/forgot-password" className={styles.forgotLink}>
+    Forgot your password?
+  </Link>
+</div>
 
-              <Link to="/forgot-password" className="login-link">
-                Forgot your password?
-              </Link>
-            </div>
-          </form>
+
+       </form>
         </div>
       </div>
 
