@@ -85,15 +85,24 @@ function App() {
                   <Route path="/dashboard" element={<p>Dashboard Main</p>} />
                   <Route index element={<Navigate to="main" replace />} />
                   <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
-                  <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                  <Route
+                    path="/dashboard/resources"
+                    element={<p>Resources</p>}
+                  />
                   <Route path="/dashboard/profile" element={<p>Profile</p>} />
                   <Route path="/dashboard/payments" element={<p>Payments</p>} />
                   <Route path="/dashboard/blog" element={<p>Blog</p>} />
                   <Route path="/dashboard/services" element={<p>Services</p>} />
-                  <Route path="/dashboard/about" element={<p>About (management)</p>} />
+                  <Route
+                    path="/dashboard/about"
+                    element={<p>About (management)</p>}
+                  />
                   <Route path="/dashboard/users" element={<UserManagement />} />
                   <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                  <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
+                  <Route
+                    path="/dashboard/*"
+                    element={<Navigate to="/dashboard" replace />}
+                  />
                 </Route>
               </Routes>
             </Suspense>
@@ -130,6 +139,5 @@ function App() {
     </>
   );
 }
-
 
 export default App;
