@@ -13,14 +13,14 @@ flask-migrate = "==3.1.0"
 gunicorn = "==22.0.0"
 phonenumbers = "==9.0.14"
 psycopg2-binary = "*"
+flask_restful = "*"
+flask-cors = "*"
 
 [dev-packages]
 pytest = "==8.2.2"
 black = "==24.4.2"
-flake8 = "==7.1.0"
 pytest-cov = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.12"
-
-

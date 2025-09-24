@@ -1,0 +1,77 @@
+[
+  {
+    "endpoint": "/api/clients",
+    "method": "GET",
+    "description": "Retrieve all clients.",
+    "responses": {
+      "200": { "$ref": "../examples/clients/list.200.json" },
+      "403": { "$ref": "../examples/errors/403.json" }
+    }
+  },
+  {
+    "endpoint": "/api/clients/:id",
+    "method": "GET",
+    "description": "Retrieve a client by ID.",
+    "request": {
+      "params": { "id": "integer" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/clients/get.200.json" },
+      "403": { "$ref": "../examples/errors/403.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/register",
+    "method": "POST",
+    "description": "Register a new client.",
+    "request": {
+      "body": {
+        "full_name": "string (required)",
+        "email": "string (required, valid email, unique)",
+        "phone_number": "string (required, valid phone, unique)",
+        "password": "string (required, min 8 chars, must have uppercase & digit)",
+        "industry": "string (required)"
+      }
+    },
+    "responses": {
+      "201": { "$ref": "../examples/clients/post.201.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "409": { "$ref": "../examples/errors/409.json" }
+    }
+  },
+  {
+    "endpoint": "/api/clients/:id",
+    "method": "PUT",
+    "description": "Update an existing client.",
+    "request": {
+      "params": { "id": "integer" },
+      "body": {
+        "full_name": "string (optional)",
+        "email": "string (optional, valid email, unique)",
+        "phone_number": "string (optional, valid phone, unique)",
+        "password": "string (optional, min 8 chars, must have uppercase & digit)",
+        "industry": "string (optional)",
+        "profile_image_url": "string (optional, valid URL to image)"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/clients/put.200.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "404": { "$ref": "../examples/errors/404.json" },
+      "409": { "$ref": "../examples/errors/409.json" }
+    }
+  },
+  {
+    "endpoint": "/api/clients/:id",
+    "method": "DELETE",
+    "description": "Delete a client by ID.",
+    "request": {
+      "params": { "id": "integer" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/clients/delete.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]

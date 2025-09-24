@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "message": null,
+  "data": {
+    "id": 1,
+    "date_created": "2025-09-20",
+    "date_updated": null,
+    "title": "How to Scale Your API",
+    "likes": 15,
+    "views": 200,
+    "image": "https://example.com/images/api-guide.png",
+    "category": "Technology",
+    "author_name": "Jane Doe",
+    "admin_id": 7,
+    "content": "This tutorial walks you through scaling APIs with best practices.",
+    "reading_duration": "10 minutes",
+    "type": "tutorial"
+  }
+}
