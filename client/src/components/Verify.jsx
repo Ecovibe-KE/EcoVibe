@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"; 
 import api from "../api/axiosConfig";
-import Button from "../components/Button"; 
+import Button from "../utils/Button"; 
 
 function VerifyPage() {
   const [status, setStatus] = useState("loading");
