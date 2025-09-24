@@ -1,10 +1,12 @@
 export const ENDPOINTS = {
-  // Ping
-  ping: "/ping",
-  // Auth
-  register: "/register",
-  // Contact
-  contact: "/contact",
+    // Ping
+    ping: "/ping",
+    // Auth
+    register: "/register",
+    // Contact
+    contact: "/contact",
 
-  // Add more endpoints as needed here
+    // users
+    users: "/users",
+    // Add more endpoints as needed here
 };

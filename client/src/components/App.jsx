@@ -7,7 +7,7 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import UserManagement from "./admin/UserManagement.jsx";
+import UserManagement from "./admin/userManagement/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import AboutUs from "./AboutUs.jsx";
 
