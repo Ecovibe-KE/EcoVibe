@@ -67,8 +67,9 @@ const Footer = ({ pageType }) => {
 
         {/* Bottom Row */}
         <div className="footer-bottom-row">
-          <small>© {currentYear} EcoVibe Kenya. All rights reserved.</small>
-
+         <small style={{ color: "#37b137" }}>
+  © {currentYear} EcoVibe Kenya. All rights reserved.
+</small>
           <div className="footer-legal-links">
             <a href="/privacy-policy" className="legal-link">
               Privacy Policy
