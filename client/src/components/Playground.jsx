@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../utils/Button.jsx";
 import Input from "../utils/Input.jsx";
+import { getPing } from "../api/services/ping";
 
 function handleClick() {
   alert("Button Clicked");
@@ -84,9 +85,52 @@ function Playground() {
             </div>
           </div>
         </div>
+        {/* Ping Playground Component */}
+        <PingPlayground />
       </div>
     </div>
   );
 }
+
+const PingPlayground = () => {
+  const [pingState, setPingState] = useState({
+    loading: false,
+    result: null,
+    error: null,
+  });
+
+  const handlePing = async () => {
+    setPingState({ loading: true, result: null, error: null });
+    try {
+      const response = await getPing();
+      setPingState({
+        loading: false,
+        result: response.message,
+        error: null,
+      });
+    } catch (err) {
+      setPingState({
+        loading: false,
+        error: "Failed to ping server",
+        result: null,
+      });
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="playground">
+      <p>
+        Time to check connection to the server! Click the button below to ping
+        the server.
+      </p>
+      <Button onClick={handlePing} disabled={pingState.loading}>
+        {pingState.loading ? "Pinging..." : "Ping Server"}
+      </Button>
+      {pingState.result && <p>Result: {pingState.result}</p>}
+      {pingState.error && <p style={{ color: "red" }}>{pingState.error}</p>}
+    </div>
+  );
+};
 
 export default Playground;
