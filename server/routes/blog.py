@@ -3,7 +3,7 @@ from flask import Blueprint
 from models import Blog
 
 # Create a Blueprint
-blogs_bp = Blueprint("blogs", __name__, url_prefix="/api/blogs")
+blogs_bp = Blueprint("blogs", __name__, url_prefix="/blogs")
 api = Api(blogs_bp)
 
 
