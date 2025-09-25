@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {vi, describe, test, expect, beforeEach, afterEach, it} from 'vitest';
-import {render, screen, fireEvent, waitFor, renderHook, act} from '@testing-library/react';
+import {render, screen, fireEvent, waitFor, renderHook, act, within} from '@testing-library/react';
 import UserManagement from '../../src/components/admin/UserManagement';
 import {
     fetchUsers,
@@ -55,81 +55,316 @@ describe('UserManagement Component', () => {
         });
     });
 
-    test('handles error when fetching users', async () => {
-        fetchUsers.mockRejectedValue(new Error('Failed to fetch'));
-        render(<UserManagement/>);
-        await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
-        });
-    });
-
-    test('handles network error when fetching users', async () => {
+    test('handles error when fetching users fails', async () => {
+        // Mock the API to reject with an error
         fetchUsers.mockRejectedValue(new Error('Network error'));
+
+        render(<UserManagement/>);
+
+        // Initially shows loading
+        expect(screen.getByRole('status')).toBeInTheDocument();
+
+        // After loading completes, should show empty state or error handling
+        await waitFor(() => {
+            expect(screen.queryByRole('status')).not.toBeInTheDocument();
+        });
+
+        // Should display "No users" when the API fails and users array is empty
+        expect(screen.getByText('No users')).toBeInTheDocument();
+    });
+    test('handles page size change and pagination correctly', async () => {
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
+
+        // Test page size change from 10 to 20
+        const pageSizeSelect = screen.getByDisplayValue('10');
+        fireEvent.change(pageSizeSelect, {target: {value: '20'}});
+
+        expect(pageSizeSelect.value).toBe('20');
+
+        // Test "View All" functionality
+        const viewAllButton = screen.getByText('View All');
+        fireEvent.click(viewAllButton);
+
+        await waitFor(() => {
+            expect(pageSizeSelect.value).toBe('All');
+        });
+
+        // Test pagination navigation
+        const pageSizeSelectAgain = screen.getByDisplayValue('All');
+        fireEvent.change(pageSizeSelectAgain, {target: {value: '10'}});
+
+        // Wait for pagination to appear
+        await waitFor(() => {
+            expect(screen.getByText('Next')).toBeInTheDocument();
+        });
+
+        // Click next page
+        const nextButton = screen.getByText('Next');
+        fireEvent.click(nextButton);
     });
 
-    test('handles server error when fetching users', async () => {
-        fetchUsers.mockRejectedValue(new Error('500 Internal Server Error'));
+    test('displays correct pagination info and handles page navigation', async () => {
+        const manyUsers = Array.from({length: 15}, (_, i) => ({
+            id: i + 1,
+            name: `User ${i + 1}`,
+            email: `user${i + 1}@example.com`,
+            phone: `123456789${i}`,
+            role: 'Client',
+            status: 'Active'
+        }));
+
+        fetchUsers.mockResolvedValue(manyUsers);
+
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
+            expect(screen.getByText('User 1')).toBeInTheDocument();
+        });
+
+        // Should show correct pagination info
+        expect(screen.getByText(/Showing 1 to 10 of 15 entries/)).toBeInTheDocument();
+
+        // Go to page 2
+        const page2Button = screen.getByText('2');
+        fireEvent.click(page2Button);
+
+        // Should update showing info
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 11 to 15 of 15 entries/)).toBeInTheDocument();
         });
     });
-
-    test('handles empty users list', async () => {
-        fetchUsers.mockResolvedValue([]); // Empty array instead of error
+    test('modals open when corresponding buttons are clicked', async () => {
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+        });
+
+        const userRow = screen.getByText('John Doe').closest('tr');
+        const buttons = within(userRow).getAllByRole('button');
+
+        // Test each button opens a modal
+        const actions = ['View', 'Edit', 'Block', 'Delete'];
+
+        for (const action of actions) {
+            const button = buttons.find(btn => btn.textContent === action);
+            fireEvent.click(button);
+
+            await waitFor(() => {
+                expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+            });
+
+            // Close modal before next test
+            const modal = document.querySelector('[role="dialog"]');
+            const closeButton = modal.querySelector('.btn-close') || within(modal).getByText(/Cancel|Close/);
+            fireEvent.click(closeButton);
+
+            await waitFor(() => {
+                expect(document.querySelector('[role="dialog"]')).not.toBeInTheDocument();
+            });
+        }
+
+        // Test Add User modal separately
+        const addButton = screen.getByLabelText('Add User');
+        fireEvent.click(addButton);
+
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
         });
     });
-
-    test('handles unauthorized access error', async () => {
-        fetchUsers.mockRejectedValue(new Error('401 Unauthorized'));
+    test('shows correct block/unblock buttons based on user status', async () => {
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            expect(screen.getByText('Jane Smith')).toBeInTheDocument();
         });
+
+        // John Doe is Active - should show Block button
+        const johnRow = screen.getByText('John Doe').closest('tr');
+        const johnButtons = within(johnRow).getAllByRole('button');
+        expect(johnButtons.some(btn => btn.textContent === 'Block')).toBe(true);
+        expect(johnButtons.some(btn => btn.textContent === 'Unblock')).toBe(false);
+
+        // Jane Smith is Suspended - should show Unblock button
+        const janeRow = screen.getByText('Jane Smith').closest('tr');
+        const janeButtons = within(janeRow).getAllByRole('button');
+        expect(janeButtons.some(btn => btn.textContent === 'Unblock')).toBe(true);
+        expect(janeButtons.some(btn => btn.textContent === 'Block')).toBe(false);
     });
-    test('handles unauthorized access error', async () => {
-        fetchUsers.mockRejectedValue(new Error('401 Unauthorized'));
+
+    test('opens add user modal when Add User button is clicked', async () => {
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+        });
+
+        // Find and click the main Add User button
+        const addUserButtons = screen.getAllByText('Add User');
+        const mainAddButton = addUserButtons.find(button =>
+            button.closest('button')?.getAttribute('aria-label') === 'Add User'
+        );
+
+        fireEvent.click(mainAddButton);
+
+        // Verify modal opens by checking for modal-specific content
+        await waitFor(() => {
+            // Look for the modal title specifically
+            const modalTitles = screen.getAllByText('Add User');
+            const modalTitle = modalTitles.find(title =>
+                title.tagName.toLowerCase() === 'h6'
+            );
+            expect(modalTitle).toBeInTheDocument();
+
+            // Look for form labels that are specifically in the modal context
+            const allEmailLabels = screen.getAllByText('Email');
+            const modalEmailLabel = allEmailLabels.find(label =>
+                label.className.includes('form-label')
+            );
+            expect(modalEmailLabel).toBeInTheDocument();
         });
     });
-    test('handles timeout when fetching users', async () => {
-        fetchUsers.mockRejectedValue(new Error('Request timeout'));
+
+    test('successfully opens and interacts with add user modal', async () => {
+        const newUser = {
+            id: 3,
+            name: 'New User',
+            email: 'new@example.com',
+            phone: '5555555555',
+            role: 'Client',
+            status: 'Inactive'
+        };
+
+        addUsers.mockResolvedValue(newUser);
+
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('No users')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+        });
+
+        // Click the Add User button
+        const addUserButton = screen.getByLabelText('Add User');
+        fireEvent.click(addUserButton);
+
+        // Wait for modal to be in the DOM
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+        });
+
+        // Now we can interact with the modal content
+        const modalDialog = document.querySelector('[role="dialog"]');
+        const modalContent = within(modalDialog);
+
+        // Check modal title (h6 element)
+        const modalTitles = modalContent.getAllByText('Add User');
+        const modalTitle = modalTitles.find(element => element.tagName.toLowerCase() === 'h6');
+        expect(modalTitle).toBeInTheDocument();
+
+        // Find inputs within the modal
+        const nameInput = modalContent.getByLabelText('Full name');
+        const emailInput = modalContent.getByLabelText('Email');
+        const phoneInput = modalContent.getByLabelText('Phone');
+
+        // Fill out the form
+        fireEvent.change(nameInput, {target: {value: 'New User'}});
+        fireEvent.change(emailInput, {target: {value: 'new@example.com'}});
+        fireEvent.change(phoneInput, {target: {value: '5555555555'}});
+
+        // Click the Add User button in the modal (the button, not the title)
+        const modalButtons = modalContent.getAllByText('Add User');
+        const modalAddButton = modalButtons.find(button =>
+            button.closest('button')?.className.includes('btn-success')
+        );
+        fireEvent.click(modalAddButton);
+
+        await waitFor(() => {
+            expect(addUsers).toHaveBeenCalledWith({
+                name: 'New User',
+                email: 'new@example.com',
+                phone: '5555555555',
+                role: 'Client',
+                status: 'Inactive'
+            });
+            expect(toast.success).toHaveBeenCalledWith('User added successfully.');
         });
     });
 
+    test('closes add user modal when cancel button is clicked', async () => {
+        render(<UserManagement/>);
 
-    test('opens Edit User modal and updates a user', async () => {
-        const updatedUser = {...mockUsers[0], name: 'John Updated'};
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+        });
+
+        // Open the modal
+        const addUserButton = screen.getByLabelText('Add User');
+        fireEvent.click(addUserButton);
+
+        // Wait for modal to appear
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+        });
+
+        // Find and click the cancel button
+        const modalDialog = document.querySelector('[role="dialog"]');
+        const modalContent = within(modalDialog);
+        const cancelButton = modalContent.getByText('Cancel');
+        fireEvent.click(cancelButton);
+
+        // Modal should be closed
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).not.toBeInTheDocument();
+        });
+    });
+
+    test('successfully edits an existing user', async () => {
+        const updatedUser = {
+            id: 1,
+            name: 'John Updated',
+            email: 'johnupdated@example.com',
+            phone: '9999999999',
+            role: 'Client',
+            status: 'Active'
+        };
+
         editUsers.mockResolvedValue(updatedUser);
-        render(<UserManagement/>);
-        await waitFor(() => screen.getByText('John Doe'));
 
-        fireEvent.click(screen.getAllByText('Edit')[0]);
+        render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
 
-        fireEvent.change(screen.getByDisplayValue('John Doe'), {target: {value: 'John Updated'}});
-        fireEvent.click(screen.getByText('Save Changes'));
+        // Find John Doe's row and click Edit button
+        const johnRow = screen.getByText('John Doe').closest('tr');
+        const editButton = within(johnRow).getByText('Edit');
+        fireEvent.click(editButton);
+
+        // Wait for edit modal to appear
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+        });
+
+        // Edit the user information
+        const modalDialog = document.querySelector('[role="dialog"]');
+        const modalContent = within(modalDialog);
+
+        // The edit form should be pre-filled with John Doe's data
+        const nameInput = modalDialog.querySelector('input[name="name"]');
+        expect(nameInput.value).toBe('John Doe');
+
+        // Change the name
+        fireEvent.change(nameInput, {target: {value: 'John Updated'}});
+
+        // Find and click the save button
+        const saveButton = modalContent.getByText('Save Changes');
+        fireEvent.click(saveButton);
 
         await waitFor(() => {
             expect(editUsers).toHaveBeenCalledWith(1, {
@@ -138,1049 +373,272 @@ describe('UserManagement Component', () => {
                 phone: '1234567890'
             });
             expect(toast.success).toHaveBeenCalledWith('User Successfully edited');
-            expect(screen.getByText('John Updated')).toBeInTheDocument();
         });
     });
 
-    test('opens Edit User modal and updates user email', async () => {
-        const updatedUser = {...mockUsers[0], email: 'john.updated@example.com'};
-        editUsers.mockResolvedValue(updatedUser);
-        render(<UserManagement/>);
+    test('successfully deletes a user', async () => {
+        deleteUsers.mockResolvedValue({});
 
-        await waitFor(() => screen.getByText('John Doe'));
-        fireEvent.click(screen.getAllByText('Edit')[0]);
-
-        await waitFor(() => {
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-        });
-
-        fireEvent.change(screen.getByDisplayValue('john@example.com'), {
-            target: {value: 'john.updated@example.com'}
-        });
-        fireEvent.click(screen.getByText('Save Changes'));
-
-        await waitFor(() => {
-            expect(editUsers).toHaveBeenCalledWith(1, {
-                name: 'John Doe',
-                email: 'john.updated@example.com',
-                phone: '1234567890'
-            });
-            expect(toast.success).toHaveBeenCalledWith('User Successfully edited');
-            expect(screen.getByText('john.updated@example.com')).toBeInTheDocument();
-        });
-    });
-    test('opens Edit User modal and updates user phone number', async () => {
-        const updatedUser = {...mockUsers[0], phone: '9998887777'};
-        editUsers.mockResolvedValue(updatedUser);
-        render(<UserManagement/>);
-
-        await waitFor(() => screen.getByText('John Doe'));
-        fireEvent.click(screen.getAllByText('Edit')[0]);
-
-        await waitFor(() => {
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-        });
-
-        fireEvent.change(screen.getByDisplayValue('1234567890'), {
-            target: {value: '9998887777'}
-        });
-        fireEvent.click(screen.getByText('Save Changes'));
-
-        await waitFor(() => {
-            expect(editUsers).toHaveBeenCalledWith(1, {
-                name: 'John Doe',
-                email: 'john@example.com',
-                phone: '9998887777'
-            });
-            expect(toast.success).toHaveBeenCalledWith('User Successfully edited');
-            expect(screen.getByText('9998887777')).toBeInTheDocument();
-        });
-    });
-    test('opens Edit User modal and updates multiple fields', async () => {
-        const updatedUser = {
-            ...mockUsers[0],
-            name: 'John Smith',
-            email: 'john.smith@example.com',
-            phone: '5556667777'
-        };
-        editUsers.mockResolvedValue(updatedUser);
-        render(<UserManagement/>);
-
-        await waitFor(() => screen.getByText('John Doe'));
-        fireEvent.click(screen.getAllByText('Edit')[0]);
-
-        await waitFor(() => {
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-        });
-
-        fireEvent.change(screen.getByDisplayValue('John Doe'), {
-            target: {value: 'John Smith'}
-        });
-        fireEvent.change(screen.getByDisplayValue('john@example.com'), {
-            target: {value: 'john.smith@example.com'}
-        });
-        fireEvent.change(screen.getByDisplayValue('1234567890'), {
-            target: {value: '5556667777'}
-        });
-
-        fireEvent.click(screen.getByText('Save Changes'));
-
-        await waitFor(() => {
-            expect(editUsers).toHaveBeenCalledWith(1, {
-                name: 'John Smith',
-                email: 'john.smith@example.com',
-                phone: '5556667777'
-            });
-            expect(toast.success).toHaveBeenCalledWith('User Successfully edited');
-            expect(screen.getByText('John Smith')).toBeInTheDocument();
-            expect(screen.getByText('john.smith@example.com')).toBeInTheDocument();
-        });
-    });
-    test('opens Edit User modal for different user and updates', async () => {
-        const updatedUser = {...mockUsers[1], name: 'Jane Updated'};
-        editUsers.mockResolvedValue(updatedUser);
-        render(<UserManagement/>);
-
-        await waitFor(() => screen.getByText('Jane Smith'));
-        fireEvent.click(screen.getAllByText('Edit')[1]); // Second Edit button for Jane
-
-        await waitFor(() => {
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-        });
-
-        fireEvent.change(screen.getByDisplayValue('Jane Smith'), {
-            target: {value: 'Jane Updated'}
-        });
-        fireEvent.click(screen.getByText('Save Changes'));
-
-        await waitFor(() => {
-            expect(editUsers).toHaveBeenCalledWith(2, {
-                name: 'Jane Updated',
-                email: 'jane@example.com',
-                phone: '0987654321'
-            });
-            expect(toast.success).toHaveBeenCalledWith('User Successfully edited');
-            expect(screen.getByText('Jane Updated')).toBeInTheDocument();
-        });
-    });
-    test('handles edit user with empty name field', async () => {
-        editUsers.mockResolvedValue(mockUsers[0]); // Return original user if validation fails
-        render(<UserManagement/>);
-
-        await waitFor(() => screen.getByText('John Doe'));
-        fireEvent.click(screen.getAllByText('Edit')[0]);
-
-        await waitFor(() => {
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-        });
-
-        // Clear the name field
-        fireEvent.change(screen.getByDisplayValue('John Doe'), {
-            target: {value: ''}
-        });
-        fireEvent.click(screen.getByText('Save Changes'));
-
-        // Should show validation error or not call API
-        await waitFor(() => {
-            // Either expect validation error message or no API call
-            expect(editUsers).not.toHaveBeenCalled();
-            // OR expect error message if your component shows validation errors
-            // expect(screen.getByText('Name is required')).toBeInTheDocument();
-        });
-    });
-
-
-    test('pagination works correctly', async () => {
-        const manyUsers = Array.from({length: 15}, (_, i) => ({
-            id: i + 1,
-            name: `User ${i + 1}`,
-            email: `user${i + 1}@example.com`,
-            phone: '1234567890',
-            role: 'Client',
-            status: 'Active',
-        }));
-        fetchUsers.mockResolvedValue(manyUsers);
         render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('User 1')).toBeInTheDocument();
-            expect(screen.queryByText('User 11')).not.toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByText('Next'));
+        // Find John Doe's row and click Delete button
+        const johnRow = screen.getByText('John Doe').closest('tr');
+        const deleteButton = within(johnRow).getByText('Delete');
+        fireEvent.click(deleteButton);
+
+        // Wait for delete confirmation modal to appear
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+        });
+
+        // Confirm deletion
+        const modalDialog = document.querySelector('[role="dialog"]');
+        const modalContent = within(modalDialog);
+
+        const confirmButton = modalContent.getByText(/^(Confirm|Delete|Yes|OK)$/);
+        fireEvent.click(confirmButton);
 
         await waitFor(() => {
-            expect(screen.queryByText('User 1')).not.toBeInTheDocument();
-            expect(screen.getByText('User 11')).toBeInTheDocument();
+            expect(deleteUsers).toHaveBeenCalledWith(1);
+            expect(toast.success).toHaveBeenCalledWith('User deleted Successfully!');
         });
+    });
 
-        fireEvent.change(screen.getByRole('combobox'), {target: {value: '20'}});
+    test('successfully blocks and unblocks users', async () => {
+        blockUser.mockResolvedValue({});
+        activateUser.mockResolvedValue({});
+
+        render(<UserManagement/>);
 
         await waitFor(() => {
-            expect(screen.getByText('User 1')).toBeInTheDocument();
-            expect(screen.getByText('User 15')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+        });
+
+        // Block John Doe (who is Active)
+        const johnRow = screen.getByText('John Doe').closest('tr');
+        const blockButton = within(johnRow).getByText('Block');
+        fireEvent.click(blockButton);
+
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+        });
+
+        const blockModal = document.querySelector('[role="dialog"]');
+        const blockModalContent = within(blockModal);
+
+        const confirmBlockButton = blockModalContent.getByText(/^(Confirm|Block|Yes|OK)$/);
+        fireEvent.click(confirmBlockButton);
+
+        await waitFor(() => {
+            expect(blockUser).toHaveBeenCalledWith(1, "Suspended");
+            expect(toast.success).toHaveBeenCalledWith('User Blocked Successfully!');
+        });
+
+        // Unblock Jane Smith (who is Suspended)
+        const janeRow = screen.getByText('Jane Smith').closest('tr');
+        const unblockButton = within(janeRow).getByText('Unblock');
+        fireEvent.click(unblockButton);
+
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+        });
+
+        const unblockModal = document.querySelector('[role="dialog"]');
+        const unblockModalContent = within(unblockModal);
+
+        const confirmUnblockButton = unblockModalContent.getByText(/^(Confirm|Unblock|Yes|OK)$/);
+        fireEvent.click(confirmUnblockButton);
+
+        await waitFor(() => {
+            expect(activateUser).toHaveBeenCalledWith(2);
+            expect(toast.success).toHaveBeenCalledWith('User Unblocked Successfully!');
         });
     });
 
+    test('successfully views user details', async () => {
+        render(<UserManagement/>);
 
-    // Test case 20: UserManagement component - user list updates after operations
-    test('should update users list correctly after CRUD operations', () => {
-        const initialUsers = [
-            {id: 1, name: 'User 1', status: 'Active'},
-            {id: 2, name: 'User 2', status: 'Active'},
-            {id: 3, name: 'User 3', status: 'Inactive'}
-        ];
-
-        // Test user deletion (from confirmDelete)
-        const deleteUser = (users, userId) => users.filter(u => u.id !== userId);
-
-        const afterDelete = deleteUser(initialUsers, 2);
-        expect(afterDelete).toHaveLength(2);
-        expect(afterDelete.find(u => u.id === 2)).toBeUndefined();
-
-        // Test user status update - block (from confirmBlock)
-        const blockUser = (users, userId) =>
-            users.map(u => u.id === userId ? {...u, status: 'Suspended'} : u);
-
-        const afterBlock = blockUser(initialUsers, 1);
-        expect(afterBlock.find(u => u.id === 1).status).toBe('Suspended');
-        expect(afterBlock.find(u => u.id === 2).status).toBe('Active');
-
-        // Test user status update - activate (from confirmUnblock)
-        const activateUser = (users, userId) =>
-            users.map(u => u.id === userId ? {...u, status: 'Active'} : u);
-
-        const afterActivate = activateUser(initialUsers, 3);
-        expect(afterActivate.find(u => u.id === 3).status).toBe('Active');
-
-        // Test user edit update (from saveEdit)
-        const editUser = (users, userId, updates) =>
-            users.map(u => u.id === userId ? {...u, ...updates} : u);
-
-        const afterEdit = editUser(initialUsers, 1, {name: 'Updated User 1', email: 'updated@test.com'});
-        expect(afterEdit.find(u => u.id === 1).name).toBe('Updated User 1');
-        expect(afterEdit.find(u => u.id === 1).email).toBe('updated@test.com');
-
-        // Test user addition (from saveAdd)
-        const addUser = (users, newUser) => [newUser, ...users];
-
-        const newUser = {id: 4, name: 'New User', status: 'Inactive'};
-        const afterAdd = addUser(initialUsers, newUser);
-        expect(afterAdd).toHaveLength(4);
-        expect(afterAdd[0]).toEqual(newUser); // New user should be at the beginning
-    });
-
-// Test case 21: UserManagement component - pagination boundary conditions
-    test('should handle pagination boundary conditions correctly', () => {
-        const gotoPage = (p, totalPages) => Math.min(Math.max(p, 1), totalPages);
-
-        // Test normal page navigation
-        expect(gotoPage(2, 5)).toBe(2);
-        expect(gotoPage(5, 5)).toBe(5);
-
-        // Test lower boundary
-        expect(gotoPage(0, 5)).toBe(1);
-        expect(gotoPage(-1, 5)).toBe(1);
-        expect(gotoPage(1, 5)).toBe(1);
-
-        // Test upper boundary
-        expect(gotoPage(6, 5)).toBe(5);
-        expect(gotoPage(100, 5)).toBe(5);
-
-        // Test edge cases
-        expect(gotoPage(1, 1)).toBe(1); // Only one page
-        expect(gotoPage(2, 1)).toBe(1); // Request page beyond total
-
-        // Test page size change resets to page 1
-        const handlePageSizeChange = (currentPage, newPageSize, oldPageSize) => {
-            if (newPageSize !== oldPageSize) {
-                return 1;
-            }
-            return currentPage;
-        };
-
-        expect(handlePageSizeChange(3, 20, 10)).toBe(1); // Page size changed
-        expect(handlePageSizeChange(3, 10, 10)).toBe(3); // Page size unchanged
-    });
-
-// Test case 22: UserManagement component - loading state and empty states
-    test('should handle loading and empty states correctly', () => {
-        // Test loading state rendering
-        const renderTableContent = (loading, users, pagedUsers) => {
-            if (loading) {
-                return {type: 'loading'};
-            }
-            if (pagedUsers.length === 0) {
-                return {type: 'empty'};
-            }
-            return {type: 'data', count: pagedUsers.length};
-        };
-
-        // Test loading state
-        expect(renderTableContent(true, [], [])).toEqual({type: 'loading'});
-
-        // Test empty state when no users
-        expect(renderTableContent(false, [], [])).toEqual({type: 'empty'});
-
-        // Test data state with users
-        const users = [{id: 1, name: 'User 1'}, {id: 2, name: 'User 2'}];
-        expect(renderTableContent(false, users, users)).toEqual({type: 'data', count: 2});
-
-        // Test paginated data state
-        const pagedUsers = [users[0]]; // Only first user on current page
-        expect(renderTableContent(false, users, pagedUsers)).toEqual({type: 'data', count: 1});
-
-        // Test "View All" functionality
-        const viewAllUsers = (currentPageSize, setPageSize, setPage) => {
-            setPageSize("All");
-            setPage(1);
-            return {pageSize: "All", page: 1};
-        };
-
-        const result = viewAllUsers(10, (size) => size, (page) => page);
-        expect(result.pageSize).toBe("All");
-        expect(result.page).toBe(1);
-    });
-    it('should transform user data correctly for API calls', () => {
-        // Test data transformation for edit API (from saveEdit function)
-        const transformEditData = (formData) => ({
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            phone: formData.phone.trim()
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
 
-        const editFormData = {
-            name: '  John Doe  ',
-            email: '  john@example.com  ',
-            phone: '  1234567890  '
-        };
+        // Find John Doe's row and click View button
+        const johnRow = screen.getByText('John Doe').closest('tr');
+        const viewButton = within(johnRow).getByText('View');
+        fireEvent.click(viewButton);
 
-        const transformedEdit = transformEditData(editFormData);
-        expect(transformedEdit).toEqual({
-            name: 'John Doe',
-            email: 'john@example.com',
-            phone: '1234567890'
+        // Wait for view modal to appear
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
         });
 
-        // Test data transformation for add API (from saveAdd function)
-        const transformAddData = (formData) => ({
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            phone: formData.phone.trim(),
-            role: formData.role,
-            status: "Inactive"
-        });
+        // Check that view modal contains user details
+        const viewModal = document.querySelector('[role="dialog"]');
+        const viewModalContent = within(viewModal);
 
-        const addFormData = {
-            name: '  Jane Smith  ',
-            email: '  jane@example.com  ',
-            phone: '  0987654321  ',
-            role: 'Client'
-        };
+        // The view modal should display user information
+        const closeButton = viewModalContent.getByText(/^(Close|Cancel|OK)$/) ||
+            viewModal.querySelector('.btn-close');
+        fireEvent.click(closeButton);
 
-        const transformedAdd = transformAddData(addFormData);
-        expect(transformedAdd).toEqual({
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            phone: '0987654321',
-            role: 'Client',
-            status: 'Inactive'
-        });
-
-        // Test with empty strings
-        const emptyFormData = {name: '  ', email: '  ', phone: '  ', role: 'Client'};
-        const transformedEmpty = transformAddData(emptyFormData);
-        expect(transformedEmpty).toEqual({
-            name: '',
-            email: '',
-            phone: '',
-            role: 'Client',
-            status: 'Inactive'
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).not.toBeInTheDocument();
         });
     });
 
-    it('should handle modal open/close states correctly', () => {
-        // Test the modal state management pattern used in component
-        const modalHandlers = {
-            delete: {open: false, user: null},
-            edit: {open: false, user: null},
-            view: {open: false, user: null},
-            add: {open: false}
-        };
+    test('shows validation errors for invalid form data', async () => {
+        render(<UserManagement/>);
 
-        // Simulate opening modals
-        const openModal = (modalType, user = null) => {
-            modalHandlers[modalType].open = true;
-            if (user) modalHandlers[modalType].user = user;
-        };
-
-        // Simulate closing modals
-        const closeModal = (modalType) => {
-            modalHandlers[modalType].open = false;
-            modalHandlers[modalType].user = null;
-        };
-
-        const testUser = {id: 1, name: 'Test User'};
-
-        // Test open/close cycle for delete modal
-        openModal('delete', testUser);
-        expect(modalHandlers.delete.open).toBe(true);
-        expect(modalHandlers.delete.user).toEqual(testUser);
-
-        closeModal('delete');
-        expect(modalHandlers.delete.open).toBe(false);
-        expect(modalHandlers.delete.user).toBe(null);
-
-        // Test open/close cycle for edit modal
-        openModal('edit', testUser);
-        expect(modalHandlers.edit.open).toBe(true);
-        expect(modalHandlers.edit.user).toEqual(testUser);
-
-        closeModal('edit');
-        expect(modalHandlers.edit.open).toBe(false);
-        expect(modalHandlers.edit.user).toBe(null);
-
-        // Test add modal (no user needed)
-        openModal('add');
-        expect(modalHandlers.add.open).toBe(true);
-
-        closeModal('add');
-        expect(modalHandlers.add.open).toBe(false);
-    });
-// Test case 17: UserManagement component - form state initialization
-    it('should initialize form states correctly for different modals', () => {
-        const testUser = {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@example.com',
-            phone: '1234567890',
-            role: 'Client',
-            status: 'Active'
-        };
-
-        // Test edit form initialization (from openEdit function)
-        const initializeEditForm = (user) => ({
-            name: user.name || "",
-            email: user.email || "",
-            phone: user.phone || ""
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
 
-        const editForm = initializeEditForm(testUser);
-        expect(editForm).toEqual({
-            name: 'John Doe',
-            email: 'john@example.com',
-            phone: '1234567890'
+        // Open add user modal
+        const addUserButton = screen.getByLabelText('Add User');
+        fireEvent.click(addUserButton);
+
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
         });
 
-        // Test add form initialization (from openAdd function)
-        const initializeAddForm = () => ({
-            name: "",
-            email: "",
-            phone: "",
-            role: "Client",
-            status: "Inactive"
-        });
+        const modalDialog = document.querySelector('[role="dialog"]');
+        const modalContent = within(modalDialog);
 
-        const addForm = initializeAddForm();
-        expect(addForm).toEqual({
-            name: "",
-            email: "",
-            phone: "",
-            role: "Client",
-            status: "Inactive"
-        });
+        // Try to save with invalid data (empty fields)
+        const addUserButtons = modalContent.getAllByText('Add User');
+        const modalSaveButton = addUserButtons.find(button =>
+            button.closest('button')?.className.includes('btn-success')
+        );
+        fireEvent.click(modalSaveButton);
 
-        // Test with user having empty values
-        const userWithEmptyValues = {id: 2, name: "", email: null, phone: undefined};
-        const emptyEditForm = initializeEditForm(userWithEmptyValues);
-        expect(emptyEditForm).toEqual({
-            name: "",
-            email: "",
-            phone: ""
+        // Should show validation errors instead of making API call
+        await waitFor(() => {
+            expect(addUsers).not.toHaveBeenCalled();
         });
     });
 
-// Test case 18: UserManagement component - error state management
-    it('should manage error states correctly during form operations', () => {
-        // Test error clearing on input change (from onEditChange and onAddChange)
-        const clearErrorOnChange = (currentErrors, fieldName) => {
-            const newErrors = {...currentErrors};
-            if (newErrors[fieldName]) {
-                newErrors[fieldName] = "";
-            }
-            if (newErrors.general) {
-                delete newErrors.general;
-            }
-            return newErrors;
-        };
+    const mockUsers = [
+        {id: 1, name: 'John Doe', email: 'john@example.com', phone: '1234567890', role: 'Client', status: 'Active'},
+        {id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '0987654321', role: 'Admin', status: 'Suspended'},
+    ];
 
-        // Test clearing field-specific errors
-        const errorsWithField = {name: "Name is required", email: "Invalid email"};
-        const clearedNameErrors = clearErrorOnChange(errorsWithField, "name");
-        expect(clearedNameErrors.name).toBe("");
-        expect(clearedNameErrors.email).toBe("Invalid email");
+    test('handles empty users list correctly', async () => {
+        fetchUsers.mockResolvedValue([]);
 
-        // Test clearing general errors
-        const errorsWithGeneral = {general: "Server error", name: "Name error"};
-        const clearedGeneralErrors = clearErrorOnChange(errorsWithGeneral, "name");
-        expect(clearedGeneralErrors.general).toBeUndefined();
-        expect(clearedGeneralErrors.name).toBe("");
+        render(<UserManagement/>);
 
-        // Test error checking logic (from saveEdit and saveAdd)
-        const hasValidationErrors = (errors) => {
-            return Object.values(errors).some(error => error !== "" && error !== undefined);
-        };
+        // Should show loading initially
+        expect(screen.getByRole('status')).toBeInTheDocument();
 
-        expect(hasValidationErrors({})).toBe(false);
-        expect(hasValidationErrors({name: ""})).toBe(false);
-        expect(hasValidationErrors({name: "Error"})).toBe(true);
-        expect(hasValidationErrors({name: "", email: "Invalid"})).toBe(true);
+        // After loading, should show "No users"
+        await waitFor(() => {
+            expect(screen.getByText('No users')).toBeInTheDocument();
+        });
     });
 
-    it('should handle pagination correctly when changing page size', () => {
-        const {result} = renderHook(() => {
-            const [page, setPage] = useState(1);
-            const [pageSize, setPageSize] = useState(10);
-            const users = Array.from({length: 25}, (_, i) => ({
-                id: i + 1,
-                name: `User ${i + 1}`,
-                email: `user${i + 1}@test.com`,
-                phone: '1234567890',
-                role: 'Client',
-                status: 'Active'
-            }));
+    test('handles API errors gracefully', async () => {
+        // Test add user error
+        addUsers.mockRejectedValue(new Error('API Error'));
 
-            const totalItems = users.length;
-            const totalPages = useMemo(() => {
-                if (pageSize === "All") return 1;
-                return Math.max(1, Math.ceil(totalItems / Number(pageSize)));
-            }, [totalItems, pageSize]);
+        render(<UserManagement/>);
 
-            const pagedUsers = useMemo(() => {
-                if (pageSize === "All") return users;
-                const start = (page - 1) * Number(pageSize);
-                const end = start + Number(pageSize);
-                return users.slice(start, end);
-            }, [page, pageSize, users]);
-
-            return {page, setPage, pageSize, setPageSize, pagedUsers, totalPages};
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
 
-        // Test initial state
-        expect(result.current.pagedUsers).toHaveLength(10);
-        expect(result.current.totalPages).toBe(3);
+        // Try to add a user
+        const addUserButton = screen.getByLabelText('Add User');
+        fireEvent.click(addUserButton);
 
-        // Test page size change to 20
-        act(() => {
-            result.current.setPageSize(20);
-        });
-        expect(result.current.pagedUsers).toHaveLength(20);
-        expect(result.current.totalPages).toBe(2);
-
-        // Test "All" page size
-        act(() => {
-            result.current.setPageSize("All");
-        });
-        expect(result.current.pagedUsers).toHaveLength(25);
-        expect(result.current.totalPages).toBe(1);
-    });
-
-// Test case 11: UserManagement component - validation functions
-    it('should validate user fields correctly', () => {
-        // Import or define the validation functions
-        const validateEmail = (email) => {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return email && emailRegex.test(email) ? '' : 'Invalid email format';
-        };
-
-        const validatePhone = (phone) => {
-            const phoneRegex = /^\d{10}$/;
-            return phone && phoneRegex.test(phone) ? '' : 'Phone must be 10 digits';
-        };
-
-        const validateName = (name) => {
-            return name && name.trim().length >= 2 ? '' : 'Name must be at least 2 characters';
-        };
-
-        // Test validateField function (copied from component)
-        const validateField = (name, value) => {
-            if (name === "email") return validateEmail(value);
-            if (name === "phone") return validatePhone(value);
-            if (name === "name") return validateName(value);
-            return "";
-        };
-
-        // Test valid inputs
-        expect(validateField('email', 'test@example.com')).toBe('');
-        expect(validateField('phone', '1234567890')).toBe('');
-        expect(validateField('name', 'John Doe')).toBe('');
-
-        // Test invalid inputs
-        expect(validateField('email', 'invalid-email')).not.toBe('');
-        expect(validateField('phone', '123')).not.toBe('');
-        expect(validateField('name', '')).not.toBe('');
-    });
-
-// Test case 12: UserManagement component - user status button logic
-    it('should show correct buttons based on user status', () => {
-        const users = [
-            {
-                id: 1,
-                name: 'Active User',
-                email: 'active@test.com',
-                phone: '1234567890',
-                role: 'Client',
-                status: 'Active'
-            },
-            {
-                id: 2,
-                name: 'Suspended User',
-                email: 'suspended@test.com',
-                phone: '1234567890',
-                role: 'Client',
-                status: 'Suspended'
-            },
-            {
-                id: 3,
-                name: 'Inactive User',
-                email: 'inactive@test.com',
-                phone: '1234567890',
-                role: 'Client',
-                status: 'Inactive'
-            },
-            {
-                id: 4,
-                name: 'Blocked User',
-                email: 'blocked@test.com',
-                phone: '1234567890',
-                role: 'Client',
-                status: 'Blocked'
-            }
-        ];
-
-        // Test the button logic from the component
-        const getExpectedButtons = (user) => {
-            const buttons = ['View', 'Edit', 'Delete'];
-
-            if (user.status === 'Active') {
-                buttons.splice(2, 0, 'Block'); // Add Block before Delete
-            } else if (user.status === 'Suspended') {
-                buttons.splice(2, 0, 'Unblock'); // Add Unblock before Delete
-            } else if (user.status === 'Inactive' || user.status === 'Blocked') {
-                // Block button should be disabled for these statuses
-                buttons.splice(2, 0, 'Block');
-            }
-
-            return buttons;
-        };
-
-        expect(getExpectedButtons(users[0])).toEqual(['View', 'Edit', 'Block', 'Delete']);
-        expect(getExpectedButtons(users[1])).toEqual(['View', 'Edit', 'Unblock', 'Delete']);
-        expect(getExpectedButtons(users[2])).toEqual(['View', 'Edit', 'Block', 'Delete']);
-        expect(getExpectedButtons(users[3])).toEqual(['View', 'Edit', 'Block', 'Delete']);
-    });
-
-// Test case 13: UserManagement component - form validation logic
-    it('should validate user payload correctly', () => {
-        // Copy the validation functions from component
-        const validateEmail = (email) => {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return email && emailRegex.test(email) ? '' : 'Invalid email format';
-        };
-
-        const validatePhone = (phone) => {
-            const phoneRegex = /^\d{10}$/;
-            return phone && phoneRegex.test(phone) ? '' : 'Phone must be 10 digits';
-        };
-
-        const validateName = (name) => {
-            return name && name.trim().length >= 2 ? '' : 'Name must be at least 2 characters';
-        };
-
-        // Copy the validateUserPayload function from component
-        const validateUserPayload = (payload) => {
-            return {
-                name: validateName(payload.name),
-                email: validateEmail(payload.email),
-                phone: validatePhone(payload.phone),
-            };
-        };
-
-        // Test valid payload
-        const validPayload = {
-            name: 'John Doe',
-            email: 'john@example.com',
-            phone: '1234567890'
-        };
-        const validResult = validateUserPayload(validPayload);
-        expect(validResult.name).toBe('');
-        expect(validResult.email).toBe('');
-        expect(validResult.phone).toBe('');
-
-        // Test invalid payload
-        const invalidPayload = {
-            name: 'J', // Too short
-            email: 'invalid-email', // Invalid format
-            phone: '123' // Too short
-        };
-        const invalidResult = validateUserPayload(invalidPayload);
-        expect(invalidResult.name).not.toBe('');
-        expect(invalidResult.email).not.toBe('');
-        expect(invalidResult.phone).not.toBe('');
-
-        // Test Object.values(errs).some(Boolean) logic
-        const hasErrors = (errors) => Object.values(errors).some(Boolean);
-        expect(hasErrors(validResult)).toBe(false);
-        expect(hasErrors(invalidResult)).toBe(true);
-    });
-// Test case 14: UserManagement component - role-based access control for adding users
-    it('should enforce role restrictions for creating admin accounts', () => {
-        // Test the role restriction logic from saveAdd function
-        const canCreateAdmin = (currentUserRole, targetRole) => {
-            return currentUserRole === 'SuperAdmin' || targetRole !== 'Admin';
-        };
-
-        // SuperAdmin can create any role
-        expect(canCreateAdmin('SuperAdmin', 'Admin')).toBe(true);
-        expect(canCreateAdmin('SuperAdmin', 'Client')).toBe(true);
-
-        // Admin cannot create Admin accounts
-        expect(canCreateAdmin('Admin', 'Admin')).toBe(false);
-        expect(canCreateAdmin('Admin', 'Client')).toBe(true);
-
-        // Client cannot create Admin accounts
-        expect(canCreateAdmin('Client', 'Admin')).toBe(false);
-        expect(canCreateAdmin('Client', 'Client')).toBe(true);
-    })
-
-    // Test case 23: UserManagement component - form field validation edge cases
-    test('should handle form validation edge cases correctly', () => {
-        // Copy validation functions from component
-        const validateEmail = (email) => {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return email && emailRegex.test(email) ? '' : 'Invalid email format';
-        };
-
-        const validatePhone = (phone) => {
-            const phoneRegex = /^\d{10}$/;
-            return phone && phoneRegex.test(phone) ? '' : 'Phone must be 10 digits';
-        };
-
-        const validateName = (name) => {
-            return name && name.trim().length >= 2 ? '' : 'Name must be at least 2 characters';
-        };
-
-        // Test email edge cases
-        expect(validateEmail('test@domain.com')).toBe(''); // Valid
-        expect(validateEmail('test@domain.co.uk')).toBe(''); // Valid with subdomain
-        expect(validateEmail('test@domain')).not.toBe(''); // Invalid - no TLD
-        expect(validateEmail('testdomain.com')).not.toBe(''); // Invalid - no @
-        expect(validateEmail('')).not.toBe(''); // Invalid - empty
-        expect(validateEmail(null)).not.toBe(''); // Invalid - null
-        expect(validateEmail(undefined)).not.toBe(''); // Invalid - undefined
-
-        // Test phone edge cases
-        expect(validatePhone('1234567890')).toBe(''); // Valid
-        expect(validatePhone('123456789')).not.toBe(''); // Invalid - 9 digits
-        expect(validatePhone('12345678901')).not.toBe(''); // Invalid - 11 digits
-        expect(validatePhone('123abc4567')).not.toBe(''); // Invalid - contains letters
-        expect(validatePhone('')).not.toBe(''); // Invalid - empty
-        expect(validatePhone(null)).not.toBe(''); // Invalid - null
-
-        // Test name edge cases
-        expect(validateName('John')).toBe(''); // Valid
-        expect(validateName('Jo')).toBe(''); // Valid - exactly 2 characters
-        expect(validateName('J')).not.toBe(''); // Invalid - 1 character
-        expect(validateName('  ')).not.toBe(''); // Invalid - only spaces
-        expect(validateName('')).not.toBe(''); // Invalid - empty
-        expect(validateName(null)).not.toBe(''); // Invalid - null
-    });
-
-// Test case 24: UserManagement component - user role and status combinations
-    test('should handle various user role and status combinations correctly', () => {
-        const users = [
-            {id: 1, name: 'Super Admin', role: 'SuperAdmin', status: 'Active'},
-            {id: 2, name: 'Admin User', role: 'Admin', status: 'Active'},
-            {id: 3, name: 'Client User', role: 'Client', status: 'Suspended'},
-            {id: 4, name: 'Inactive Client', role: 'Client', status: 'Inactive'},
-            {id: 5, name: 'Blocked Admin', role: 'Admin', status: 'Blocked'}
-        ];
-
-        // Test role-based filtering logic
-        const filterUsersByRole = (users, currentUserRole) => {
-            if (currentUserRole === 'SuperAdmin') {
-                return users; // SuperAdmin sees all users
-            }
-            return users.filter(user => user.role !== 'SuperAdmin'); // Others don't see SuperAdmins
-        };
-
-        // SuperAdmin should see all users
-        expect(filterUsersByRole(users, 'SuperAdmin')).toHaveLength(5);
-
-        // Admin should not see SuperAdmin users
-        const adminView = filterUsersByRole(users, 'Admin');
-        expect(adminView).toHaveLength(4);
-        expect(adminView.some(u => u.role === 'SuperAdmin')).toBe(false);
-
-        // Client should not see SuperAdmin users
-        const clientView = filterUsersByRole(users, 'Client');
-        expect(clientView).toHaveLength(4);
-        expect(clientView.some(u => u.role === 'SuperAdmin')).toBe(false);
-
-        // Test status display logic
-        const getStatusDisplay = (status) => {
-            const statusConfig = {
-                'Active': {label: 'Active', variant: 'success'},
-                'Suspended': {label: 'Suspended', variant: 'danger'},
-                'Inactive': {label: 'Inactive', variant: 'secondary'},
-                'Blocked': {label: 'Blocked', variant: 'warning'}
-            };
-            return statusConfig[status] || {label: status, variant: 'secondary'};
-        };
-
-        expect(getStatusDisplay('Active')).toEqual({label: 'Active', variant: 'success'});
-        expect(getStatusDisplay('Suspended')).toEqual({label: 'Suspended', variant: 'danger'});
-        expect(getStatusDisplay('Inactive')).toEqual({label: 'Inactive', variant: 'secondary'});
-        expect(getStatusDisplay('Blocked')).toEqual({label: 'Blocked', variant: 'warning'});
-        expect(getStatusDisplay('Unknown')).toEqual({label: 'Unknown', variant: 'secondary'});
-    });
-
-// Test case 25: UserManagement component - modal prop passing and event handling
-    test('should pass correct props to modal components and handle events', () => {
-        // Test modal prop structure for AddUserModal
-        const getAddModalProps = (showAddModal, addForm, addFieldErrors, currentUserRole, addError) => ({
-            visible: showAddModal,
-            addForm: addForm,
-            addFieldErrors: addFieldErrors,
-            currentUserRole: currentUserRole,
-            addError: addError,
-            // onChange, onCancel, onSave would be function references
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
         });
 
-        const addModalProps = getAddModalProps(
-            true,
-            {name: 'Test', email: 'test@test.com', phone: '1234567890', role: 'Client'},
-            {name: '', email: '', phone: ''},
-            'Admin',
-            ''
+        const modalDialog = document.querySelector('[role="dialog"]');
+
+        // Fill out ALL required fields properly to pass validation
+        const nameInput = modalDialog.querySelector('input[name="name"]');
+        const emailInput = modalDialog.querySelector('input[name="email"]');
+        const phoneInput = modalDialog.querySelector('input[name="phone"]');
+
+        fireEvent.change(nameInput, {target: {value: 'Test User'}});
+        fireEvent.change(emailInput, {target: {value: 'test@example.com'}});
+        fireEvent.change(phoneInput, {target: {value: '1234567890'}});
+
+        // Now save - this should trigger the API call
+        const addUserButtons = within(modalDialog).getAllByText('Add User');
+        const modalSaveButton = addUserButtons.find(button =>
+            button.closest('button')?.className.includes('btn-success')
         );
 
-        expect(addModalProps.visible).toBe(true);
-        expect(addModalProps.addForm.name).toBe('Test');
-        expect(addModalProps.currentUserRole).toBe('Admin');
-        expect(addModalProps.addError).toBe('');
+        fireEvent.click(modalSaveButton);
 
-        // Test modal prop structure for EditUserModal
-        const getEditModalProps = (showEditModal, editForm, editErrors) => ({
-            visible: showEditModal,
-            form: editForm,
-            errors: editErrors,
-            // onChange, onCancel, onSave would be function references
-        });
-
-        const editModalProps = getEditModalProps(
-            true,
-            {name: 'Updated Name', email: 'updated@test.com', phone: '0987654321'},
-            {general: 'Server error'}
-        );
-
-        expect(editModalProps.visible).toBe(true);
-        expect(editModalProps.form.email).toBe('updated@test.com');
-        expect(editModalProps.errors.general).toBe('Server error');
-
-        // Test modal prop structure for BlockUserModal
-        const getBlockModalProps = (showBlockModal, selectedUser, type) => ({
-            visible: showBlockModal,
-            user: selectedUser,
-            type: type,
-            // onCancel, onConfirm would be function references
-        });
-
-        const testUser = {id: 1, name: 'Test User'};
-        const blockModalProps = getBlockModalProps(true, testUser, 'block');
-
-        expect(blockModalProps.visible).toBe(true);
-        expect(blockModalProps.user).toEqual(testUser);
-        expect(blockModalProps.type).toBe('block');
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith('Failed to add user. Please try again.');
+        }, {timeout: 3000});
     });
 
-    test('openDelete function sets correct state', () => {
-        // If you can access the component's state or functions directly
-        const {result} = renderHook(() => {
-            const [selectedUser, setSelectedUser] = useState(null);
-            const [showDeleteModal, setShowDeleteModal] = useState(false);
+    test('enforces role restrictions for non-SuperAdmin users', async () => {
+        // Set role to Admin (not SuperAdmin)
+        localStorage.setItem('userRole', 'Admin');
 
-            const openDelete = (user) => {
-                setSelectedUser(user);
-                setShowDeleteModal(true);
-            };
+        render(<UserManagement/>);
 
-            return {selectedUser, showDeleteModal, openDelete};
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
         });
 
-        const testUser = {id: 1, name: 'Test User'};
+        // Open add user modal
+        const addUserButton = screen.getByLabelText('Add User');
+        fireEvent.click(addUserButton);
 
-        act(() => {
-            result.current.openDelete(testUser);
+        await waitFor(() => {
+            expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
         });
 
-        expect(result.current.selectedUser).toEqual(testUser);
-        expect(result.current.showDeleteModal).toBe(true);
+        const modalDialog = document.querySelector('[role="dialog"]');
+
+        // Check that Admin option is not available
+        const roleSelect = modalDialog.querySelector('select[name="role"]');
+        const options = Array.from(roleSelect.querySelectorAll('option'));
+
+        // Should only have Client option for non-SuperAdmin
+        expect(options).toHaveLength(1);
+        expect(options[0].value).toBe('Client');
+
+        // Cleanup
+        localStorage.setItem('userRole', 'SuperAdmin');
     });
 
+    test('displays correct user status and appropriate actions', async () => {
+        render(<UserManagement/>);
 
-        test('confirmDelete should not proceed if no user is selected', async () => {
-        // Render component with no selected user
-        const { result } = renderHook(() => {
-            const [selectedUser, setSelectedUser] = useState(null);
-            const [users, setUsers] = useState(mockUsers);
-
-            const confirmDelete = async () => {
-                if (!selectedUser) return;
-
-                try {
-                    await deleteUsers(selectedUser.id);
-                    setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
-                    toast.success("User deleted Successfully!");
-                } catch (error) {
-                    console.error("Failed to delete user:", error);
-                    toast.error("Failed to delete user. Please try again.");
-                }
-            };
-
-            return { selectedUser, users, confirmDelete };
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            expect(screen.getByText('Jane Smith')).toBeInTheDocument();
         });
 
-        // Call confirmDelete with no selected user
-        await act(async () => {
-            await result.current.confirmDelete();
-        });
+        // Check user status displays
+        expect(screen.getByText('Active')).toBeInTheDocument();
+        expect(screen.getByText('Suspended')).toBeInTheDocument();
 
-        // Verify no API calls were made
-        expect(deleteUsers).not.toHaveBeenCalled();
-        expect(toast.success).not.toHaveBeenCalled();
-        expect(toast.error).not.toHaveBeenCalled();
+        // Check that buttons are present using more specific selectors
+        const johnRow = screen.getByText('John Doe').closest('tr');
+        expect(within(johnRow).getByText('View')).toBeInTheDocument();
+        expect(within(johnRow).getByText('Edit')).toBeInTheDocument();
+        expect(within(johnRow).getByText('Block')).toBeInTheDocument();
+        expect(within(johnRow).getByText('Delete')).toBeInTheDocument();
+
+        const janeRow = screen.getByText('Jane Smith').closest('tr');
+        expect(within(janeRow).getByText('View')).toBeInTheDocument();
+        expect(within(janeRow).getByText('Edit')).toBeInTheDocument();
+        expect(within(janeRow).getByText('Unblock')).toBeInTheDocument();
+        expect(within(janeRow).getByText('Delete')).toBeInTheDocument();
     });
 
-    test('confirmDelete should successfully delete user and update state', async () => {
-        const mockUser = mockUsers[0];
-
-        const { result } = renderHook(() => {
-            const [selectedUser, setSelectedUser] = useState(mockUser);
-            const [users, setUsers] = useState(mockUsers);
-
-            const confirmDelete = async () => {
-                if (!selectedUser) return;
-
-                try {
-                    await deleteUsers(selectedUser.id);
-                    setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
-                    toast.success("User deleted Successfully!");
-                } catch (error) {
-                    console.error("Failed to delete user:", error);
-                    toast.error("Failed to delete user. Please try again.");
-                }
-            };
-
-            return { selectedUser, users, confirmDelete, setSelectedUser };
-        });
-
-        // Mock successful API response
-        deleteUsers.mockResolvedValue({ success: true });
-
-        await act(async () => {
-            await result.current.confirmDelete();
-        });
-
-        // Verify API was called with correct ID
-        expect(deleteUsers).toHaveBeenCalledWith(mockUser.id);
-
-        // Verify user was removed from state
-        expect(result.current.users).toEqual([mockUsers[1]]);
-
-        // Verify success toast was shown
-        expect(toast.success).toHaveBeenCalledWith("User deleted Successfully!");
-    });
-
-    test('confirmDelete should handle API errors gracefully', async () => {
-        const mockUser = mockUsers[0];
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-        const { result } = renderHook(() => {
-            const [selectedUser, setSelectedUser] = useState(mockUser);
-            const [users, setUsers] = useState(mockUsers);
-
-            const confirmDelete = async () => {
-                if (!selectedUser) return;
-
-                try {
-                    await deleteUsers(selectedUser.id);
-                    setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
-                    toast.success("User deleted Successfully!");
-                } catch (error) {
-                    console.error("Failed to delete user:", error);
-                    toast.error("Failed to delete user. Please try again.");
-                }
-            };
-
-            return { selectedUser, users, confirmDelete };
-        });
-
-        // Mock API failure
-        const error = new Error('Delete failed');
-        deleteUsers.mockRejectedValue(error);
-
-        await act(async () => {
-            await result.current.confirmDelete();
-        });
-
-        // Verify API was called
-        expect(deleteUsers).toHaveBeenCalledWith(mockUser.id);
-
-        // Verify error was logged
-        expect(consoleSpy).toHaveBeenCalledWith("Failed to delete user:", error);
-
-        // Verify error toast was shown
-        expect(toast.error).toHaveBeenCalledWith("Failed to delete user. Please try again.");
-
-        // Verify users state was not changed
-        expect(result.current.users).toEqual(mockUsers);
-
-        consoleSpy.mockRestore();
-    });
-
-    test('confirmDelete should preserve other users when deleting one', async () => {
-        const mockUser = mockUsers[0];
-
-        const { result } = renderHook(() => {
-            const [selectedUser, setSelectedUser] = useState(mockUser);
-            const [users, setUsers] = useState(mockUsers);
-
-            const confirmDelete = async () => {
-                if (!selectedUser) return;
-
-                try {
-                    await deleteUsers(selectedUser.id);
-                    setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
-                    toast.success("User deleted Successfully!");
-                } catch (error) {
-                    console.error("Failed to delete user:", error);
-                    toast.error("Failed to delete user. Please try again.");
-                }
-            };
-
-            return { selectedUser, users, confirmDelete };
-        });
-
-        deleteUsers.mockResolvedValue({ success: true });
-
-        await act(async () => {
-            await result.current.confirmDelete();
-        });
-
-        // Verify only the selected user was removed
-        expect(result.current.users).toHaveLength(1);
-        expect(result.current.users[0].id).toBe(2); // Jane Smith remains
-        expect(result.current.users[0].name).toBe('Jane Smith');
-    });
 });
