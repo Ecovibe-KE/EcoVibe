@@ -49,10 +49,7 @@ const Login = () => {
       {/* Left Section */}
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
-        <p className={styles.brandSubtitle}>
-  <span>Empowering Sustainable</span>
-  <span>Solutions</span>
-</p>
+        <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
         <img src="/Empower.png" alt="EcoVibe Illustration" className="img-fluid mt-3" style={{ width: "400px", height: "auto" }}/>
       </div>
 
