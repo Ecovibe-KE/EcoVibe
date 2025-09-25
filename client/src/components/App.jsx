@@ -125,6 +125,15 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
           <Route path="/signup" element={<SignUpForm />}/>
+          <Route path="/login" element={
+            <div className="justify-content-center align-items-center">
+             <p className="">
+              welcome to ecovibe
+             </p>
+             <p className="">
+              something good is coming
+             </p>
+            </div>}/>
         </Routes>
       )}
 

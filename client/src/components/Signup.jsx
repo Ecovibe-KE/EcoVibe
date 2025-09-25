@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { toast } from "react-toastify";
 import Button from "../utils/Button";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
 
@@ -88,12 +88,7 @@ const SignUpForm = () => {
       const result = await response.json();
       if (response.ok) {
         toast.success("An activation link was sent to your email address.");
-      } else {
-        toast.error(
-          result.message || "There was an error submitting your form.",
-        );
-      }
-      // Reset form and reCAPTCHA
+         // Reset form and reCAPTCHA
       setFormData({
         name: "",
         industry: "",
@@ -111,23 +106,18 @@ const SignUpForm = () => {
       setTimeout(() => {
         navigate("/login");
       }, 15);
+      } else {
+        toast.error(
+          result.message || "There was an error submitting your form.",
+        );
+        recaptchaRef.current.reset();
+      }
+     
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("An error occurred. Please try again.");
-      // Reset form and reCAPTCHA
-      setFormData({
-        name: "",
-        industry: "",
-        email: "",
-        phone: "254",
-        password: "",
-        confirmPassword: "",
-        receiveEmails: false,
-        privacyPolicy: false,
-      });
-      recaptchaRef.current.reset();
-      setIsValidPassword(false);
-      setPasswordTouched(false);
+      toast.error("An error occurred. Please try again.",error);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
     }
   };
   const handleClickShowPassword = () => {
@@ -343,7 +333,7 @@ const SignUpForm = () => {
                   Sign up
                 </Button>
                 <p className="text-center mt-3">
-                  Already have an account? <a href="#">Login</a>
+                  Already have an account? <Link to="/login">Login</Link>
                 </p>
               </div>
             </form>

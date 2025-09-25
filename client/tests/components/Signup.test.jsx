@@ -3,7 +3,6 @@ import SignUpForm from "../../src/components/Signup";
 import { vi } from "vitest";
 
 const mockToast = { success: vi.fn(), error: vi.fn() };
-// Mock toast and navigate so they don’t actually run
 vi.mock("react-toastify", () => ({
   toast: { success: vi.fn(), error: vi.fn() }
 }));
@@ -33,8 +32,8 @@ describe("SignUpForm", () => {
 
   it("validates password and confirm password", () => {
     render(<SignUpForm />);
-    const password = screen.getByLabelText(/Password/i);
-    fireEvent.change(password, { target: { value: "abc123!" } }); // too short
+    const password = screen.getByLabelText(/^Password$/i);
+    fireEvent.change(password, { target: { value: "abc123!" } }); 
     fireEvent.blur(password);
     expect(screen.getByText(/Password must be at least/)).toBeInTheDocument();
 
