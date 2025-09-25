@@ -1,5 +1,5 @@
-import "react-phone-input-2/lib/style.css";
-import PhoneInput from "react-phone-input-2";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 import { useState, useEffect } from "react";
 import Input from "../utils/Input";
 import { useRef } from "react";
@@ -8,6 +8,7 @@ import Button from "../utils/Button";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
+import "../css/signup.css";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,12 +55,34 @@ const SignUpForm = () => {
       );
       return;
     }
+    if (!validatePassword(formData.password)) {
+      setPasswordTouched(true);
+      toast.error(
+      "Password must be at least 8 characters and include a letter, a number, and a symbol.",
+      );
+      return;
+    }
+    if (!formData.confirmPassword) {
+      toast.error("Please confirm your password.");
+      return;
+    }
+    if (formData.confirmPassword !== formData.password) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    const captchaToken = recaptchaRef.current.getValue();
+    if (!captchaToken) {
+      toast.error("Please complete the reCAPTCHA challenge.");
+      return;
+    }
     try {
-      console.log("Form submitted:", formData);
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken: captchaToken,
+         }),
       });
 
       const result = await response.json();
@@ -186,15 +209,13 @@ const SignUpForm = () => {
               <div className="mb-3">
                 <label className="form-label" htmlFor="phone">Phone number</label>
                 <PhoneInput
-                  country={"ke"}
-                  containerClass="phone-input-container"
-                  inputClass="form-control-custom"
+                  defaultCountry="ke"
                   value={formData.phone}
-                  preferredCountries={["ke"]}
-                  onChange={(value) =>
-                    setFormData((prev) => ({ ...prev, phone: value }))
+                  onChange={(phone) =>
+                    setFormData((prev) => ({ ...prev, phone }))
                   }
-                  required
+                  inputClassName="w-100 custom-phone-input-text"
+                  className="custom-phone-input" 
                   inputProps={{
                     name: "phone",
                     required: true,
@@ -245,34 +266,32 @@ const SignUpForm = () => {
                     : undefined
                 }
               />
-              {isValidPassword && (
-                <div className="mb-3">
-                  <Input
-                    required
-                    type={showPassword ? "text" : "password"}
-                    label="confirm password"
-                    value={formData.confirmPassword}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        confirmPassword: e.target.value,
-                      }))
-                    }
-                    error={
-                      formData.confirmPassword &&
-                      formData.confirmPassword !== formData.password
-                        ? "Passwords do not match."
-                        : undefined
-                    }
-                    success={
-                      formData.confirmPassword &&
-                      formData.confirmPassword == formData.password
-                        ? " "
-                        : undefined
-                    }
-                  />
-                </div>
-              )}
+              <div className="mb-3">
+                <Input
+                  required
+                  type={showPassword ? "text" : "password"}
+                  label="confirm password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
+                  error={
+                    formData.confirmPassword &&
+                    formData.confirmPassword !== formData.password
+                      ? "Passwords do not match."
+                      : undefined
+                  }
+                  success={
+                    formData.confirmPassword &&
+                    formData.confirmPassword == formData.password
+                      ? " "
+                      : undefined
+                  }
+                />
+              </div>
               <div className="form-check mb-2">
                 <input
                   name="privacyPolicy"

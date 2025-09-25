@@ -1,3 +1,27 @@
+.custom-phone-input {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: "all 0.3s ease";
+  width: "100%";
+  padding: "0.375rem 0.75rem";
+  font-Size: "1rem";
+  line-height: "1.5";
+  color: "#495057";
+  background-Color: "#fff";
+}
+.custom-phone-input-text{
+  font-size: 1rem !important;
+  padding-left: 1 !important;
+}
+.custom-phone-input.rip-country-selector{
+  height: calc(2.25rem + 2px) !important;
+  font-size: 1rem !important;
+  padding-left: 1 !important;
+}
+.custom-phone-input:focus-within {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
 .form-check-input {
     accent-color: black !important;
   }
@@ -5,32 +29,7 @@
     border-color: #28a745 !important;
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
   }
-  .react-tel-input .form-control {
-    height: calc(2.25rem + 2px) !important;
-    font-size: 1rem !important;
-    padding: 0.375rem 0.75rem !important;
-    border: 1px solid #ced4da !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding-left: 50px !important;
-  }
-  .react-tel-input .form-control:focus {
-    border-color: #28a745 !important;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
-  }
-  .phone-input-container .flag-dropdown {
-    border: 1px solid #ced4da !important;
-    border-radius: 0.375rem 0 0 0.375rem !important;
-  }
-  .react-tel-input .selected-flag .dial-code {
-    margin-left: 8px !important;
-    font-size: 0.95rem;
-    color: #495057;
-  }
-  .flag-dropdown .custom-input-focus:focus {
-    border-color: #28a745 !important;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
-  }
+  
   
   .register-text {
     color: #ffffff;
