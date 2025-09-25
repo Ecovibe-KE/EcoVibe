@@ -9,6 +9,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
+import { createUser } from "../api/services/user";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -58,7 +59,7 @@ const SignUpForm = () => {
     if (!validatePassword(formData.password)) {
       setPasswordTouched(true);
       toast.error(
-      "Password must be at least 8 characters and include a letter, a number, and a symbol.",
+        "Password must be at least 8 characters and include a letter, a number, and a symbol.",
       );
       return;
     }
@@ -76,45 +77,40 @@ const SignUpForm = () => {
       return;
     }
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          recaptchaToken: captchaToken,
-         }),
-      });
-
-      const result = await response.json();
+      const payload = {
+        ...formData,
+        recaptchaToken: captchaToken,
+      };
+      const response = await createUser(payload)
       if (response.ok) {
         toast.success("An activation link was sent to your email address.");
-         // Reset form and reCAPTCHA
-      setFormData({
-        name: "",
-        industry: "",
-        email: "",
-        phone: "254",
-        password: "",
-        confirmPassword: "",
-        receiveEmails: false,
-        privacyPolicy: false,
-      });
-      recaptchaRef.current.reset();
-      setIsValidPassword(false);
-      setPasswordTouched(false);
+        // Reset form and reCAPTCHA
+        setFormData({
+          name: "",
+          industry: "",
+          email: "",
+          phone: "254",
+          password: "",
+          confirmPassword: "",
+          receiveEmails: false,
+          privacyPolicy: false,
+        });
+        recaptchaRef.current.reset();
+        setIsValidPassword(false);
+        setPasswordTouched(false);
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 15);
+        setTimeout(() => {
+          navigate("/login");
+        }, 15);
       } else {
         toast.error(
-          result.message || "There was an error submitting your form.",
+          response.message || "There was an error submitting your form.",
         );
         recaptchaRef.current.reset();
       }
-     
+
     } catch (error) {
-      toast.error("An error occurred. Please try again.",error);
+      toast.error("An error occurred. Please try again.", error);
       if (recaptchaRef.current) {
         recaptchaRef.current.reset();
       }
@@ -140,12 +136,12 @@ const SignUpForm = () => {
   return (
     <section className="container-fluid justify-content-center align-items-center signup-form-section p-md-3 p-lg-5">
       <div className="row">
-        <div className="col-lg-6 col-12 text-dark d-flex flex-column justify-content-center align-items-center p-5">
+        <div className="col-lg-6 col-12 text-dark d-flex flex-column justify-content-center align-items-center p-3 p-lg-5 mb-0">
           <h4 className="mb-3 register-text fw-bold fs-1">Ecovibe</h4>
-          <h2 className="mb-4 fs-3 text-light">
+          <h2 className="mb-0 mb-lg-4 fs-3 text-light">
             Empowering Sustainable Solutions
           </h2>
-          <div>
+          <div className="d-none d-lg-block">
             <img src="/3826376 1.png" alt="Ecovibe" className="img-fluid" />
           </div>
         </div>
@@ -205,7 +201,7 @@ const SignUpForm = () => {
                     setFormData((prev) => ({ ...prev, phone }))
                   }
                   inputClassName="w-100 custom-phone-input-text"
-                  className="custom-phone-input" 
+                  className="custom-phone-input"
                   inputProps={{
                     name: "phone",
                     required: true,
@@ -245,11 +241,6 @@ const SignUpForm = () => {
                   handlePasswordChange(e);
                 }}
                 onBlur={() => setPasswordTouched(true)}
-                error={
-                  !validatePassword(formData.password) && passwordTouched
-                    ? "Password must be at least 8 characters, include a letter, a number, and a symbol."
-                    : undefined
-                }
                 success={
                   passwordTouched && validatePassword(formData.password)
                     ? " "
@@ -268,15 +259,9 @@ const SignUpForm = () => {
                       confirmPassword: e.target.value,
                     }))
                   }
-                  error={
-                    formData.confirmPassword &&
-                    formData.confirmPassword !== formData.password
-                      ? "Passwords do not match."
-                      : undefined
-                  }
                   success={
                     formData.confirmPassword &&
-                    formData.confirmPassword == formData.password
+                      formData.confirmPassword == formData.password
                       ? " "
                       : undefined
                   }
@@ -293,8 +278,8 @@ const SignUpForm = () => {
                   required
                 />
                 <label className="form-check-label" htmlFor="privacyPolicy">
-                  I agree to the <a href="#">Terms of use</a> and{" "}
-                  <a href="#">Privacy Policy</a>
+                  I agree to the <Link to="/termsOfUse" className="text-decoration-none">Terms of use</Link> and{" "}
+                  <Link to="/privacypolicy" className="text-decoration-none">Privacy Policy</Link>
                 </label>
               </div>
               <div className="form-check mb-3">
@@ -314,9 +299,9 @@ const SignUpForm = () => {
               </div>
               <div className="">
                 {siteKey ? (
-                  <ReCAPTCHA 
-                  sitekey={siteKey} 
-                  ref={recaptchaRef}
+                  <ReCAPTCHA
+                    sitekey={siteKey}
+                    ref={recaptchaRef}
                   />
                 ) : (
                   <div className="alert alert-warning">

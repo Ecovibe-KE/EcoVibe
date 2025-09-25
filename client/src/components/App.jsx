@@ -17,7 +17,7 @@ import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
-import "../css/signup.css";
+
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
