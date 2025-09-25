@@ -5,10 +5,12 @@ from routes import register_routes
 from models import db
 from dotenv import load_dotenv
 import os
+from flask_jwt_extended import JWTManager
 
 load_dotenv()
 
 migrate = Migrate()
+jwt = JWTManager()
 
 
 def create_app(config_name="development"):
@@ -35,8 +37,14 @@ def create_app(config_name="development"):
     else:
         app.config.from_prefixed_env()
 
+    # Load  Jwt secret key
+    app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
+
+    # Init extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
+
     from models import (
         blog,
         booking,
@@ -52,7 +60,10 @@ def create_app(config_name="development"):
         user,
     )
 
+    # Register Blueprints
     register_routes(app)
+
+    # CORs setup
     origins = os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",")
     CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
     return app

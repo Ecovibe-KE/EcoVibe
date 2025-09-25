@@ -322,6 +322,22 @@ To propose a new feature, you would run:
 make propose m="feat: implement user authentication"
 ```
 
+#### `make validate-contracts`
+
+This command validates all API contracts in `server/api_design/contracts/` by checking that:
+
+1. Each contract has an associated example (either inline or via `$ref`).
+2. The example resolves correctly, even if it chains through catalogs.
+3. The example matches the schema defined in `schema.json`.
+
+This helps catch issues early, such as missing examples, broken `$ref` paths, or mismatched response formats.
+
+**Example:**
+
+```bash
+make validate-contracts
+```
+
 ## GitHub Actions
 
 This project uses GitHub Actions to automate testing, linting, and deployment. Here is an overview of the workflows:
@@ -335,6 +351,10 @@ This project uses GitHub Actions to automate testing, linting, and deployment. H
 ### Server Workflows
 
 - **`Flask application CI` (`server.yaml`)**: Triggered on pushes and pull requests to `main` and `develop`. It runs the server-side Python tests against multiple Python versions. It also calculates test coverage and adds a report to the pull request, highlighting coverage for only the changed files.
+
+- **`Validate API Contracts` (`validate-contracts.yml`)**:  
+  Triggered on pull requests that change API contracts, examples, schema, or the validator itself, as well as on pushes to `main` and `develop`.  
+  This workflow runs the `validate_contracts.py` script to ensure all API contracts have valid examples and that those examples comply with `schema.json`. It prevents invalid or incomplete contracts from being merged into the codebase.
 
 ### Deployment Workflows
 

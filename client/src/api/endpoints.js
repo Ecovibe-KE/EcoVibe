@@ -5,6 +5,8 @@ export const ENDPOINTS = {
   register: "/register",
   // Contact
   contact: "/contact",
+  //verify
+  verify: "/verify",
 
   // users
   users: "/users",
