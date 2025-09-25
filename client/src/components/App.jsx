@@ -17,8 +17,10 @@ import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
-
 import Footer from "./Footer.jsx";
+
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -51,7 +53,7 @@ function App() {
     "/resources",
     "/profile",
     "/payments",
-    "/blog",
+    // "/blog",
     "/services",
     "/mgmtabout",
     "/users",

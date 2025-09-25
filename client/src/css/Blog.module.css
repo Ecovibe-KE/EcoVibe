@@ -1,0 +1,53 @@
+.searchInput {
+  background-color: #eee3f0 !important;
+}
+.searchInput:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background-color: #eee3f0 !important;
+}
+
+.searchButton:active,
+.searchButton:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transform: none !important;
+}
+
+.searchButton {
+  background-color: #eee3f0 !important;
+}
+.searchButton:active i {
+  transform: none !important;
+  background-color: #eee3f0 !important;
+}
+
+.sidebarBox {
+  background-color: #ffffff;
+}
+
+.searchForm {
+  background-color: #eee3f0;
+}
+
+.toggleButtonIcon {
+  color: #4a4a4a;
+  border: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin-right: 0 !important;
+}
+
+.blogContainer {
+  background-color: #eeeeee;
+}
+
+.sustainabilityUnderline {
+  background-image: linear-gradient(to right, #37b137 0 0);
+  background-position: bottom center;
+  background-size: 25% 2px;
+  background-repeat: no-repeat;
+  padding-bottom: 4px;
+}
