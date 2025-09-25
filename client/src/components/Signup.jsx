@@ -54,7 +54,6 @@ const SignUpForm = () => {
       );
       return;
     }
-
     try {
       console.log("Form submitted:", formData);
       const response = await fetch("/api/register", {
@@ -149,6 +148,7 @@ const SignUpForm = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div className="col-6">
@@ -180,6 +180,7 @@ const SignUpForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div className="mb-3">
@@ -193,6 +194,7 @@ const SignUpForm = () => {
                   onChange={(value) =>
                     setFormData((prev) => ({ ...prev, phone: value }))
                   }
+                  required
                   inputProps={{
                     name: "phone",
                     required: true,
@@ -226,6 +228,7 @@ const SignUpForm = () => {
               <Input
                 type={showPassword ? "text" : "password"}
                 id="password"
+                required
                 value={formData.password}
                 onChange={(e) => {
                   handlePasswordChange(e);
@@ -245,6 +248,7 @@ const SignUpForm = () => {
               {isValidPassword && (
                 <div className="mb-3">
                   <Input
+                    required
                     type={showPassword ? "text" : "password"}
                     label="confirm password"
                     value={formData.confirmPassword}
@@ -301,7 +305,10 @@ const SignUpForm = () => {
               </div>
               <div className="">
                 {siteKey ? (
-                  <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef}/>
+                  <ReCAPTCHA 
+                  sitekey={siteKey} 
+                  ref={recaptchaRef}
+                  />
                 ) : (
                   <div className="alert alert-warning">
                     reCAPTCHA is not configured. Please contact Site Owner.
