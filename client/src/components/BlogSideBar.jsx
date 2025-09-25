@@ -52,30 +52,30 @@ const BlogSideBar = ({
         <hr />
 
         {/* All */}
-        <div
-          className={`d-flex justify-content-between category-row ${
+        <button
+          type="button"
+          className={`d-flex justify-content-between w-100 border-0 bg-transparent p-0 category-row ${
             !selectedCategory ? "fw-bold" : ""
           }`}
-          role="button"
           onClick={() => setSelectedCategory(null)}
         >
           <span>All</span>
           <span>({totalCount})</span>
-        </div>
+        </button>
 
         {/* Other categories */}
         {Object.entries(categoryCounts).map(([category, count]) => (
-          <div
+          <button
+            type="button"
             key={category}
             className={`d-flex justify-content-between mt-2 category-row ${
               selectedCategory === category ? "fw-bold" : ""
             }`}
-            role="button"
             onClick={() => setSelectedCategory(category)}
           >
             <span>{category}</span>
             <span>({count})</span>
-          </div>
+          </button>
         ))}
 
         <hr />
