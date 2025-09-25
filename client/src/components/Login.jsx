@@ -28,7 +28,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      console.log("🔧 [TEST MODE] Skipping reCAPTCHA validation");
+      console.log("[TEST MODE] Skipping reCAPTCHA validation");
       console.log("Logging in with:", formData);
 
       if (formData.email && formData.password) {
@@ -49,7 +49,10 @@ const Login = () => {
       {/* Left Section */}
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
-        <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
+        <p className={styles.brandSubtitle}>
+  <span>Empowering Sustainable</span>
+  <span>Solutions</span>
+</p>
         <img src="/Empower.png" alt="EcoVibe Illustration" className="img-fluid mt-3" style={{ width: "400px", height: "auto" }}/>
       </div>
 
@@ -67,7 +70,7 @@ const Login = () => {
   value={formData.email} 
   onChange={handleChange} 
   required 
-  autoComplete="new-email"   // prevent Chrome autofill
+  autoComplete="new-email"   
   spellCheck={false}
 />
             </div>
@@ -80,14 +83,14 @@ const Login = () => {
   value={formData.password} 
   onChange={handleChange} 
   required 
-  autoComplete="new-password"  // prevent Chrome autofill
+  autoComplete="new-password"  
   spellCheck={false}
 />
             </div>
 
             <div className="mb-3">
               {siteKey ? (
-                <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} size="normal" />
+                <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} size={window.innerWidth < 768 ? "compact" : "normal"} />
               ) : (
                 <div className="alert alert-warning">reCAPTCHA not configured.</div>
               )}

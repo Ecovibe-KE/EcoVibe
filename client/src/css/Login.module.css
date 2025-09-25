@@ -8,13 +8,12 @@
 
 /* Left section */
 .leftSection {
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   color: #ffffff;
-  padding: 2rem;
+  padding-left: 2rem;
   text-align: center;
 }
 
@@ -22,16 +21,19 @@
 .brandTitle {
   font-weight: bold;
   font-size: 3.0rem;
-  /* text-align: left;  */
   margin: 0;
 }
 
 .brandSubtitle {
   font-size: 1.5rem;
-  /* text-align: left;  */
   margin: 0;
-  /* opacity: 0.85; */
+  
 }
+.brandSubtitle span {
+  display: block;       
+  line-height: 1.2;     
+}
+
 
 /* Right section */
 .rightSection {
@@ -49,13 +51,12 @@
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-
-  min-height: 800px;
+  min-height: 700px;
 }
 
 /* Responsive tweaks */
@@ -71,15 +72,28 @@
   .loginCard {
     margin-top: 1rem;
   }
+  .loginActions {
+    flex-direction: column;
+    align-items: stretch; 
+  }
+
+  .loginButton {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .forgotLink {
+    text-align: center; 
+  width: 100%;
+  }
 }
 
 /* Login.module.css or your CSS module file */
 
 .loginActions {
-  display: flex;           /* horizontal layout */
-  align-items: center;     /* vertically center items */
-  gap: 1rem;               /* space between button and link */
-  justify-content: flex-start; /* left-align */
+  display: flex;           
+  align-items: center;    
+  gap: 1rem;              
 }
 .loginActions .loginButton.btn {
   transition: background-color 0.3s ease;
@@ -87,18 +101,23 @@
 }
 
 .loginActions .loginButton.btn:hover {
-  background-color: #f5a030 !important; /* override Bootstrap */
+  background-color: #f5a030 !important; 
+ 
 }
 
+.loginButton {
+  min-width: 120px;
+}
 
 .forgotLink {
-  color: black;            /* link color */
-  text-decoration: none;   /* remove default underline */
+  color: black;            
+  text-decoration: none;   
   font-size: 18px;
   transition: text-decoration 0.2s ease;
+  white-space: nowrap;
 }
 
 .forgotLink:hover {
-  text-decoration: underline; /* underline on hover */
+  text-decoration: underline; 
 }
 

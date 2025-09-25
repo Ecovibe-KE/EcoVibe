@@ -17,7 +17,7 @@ import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
-
+import Login from "./Login.jsx";
 import Footer from "./Footer.jsx";
 
 // Footer Wrapper to detect page type
@@ -123,6 +123,7 @@ function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/login" element={<Login />} /> 
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}
