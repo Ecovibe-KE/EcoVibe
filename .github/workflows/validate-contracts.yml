@@ -1,0 +1,58 @@
+name: Validate API Contracts
+
+on:
+  # Run on pull requests when API design files change
+  pull_request:
+    paths:
+      - "server/api_design/contracts/**" # Contracts definitions
+      - "server/api_design/examples/**" # Example payloads
+      - "server/api_design/schema.json" # Shared schema
+      - "server/api_design/validate_contracts.py" # Validation script
+
+  # Also run automatically when pushing to main/develop,
+  # to catch any issues that slip through PRs.
+  push:
+    branches:
+      - "main"
+      - "develop"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest # Standard GitHub-hosted Linux runner
+
+    steps:
+      # Step 1: Pull down the repo contents
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python runtime
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # Keep in sync with project requirements
+
+      # Step 3: Install dependencies
+      # Using pipenv to match our local dev environment exactly
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          cd server
+          pipenv install --deploy --ignore-pipfile
+
+      # Step 4: Run contract validation
+      # - Uses our Makefile target to stay consistent with local dev
+      # - If validation fails, the Makefile exits non-zero
+      #   which automatically fails this CI job
+      - name: Run contract validation
+        run: |
+          echo "🔎 Running API contract validation..."
+          make validate-contracts
+
+      # Step 5: Handle failures nicely
+      # This step only runs if the previous one fails.
+      # It gives developers a clear ❌ error message in the logs.
+      - name: Validation failed (friendly message)
+        if: failure()
+        run: |
+          echo "❌ API contract validation failed!"
+          echo "Please run 'make validate-contracts' locally and fix errors before merging."

@@ -12,6 +12,7 @@ import AboutUs from "./AboutUs.jsx";
 import Blog from "./Blog.jsx";
 import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import Terms from "./Terms.jsx";
+import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import Footer from "./Footer.jsx";
@@ -89,6 +90,10 @@ function App() {
                     path="/dashboard/resources"
                     element={<p>Resources</p>}
                   />
+                  <Route
+                    path="/dashboard/resources"
+                    element={<p>Resources</p>}
+                  />
                   <Route path="/dashboard/profile" element={<p>Profile</p>} />
                   <Route path="/dashboard/payments" element={<p>Payments</p>} />
                   <Route path="/dashboard/blog" element={<p>Blog</p>} />
@@ -116,6 +121,7 @@ function App() {
           <Route path="/playground" element={<Playground />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/verify" element={<VerifyPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
           <Route path="/signup" element={<SignUpForm />}/>
