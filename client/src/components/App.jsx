@@ -123,7 +123,7 @@ function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/login" element={<Login />} /> 
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}

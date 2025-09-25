@@ -30,11 +30,19 @@ const Header = ({ user, onLogout }) => {
         />
 
         {/* Name + Role */}
-        <div style={{ display: "flex", flexDirection: "column", textAlign: "right" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right",
+          }}
+        >
           <span style={{ fontWeight: "bold", fontSize: "1rem", color: "#000" }}>
             {user.name}
           </span>
-          <span style={{ fontSize: "0.85rem", color: "#555" }}>{user.role}</span>
+          <span style={{ fontSize: "0.85rem", color: "#555" }}>
+            {user.role}
+          </span>
         </div>
 
         {/* Logout Button */}

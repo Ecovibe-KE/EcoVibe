@@ -20,14 +20,13 @@
 /* Branding text */
 .brandTitle {
   font-weight: bold;
-  font-size: 3.0rem;
+  font-size: 3rem;
   margin: 0;
 }
 
 .brandSubtitle {
   font-size: 1.5rem;
   margin: 0;
-  
 }
 
 /* Right section */
@@ -37,7 +36,6 @@
   justify-content: center;
   align-items: center;
   padding: 2rem;
-
 }
 
 /* White login card */
@@ -69,7 +67,7 @@
   }
   .loginActions {
     flex-direction: column;
-    align-items: stretch; 
+    align-items: stretch;
   }
 
   .loginButton {
@@ -78,26 +76,24 @@
   }
 
   .forgotLink {
-    text-align: center; 
-  width: 100%;
+    text-align: center;
+    width: 100%;
   }
 }
 
 /* Login.module.css or your CSS module file */
 
 .loginActions {
-  display: flex;           
-  align-items: center;    
-  gap: 1rem;              
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 .loginActions .loginButton.btn {
   transition: background-color 0.3s ease;
-  
 }
 
 .loginActions .loginButton.btn:hover {
-  background-color: #f5a030 !important; 
- 
+  background-color: #f5a030 !important;
 }
 
 .loginButton {
@@ -105,14 +101,13 @@
 }
 
 .forgotLink {
-  color: black;            
-  text-decoration: none;   
+  color: black;
+  text-decoration: none;
   font-size: 18px;
   transition: text-decoration 0.2s ease;
   white-space: nowrap;
 }
 
 .forgotLink:hover {
-  text-decoration: underline; 
+  text-decoration: underline;
 }
-

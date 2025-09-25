@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link } from "react-router-dom";
-import styles from "../css/Login.module.css"; 
+import styles from "../css/Login.module.css";
 
 const Login = () => {
   const recaptchaRef = useRef();
@@ -16,7 +16,8 @@ const Login = () => {
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
-    if (!key) toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
+    if (!key)
+      toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
   }, []);
 
   const handleChange = (e) => {
@@ -50,65 +51,79 @@ const Login = () => {
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
         <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
-        <img src="/Empower.png" alt="EcoVibe Illustration" className="img-fluid mt-3" style={{ width: "400px", height: "auto" }}/>
+        <img
+          src="/Empower.png"
+          alt="EcoVibe Illustration"
+          className="img-fluid mt-3"
+          style={{ width: "400px", height: "auto" }}
+        />
       </div>
 
       {/* Right Section */}
       <div className={styles.rightSection}>
         <div className={styles.loginCard}>
           <form onSubmit={handleSubmit}>
-            <h2 className="text-left mb-4 text-dark" style={{ fontSize: "40px" }}>Log In</h2>
+            <h2
+              className="text-left mb-4 text-dark"
+              style={{ fontSize: "40px" }}
+            >
+              Log In
+            </h2>
 
             <div className="mb-3">
-             <Input 
-  type="email" 
-  name="email" 
-  label="Email Address" 
-  value={formData.email} 
-  onChange={handleChange} 
-  required 
-  autoComplete="new-email"   
-  spellCheck={false}
-/>
+              <Input
+                type="email"
+                name="email"
+                label="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                autoComplete="new-email"
+                spellCheck={false}
+              />
             </div>
 
             <div className="mb-3">
-              <Input 
-  type="password" 
-  name="password" 
-  label="Password" 
-  value={formData.password} 
-  onChange={handleChange} 
-  required 
-  autoComplete="new-password"  
-  spellCheck={false}
-/>
+              <Input
+                type="password"
+                name="password"
+                label="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                autoComplete="new-password"
+                spellCheck={false}
+              />
             </div>
 
             <div className="mb-3">
               {siteKey ? (
-                <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} size={window.innerWidth < 768 ? "compact" : "normal"} />
+                <ReCAPTCHA
+                  sitekey={siteKey}
+                  ref={recaptchaRef}
+                  size={window.innerWidth < 768 ? "compact" : "normal"}
+                />
               ) : (
-                <div className="alert alert-warning">reCAPTCHA not configured.</div>
+                <div className="alert alert-warning">
+                  reCAPTCHA not configured.
+                </div>
               )}
             </div>
-<div className={styles.loginActions}>
-  <Button
-    type="submit"
-    size="16px"
-    className={`btn btn-success ${styles.loginButton}`}
-    borderRadius="10rem"
-  >
-    Login
-  </Button>
+            <div className={styles.loginActions}>
+              <Button
+                type="submit"
+                size="16px"
+                className={`btn btn-success ${styles.loginButton}`}
+                borderRadius="10rem"
+              >
+                Login
+              </Button>
 
-  <Link to="/forgot-password" className={styles.forgotLink}>
-    Forgot your password?
-  </Link>
-</div>
-
-
-       </form>
+              <Link to="/forgot-password" className={styles.forgotLink}>
+                Forgot your password?
+              </Link>
+            </div>
+          </form>
         </div>
       </div>
 
