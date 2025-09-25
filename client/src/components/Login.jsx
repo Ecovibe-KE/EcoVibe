@@ -7,21 +7,24 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../css/Login.module.css";
-import { UserContext } from "../context/UserContext.jsx"; // <-- import UserContext
+import { UserContext } from "../context/UserContext.jsx";
+import { loginUser } from "../api/services/auth.js"; // ✅ using your service
 
 const Login = () => {
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const { setUser } = useContext(UserContext); // <-- get setUser from context
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
-    if (!key)
+    if (!key) {
       toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
+    }
   }, []);
 
   const handleChange = (e) => {
@@ -32,33 +35,39 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.email || !formData.password) {
+      toast.error("Please enter email and password.");
+      return;
+    }
+
     try {
+      setLoading(true);
+
+      // reCAPTCHA (optional, test mode can skip)
       console.log("[TEST MODE] Skipping reCAPTCHA validation");
-      console.log("Logging in with:", formData);
 
-      if (formData.email && formData.password) {
-        // Example dummy user data - replace with API response
-        const loggedInUser = {
-          name: "John Doe",
-          role: "Admin", // or "Client"
-          avatar: "/profile.jpg",
-        };
+      // ✅ Call API via axios service
+      const data = await loginUser(formData);
 
-        // Update context
-        setUser(loggedInUser);
+      // Example expected response
+      // { token: "jwt_token_here", user: { name: "John Doe", role: "Admin", avatar: "/profile.jpg" } }
 
-        // Store auth token & user in localStorage
-        localStorage.setItem("authToken", "dummy_token_123");
-        localStorage.setItem("userData", JSON.stringify(loggedInUser));
+      if (data?.token && data?.user) {
+        // Save to context & localStorage
+        setUser(data.user);
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userData", JSON.stringify(data.user));
 
         toast.success("Login successful! Redirecting...");
-        setTimeout(() => navigate("/dashboard"), 1200); // navigate instead of window.location
+        setTimeout(() => navigate("/dashboard"), 1200);
       } else {
-        toast.error("Please enter email and password.");
+        toast.error("Invalid login response. Please try again.");
       }
     } catch (err) {
       console.error("Login failed:", err);
-      toast.error("Login failed. Please try again.");
+      toast.error(err?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,11 +81,12 @@ const Login = () => {
             Empowering Sustainable Solutions
           </p>
         </div>
+
+        {/* Empower illustration (hidden on mobile via CSS) */}
         <img
           src="/Empower.png"
           alt="EcoVibe Illustration"
-          className="img-fluid mt-3"
-          style={{ width: "100%", maxWidth: "400px", height: "auto" }}
+          className={`${styles.empowerImage} img-fluid mt-3`}
         />
       </div>
 
@@ -84,10 +94,7 @@ const Login = () => {
       <div className={styles.rightSection}>
         <div className={styles.loginCard}>
           <form onSubmit={handleSubmit}>
-            <h2
-              className="text-left mb-4 text-dark"
-              style={{ fontSize: "40px" }}
-            >
+            <h2 className="text-left mb-4 text-dark" style={{ fontSize: "40px" }}>
               Log In
             </h2>
 
@@ -136,10 +143,11 @@ const Login = () => {
               <Button
                 type="submit"
                 size="16px"
+                disabled={loading}
                 className={`btn btn-success ${styles.loginButton}`}
                 borderRadius="10rem"
               >
-                Login
+                {loading ? "Logging in..." : "Login"}
               </Button>
 
               <Link to="/forgot-password" className={styles.forgotLink}>

@@ -8,5 +8,11 @@ export const ENDPOINTS = {
   //verify
   verify: "/verify",
 
+  //Login
+  login: "/login",
+
+  //forgot-password
+  forgotPassword: "/forgot-password"
+
   // Add more endpoints as needed here
 };

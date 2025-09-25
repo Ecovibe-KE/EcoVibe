@@ -10,12 +10,12 @@
 .leftSection {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* vertical centering */
-  align-items: flex-start; /* align everything to the left */
+  justify-content: center;
+  align-items: flex-start;
   color: #ffffff;
   padding: 4rem;
   box-sizing: border-box;
-  text-align: left; /* text starts from left */
+  text-align: left;
   min-width: 300px;
   flex: 1;
 }
@@ -65,7 +65,7 @@
   min-height: 700px;
 }
 
-/* Login actions (button + link) */
+/* Login actions */
 .loginActions {
   display: flex;
   align-items: center;
@@ -96,23 +96,17 @@
   text-decoration: underline;
 }
 
-/* Input fields responsive */
+/* Input fields */
 .loginCard input,
 .loginCard label {
   width: 100%;
   font-size: 1rem;
 }
 
-/* ReCAPTCHA scaling */
-.loginCard .g-recaptcha {
-  transform: scale(1);
-  transform-origin: 0 0;
-}
-
-/* Tablet and smaller screens */
+/* Tablet */
 @media (max-width: 1024px) {
   .wrapper {
-    flex-direction: column; /* stack sections */
+    flex-direction: column;
     min-height: auto;
   }
 
@@ -120,12 +114,12 @@
   .rightSection {
     width: 100%;
     padding: 1.5rem;
-    align-items: center; /* center text on tablet/mobile */
+    align-items: center;
     text-align: center;
   }
 
   .loginCard {
-    min-height: auto; /* adaptive height */
+    min-height: auto;
     padding: 1.5rem;
     text-align: left;
   }
@@ -149,14 +143,9 @@
   .loginCard label {
     font-size: 0.95rem;
   }
-
-  .loginCard .g-recaptcha {
-    transform: scale(0.85);
-    transform-origin: 0 0;
-  }
 }
 
-/* Mobile screens */
+/* Mobile */
 @media (max-width: 600px) {
   .brandTitle {
     font-size: 2rem;
@@ -175,7 +164,21 @@
     font-size: 0.9rem;
   }
 
-  .loginCard .g-recaptcha {
-    transform: scale(0.75);
+  /* 🔥 Hide Empower logo on mobile */
+  .logoImage {
+    display: none;
   }
 }
+
+.empowerImage {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .empowerImage {
+    display: none; /* hide Empower logo on mobile/tablet */
+  }
+}
+

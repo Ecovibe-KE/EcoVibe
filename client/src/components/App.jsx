@@ -57,7 +57,7 @@ function App() {
   ];
 
   const isManagementRoute = managementRoutes.some((route) =>
-    location.pathname.startsWith(route),
+    location.pathname.startsWith(route)
   );
 
   // ✅ Always call hooks
@@ -88,39 +88,17 @@ function App() {
               <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
                   <Route path="/dashboard" element={<Outlet />}>
-                    <Route path="/dashboard" element={<p>Dashboard Main</p>} />
-                    <Route index element={<Navigate to="main" replace />} />
-                    <Route
-                      path="/dashboard/bookings"
-                      element={<p>Bookings</p>}
-                    />
-                    <Route
-                      path="/dashboard/resources"
-                      element={<p>Resources</p>}
-                    />
-                    <Route path="/dashboard/profile" element={<p>Profile</p>} />
-                    <Route
-                      path="/dashboard/payments"
-                      element={<p>Payments</p>}
-                    />
-                    <Route path="/dashboard/blog" element={<p>Blog</p>} />
-                    <Route
-                      path="/dashboard/services"
-                      element={<p>Services</p>}
-                    />
-                    <Route
-                      path="/dashboard/about"
-                      element={<p>About (management)</p>}
-                    />
-                    <Route
-                      path="/dashboard/users"
-                      element={<UserManagement />}
-                    />
-                    <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                    <Route
-                      path="/dashboard/*"
-                      element={<Navigate to="/dashboard" replace />}
-                    />
+                    <Route index element={<p>Dashboard Main</p>} />
+                    <Route path="bookings" element={<p>Bookings</p>} />
+                    <Route path="resources" element={<p>Resources</p>} />
+                   <Route path="profile" element={<p>Profile</p>} />
+                    <Route path="payments" element={<p>Payments</p>} />
+                    <Route path="blog" element={<p>Blog</p>} />
+                     <Route path="services" element={<p>Services</p>} />
+                    <Route path="about" element={<p>About (management)</p>} />
+                    <Route path="users" element={<UserManagement />} />
+                   <Route path="tickets" element={<p>Tickets</p>} />
+                   <Route path="*" element={<Navigate to="." replace />} />
                   </Route>
                 </Routes>
               </Suspense>
