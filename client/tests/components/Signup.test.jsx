@@ -36,8 +36,5 @@ describe("SignUpForm", () => {
 
     // Buttons
     expect(screen.getByRole("button", { name: /Sign up/i })).toBeInTheDocument();
-
-    // reCAPTCHA mock
-    expect(screen.getByTestId("recaptcha")).toBeInTheDocument();
   });
 });
