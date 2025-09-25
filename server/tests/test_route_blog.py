@@ -6,7 +6,17 @@ from models.user import User  # make sure to import your User model
 @pytest.fixture
 def test_blogs(session):
     # Create a test admin user
-    admin = User(username="admin", email="admin@example.com", password="hashedpassword")
+from models.enums import Role
+from models.user import User
+
+    admin = User(
+        full_name="Admin User",
+        email="admin@example.com",
+        phone_number="+254700000000",
+        industry="Sustainability",
+        role=Role.ADMIN,
+        password="SecurePass1",
+    )
     session.add(admin)
     session.commit()  # commit to get the ID
 
