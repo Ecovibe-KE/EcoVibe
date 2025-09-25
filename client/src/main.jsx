@@ -6,11 +6,14 @@ import "./css/TopNavBar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import App from "./components/App.jsx";
+import { UserProvider } from "./context/UserContext.jsx"; // <-- import UserProvider
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <UserProvider> {/* Wrap App in UserProvider */}
+        <App />
+      </UserProvider>
     </BrowserRouter>
   </StrictMode>,
 );

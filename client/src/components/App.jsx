@@ -1,10 +1,8 @@
-import { useEffect, useMemo, Suspense } from "react";
+import { useEffect, useMemo, Suspense, useContext } from "react";
 import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useAnalytics } from "../hooks/useAnalytics";
-
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
 import Homepage from "./Homepage.jsx";
@@ -18,9 +16,12 @@ import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import Login from "./Login.jsx";
+import ForgotPassword from "./ForgotPassword.jsx";
+import Header from "./Header";
 import Footer from "./Footer.jsx";
+import { UserContext } from "../context/UserContext.jsx";
 
-// Footer Wrapper to detect page type
+// Footer Wrapper
 function FooterWrapper() {
   const location = useLocation();
 
@@ -33,16 +34,13 @@ function FooterWrapper() {
     return "landing";
   }, [location.pathname]);
 
-  if (import.meta.env?.MODE === "development") {
-    console.debug("Rendering FooterWrapper with pageType:", pageType);
-  }
-
   return <Footer pageType={pageType} />;
 }
 
 function App() {
   const location = useLocation();
   const { logEvent } = useAnalytics();
+  const { user } = useContext(UserContext);
 
   // Management routes list
   const managementRoutes = [
@@ -59,10 +57,15 @@ function App() {
   ];
 
   const isManagementRoute = managementRoutes.some((route) =>
-    location.pathname.startsWith(route),
+    location.pathname.startsWith(route)
   );
 
-  // Analytics event
+  // Redirect guests away from protected routes
+  if (isManagementRoute && (!user || user.role === "Client")) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Analytics
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: location.pathname || "/",
@@ -72,49 +75,39 @@ function App() {
 
   return (
     <>
-      {/*  Non-management paths - show NavBar*/}
+      {/* Non-management paths */}
       {!isManagementRoute && <NavBar />}
 
-      {/* Management routes - show NavPanel layout */}
+      {/* Management routes */}
       {isManagementRoute ? (
         <div className="d-flex vh-100">
           <NavPanel />
-          <main role="main" className="flex-fill bg-light overflow-auto">
-            <Suspense fallback={<div className="p-4">Loading…</div>}>
-              <Routes>
-                <Route path="/dashboard" element={<Outlet />}>
-                  <Route path="/dashboard" element={<p>Dashboard Main</p>} />
-                  <Route index element={<Navigate to="main" replace />} />
-                  <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
-                  <Route
-                    path="/dashboard/resources"
-                    element={<p>Resources</p>}
-                  />
-                  <Route
-                    path="/dashboard/resources"
-                    element={<p>Resources</p>}
-                  />
-                  <Route path="/dashboard/profile" element={<p>Profile</p>} />
-                  <Route path="/dashboard/payments" element={<p>Payments</p>} />
-                  <Route path="/dashboard/blog" element={<p>Blog</p>} />
-                  <Route path="/dashboard/services" element={<p>Services</p>} />
-                  <Route
-                    path="/dashboard/about"
-                    element={<p>About (management)</p>}
-                  />
-                  <Route path="/dashboard/users" element={<UserManagement />} />
-                  <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                  <Route
-                    path="/dashboard/*"
-                    element={<Navigate to="/dashboard" replace />}
-                  />
-                </Route>
-              </Routes>
-            </Suspense>
-          </main>
+          <div className="flex-fill d-flex flex-column">
+            <Header /> {/* Dynamic header from context */}
+            <main role="main" className="flex-fill bg-light overflow-auto">
+              <Suspense fallback={<div className="p-4">Loading…</div>}>
+                <Routes>
+                  <Route path="/dashboard" element={<Outlet />}>
+                    <Route path="/dashboard" element={<p>Dashboard Main</p>} />
+                    <Route index element={<Navigate to="main" replace />} />
+                    <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
+                    <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                    <Route path="/dashboard/profile" element={<p>Profile</p>} />
+                    <Route path="/dashboard/payments" element={<p>Payments</p>} />
+                    <Route path="/dashboard/blog" element={<p>Blog</p>} />
+                    <Route path="/dashboard/services" element={<p>Services</p>} />
+                    <Route path="/dashboard/about" element={<p>About (management)</p>} />
+                    <Route path="/dashboard/users" element={<UserManagement />} />
+                    <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
+                    <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </main>
+          </div>
         </div>
       ) : (
-        /* Public routes - normal layout */
+        /* Public routes */
         <Routes>
           <Route index element={<Homepage />} />
           <Route path="/home" element={<Homepage />} />
@@ -124,6 +117,7 @@ function App() {
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       )}

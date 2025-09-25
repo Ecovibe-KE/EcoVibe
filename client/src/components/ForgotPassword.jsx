@@ -1,49 +1,121 @@
-import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../css/ForgotPassword.module.css";
+import redirectStyles from "../css/ForgotPasswordRedirect.module.css";
+
+const EyeIcon = ({ visible }) => {
+  return visible ? (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+      <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+    </svg>
+  ) : (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M13.359 11.238l1.396 1.396-1.06 1.06-1.396-1.396a8.879 8.879 0 0 1-4.299 1.364C3 13.662 0 8 0 8s1.53-2.642 4.07-4.31L2.322 2.268l1.06-1.06 11 11-1.06 1.06-1.963-1.963zM5.998 5.998a2 2 0 0 0 2.828 2.828L5.998 5.998z"/>
+    </svg>
+  );
+};
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleReset = (e) => {
     e.preventDefault();
-    // Placeholder for backend API call
-    console.log("Password reset link sent to:", email);
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    alert("Password reset successfully!");
+    setResetSuccess(true); // Show redirect link
   };
 
+  // Auto-redirect after 3 seconds
+  useEffect(() => {
+    if (resetSuccess) {
+      const timer = setTimeout(() => {
+        navigate("/login");
+      }, 3000); // 3 seconds
+      return () => clearTimeout(timer); // cleanup
+    }
+  }, [resetSuccess, navigate]);
+
   return (
-    <div className="d-flex vh-100">
+    <div className={styles.wrapper}>
       {/* Left Section */}
-      <div className="d-flex flex-column justify-content-center align-items-center flex-1 bg-dark text-white p-5">
-        <h1>ECOVIBE</h1>
-        <p>Empowering Sustainable Solutions</p>
+      <div className={styles.leftSection}>
+        <h1 className={styles.brandTitle}>ECOVIBE</h1>
+        <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
         <img
           src="/Empower.png"
           alt="EcoVibe Illustration"
           className="img-fluid mt-3"
-          style={{ maxHeight: "300px" }}
+          style={{ width: "400px", height: "auto" }}
         />
       </div>
 
       {/* Right Section */}
-      <div className="d-flex flex-column justify-content-center align-items-center flex-1 p-5">
-        <div className="w-100" style={{ maxWidth: "400px" }}>
-          <h2 className="mb-4">Forgot Password</h2>
-          <p>Enter your email to receive a password reset link.</p>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Button variant="success" type="submit" className="w-100">
-              Send Reset Link
-            </Button>
-          </Form>
+      <div className={styles.rightSection}>
+        <div className={styles.formContainer}>
+          <h2 className={styles.subheading}>Forgot Password</h2>
+          <form onSubmit={handleReset}>
+            {/* New Password */}
+            <div className={styles.labelRow}>
+              <label className={styles.label}>New Password</label>
+              <span
+                className={styles.eyeIcon}
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                <EyeIcon visible={showNewPassword} />
+              </span>
+            </div>
+            <input
+              type={showNewPassword ? "text" : "password"}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={styles.input}
+              required
+            />
+
+            {/* Confirm Password */}
+            <div className={styles.labelRow}>
+              <label className={styles.label}>Confirm Password</label>
+              <span
+                className={styles.eyeIcon}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <EyeIcon visible={showConfirmPassword} />
+              </span>
+            </div>
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={styles.input}
+              required
+            />
+
+            <button type="submit" className={styles.resetButton}>
+              RESET PASSWORD
+            </button>
+          </form>
+
+          {/* Redirect to Login - only after reset */}
+          {resetSuccess && (
+            <div className={redirectStyles.redirectWrapper}>
+              <span
+                className={redirectStyles.redirectLink}
+                onClick={() => navigate("/login")}
+              >
+                Back to Login (Redirecting in 3s...)
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

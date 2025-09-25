@@ -1,8 +1,8 @@
 /* Main wrapper covering full viewport */
 .wrapper {
   display: flex;
-  flex-direction: row;
-  min-height: 100vh;
+  flex-direction: wrap;
+  min-height: calc(100vh - 120px);
   background-color: #1e1e1e;
 }
 
@@ -10,23 +10,33 @@
 .leftSection {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: center; /* vertical centering */
+  align-items: flex-start; /* align everything to the left */
   color: #ffffff;
-  padding-left: 2rem;
-  text-align: center;
+  padding: 4rem;
+  box-sizing: border-box;
+  text-align: left; /* text starts from left */
+  min-width: 300px;
+  flex: 1;
 }
 
-/* Branding text */
 .brandTitle {
-  font-weight: bold;
   font-size: 3rem;
+  font-weight: bold;
   margin: 0;
+  line-height: 1.2;
 }
 
 .brandSubtitle {
   font-size: 1.5rem;
-  margin: 0;
+  margin: 1rem 0 2rem 0;
+  line-height: 1.4;
+}
+
+.logoImage {
+  width: 300px;
+  height: auto;
+  margin-top: 2rem;
 }
 
 /* Right section */
@@ -36,58 +46,32 @@
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  min-width: 300px;
 }
 
 /* White login card */
 .loginCard {
   background: #ffffff;
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 2rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   max-width: 700px;
   width: 100%;
   display: flex;
+  font-size: 1.2rem;
+  font-weight: 400;
   flex-direction: column;
   justify-content: center;
   min-height: 700px;
 }
 
-/* Responsive tweaks */
-@media (max-width: 768px) {
-  .wrapper {
-    flex-direction: column;
-  }
-
-  .leftSection {
-    padding: 1.5rem;
-  }
-
-  .loginCard {
-    margin-top: 1rem;
-  }
-  .loginActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .loginButton {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .forgotLink {
-    text-align: center;
-    width: 100%;
-  }
-}
-
-/* Login.module.css or your CSS module file */
-
+/* Login actions (button + link) */
 .loginActions {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
+
 .loginActions .loginButton.btn {
   transition: background-color 0.3s ease;
 }
@@ -110,4 +94,89 @@
 
 .forgotLink:hover {
   text-decoration: underline;
+}
+
+/* Input fields responsive */
+.loginCard input,
+.loginCard label {
+  width: 100%;
+  font-size: 1rem;
+}
+
+/* ReCAPTCHA scaling */
+.loginCard .g-recaptcha {
+  transform: scale(1);
+  transform-origin: 0 0;
+}
+
+/* Tablet and smaller screens */
+@media (max-width: 1024px) {
+  .wrapper {
+    flex-direction: column; /* stack sections */
+    min-height: auto;
+  }
+
+  .leftSection,
+  .rightSection {
+    width: 100%;
+    padding: 1.5rem;
+   align-items: center; /* center text on tablet/mobile */
+    text-align: center;
+  }
+
+  .loginCard {
+    min-height: auto; /* adaptive height */
+    padding: 1.5rem;
+       text-align: left;
+  }
+
+  .loginActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .loginButton {
+    width: 100%;
+    margin-bottom: 0.5rem;
+ 
+  }
+
+  .forgotLink {
+    text-align: center;
+    width: 100%;
+  }
+
+  .loginCard input,
+  .loginCard label {
+    font-size: 0.95rem;
+  }
+
+  .loginCard .g-recaptcha {
+    transform: scale(0.85);
+    transform-origin: 0 0;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 600px) {
+  .brandTitle {
+    font-size: 2rem;
+  }
+
+  .brandSubtitle {
+    font-size: 1rem;
+  }
+
+  .loginCard {
+    padding: 1rem;
+  }
+
+  .loginCard input,
+  .loginCard label {
+    font-size: 0.9rem;
+  }
+
+  .loginCard .g-recaptcha {
+    transform: scale(0.75);
+  }
 }
