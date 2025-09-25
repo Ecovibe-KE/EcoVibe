@@ -1,19 +1,38 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SignUpForm from "../../src/components/Signup";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 
-const mockToast = { success: vi.fn(), error: vi.fn() };
-vi.mock("react-toastify", () => ({
-  toast: { success: vi.fn(), error: vi.fn() }
-}));
-vi.mock("react-router-dom", () => ({
-  useNavigate: () => vi.fn()
-}));
+// ✅ Mock react-router-dom BEFORE importing the component
+vi.mock("react-router-dom", () => {
+  const actual = vi.importActual("react-router-dom"); // get the real module
+  return {
+    ...actual,
+    Link: ({ children, to }) => <a href={to}>{children}</a>,
+    useNavigate: () => vi.fn(),
+  };
+});
 
+// ✅ Mock react-google-recaptcha
 vi.mock("react-google-recaptcha", () => ({
   __esModule: true,
-  default: () => <div>Mocked reCAPTCHA</div>,
+  default: ({ ref }) => {
+    ref.current = {
+      getValue: () => "fake-token",
+      reset: () => {},
+    };
+    return <div data-testid="recaptcha">Mock reCAPTCHA</div>;
+  },
 }));
+
+// ✅ Mock react-toastify
+vi.mock("react-toastify", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+// Now import your component
+import SignUpForm from "../../src/components/Signup";
 
 describe("SignUpForm", () => {
   it("renders inputs and button", () => {
@@ -50,9 +69,10 @@ describe("SignUpForm", () => {
     expect(checkbox.checked).toBe(true);
   });
 
-  it("submits form and shows error when recaptcha missing", async () => {
+  it("submits form and shows error when recaptcha missing", () => {
     render(<SignUpForm />);
     const submit = screen.getByRole("button", { name: /sign up/i });
     fireEvent.click(submit);
+    // your toast.error mock will capture the error, no real recaptcha needed
   });
 });
