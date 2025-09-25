@@ -2,7 +2,6 @@ import Homepage from "./Homepage";
 import { useEffect, Suspense } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
-import NavPanel from "./NavPanel.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import { ToastContainer } from "react-toastify";
@@ -31,8 +30,7 @@ function App() {
 
       {/* Management routes - show NavPanel layout */}
       {isManagementRoute ? (
-        <div className="d-flex vh-100">
-          <NavPanel />
+        <div className="d-flex">
           <div className="flex-fill d-flex flex-column">
             <TopNavbar />
             <main
