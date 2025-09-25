@@ -125,7 +125,7 @@ const Button = ({
   const sizeClass = size === "sm" ? "btn-sm" : size === "lg" ? "btn-lg" : "";
 
   // Handle action button variant
-  let actionVariantClass = "";
+  let actionVariantClass = "";  
   if (isActionButton) {
     const variantBase = actionVariantMap[action];
     actionVariantClass = outline
