@@ -1,12 +1,11 @@
 // TopNavbar.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Offcanvas, Container } from "react-bootstrap";
-import { NavLink, Link } from "react-router-dom";
-import { FiMenu } from "react-icons/fi";
+import { NavLink, Link, Outlet } from "react-router-dom";
+import { FiMenu, FiX } from "react-icons/fi";
 import useBreakpoint from "../hooks/useBreakpoint";
 import "../css/TopNavBar.css";
 
-// ✅ Import all sidebar icons
 import home from "../assets/home.png";
 import bookings from "../assets/bookings.png";
 import resources from "../assets/resources.png";
@@ -18,15 +17,29 @@ import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
 
+const SIDEBAR_WIDTH = 280;
+
+const NAV_ITEMS = [
+  { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
+  { to: "/dashboard/bookings", icon: bookings, label: "Bookings", alt: "Bookings" },
+  { to: "/dashboard/resources", icon: resources, label: "Resource Center", alt: "Resources" },
+  { to: "/dashboard/profile", icon: profile, label: "Profile", alt: "Profile" },
+  { to: "/dashboard/payments", icon: payments, label: "Payment History", alt: "Payments" },
+  { to: "/dashboard/blog", icon: blog, label: "Blog Management", alt: "Blog" },
+  { to: "/dashboard/services", icon: services, label: "Service Management", alt: "Services" },
+  { to: "/dashboard/about", icon: about, label: "About Us Management", alt: "About Us" },
+  { to: "/dashboard/users", icon: users, label: "User Management", alt: "User Management" },
+  { to: "/dashboard/tickets", icon: tickets, label: "Tickets", alt: "Tickets" },
+];
+
 function TopNavbar() {
   const [userData, setUserData] = useState({
     name: "Sharon Maina",
     role: "Admin",
-    avatar:
-      "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
+    avatar: "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
   });
 
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
 
   useEffect(() => {
@@ -41,141 +54,226 @@ function TopNavbar() {
     }
   }, []);
 
-  const linkClass = ({ isActive }) =>
-    `d-flex align-items-center p-2 rounded mb-1 ${
-      isActive ? "active-link" : "inactive-link"
-    } text-decoration-none`;
+  // Close mobile sidebar when switching to desktop
+  useEffect(() => {
+    if (isDesktop && showMobileSidebar) {
+      setShowMobileSidebar(false);
+    }
+  }, [isDesktop, showMobileSidebar]);
 
-  // Sidebar with safe default for onClose
-  const Sidebar = ({ onClose = () => {} }) => (
+  const toggleMobileSidebar = useCallback(() => {
+    setShowMobileSidebar((prev) => !prev);
+  }, []);
+
+  const closeMobileSidebar = useCallback(() => {
+    setShowMobileSidebar(false);
+  }, []);
+
+  const getLinkClass = ({ isActive }) =>
+    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${
+      isActive ? "active-link" : "inactive-link"
+    }`;
+
+  const SidebarContent = ({ onClose, isMobile = false }) => (
     <div
-      className="vh-100 d-flex flex-column"
+      className="sidebar-content h-100 d-flex flex-column"
       style={{
-        width: "280px",
+        width: `${SIDEBAR_WIDTH}px`,
         background: "linear-gradient(180deg, #F5E6D3 0%, #E8F5E8 100%)",
       }}
     >
-      {/* Logo */}
-      <Container fluid className="p-3 border-bottom">
-        <Link to="/home" onClick={onClose}>
-          <img
-            src="/EcovibeLogo.png"
-            alt="EcoVibe Logo"
-            className="img-fluid"
-            style={{ maxHeight: "60px" }}
-          />
-        </Link>
+      {/* Header */}
+      <Container fluid className="p-3 border-bottom flex-shrink-0">
+        <div className="d-flex align-items-center justify-content-between">
+          <Link to="/home" onClick={isMobile ? onClose : undefined} className="logo-link">
+            <img
+              src="/EcovibeLogo.png"
+              alt="EcoVibe Logo"
+              className="img-fluid"
+              style={{ maxHeight: "60px" }}
+            />
+          </Link>
+          {isMobile && (
+            <button 
+              onClick={onClose} 
+              className="btn btn-light btn-sm"
+              aria-label="Close sidebar"
+            >
+              <FiX size={18} />
+            </button>
+          )}
+        </div>
       </Container>
 
-      {/* Nav links */}
+      {/* Navigation Links */}
       <Container fluid className="p-3 flex-grow-1 overflow-auto">
-        <NavLink to="/dashboard/main" className={linkClass} onClick={onClose}>
-          <img src={home} alt="Home" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Dashboard</span>
-        </NavLink>
+        {/* Main Section */}
+        <div className="mb-3">
+          <h6
+            className="text-muted fw-bold text-uppercase mb-2"
+            style={{ fontSize: "14px", letterSpacing: "0.5px" }}
+          >
+            MAIN
+          </h6>
+          <NavLink
+            to="/dashboard/main"
+            className={getLinkClass}
+            style={{ fontSize: "15px" }}
+            onClick={isMobile ? onClose : undefined}
+            end
+          >
+            <img
+              src={home}
+              alt="Home"
+              className="me-2"
+              style={{ width: "18px", height: "18px" }}
+            />
+            <span>Dashboard</span>
+          </NavLink>
+        </div>
 
-        <NavLink to="/dashboard/bookings" className={linkClass} onClick={onClose}>
-          <img src={bookings} alt="Bookings" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Bookings</span>
-        </NavLink>
+        {/* Management Modules */}
+        <div>
+          <h6
+            className="text-muted fw-bold text-uppercase mb-2"
+            style={{ fontSize: "15px", letterSpacing: "0.5px" }}
+          >
+            MANAGEMENT MODULES
+          </h6>
 
-        <NavLink to="/dashboard/resources" className={linkClass} onClick={onClose}>
-          <img src={resources} alt="Resources" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Resource Center</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/profile" className={linkClass} onClick={onClose}>
-          <img src={profile} alt="Profile" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Profile</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/payments" className={linkClass} onClick={onClose}>
-          <img src={payments} alt="Payments" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Payment History</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/blog" className={linkClass} onClick={onClose}>
-          <img src={blog} alt="Blog" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Blog Management</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/services" className={linkClass} onClick={onClose}>
-          <img src={services} alt="Services" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Service Management</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/about" className={linkClass} onClick={onClose}>
-          <img src={about} alt="About Us" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>About Us Management</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/users" className={linkClass} onClick={onClose}>
-          <img src={users} alt="User Management" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>User Management</span>
-        </NavLink>
-
-        <NavLink to="/dashboard/tickets" className={linkClass} onClick={onClose}>
-          <img src={tickets} alt="Tickets" className="me-2" style={{ width: 20, height: 20 }} />
-          <span>Tickets</span>
-        </NavLink>
+          {NAV_ITEMS.slice(1).map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={getLinkClass}
+              onClick={isMobile ? onClose : undefined}
+              end
+            >
+              <img 
+                src={item.icon} 
+                alt={item.alt} 
+                className="me-3" 
+                style={{ width: 20, height: 20 }} 
+              />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
       </Container>
     </div>
   );
 
   return (
     <>
-      {/* Top bar */}
+      {/* Desktop Sidebar - Fixed */}
+      {isDesktop && (
+        <div
+          className="desktop-sidebar"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            height: "100vh",
+            width: `${SIDEBAR_WIDTH}px`,
+            zIndex: 1040,
+          }}
+        >
+          <SidebarContent />
+        </div>
+      )}
+
+      {/* Top Navigation Bar */}
       <nav
-        className="topbar d-flex justify-content-between align-items-center px-3"
+        className="top-navbar"
         style={{
-          transition: "margin-left 0.3s ease",
-          marginLeft: isDesktop ? "280px" : "0px",
+          position: "fixed",
+          top: 0,
+          left: isDesktop ? `${SIDEBAR_WIDTH}px` : 0,
+          right: 0,
+          height: "70px",
           backgroundColor: "#fff",
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          height: "60px",
           zIndex: 1050,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 20px",
+          transition: "left 0.3s ease",
         }}
       >
+        {/* Left Side */}
         <div className="d-flex align-items-center gap-3">
           {!isDesktop && (
             <button
-              onClick={() => setShowSidebar(true)}
+              onClick={toggleMobileSidebar}
               className="btn btn-light"
-              style={{ width: 40, height: 40, borderRadius: 8 }}
+              style={{ 
+                width: "40px", 
+                height: "40px", 
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              aria-label="Toggle sidebar"
             >
               <FiMenu size={20} />
             </button>
           )}
-          <h1 className="fs-5 m-0">Dashboard</h1>
+          <h1 className="page-title mb-0" style={{ fontSize: "1.5rem", fontWeight: 600, color: "#5a5c69" }}>
+            Dashboard
+          </h1>
         </div>
 
-        {/* User info */}
-        <div className="d-flex align-items-center">
-          <img
-            src={userData.avatar}
-            className="rounded-circle me-2"
-            alt="User Avatar"
-            style={{ width: 40, height: 40 }}
+        {/* Right Side - User Info */}
+        <div className="user-profile d-flex align-items-center">
+          <img 
+            src={userData.avatar} 
+            className="user-avatar rounded-circle me-2" 
+            alt="User Avatar" 
+            style={{ 
+              width: "40px", 
+              height: "40px", 
+              border: "2px solid #e3e6f0" 
+            }}
           />
-          <div>
-            <span className="fw-bold d-block">{userData.name}</span>
-            <span className="text-muted small">{userData.role}</span>
+          <div className="user-details d-none d-sm-block">
+            <div className="user-name" style={{ fontWeight: 600, fontSize: "0.9rem", color: "#5a5c69" }}>
+              {userData.name}
+            </div>
+            <div className="user-role" style={{ fontSize: "0.8rem", color: "#858796" }}>
+              {userData.role}
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Sidebar logic */}
-      {isDesktop ? (
-        <Sidebar />
-      ) : (
-        <Offcanvas
-          show={showSidebar}
-          onHide={() => setShowSidebar(false)}
-          placement="start"
-        >
-          <Sidebar onClose={() => setShowSidebar(false)} />
-        </Offcanvas>
-      )}
+      {/* Mobile Sidebar - Offcanvas */}
+      <Offcanvas
+        show={showMobileSidebar && !isDesktop}
+        onHide={closeMobileSidebar}
+        placement="start"
+        backdrop={true}
+        scroll={false}
+        style={{ width: `${SIDEBAR_WIDTH}px` }}
+      >
+        <SidebarContent onClose={closeMobileSidebar} isMobile={true} />
+      </Offcanvas>
+
+      {/* Main Content Area */}
+      <div
+        className="main-content"
+        style={{
+          marginLeft: isDesktop ? `${SIDEBAR_WIDTH}px` : 0,
+          marginTop: "70px",
+          padding: "20px",
+          minHeight: "calc(100vh - 70px)",
+          backgroundColor: "#f8f9fc",
+          transition: "margin-left 0.3s ease",
+        }}
+      >
+        <Outlet />
+      </div>
     </>
   );
 }
