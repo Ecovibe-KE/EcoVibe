@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
+import { vi } from "vitest";
 
 // Mock react-google-recaptcha BEFORE importing Login
 vi.mock("react-google-recaptcha", () => ({
@@ -11,47 +12,40 @@ vi.mock("react-google-recaptcha", () => ({
 }));
 
 import Login from "../../src/components/Login.jsx";
+import { UserContext } from "../../src/context/UserContext.jsx"; // adjust path if needed
 
 describe("Login Component", () => {
-  test("renders main branding text", () => {
+  const mockSetUser = vi.fn();
+
+  // Helper to render Login with BrowserRouter + UserContext
+  const renderWithProviders = (ui) =>
     render(
       <BrowserRouter>
-        <Login />
+        <UserContext.Provider value={{ user: null, setUser: mockSetUser }}>
+          {ui}
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
+  test("renders main branding text", () => {
+    renderWithProviders(<Login />);
     expect(screen.getByText(/ecovibe/i)).toBeInTheDocument();
     expect(screen.getByText(/empowering sustainable solutions/i)).toBeInTheDocument();
   });
 
   test("renders login button", () => {
-    render(
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>
-    );
-
+    renderWithProviders(<Login />);
     const loginButton = screen.getByRole("button", { name: /login/i });
     expect(loginButton).toBeInTheDocument();
   });
 
   test("renders mocked recaptcha component", () => {
-    render(
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>
-    );
-
+    renderWithProviders(<Login />);
     expect(screen.getByTestId("recaptcha-mock")).toBeInTheDocument();
   });
 
   test("allows user to type in email and password fields", async () => {
-    render(
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>
-    );
-
+    renderWithProviders(<Login />);
     const user = userEvent.setup();
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
@@ -64,14 +58,9 @@ describe("Login Component", () => {
   });
 
   test("renders forgot password link", () => {
-    render(
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>
-    );
-
-    const forgotLink = screen.getByText(/forgot your password\?/i);
+    renderWithProviders(<Login />);
+    const forgotLink = screen.getByText(/forgot your password/i);
     expect(forgotLink).toBeInTheDocument();
-    expect(forgotLink).toHaveAttribute("href", "/forgot-password");
+    expect(forgotLink.closest("a")).toHaveAttribute("href", "/forgot-password");
   });
 });

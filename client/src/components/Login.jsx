@@ -68,7 +68,9 @@ const Login = () => {
       <div className={styles.leftSection}>
         <div className={styles.brandWrapper}>
           <h1 className={styles.brandTitle}>ECOVIBE</h1>
-          <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
+          <p className={styles.brandSubtitle}>
+            Empowering Sustainable Solutions
+          </p>
         </div>
         <img
           src="/Empower.png"
@@ -82,7 +84,10 @@ const Login = () => {
       <div className={styles.rightSection}>
         <div className={styles.loginCard}>
           <form onSubmit={handleSubmit}>
-            <h2 className="text-left mb-4 text-dark" style={{ fontSize: "40px" }}>
+            <h2
+              className="text-left mb-4 text-dark"
+              style={{ fontSize: "40px" }}
+            >
               Log In
             </h2>
 

@@ -11,7 +11,9 @@ import { UserProvider } from "./context/UserContext.jsx"; // <-- import UserProv
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <UserProvider> {/* Wrap App in UserProvider */}
+      <UserProvider>
+        {" "}
+        {/* Wrap App in UserProvider */}
         <App />
       </UserProvider>
     </BrowserRouter>

@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../../src/components/App';
+import { UserContext } from '../../src/context/UserContext'; // adjust path if needed
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -18,8 +19,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// 1. Mock dependencies
-// Mock the custom hook to track calls to logEvent
+// Mock dependencies
 const mockLogEvent = vi.fn();
 vi.mock('../../src/hooks/useAnalytics', () => ({
   useAnalytics: vi.fn(() => ({
@@ -27,7 +27,6 @@ vi.mock('../../src/hooks/useAnalytics', () => ({
   })),
 }));
 
-// Mock the Button component
 vi.mock("../../src/utils/Button", () => ({
   default: ({ children, onClick }) => (
     <button onClick={onClick}>{children}</button>
@@ -37,33 +36,30 @@ vi.mock("../../src/utils/Button", () => ({
   ),
 }));
 
-// Mock window.alert to prevent it from blocking tests and to track calls
 global.alert = vi.fn();
 
-// 2. Test suite for the App component
 describe('App component', () => {
-  // Reset mocks before each test to ensure test isolation
+  const mockUserContext = { user: null, setUser: vi.fn() };
+
   beforeEach(() => {
     mockLogEvent.mockClear();
     global.alert.mockClear();
   });
 
-  // Helper function to render App with Router
-  const renderAppWithRouter = () => {
-    return render(
+  // Helper to render App with Router + UserContext
+  const renderAppWithProviders = () =>
+    render(
       <MemoryRouter>
-        <App />
+        <UserContext.Provider value={mockUserContext}>
+          <App />
+        </UserContext.Provider>
       </MemoryRouter>
     );
-  };
 
   test('logs screen_view event on mount', () => {
-    renderAppWithRouter();
+    renderAppWithProviders();
 
-    // Check if the mock was called at least once (might be called multiple times)
     expect(mockLogEvent).toHaveBeenCalled();
-
-    // Check if it was called with the specific event
     expect(mockLogEvent).toHaveBeenCalledWith('screen_view', {
       firebase_screen: '/',
       firebase_screen_class: 'App',

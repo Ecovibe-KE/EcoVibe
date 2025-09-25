@@ -1,17 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../css/ForgotPassword.module.css";
-import redirectStyles from "../css/ForgotPasswordRedirect.module.css";
 
 const EyeIcon = ({ visible }) => {
   return visible ? (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-      <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+    // Eye Open
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+      <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
     </svg>
   ) : (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M13.359 11.238l1.396 1.396-1.06 1.06-1.396-1.396a8.879 8.879 0 0 1-4.299 1.364C3 13.662 0 8 0 8s1.53-2.642 4.07-4.31L2.322 2.268l1.06-1.06 11 11-1.06 1.06-1.963-1.963zM5.998 5.998a2 2 0 0 0 2.828 2.828L5.998 5.998z"/>
+    // Eye Closed
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M13.359 11.238l1.396 1.396-1.06 1.06-1.396-1.396a8.879 8.879 0 0 1-4.299 1.364C3 13.662 0 8 0 8s1.53-2.642 4.07-4.31L2.322 2.268l1.06-1.06 11 11-1.06 1.06-1.963-1.963zM5.998 5.998a2 2 0 0 0 2.828 2.828L5.998 5.998z" />
     </svg>
   );
 };
@@ -21,7 +34,6 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [resetSuccess, setResetSuccess] = useState(false);
 
   const navigate = useNavigate();
 
@@ -31,19 +43,12 @@ const ForgotPassword = () => {
       alert("Passwords do not match!");
       return;
     }
-    alert("Password reset successfully!");
-    setResetSuccess(true); // Show redirect link
-  };
 
-  // Auto-redirect after 3 seconds
-  useEffect(() => {
-    if (resetSuccess) {
-      const timer = setTimeout(() => {
-        navigate("/login");
-      }, 3000); // 3 seconds
-      return () => clearTimeout(timer); // cleanup
-    }
-  }, [resetSuccess, navigate]);
+    alert("Password reset successfully! Redirecting to login...");
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -66,7 +71,9 @@ const ForgotPassword = () => {
           <form onSubmit={handleReset}>
             {/* New Password */}
             <div className={styles.labelRow}>
-              <label className={styles.label}>New Password</label>
+              <label htmlFor="newPassword" className={styles.label}>
+                New Password
+              </label>
               <span
                 className={styles.eyeIcon}
                 onClick={() => setShowNewPassword(!showNewPassword)}
@@ -75,6 +82,7 @@ const ForgotPassword = () => {
               </span>
             </div>
             <input
+              id="newPassword"
               type={showNewPassword ? "text" : "password"}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -84,7 +92,9 @@ const ForgotPassword = () => {
 
             {/* Confirm Password */}
             <div className={styles.labelRow}>
-              <label className={styles.label}>Confirm Password</label>
+              <label htmlFor="confirmPassword" className={styles.label}>
+                Confirm Password
+              </label>
               <span
                 className={styles.eyeIcon}
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -93,6 +103,7 @@ const ForgotPassword = () => {
               </span>
             </div>
             <input
+              id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -104,18 +115,6 @@ const ForgotPassword = () => {
               RESET PASSWORD
             </button>
           </form>
-
-          {/* Redirect to Login - only after reset */}
-          {resetSuccess && (
-            <div className={redirectStyles.redirectWrapper}>
-              <span
-                className={redirectStyles.redirectLink}
-                onClick={() => navigate("/login")}
-              >
-                Back to Login (Redirecting in 3s...)
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </div>

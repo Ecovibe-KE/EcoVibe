@@ -57,21 +57,21 @@ function App() {
   ];
 
   const isManagementRoute = managementRoutes.some((route) =>
-    location.pathname.startsWith(route)
+    location.pathname.startsWith(route),
   );
 
-  // Redirect guests away from protected routes
-  if (isManagementRoute && (!user || user.role === "Client")) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Analytics
+  // ✅ Always call hooks
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: location.pathname || "/",
       firebase_screen_class: "App",
     });
   }, [logEvent, location.pathname]);
+
+  // ✅ Perform redirect *after* hooks
+  if (isManagementRoute && (!user || user.role === "Client")) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <>
@@ -90,16 +90,37 @@ function App() {
                   <Route path="/dashboard" element={<Outlet />}>
                     <Route path="/dashboard" element={<p>Dashboard Main</p>} />
                     <Route index element={<Navigate to="main" replace />} />
-                    <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
-                    <Route path="/dashboard/resources" element={<p>Resources</p>} />
+                    <Route
+                      path="/dashboard/bookings"
+                      element={<p>Bookings</p>}
+                    />
+                    <Route
+                      path="/dashboard/resources"
+                      element={<p>Resources</p>}
+                    />
                     <Route path="/dashboard/profile" element={<p>Profile</p>} />
-                    <Route path="/dashboard/payments" element={<p>Payments</p>} />
+                    <Route
+                      path="/dashboard/payments"
+                      element={<p>Payments</p>}
+                    />
                     <Route path="/dashboard/blog" element={<p>Blog</p>} />
-                    <Route path="/dashboard/services" element={<p>Services</p>} />
-                    <Route path="/dashboard/about" element={<p>About (management)</p>} />
-                    <Route path="/dashboard/users" element={<UserManagement />} />
+                    <Route
+                      path="/dashboard/services"
+                      element={<p>Services</p>}
+                    />
+                    <Route
+                      path="/dashboard/about"
+                      element={<p>About (management)</p>}
+                    />
+                    <Route
+                      path="/dashboard/users"
+                      element={<UserManagement />}
+                    />
                     <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                    <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
+                    <Route
+                      path="/dashboard/*"
+                      element={<Navigate to="/dashboard" replace />}
+                    />
                   </Route>
                 </Routes>
               </Suspense>
