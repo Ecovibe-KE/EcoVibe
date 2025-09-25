@@ -88,7 +88,7 @@ describe("Blog component", () => {
       },
     ];
 
-    vi.spyOn(blogService, "getBlogs").mockResolvedValue({ status: "success", data: mockBlogs });
+    vi.spyOn(blogService, "getBlogs").mockResolvedValue(mockBlogs);
 
     render(
       <BrowserRouter>
