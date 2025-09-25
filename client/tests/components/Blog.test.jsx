@@ -25,7 +25,11 @@ describe("Blog component", () => {
   });
 
   it("renders loading initially", async () => {
-    vi.spyOn(blogService, "getBlogs").mockResolvedValue({ status: "success", data: [] });
+    vi.spyOn(blogService, "getBlogs").mockResolvedValue({
+      status: "success",
+      message: null,
+      data: [],
+    });
 
     render(
       <BrowserRouter>
@@ -51,7 +55,11 @@ describe("Blog component", () => {
       },
     ];
 
-    vi.spyOn(blogService, "getBlogs").mockResolvedValue(mockBlogs);
+    vi.spyOn(blogService, "getBlogs").mockResolvedValue({
+      status: "success",
+      message: null,
+      data: mockBlogs,
+    });
 
     render(
       <BrowserRouter>
@@ -59,7 +67,6 @@ describe("Blog component", () => {
       </BrowserRouter>
     );
 
-    // Wait for BlogCard to render
     const blogCard = await screen.findByText("Test Blog");
     expect(blogCard).toBeInTheDocument();
   });
@@ -88,7 +95,11 @@ describe("Blog component", () => {
       },
     ];
 
-    vi.spyOn(blogService, "getBlogs").mockResolvedValue(mockBlogs);
+    vi.spyOn(blogService, "getBlogs").mockResolvedValue({
+      status: "success",
+      message: null,
+      data: mockBlogs,
+    });
 
     render(
       <BrowserRouter>

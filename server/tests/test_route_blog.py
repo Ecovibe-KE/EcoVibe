@@ -1,14 +1,10 @@
 import pytest
 from models.blog import Blog
-from models.user import User  # make sure to import your User model
+from models.user import User, Role
 
 
 @pytest.fixture
 def test_blogs(session):
-    # Create a test admin user
-from models.enums import Role
-from models.user import User
-
     admin = User(
         full_name="Admin User",
         email="admin@example.com",
@@ -18,9 +14,8 @@ from models.user import User
         password="SecurePass1",
     )
     session.add(admin)
-    session.commit()  # commit to get the ID
+    session.commit()
 
-    # Now create blogs with the correct admin_id
     blog1 = Blog(
         title="Test Blog 1",
         author_name="Alice",

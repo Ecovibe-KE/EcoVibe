@@ -20,7 +20,6 @@ const Blog = () => {
         if (response.status === "success") {
           setBlogs(response.data);
         } else {
-          console.error("Error fetching blogs:", response.message);
           toast.error(`Error: ${response.message}`);
         }
       } catch (error) {

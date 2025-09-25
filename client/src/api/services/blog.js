@@ -5,27 +5,21 @@ import api from "../axiosConfig";
 export const getBlogs = async () => {
   try {
     const response = await api.get(ENDPOINTS.blogs);
-    const res = response.data;
-    if (res.status === "success") {
-      return res.data;
-    } else {
-      throw new Error(res.message || "Failed to fetch blogs");
-    }
+    return response.data;
   } catch (error) {
-    throw new Error(error.message || "Failed to fetch blogs");
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to fetch blogs",
+    );
   }
 };
 
 export const getBlogById = async (id) => {
   try {
     const response = await api.get(ENDPOINTS.blogById(id));
-    const res = response.data;
-    if (res.status === "success") {
-      return res.data;
-    } else {
-      throw new Error(res.message || "Failed to fetch blog");
-    }
+    return response.data;
   } catch (error) {
-    throw new Error(error.message || "Failed to fetch blog");
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to fetch blog",
+    );
   }
 };
