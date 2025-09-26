@@ -61,8 +61,6 @@ function App() {
             element={
               <>
                 <TopNavbar />
-                <Outlet />
-                <FooterWrapper />
               </>
             }
           >
