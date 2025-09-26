@@ -261,7 +261,7 @@ const SignUpForm = () => {
                   }
                   success={
                     formData.confirmPassword &&
-                      formData.confirmPassword == formData.password
+                      formData.confirmPassword === formData.password
                       ? " "
                       : undefined
                   }
