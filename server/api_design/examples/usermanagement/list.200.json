@@ -1,0 +1,61 @@
+{
+  "status": "success",
+  "message": "Users retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+2424242242424",
+      "role": "Client",
+      "status": "Suspended",
+      "profileImage": "https://i.pravatar.cc/100?img=1",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+2424242242424",
+      "role": "Client",
+      "status": "Active",
+      "profileImage": "https://i.pravatar.cc/100?img=2",
+      "createdAt": "2024-02-02T00:00:00.000Z",
+      "updatedAt": null
+    },
+    {
+      "id": 3,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+2424242242424",
+      "role": "Client",
+      "status": "Active",
+      "profileImage": "https://i.pravatar.cc/100?img=3",
+      "createdAt": "2024-03-03T00:00:00.000Z",
+      "updatedAt": "2025-03-03T00:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+2424242242424",
+      "role": "Client",
+      "status": "Active",
+      "profileImage": "https://i.pravatar.cc/100?img=4",
+      "createdAt": "2024-04-04T00:00:00.000Z",
+      "updatedAt": null
+    },
+    {
+      "id": 5,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+2424242242424",
+      "role": "Client",
+      "status": "Inactive",
+      "profileImage": "https://i.pravatar.cc/100?img=5",
+      "createdAt": "2024-05-05T00:00:00.000Z",
+      "updatedAt": null
+    }
+  ]
+}

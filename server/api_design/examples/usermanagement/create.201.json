@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "message": "User created successfully",
+  "data": {
+    "id": 29,
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "phone": "+2424242242425",
+    "role": "Client",
+    "status": "Active",
+    "profileImage": "https://i.pravatar.cc/100?img=29",
+    "createdAt": "2024-09-27T10:30:00.000Z",
+    "updatedAt": null
+  }
+}
