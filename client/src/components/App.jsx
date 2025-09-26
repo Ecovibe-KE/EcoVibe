@@ -1,7 +1,4 @@
 import { useEffect, Suspense,useMemo,lazy } from "react";
-import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useAnalytics } from "../hooks/useAnalytics";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -17,8 +14,8 @@ import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import Footer from "./Footer.jsx";
-
 import SignUpForm from "./Signup.jsx";
+
 
 
 // Footer Wrapper to detect page type
@@ -84,6 +81,16 @@ function App() {
           <Route path="/blog" element={<><NavBar /><Blog /><FooterWrapper /></>} />
           <Route path="/privacy" element={<><NavBar /><PrivacyPolicy /><FooterWrapper /></>} />
           <Route path="/terms" element={<><NavBar /><Terms /><FooterWrapper /></>} />
+          <Route path="/signup" element={<SignUpForm />}/>
+          <Route path="/login" element={
+            <div className="justify-content-center align-items-center">
+             <p className="">
+              welcome to ecovibe
+             </p>
+             <p className="">
+              something good is coming
+             </p>
+            </div>}/>
           
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
