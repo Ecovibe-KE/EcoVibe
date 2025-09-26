@@ -1,0 +1,44 @@
+.custom-phone-input {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: "all 0.3s ease";
+  width: "100%";
+  padding: "0.375rem 0.75rem";
+  font-Size: "1rem";
+  line-height: "1.5";
+  color: "#495057";
+  background-Color: "#fff";
+}
+
+.custom-phone-input-text {
+  font-size: 1rem !important;
+  padding-left: 1 !important;
+}
+
+.custom-phone-input.rip-country-selector {
+  height: calc(2.25rem + 2px) !important;
+  font-size: 1rem !important;
+  padding-left: 1 !important;
+}
+
+.custom-phone-input:focus-within {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+.form-check-input {
+  accent-color: black !important;
+}
+
+.input.is-valid {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+.register-text {
+  color: #ffffff;
+}
+
+.signup-form-section {
+  background-color: #1f1f1f;
+}
