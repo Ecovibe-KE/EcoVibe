@@ -84,7 +84,7 @@ const SignUpForm = () => {
           ...formData,
           recaptchaToken: captchaToken,
         };
-        const response = await createUser(payload)
+        const response = await createUser(payload);
         if (response.ok) {
           toast.success("An activation link was sent to your email address.");
           // Reset form and reCAPTCHA
@@ -111,7 +111,6 @@ const SignUpForm = () => {
           );
           recaptchaRef.current.reset();
         }
-
       } catch (error) {
         console.error(error);
         toast.error("An error occurred. Please try again.");
@@ -119,8 +118,7 @@ const SignUpForm = () => {
           recaptchaRef.current.reset();
         }
       }
-    }
-    finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -169,7 +167,9 @@ const SignUpForm = () => {
                   />
                 </div>
                 <div className="col-6">
-                  <label className="form-label" htmlFor="industry">Industry</label>
+                  <label className="form-label" htmlFor="industry">
+                    Industry
+                  </label>
                   <select
                     id="industry"
                     name="industry"
@@ -201,7 +201,9 @@ const SignUpForm = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label" htmlFor="phone">Phone number</label>
+                <label className="form-label" htmlFor="phone">
+                  Phone number
+                </label>
                 <PhoneInput
                   defaultCountry="ke"
                   value={formData.phone}
@@ -214,7 +216,7 @@ const SignUpForm = () => {
                     name: "phone",
                     required: true,
                     autoFocus: true,
-                    id: "phone"
+                    id: "phone",
                   }}
                 />
               </div>
@@ -269,7 +271,7 @@ const SignUpForm = () => {
                   }
                   success={
                     formData.confirmPassword &&
-                      formData.confirmPassword === formData.password
+                    formData.confirmPassword === formData.password
                       ? " "
                       : undefined
                   }
@@ -286,8 +288,14 @@ const SignUpForm = () => {
                   required
                 />
                 <label className="form-check-label" htmlFor="privacyPolicy">
-                  I agree to the <Link to="/terms" className="text-decoration-none">Terms of use</Link> and{" "}
-                  <Link to="/privacy" className="text-decoration-none">Privacy Policy</Link>
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-decoration-none">
+                    Terms of use
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-decoration-none">
+                    Privacy Policy
+                  </Link>
                 </label>
               </div>
               <div className="form-check mb-3">
@@ -307,10 +315,7 @@ const SignUpForm = () => {
               </div>
               <div className="">
                 {siteKey ? (
-                  <ReCAPTCHA
-                    sitekey={siteKey}
-                    ref={recaptchaRef}
-                  />
+                  <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
                 ) : (
                   <div className="alert alert-warning">
                     reCAPTCHA is not configured. Please contact Site Owner.
@@ -322,7 +327,7 @@ const SignUpForm = () => {
                   type="submit"
                   className="rounded-pill"
                   hoverColor="none"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isValidPassword}
                 >
                   Sign up
                 </Button>
