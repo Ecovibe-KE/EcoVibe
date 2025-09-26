@@ -209,7 +209,7 @@ def send_verification_email(to_email, user_name, verify_link):
 
     return send_email(to_email, subject, body, is_html=True)
 
-def send_invitation_email(recipient_email, recipient_name, invitation_link, invited_by):
+def send_invitation_email(recipient_email, recipient_name, invitation_link, invited_by,temp_password):
     """Send user invitation email"""
     subject = "You've been invited to join our platform"
 
@@ -232,10 +232,11 @@ def send_invitation_email(recipient_email, recipient_name, invitation_link, invi
             <p>Please click the button below to set your password and activate your account:</p>
             <p>
                 <a href="{invitation_link}" class="button">Set Your Password</a>
+                <a>Use the following password: {temp_password}</a>
             </p>
             <p><small>This invitation link will expire in 24 hours.</small></p>
         </div>
     </body>
     </html>
     """
-    send_email(recipient_email, subject, html_content)
+    return send_email(recipient_email, subject, html_content, is_html=True)
