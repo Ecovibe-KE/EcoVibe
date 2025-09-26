@@ -2,6 +2,15 @@ import pytest
 from app import create_app, db as _db
 
 
+@pytest.fixture(autouse=True)
+def patch_email(monkeypatch):
+    """Disable actual email sending for all tests in this file."""
+    monkeypatch.setattr(
+        "utils.mail_templates.send_verification_email",
+        lambda *a, **k: None,  # no-op
+    )
+
+
 @pytest.fixture(scope="session")
 def app(request):
     """Session-wide test `Flask` application."""
@@ -27,8 +36,9 @@ def client(app):
 @pytest.fixture(scope="function")
 def db(app, request):
     """Session-wide test database."""
+
     _db.app = app
-    _db.create_all()
+    _db.create_all()  # <-- creates *all* tables every test run
 
     def teardown():
         _db.drop_all()

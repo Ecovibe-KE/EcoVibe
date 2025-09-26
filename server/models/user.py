@@ -202,7 +202,7 @@ class User(db.Model):
             parsed = urlparse(url)
             if not all([parsed.scheme in ("http", "https"), parsed.netloc]):
                 raise ValueError(
-                    "Invalid profile image URL. " "Must start with http:// or https://"
+                    "Invalid profile image URL. Must start with http:// or https://"
                 )
             valid_exts = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
             path_ext = (

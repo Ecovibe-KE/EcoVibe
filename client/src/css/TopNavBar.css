@@ -1,0 +1,84 @@
+/* TopNavBar.css */
+
+/* Navigation Link Styles */
+.active-link {
+  font-weight: bold;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  background-color: #ece5dd;
+  color: #f0a235;
+}
+
+.inactive-link {
+  font-weight: normal;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color: rgb(36, 137, 16);
+}
+
+.inactive-link:hover {
+  background-color: rgba(240, 162, 53, 0.1);
+  color: #f0a235;
+  transition: all 0.3s ease;
+}
+
+/* Logo Link */
+.logo-link {
+  text-decoration: none;
+}
+
+.logo-link:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991.98px) {
+  .user-details {
+    display: none !important;
+  }
+
+  .main-content {
+    padding: 15px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-content {
+    padding: 10px !important;
+  }
+
+  .page-title {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Scrollbar Styling for Sidebar */
+.sidebar-content .overflow-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content .overflow-auto::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.sidebar-content .overflow-auto::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.sidebar-content .overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Button Hover Effects */
+.btn:hover {
+  transform: translateY(-1px);
+  transition: all 0.3s ease;
+}
+
+/* Offcanvas Backdrop */
+.offcanvas-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}

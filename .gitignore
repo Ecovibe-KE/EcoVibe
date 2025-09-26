@@ -101,3 +101,7 @@ instance/
 .idea/
 *.swp
 *.swo
+node_modules/
+client/node_modules/
+
+.env.*
