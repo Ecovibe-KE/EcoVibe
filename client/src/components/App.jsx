@@ -16,8 +16,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
 
-
-
 // Footer Wrapper to detect page type
 function FooterWrapper() {
     const location = useLocation();
