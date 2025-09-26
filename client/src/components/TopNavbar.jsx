@@ -21,14 +21,44 @@ const SIDEBAR_WIDTH = 280;
 
 const NAV_ITEMS = [
   { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
-  { to: "/dashboard/bookings", icon: bookings, label: "Bookings", alt: "Bookings" },
-  { to: "/dashboard/resources", icon: resources, label: "Resource Center", alt: "Resources" },
+  {
+    to: "/dashboard/bookings",
+    icon: bookings,
+    label: "Bookings",
+    alt: "Bookings",
+  },
+  {
+    to: "/dashboard/resources",
+    icon: resources,
+    label: "Resource Center",
+    alt: "Resources",
+  },
   { to: "/dashboard/profile", icon: profile, label: "Profile", alt: "Profile" },
-  { to: "/dashboard/payments", icon: payments, label: "Payment History", alt: "Payments" },
+  {
+    to: "/dashboard/payments",
+    icon: payments,
+    label: "Payment History",
+    alt: "Payments",
+  },
   { to: "/dashboard/blog", icon: blog, label: "Blog Management", alt: "Blog" },
-  { to: "/dashboard/services", icon: services, label: "Service Management", alt: "Services" },
-  { to: "/dashboard/about", icon: about, label: "About Us Management", alt: "About Us" },
-  { to: "/dashboard/users", icon: users, label: "User Management", alt: "User Management" },
+  {
+    to: "/dashboard/services",
+    icon: services,
+    label: "Service Management",
+    alt: "Services",
+  },
+  {
+    to: "/dashboard/about",
+    icon: about,
+    label: "About Us Management",
+    alt: "About Us",
+  },
+  {
+    to: "/dashboard/users",
+    icon: users,
+    label: "User Management",
+    alt: "User Management",
+  },
   { to: "/dashboard/tickets", icon: tickets, label: "Tickets", alt: "Tickets" },
 ];
 
@@ -36,7 +66,8 @@ function TopNavbar() {
   const [userData, setUserData] = useState({
     name: "Sharon Maina",
     role: "Admin",
-    avatar: "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
+    avatar:
+      "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
   });
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -85,7 +116,11 @@ function TopNavbar() {
       {/* Header */}
       <Container fluid className="p-3 border-bottom flex-shrink-0">
         <div className="d-flex align-items-center justify-content-between">
-          <Link to="/home" onClick={isMobile ? onClose : undefined} className="logo-link">
+          <Link
+            to="/home"
+            onClick={isMobile ? onClose : undefined}
+            className="logo-link"
+          >
             <img
               src="/EcovibeLogo.png"
               alt="EcoVibe Logo"
@@ -94,8 +129,8 @@ function TopNavbar() {
             />
           </Link>
           {isMobile && (
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="btn btn-light btn-sm"
               aria-label="Close sidebar"
             >
@@ -149,11 +184,11 @@ function TopNavbar() {
               onClick={isMobile ? onClose : undefined}
               end
             >
-              <img 
-                src={item.icon} 
-                alt={item.alt} 
-                className="me-3" 
-                style={{ width: 20, height: 20 }} 
+              <img
+                src={item.icon}
+                alt={item.alt}
+                className="me-3"
+                style={{ width: 20, height: 20 }}
               />
               <span>{item.label}</span>
             </NavLink>
@@ -207,41 +242,50 @@ function TopNavbar() {
             <button
               onClick={toggleMobileSidebar}
               className="btn btn-light"
-              style={{ 
-                width: "40px", 
-                height: "40px", 
+              style={{
+                width: "40px",
+                height: "40px",
                 borderRadius: "8px",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               }}
               aria-label="Toggle sidebar"
             >
               <FiMenu size={20} />
             </button>
           )}
-          <h1 className="page-title mb-0" style={{ fontSize: "1.5rem", fontWeight: 600, color: "#5a5c69" }}>
+          <h1
+            className="page-title mb-0"
+            style={{ fontSize: "1.5rem", fontWeight: 600, color: "#5a5c69" }}
+          >
             Dashboard
           </h1>
         </div>
 
         {/* Right Side - User Info */}
         <div className="user-profile d-flex align-items-center">
-          <img 
-            src={userData.avatar} 
-            className="user-avatar rounded-circle me-2" 
-            alt="User Avatar" 
-            style={{ 
-              width: "40px", 
-              height: "40px", 
-              border: "2px solid #e3e6f0" 
+          <img
+            src={userData.avatar}
+            className="user-avatar rounded-circle me-2"
+            alt="User Avatar"
+            style={{
+              width: "40px",
+              height: "40px",
+              border: "2px solid #e3e6f0",
             }}
           />
           <div className="user-details d-none d-sm-block">
-            <div className="user-name" style={{ fontWeight: 600, fontSize: "0.9rem", color: "#5a5c69" }}>
+            <div
+              className="user-name"
+              style={{ fontWeight: 600, fontSize: "0.9rem", color: "#5a5c69" }}
+            >
               {userData.name}
             </div>
-            <div className="user-role" style={{ fontSize: "0.8rem", color: "#858796" }}>
+            <div
+              className="user-role"
+              style={{ fontSize: "0.8rem", color: "#858796" }}
+            >
               {userData.role}
             </div>
           </div>

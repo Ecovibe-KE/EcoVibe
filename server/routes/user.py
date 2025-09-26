@@ -195,13 +195,17 @@ def register_user():
 
         constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "")
 
-        if constraint in {"uq_user_email", "uq_user_phone_number"}:
-            field = "Email" if "email" in constraint else "Phone number"
+        error_messages = {
+            "uq_user_email": "Email already exists",
+            "uq_user_phone_number": "Phone number already exists",
+        }
+
+        if constraint in error_messages:
             return (
                 jsonify(
                     {
                         "status": "error",
-                        "message": f"{field} already exists.",
+                        "message": error_messages[constraint],
                         "data": None,
                     }
                 ),

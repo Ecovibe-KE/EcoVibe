@@ -21,7 +21,10 @@ export const deleteUsers = async (userId) => {
 
 // Updates a user by ID
 export const editUsers = async (userId, userData) => {
-  const response = await api.patch(`${ENDPOINTS.userManagement}/${userId}`, userData);
+  const response = await api.patch(
+    `${ENDPOINTS.userManagement}/${userId}`,
+    userData,
+  );
   return response.data;
 };
 
