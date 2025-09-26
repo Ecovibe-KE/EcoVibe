@@ -102,16 +102,15 @@ class UserService:
         digits = string.digits
         all_chars = string.ascii_letters + string.digits
 
-        password_chars = [
-            secrets.choice(uppercase_letters),
-            secrets.choice(digits)
-        ]
+        password_chars = [secrets.choice(uppercase_letters), secrets.choice(digits)]
 
         remaining_length = length - 2
-        password_chars.extend(secrets.choice(all_chars) for _ in range(remaining_length))
+        password_chars.extend(
+            secrets.choice(all_chars) for _ in range(remaining_length)
+        )
         secrets.SystemRandom().shuffle(password_chars)
 
-        return ''.join(password_chars)
+        return "".join(password_chars)
 
     @staticmethod
     def can_modify_user(current_user, target_user):
@@ -135,7 +134,7 @@ class UserService:
             "status": user.account_status.value,
             "profileImage": user.profile_image_url,
             "created_at": user.created_at.isoformat() if user.created_at else None,
-            "updatedAt": user.updated_at.isoformat() if user.updated_at else None
+            "updatedAt": user.updated_at.isoformat() if user.updated_at else None,
         }
 
 
@@ -157,11 +156,11 @@ class UserListResource(Resource):
             return {
                 "status": "success",
                 "message": "Users retrieved successfully",
-                "data": {"users": users_data}
+                "data": {"users": users_data},
             }, 200
 
         except Exception as e:
-            current_app.logger.exception("Error fetching users")
+            current_app.logger.exception(f"Error fetching users {e}")
             return {"status": "error", "message": "Server error"}, 500
 
     @require_role([Role.ADMIN, Role.SUPER_ADMIN])
@@ -177,7 +176,7 @@ class UserListResource(Resource):
             return {
                 "status": "error",
                 "message": "Validation failed",
-                "errors": errors
+                "errors": errors,
             }, 400
 
         try:
@@ -185,16 +184,23 @@ class UserListResource(Resource):
             if User.query.filter_by(email=validated_data["email"]).first():
                 return {"status": "error", "message": "Email already exists"}, 409
 
-            if User.query.filter_by(phone_number=validated_data["phone_number"]).first():
-                return {"status": "error", "message": "Phone number already exists"}, 409
+            if User.query.filter_by(
+                phone_number=validated_data["phone_number"]
+            ).first():
+                return {
+                    "status": "error",
+                    "message": "Phone number already exists",
+                }, 409
 
             # Check role permissions
             requested_role = validated_data["role"] or Role.CLIENT
-            if (current_user.role == Role.ADMIN and
-                    requested_role in [Role.SUPER_ADMIN, Role.ADMIN]):
+            if current_user.role == Role.ADMIN and requested_role in [
+                Role.SUPER_ADMIN,
+                Role.ADMIN,
+            ]:
                 return {
                     "status": "error",
-                    "message": "Cannot create users with admin or SUPER_ADMIN role"
+                    "message": "Cannot create users with admin or SUPER_ADMIN role",
                 }, 403
 
             # Create user
@@ -204,7 +210,7 @@ class UserListResource(Resource):
                 phone_number=validated_data["phone_number"],
                 industry=validated_data["industry"],
                 role=requested_role,
-                account_status=AccountStatus.INACTIVE
+                account_status=AccountStatus.INACTIVE,
             )
 
             temp_password = UserService.generate_valid_password(12)
@@ -224,22 +230,31 @@ class UserListResource(Resource):
 
             threading.Thread(
                 target=send_invitation_email,
-                args=(user.email, user.full_name, verify_link, current_user.full_name, temp_password),
-                daemon=True
+                args=(
+                    user.email,
+                    user.full_name,
+                    verify_link,
+                    current_user.full_name,
+                    temp_password,
+                ),
+                daemon=True,
             ).start()
 
             return {
                 "status": "success",
                 "message": "User created successfully. Invitation email sent.",
-                "data": UserService.serialize_user(user)
+                "data": UserService.serialize_user(user),
             }, 201
 
         except IntegrityError:
             db.session.rollback()
-            return {"status": "error", "message": "Email or phone number already exists"}, 409
+            return {
+                "status": "error",
+                "message": "Email or phone number already exists",
+            }, 409
         except Exception as e:
             db.session.rollback()
-            current_app.logger.exception("Error creating user")
+            current_app.logger.exception(f"Error creating user{e}")
             return {"status": "error", "message": "Server error"}, 500
 
 
@@ -260,11 +275,11 @@ class UserResource(Resource):
             return {
                 "status": "success",
                 "message": "User retrieved successfully",
-                "data": UserService.serialize_user(user)
+                "data": UserService.serialize_user(user),
             }, 200
 
         except Exception as e:
-            current_app.logger.exception("Error fetching user")
+            current_app.logger.exception(f"Error fetching user {e}")
             return {"status": "error", "message": "Server error"}, 500
 
     @require_role([Role.ADMIN, Role.SUPER_ADMIN])
@@ -283,12 +298,14 @@ class UserResource(Resource):
             if not UserService.can_modify_user(current_user, user):
                 return {"status": "error", "message": "Cannot modify this user"}, 403
 
-            errors, validated_data = UserValidator.validate_user_data(payload, is_update=True)
+            errors, validated_data = UserValidator.validate_user_data(
+                payload, is_update=True
+            )
             if errors:
                 return {
                     "status": "error",
                     "message": "Validation failed",
-                    "errors": errors
+                    "errors": errors,
                 }, 400
 
             # Update fields if provided
@@ -308,15 +325,18 @@ class UserResource(Resource):
             return {
                 "status": "success",
                 "message": "User updated successfully",
-                "data": UserService.serialize_user(user)
+                "data": UserService.serialize_user(user),
             }, 200
 
         except IntegrityError:
             db.session.rollback()
-            return {"status": "error", "message": "Email or phone number already exists"}, 409
+            return {
+                "status": "error",
+                "message": "Email or phone number already exists",
+            }, 409
         except Exception as e:
             db.session.rollback()
-            current_app.logger.exception("Error updating user")
+            current_app.logger.exception(f"Error updating user {e}")
             return {"status": "error", "message": "Server error"}, 500
 
     @require_role([Role.ADMIN, Role.SUPER_ADMIN])
@@ -324,7 +344,10 @@ class UserResource(Resource):
         """Delete a user"""
         try:
             if current_user.id == user_id:
-                return {"status": "error", "message": "Cannot delete your own account"}, 400
+                return {
+                    "status": "error",
+                    "message": "Cannot delete your own account",
+                }, 400
 
             user = User.query.get(user_id)
             if not user:
@@ -340,7 +363,7 @@ class UserResource(Resource):
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.exception("Error deleting user")
+            current_app.logger.exception(f"Error deleting user {e}")
             return {"status": "error", "message": "Server error"}, 500
 
 
@@ -356,7 +379,7 @@ class UserStatusResource(Resource):
         if status not in [s.value for s in AccountStatus]:
             return {
                 "status": "error",
-                "message": f"Status must be one of: {[s.value for s in AccountStatus]}"
+                "message": f"Status must be one of: {[s.value for s in AccountStatus]}",
             }, 400
 
         try:
@@ -377,13 +400,15 @@ class UserStatusResource(Resource):
                     "id": user.id,
                     "email": user.email,
                     "name": user.full_name,
-                    "updatedAt": user.updated_at.isoformat() if user.updated_at else None
-                }
+                    "updatedAt": (
+                        user.updated_at.isoformat() if user.updated_at else None
+                    ),
+                },
             }, 200
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.exception("Error updating user status")
+            current_app.logger.exception(f"Error updating user status {e}")
             return {"status": "error", "message": "Server error"}, 500
 
 

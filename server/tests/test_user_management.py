@@ -13,7 +13,7 @@ def create_admin_user(session, email="admin@test.com", role=Role.ADMIN):
         industry="Tech",
         phone_number="+254712345678",
         account_status=AccountStatus.ACTIVE,
-        role=role
+        role=role,
     )
     user.set_password("Password123")
     session.add(user)
@@ -29,7 +29,7 @@ def create_test_user(session, email="user@test.com", role=Role.CLIENT):
         industry="Finance",
         phone_number="+254712345679",
         account_status=AccountStatus.ACTIVE,
-        role=role
+        role=role,
     )
     user.set_password("Password123")
     session.add(user)
@@ -41,6 +41,7 @@ def test_get_users_success_admin(client, session):
     """Test admin can retrieve user list"""
     admin = create_admin_user(session)
     user = create_test_user(session)
+    print(f"user {user}")
 
     # Login as admin
     login_res = client.post(
@@ -60,6 +61,7 @@ def test_get_users_success_admin(client, session):
     assert data["status"] == "success"
     assert len(data["data"]["users"]) == 2  # admin + user
 
+
 def test_create_user_validation_errors(client, session):
     """Test user creation with invalid data"""
     admin = create_admin_user(session)
@@ -75,7 +77,7 @@ def test_create_user_validation_errors(client, session):
         "full_name": "A",  # Too short
         "email": "invalid-email",  # Invalid format
         "phone_number": "123",  # Too short
-        "role": "invalid_role"  # Invalid role
+        "role": "invalid_role",  # Invalid role
     }
 
     response = client.post(
@@ -112,7 +114,7 @@ def test_create_user_duplicate_email(client, session):
         "email": existing_user.email,  # Already exists
         "phone_number": "+254712345682",
         "industry": "Tech",
-        "role": "client"
+        "role": "client",
     }
 
     response = client.post(
@@ -144,7 +146,7 @@ def test_create_user_admin_trying_create_admin(client, session):
         "email": "newadminattempt@test.com",
         "phone_number": "+254712345683",
         "industry": "Tech",
-        "role": "admin"  # Admin trying to create admin - should fail
+        "role": "admin",  # Admin trying to create admin - should fail
     }
 
     response = client.post(
@@ -166,7 +168,7 @@ def test_create_user_unauthorized(client):
         "full_name": "Unauthorized User",
         "email": "unauthorized@test.com",
         "phone_number": "+254712345684",
-        "industry": "Tech"
+        "industry": "Tech",
     }
 
     response = client.post(
@@ -176,6 +178,7 @@ def test_create_user_unauthorized(client):
     )
 
     assert response.status_code == 401  # Unauthorized
+
 
 def test_get_user_success(client, session):
     """Test retrieving specific user details"""
@@ -280,9 +283,7 @@ def test_update_user_status_success(client, session):
     )
     access_token = login_res.get_json()["access_token"]
 
-    payload = {
-        "status": "inactive"
-    }
+    payload = {"status": "inactive"}
 
     response = client.patch(
         f"/api/user-management/{user.id}/status",
@@ -309,9 +310,7 @@ def test_update_user_status_invalid(client, session):
     )
     access_token = login_res.get_json()["access_token"]
 
-    payload = {
-        "status": "invalid_status"
-    }
+    payload = {"status": "invalid_status"}
 
     response = client.patch(
         f"/api/user-management/{user.id}/status",
@@ -324,6 +323,7 @@ def test_update_user_status_invalid(client, session):
     assert response.status_code == 400
     assert data["status"] == "error"
     assert "Status must be one of" in data["message"]
+
 
 def test_client_access_denied(client, session):
     """Test client cannot access user management endpoints"""
