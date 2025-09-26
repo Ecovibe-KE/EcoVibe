@@ -1,7 +1,7 @@
 # routes/auth.py
 from flask import Blueprint, request
 from utils.token import create_refresh_token_for_user
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from flask_restful import Api, Resource
 from models.token import Token
 from flask_jwt_extended import (
@@ -120,8 +120,9 @@ class RefreshResource(Resource):
 
         # Look up the token in DB
         token = Token.query.filter_by(value=token_value).first()
+        now = datetime.now(timezone.utc)
 
-        if not token or token.expiry_time < datetime.utcnow():
+        if not token or not token.expiry_time or token.expiry_time <= now:
             return {"error": "invalid or expired refresh token"}, 401
 
         user = User.query.get(token.user_id)

@@ -10,7 +10,8 @@ class Token(db.Model):
         db.DateTime(timezone=True), nullable=False, default=db.func.now()
     )
     value = db.Column(db.String)
-    expiry_time = db.Column(db.DateTime)
+    # expiry_time = db.Column(db.DateTime)
+    expiry_time = db.Column(db.DateTime(timezone=True), nullable=False)
 
     # --- Relationship ---
     user = db.relationship("User", back_populates="tokens")

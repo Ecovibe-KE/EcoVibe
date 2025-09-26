@@ -7,7 +7,7 @@ import secrets
 
 def create_refresh_token_for_user(user, days_valid=7):
     token_value = secrets.token_urlsafe(64)
-    expiry = datetime.utcnow() + timedelta(days=days_valid)
+    expiry = datetime.now(timezone.utc) + timedelta(days=days_valid)
 
     token = Token(user_id=user.id, value=token_value, expiry_time=expiry)
 
