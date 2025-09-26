@@ -15,4 +15,3 @@ def register_routes(app):
     app.register_blueprint(user_bp, url_prefix=API)
     app.register_blueprint(contact_bp, url_prefix=API)
     app.register_blueprint(auth_bp, url_prefix=API)
-    app.register_blueprint(user_management_bp, url_prefix=API + '/admin')
