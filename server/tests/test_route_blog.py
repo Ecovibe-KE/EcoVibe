@@ -1,0 +1,39 @@
+import pytest
+from models.blog import Blog
+from models.user import User, Role
+
+
+@pytest.fixture
+def test_blogs(session):
+    admin = User(
+        full_name="Admin User",
+        email="admin@example.com",
+        phone_number="+254700000000",
+        industry="Sustainability",
+        role=Role.ADMIN,
+        password="SecurePass1",
+    )
+    session.add(admin)
+    session.commit()
+
+    blog1 = Blog(
+        title="Test Blog 1",
+        author_name="Alice",
+        content="Content 1",
+        image="image1.jpg",
+        category="Tutorial",
+        reading_duration="5 min",
+        admin_id=admin.id,
+    )
+    blog2 = Blog(
+        title="Test Blog 2",
+        author_name="Bob",
+        content="Content 2",
+        image="image2.jpg",
+        category="News",
+        reading_duration="3 min",
+        admin_id=admin.id,
+    )
+    session.add_all([blog1, blog2])
+    session.commit()
+    return blog1, blog2
