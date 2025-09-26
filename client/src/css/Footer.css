@@ -1,4 +1,21 @@
-.footer {
+/* Sticky footer layout */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1; 
+}
+
+/* Existing footer styles */
+footer {
   background-color: #ffffff;
   padding: 2rem 1rem;
   margin-top: auto;
@@ -73,4 +90,59 @@
 .footer .legal-link:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+
+.footer-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+}
+
+/* Center nav links */
+.footer-nav-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.footer-nav-links {
+  display: flex;
+  gap: 2rem;
+  font-weight: 500;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footer-top-row {
+    flex-direction: column;
+    align-items: center;
+    position: relative; 
+  }
+
+  .footer-nav-wrapper {
+    position: static; 
+    transform: none;
+    margin: 1rem 0;
+  }
+
+  .footer-social-icons {
+    margin-top: 0.5rem;
+  }
+
+  .footer-bottom-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .footer-legal-links {
+    justify-content: center;
+  }
 }

@@ -5,7 +5,6 @@ import { NavLink, Link, Outlet } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import useBreakpoint from "../hooks/useBreakpoint";
 import "../css/TopNavBar.css";
-
 import home from "../assets/home.png";
 import bookings from "../assets/bookings.png";
 import resources from "../assets/resources.png";

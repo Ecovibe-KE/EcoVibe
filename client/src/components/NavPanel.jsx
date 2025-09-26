@@ -1,7 +1,6 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
-
 import "../css/NavPanel.css";
 import home from "../assets/home.png";
 import bookings from "../assets/bookings.png";
