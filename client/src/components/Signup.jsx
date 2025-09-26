@@ -101,7 +101,7 @@ const SignUpForm = () => {
 
         setTimeout(() => {
           navigate("/login");
-        }, 15);
+        }, 1500);
       } else {
         toast.error(
           response.message || "There was an error submitting your form.",
