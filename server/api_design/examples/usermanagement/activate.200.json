@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "message": "User activated successfully",
+  "data": {
+    "id": 15,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "status": "Active",
+    "updatedAt": "2024-09-27T10:30:00.000Z"
+  }
+}

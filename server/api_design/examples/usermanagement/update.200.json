@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "message": "User updated successfully",
+  "data": {
+    "id": 15,
+    "name": "John Smith",
+    "email": "john.smith@example.com",
+    "phone": "+2424242242426",
+    "role": "Manager",
+    "status": "Active",
+    "profileImage": "https://i.pravatar.cc/100?img=15",
+    "createdAt": "2024-05-15T00:00:00.000Z",
+    "updatedAt": "2024-09-27T10:30:00.000Z"
+  }
+}
