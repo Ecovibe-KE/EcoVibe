@@ -98,7 +98,7 @@ class LoginResource(Resource):
             "email": user.email,
             "industry": user.industry,
             "phone_number": user.phone_number,
-            # do NOT include password_hash or projects
+            "role": user.role.value,
         }
 
         return {

@@ -9,7 +9,7 @@ class Token(db.Model):
     created_at = db.Column(
         db.DateTime(timezone=True), nullable=False, default=db.func.now()
     )
-    value = db.Column(db.String)
+    value = db.Column(db.String, unique=True, index=True, nullable=False)
     # expiry_time = db.Column(db.DateTime)
     expiry_time = db.Column(db.DateTime(timezone=True), nullable=False)
 
