@@ -15,6 +15,7 @@ import BlogPost from "./BlogPost.jsx";
 import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
 import SignUpForm from "./Signup.jsx";
+import Login from "./Login.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
@@ -24,7 +25,6 @@ function DashboardLayout() {
   return (
     <>
       <TopNavbar />
-      <Outlet />
     </>
   );
 }
@@ -239,6 +239,8 @@ function App() {
                 </>
               }
             />
+             <Route path="/login" element={<Login />} />
+             
 
             {/* Catch-all */}
             <Route path="*" element={<Navigate to="/" replace />} />
