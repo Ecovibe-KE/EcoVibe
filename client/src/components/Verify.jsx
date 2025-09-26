@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom"; 
-import Button from "../utils/Button"; 
-import { verifyAccount } from "../api/services/auth"; 
-
+import { useSearchParams, useNavigate } from "react-router-dom";
+import Button from "../utils/Button";
+import { verifyAccount } from "../api/services/auth";
 
 function VerifyPage() {
   const [status, setStatus] = useState("loading");
@@ -18,9 +17,7 @@ function VerifyPage() {
       return;
     }
 
-   
-
-     verifyAccount(token)
+    verifyAccount(token)
       .then((res) => {
         setStatus("success");
         setMessage(res.message || "Account verified successfully!");
@@ -30,8 +27,6 @@ function VerifyPage() {
         setMessage(err.message || "Verification failed.");
       });
   }, [searchParams]);
-
-   
 
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
@@ -46,7 +41,6 @@ function VerifyPage() {
           </h2>
           <p style={{ color: "#333" }}>{message}</p>
 
-        
           <Button onClick={() => navigate("/login")} color="#f5a030">
             Go to Login
           </Button>

@@ -10,16 +10,35 @@ const api = axios.create({
   timeout: 10000, // 10s timeout
 });
 
+// // Request interceptor (e.g., add auth token)
+// api.interceptors.request.use(
+//   (config) => {
+//     const token =
+//       typeof localStorage !== "undefined"
+//         ? localStorage.getItem(AUTH_TOKEN_KEY)
+//         : null;
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error),
+// );
+
 // Request interceptor (e.g., add auth token)
 api.interceptors.request.use(
   (config) => {
-    const token =
-      typeof localStorage !== "undefined"
-        ? localStorage.getItem(AUTH_TOKEN_KEY)
-        : null;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // If skipAuth flag is set, don't touch Authorization
+    if (!config.skipAuth) {
+      const token =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem(AUTH_TOKEN_KEY)
+          : null;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
+
     return config;
   },
   (error) => Promise.reject(error),
