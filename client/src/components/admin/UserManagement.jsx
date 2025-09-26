@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../css/UserManagement.css";
 import Button from "../../utils/Button.jsx";
 import AddUserModal from "./AddUserModal.jsx";
 import EditUserModal from "./EditUserModal.jsx";
@@ -32,7 +33,6 @@ const Card = ({ children }) => (
     </div>
   </div>
 );
-
 const UserManagement = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -376,70 +376,75 @@ const UserManagement = () => {
                 <>
                   {pagedUsers.length > 0 ? (
                     pagedUsers.map((user) => (
-                      <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.phone}</td>
-                        <td>{user.role}</td>
-                        <td>
-                          <StatusInfo status={user.status} />
-                        </td>
-                        <td className="text-nowrap text-end">
-                          <Button
-                            action="view"
-                            label="View"
-                            size="sm"
-                            onClick={() => openView(user)}
-                          />
-                          <Button
-                            action="update"
-                            label="Edit"
-                            size="sm"
-                            onClick={() => openEdit(user)}
-                          />
+                        <tr key={user.id}>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.phone}</td>
+                            <td>{user.role}</td>
+                            <td>
+                                <StatusInfo status={user.status}/>
+                            </td>
+                            <td className="text-nowrap text-end">
+                                <Button
+                                    action="view"
+                                    label="View"
+                                    size="sm"
+                                    className="btn-fixed-width"
+                                    onClick={() => openView(user)}
+                                />
+                                <Button
+                                    action="update"
+                                    label="Edit"
+                                    size="sm"
+                                    className="btn-fixed-width"
+                                    onClick={() => openEdit(user)}
+                                />
 
-                          {/* Block/Unblock button logic */}
-                          {user.status === "Active" && (
-                            <Button
-                              action="block"
-                              label="Block"
-                              size="sm"
-                              onClick={() => openBlock(user)}
-                            />
-                          )}
-                          {user.status === "Suspended" && (
-                            <Button
-                              action="unblock"
-                              label="Unblock"
-                              size="sm"
-                              onClick={() => openUnblock(user)}
-                            />
-                          )}
-                          {(user.status === "Inactive" ||
-                            user.status === "Blocked") && (
-                            <Button
-                              action="block"
-                              label="Block"
-                              size="sm"
-                              disabled
-                            />
-                          )}
+                                {/* Block/Unblock button logic */}
+                                {user.status === "Active" && (
+                                    <Button
+                                        action="block"
+                                        label="Block"
+                                        size="sm"
+                                        className="btn-fixed-width"
+                                        onClick={() => openBlock(user)}
+                                    />
+                                )}
+                                {user.status === "Suspended" && (
+                                    <Button
+                                        action="unblock"
+                                        label="Unblock"
+                                        size="sm"
+                                        className="btn-fixed-width"
+                                        onClick={() => openUnblock(user)}
+                                    />
+                                )}
+                                {(user.status === "Inactive" || user.status === "Blocked") && (
+                                    <Button
+                                        action="block"
+                                        label="Block"
+                                        size="sm"
+                                        className="btn-fixed-width"
+                                        disabled
+                                    />
+                                )}
 
-                          <Button
-                            action="delete"
-                            label="Delete"
-                            size="sm"
-                            onClick={() => openDelete(user)}
-                          />
-                        </td>
-                      </tr>
+                                <Button
+                                    action="delete"
+                                    label="Delete"
+                                    size="sm"
+                                    className="btn-fixed-width"
+                                    onClick={() => openDelete(user)}
+                                />
+                            </td>
+                        </tr>
                     ))
                   ) : (
-                    <tr>
-                      <td colSpan="6" className="text-center py-4">
-                        No users
-                      </td>
-                    </tr>
+                      <tr>
+                          <td colSpan="6" className="text-center py-4">
+                              No users
+                          </td>
+                      </tr>
                   )}
                 </>
               )}
@@ -447,19 +452,19 @@ const UserManagement = () => {
           </table>
         </div>
 
-        {pageSize !== "All" && (
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <small className="text-muted">
-              Showing {(page - 1) * Number(pageSize) + 1} to{" "}
-              {Math.min(page * Number(pageSize), totalItems)} of {totalItems}{" "}
-              entries
-            </small>
-            <nav>
-              <ul className="pagination pagination-sm mb-0">
-                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => gotoPage(page - 1)}
+          {pageSize !== "All" && (
+              <div className="d-flex justify-content-between align-items-center mt-3">
+                  <small className="text-muted">
+                      Showing {(page - 1) * Number(pageSize) + 1} to{" "}
+                      {Math.min(page * Number(pageSize), totalItems)} of {totalItems}{" "}
+                      entries
+                  </small>
+                  <nav>
+                      <ul className="pagination pagination-sm mb-0">
+                          <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                              <button
+                                  className="page-link"
+                                  onClick={() => gotoPage(page - 1)}
                   >
                     Previous
                   </button>

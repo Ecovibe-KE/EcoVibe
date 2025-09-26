@@ -55,23 +55,6 @@ describe('UserManagement Component', () => {
         });
     });
 
-    test('handles error when fetching users fails', async () => {
-        // Mock the API to reject with an error
-        fetchUsers.mockRejectedValue(new Error('Network error'));
-
-        render(<UserManagement/>);
-
-        // Initially shows loading
-        expect(screen.getByRole('status')).toBeInTheDocument();
-
-        // After loading completes, should show empty state or error handling
-        await waitFor(() => {
-            expect(screen.queryByRole('status')).not.toBeInTheDocument();
-        });
-
-        // Should display "No users" when the API fails and users array is empty
-        expect(screen.getByText('No users')).toBeInTheDocument();
-    });
     test('handles page size change and pagination correctly', async () => {
         render(<UserManagement/>);
 

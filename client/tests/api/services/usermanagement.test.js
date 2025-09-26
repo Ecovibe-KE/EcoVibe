@@ -23,7 +23,7 @@ describe('user service', () => {
 
     it('should handle server errors', async () => {
         server.use(
-            http.post(`${BASE_URL}${ENDPOINTS.users}`, () => {
+            http.post(`${BASE_URL}${ENDPOINTS.userManagement}`, () => {
                 return new HttpResponse(
                     null,
                     {status: 500, statusText: 'Internal Server Error'}
@@ -37,7 +37,7 @@ describe('user service', () => {
     // Test case 1: fetchUsers - success case
     it('fetchUsers should return empty array when response data is not array', async () => {
         server.use(
-            http.get(`${BASE_URL}${ENDPOINTS.users}`, () => {
+            http.get(`${BASE_URL}${ENDPOINTS.userManagement}`, () => {
                 return HttpResponse.json(
                     {users: []}, // Non-array response
                     {status: 200}
@@ -53,7 +53,7 @@ describe('user service', () => {
     it('fetchUsers should return users array when response is array', async () => {
         const mockUsers = [{id: 1, name: 'John'}, {id: 2, name: 'Jane'}];
         server.use(
-            http.get(`${BASE_URL}${ENDPOINTS.users}`, () => {
+            http.get(`${BASE_URL}${ENDPOINTS.userManagement}`, () => {
                 return HttpResponse.json(mockUsers, {status: 200});
             })
         );
@@ -68,7 +68,7 @@ describe('user service', () => {
         const mockResponse = {message: 'User deleted successfully'};
 
         server.use(
-            http.delete(`${BASE_URL}${ENDPOINTS.users}/${userId}`, () => {
+            http.delete(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, () => {
                 return HttpResponse.json(mockResponse, {status: 200});
             })
         );
@@ -82,7 +82,7 @@ describe('user service', () => {
         const userId = '123';
 
         server.use(
-            http.delete(`${BASE_URL}${ENDPOINTS.users}/${userId}`, () => {
+            http.delete(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, () => {
                 return new HttpResponse(null, {status: 404});
             })
         );
@@ -97,7 +97,7 @@ describe('user service', () => {
         const mockResponse = {id: userId, ...userData};
 
         server.use(
-            http.patch(`${BASE_URL}${ENDPOINTS.users}/${userId}`, () => {
+            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, () => {
                 return HttpResponse.json(mockResponse, {status: 200});
             })
         );
@@ -112,7 +112,7 @@ describe('user service', () => {
         const userData = {name: 'Updated Name'};
 
         server.use(
-            http.patch(`${BASE_URL}${ENDPOINTS.users}/${userId}`, () => {
+            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, () => {
                 return new HttpResponse(null, {status: 400});
             })
         );
@@ -127,7 +127,7 @@ describe('user service', () => {
         const mockResponse = {id: userId, status: 'Suspended'};
 
         server.use(
-            http.patch(`${BASE_URL}${ENDPOINTS.users}/${userId}`, async ({request}) => {
+            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, async ({request}) => {
                 const body = await request.json();
                 expect(body).toEqual({status: 'Suspended'});
                 return HttpResponse.json(mockResponse, {status: 200});
@@ -144,7 +144,7 @@ describe('user service', () => {
         const mockResponse = {id: userId, status: 'Active'};
 
         server.use(
-            http.patch(`${BASE_URL}${ENDPOINTS.users}/${userId}`, async ({request}) => {
+            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, async ({request}) => {
                 const body = await request.json();
                 expect(body).toEqual({status: 'Active'});
                 return HttpResponse.json(mockResponse, {status: 200});
@@ -158,7 +158,7 @@ describe('user service', () => {
 // Test case 9: fetchUsers - error case
     it('fetchUsers should handle errors', async () => {
         server.use(
-            http.get(`${BASE_URL}${ENDPOINTS.users}`, () => {
+            http.get(`${BASE_URL}${ENDPOINTS.userManagement}`, () => {
                 return new HttpResponse(null, {status: 500});
             })
         );
