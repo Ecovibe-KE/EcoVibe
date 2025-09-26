@@ -12,7 +12,12 @@ export const ENDPOINTS = {
   login: "/login",
 
   //forgot-password
-  forgotPassword: "/forgot-password"
+  forgotPassword: "/forgot-password",
+
+
+  // users
+  users: "/users",
+  userManagement: "/user-management",
 
   // Add more endpoints as needed here
 };

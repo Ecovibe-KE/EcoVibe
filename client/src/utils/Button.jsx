@@ -2,6 +2,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import AddIcon from "@mui/icons-material/Add";
+import Block from "@mui/icons-material/Block";
+import UnBlock from "@mui/icons-material/SettingsBackupRestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
@@ -46,6 +48,7 @@ const Button = ({
   className = "",
   color,
   hoverColor,
+  hoverTextColor,
 
   // Action button props
   action,
@@ -70,6 +73,8 @@ const Button = ({
     add: <AddIcon />,
     update: <EditIcon />,
     delete: <DeleteForeverIcon />,
+    block: <Block />,
+    unblock: <UnBlock />,
     view: <RemoveRedEyeIcon />,
   };
 
@@ -77,6 +82,8 @@ const Button = ({
     add: "success",
     update: "warning",
     delete: "danger",
+    block: "light",
+    unblock: "light",
     view: "dark",
   };
 
@@ -112,7 +119,7 @@ const Button = ({
   const standardHoverStyle = {
     backgroundColor: outline ? btnColor : btnHoverColor,
     borderColor: outline ? btnHoverColor : btnHoverColor,
-    color: outline ? "#fff" : "#fff",
+    // Do not override text/icon color on hover for standard button
   };
 
   // Action button styles (using Bootstrap-like variants)
@@ -150,18 +157,16 @@ const Button = ({
         aria-label={label}
         onMouseOver={(e) => {
           if (!disabled) {
-            e.target.style.backgroundColor = outline ? btnColor : btnHoverColor;
-            e.target.style.borderColor = outline
-              ? btnHoverColor
-              : btnHoverColor;
-            e.target.style.color = outline ? "#fff" : "#fff";
+            const el = e.currentTarget;
+            el.style.backgroundColor = outline ? btnColor : btnHoverColor;
+            el.style.borderColor = outline ? btnHoverColor : btnHoverColor;
           }
         }}
         onMouseOut={(e) => {
           if (!disabled) {
-            e.target.style.backgroundColor = outline ? "transparent" : "";
-            e.target.style.borderColor = "";
-            e.target.style.color = outline ? btnColor : "";
+            const el = e.currentTarget;
+            el.style.backgroundColor = outline ? "transparent" : "";
+            el.style.borderColor = "";
           }
         }}
         {...props}
@@ -176,7 +181,9 @@ const Button = ({
   return (
     <button
       type={type}
-      className={`btn ${outline ? "btn-outline" : ""} ${sizeClass} ${className}`}
+      className={`btn ${
+        outline ? "btn-outline" : ""
+      } ${sizeClass} ${className}`}
       style={{
         ...standardStyles,
         opacity: disabled ? 0.6 : 1,
@@ -185,14 +192,14 @@ const Button = ({
       disabled={disabled}
       onMouseOver={(e) => {
         if (!disabled) {
-          Object.assign(e.target.style, standardHoverStyle);
+          Object.assign(e.currentTarget.style, standardHoverStyle);
         }
       }}
       onMouseOut={(e) => {
         if (!disabled) {
-          e.target.style.backgroundColor = outline ? "transparent" : btnColor;
-          e.target.style.borderColor = btnColor;
-          e.target.style.color = outline ? btnColor : "#fff";
+          const el = e.currentTarget;
+          el.style.backgroundColor = outline ? "transparent" : btnColor;
+          el.style.borderColor = btnColor;
         }
       }}
       {...props}
@@ -243,6 +250,7 @@ Button.propTypes = {
   showIcon: PropTypes.bool,
   /** Custom icon (for action buttons) */
   icon: PropTypes.element,
+  hoverTextColor: PropTypes.string,
 };
 
 export default Button;
