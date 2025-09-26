@@ -37,10 +37,16 @@ const Blog = () => {
   const filteredBlogs = blogs.filter((blog) => {
     const matchesCategory =
       !selectedCategory || blog.category === selectedCategory;
+
+    const title = (blog.title ?? "").toLowerCase();
+    const author = (blog.author_name ?? "").toLowerCase();
+    const content = (blog.content ?? "").toLowerCase();
+
     const matchesSearch =
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.author_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.content?.toLowerCase().includes(searchTerm.toLowerCase());
+      title.includes(searchTerm.toLowerCase()) ||
+      author.includes(searchTerm.toLowerCase()) ||
+      content.includes(searchTerm.toLowerCase());
+
     return matchesCategory && matchesSearch;
   });
 

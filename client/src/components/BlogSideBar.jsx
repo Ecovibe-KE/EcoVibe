@@ -34,10 +34,12 @@ const BlogSideBar = ({
             onChange={(e) => setSearchTerm(e.target.value)}
             className={`form-control border-0 w-100 fs-6 ${style.searchInput}`}
             placeholder="☰ Search articles"
+            aria-label="Search articles"
           />
           <button
             type="submit"
             className={`border-0 bg-transparent p-0 me-3 ${style.searchButton}`}
+            aria-label="Execute search"
           >
             <i className="bi bi-search border-0"></i>
           </button>
@@ -58,6 +60,7 @@ const BlogSideBar = ({
             !selectedCategory ? "fw-bold" : ""
           }`}
           onClick={() => setSelectedCategory(null)}
+          aria-pressed={!selectedCategory}
         >
           <span>All</span>
           <span>({totalCount})</span>
@@ -72,6 +75,7 @@ const BlogSideBar = ({
               selectedCategory === category ? "fw-bold" : ""
             }`}
             onClick={() => setSelectedCategory(category)}
+            aria-pressed={selectedCategory === category}
           >
             <span>{category}</span>
             <span>({count})</span>
@@ -100,6 +104,7 @@ const BlogSideBar = ({
             placeholder="Your email address"
             className="form-control mb-3"
             style={{ maxWidth: "250px" }}
+            aria-label="Enter your email address"
           />
           <Button type="submit">Subscribe</Button>
         </form>

@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import Blog from "../../src/components/Blog";
 import * as blogService from "../../src/api/services/blog";
 
+
 // Mock react-toastify
 vi.mock("react-toastify", () => ({
   toast: { error: vi.fn() },

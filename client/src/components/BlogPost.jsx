@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Button from "../utils/Button";
 import { getBlogById } from "../api/services/blog";
+import CalendarIcon from "../assets/Calendar.png";
+import UserIcon from "../assets/User.png";
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -47,11 +49,19 @@ const BlogPost = () => {
 
       <div className="flex items-center text-sm text-gray-500 mb-4 gap-4">
         <div className="flex items-center gap-1">
-          <img src="/assets/Calendar.png" alt="calendar" className="w-4 h-4" />
+          <img
+            src={CalendarIcon}
+            alt="calendar"
+            className="w-4 h-4 img-fluid calendar-icon"
+          />
           <time dateTime={blog.date_created}>{formattedDate}</time>
         </div>
         <div className="flex items-center gap-1">
-          <img src="/assets/User.png" alt="author" className="w-4 h-4" />
+          <img
+            src={UserIcon}
+            alt="author"
+            className="w-4 h-4 img-fluid user-icon"
+          />
           <span>{blog.author_name}</span>
         </div>
       </div>
