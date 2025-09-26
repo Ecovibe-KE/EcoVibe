@@ -147,7 +147,7 @@ const SignUpForm = () => {
         </div>
         <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center p-5">
           <div className="bg-white text-dark p-4 rounded-4 shadow w-100">
-            <h2 className="mb-4 fw-bold fs-4">Sign Up Now</h2>
+            <h2 className="mb-4 fw-bold fs-4">Sign up now</h2>
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="mb-3 col-6">
