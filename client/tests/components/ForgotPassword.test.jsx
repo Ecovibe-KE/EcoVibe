@@ -5,24 +5,23 @@ import { forgotPassword } from "../../src/api/services/auth";
 import { MemoryRouter } from "react-router-dom";
 import { vi, describe, it, beforeEach, expect } from "vitest";
 
-// Mock the API service
+// --- Partial mock of react-router-dom ---
+const mockedNavigate = vi.fn();
+
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,                // keep all original exports like MemoryRouter
+    useNavigate: () => mockedNavigate, // override useNavigate
+  };
+});
+
+// --- Mock the API service ---
 vi.mock("../../src/api/services/auth");
 
 describe("ForgotPassword Component", () => {
-  let mockedNavigate;
-
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mock useNavigate from react-router-dom
-    mockedNavigate = vi.fn();
-    vi.mock("react-router-dom", async () => {
-      const actual = await vi.importActual("react-router-dom");
-      return {
-        ...actual,
-        useNavigate: () => mockedNavigate,
-      };
-    });
   });
 
   it("renders form inputs and button", () => {

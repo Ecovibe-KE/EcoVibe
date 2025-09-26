@@ -15,8 +15,8 @@ const Header = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userData");
 
-    // Redirect to login page
-    navigate("/login");
+    // Redirect to login page (prevent back navigation)
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -27,6 +27,11 @@ const Header = () => {
           src={user.avatar || "/default-avatar.png"}
           alt="Profile Avatar"
           className={styles.avatar}
+          onError={(e) => {
+            if (e.currentTarget.src !== "/default-avatar.png") {
+              e.currentTarget.src = "/default-avatar.png";
+              }
+              }}
         />
 
         {/* User Info */}
@@ -36,7 +41,7 @@ const Header = () => {
         </div>
 
         {/* Logout Button */}
-        <button className={styles.logoutButton} onClick={handleLogout}>
+        <button type="button" className={styles.logoutButton} onClick={handleLogout}>
           Logout
         </button>
       </div>

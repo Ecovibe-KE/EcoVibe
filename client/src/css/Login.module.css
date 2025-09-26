@@ -1,7 +1,8 @@
 /* Main wrapper covering full viewport */
 .wrapper {
   display: flex;
-  flex-direction: wrap;
+  flex-direction: row;
+  flex-wrap: wrap;
   min-height: calc(100vh - 120px);
   background-color: #1e1e1e;
 }
@@ -182,3 +183,39 @@
   }
 }
 
+/* Password label with toggle on same line */
+.passwordLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  
+}
+
+.passwordToggle {
+  cursor: pointer;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+}
+
+.passwordToggle:hover {
+  color: #343a40;
+}
+
+.passwordToggle svg {
+  font-size: 1.2rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .passwordLabel {
+    font-size: 0.95rem;
+  }
+
+  .passwordToggle svg {
+    font-size: 1rem;
+  }
+}

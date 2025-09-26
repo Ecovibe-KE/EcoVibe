@@ -42,7 +42,6 @@ function App() {
   const { logEvent } = useAnalytics();
   const { user } = useContext(UserContext);
 
-  // Management routes list
   const managementRoutes = [
     "/dashboard",
     "/bookings",
@@ -60,7 +59,6 @@ function App() {
     location.pathname.startsWith(route)
   );
 
-  // ✅ Always call hooks
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: location.pathname || "/",
@@ -68,37 +66,35 @@ function App() {
     });
   }, [logEvent, location.pathname]);
 
-  // ✅ Perform redirect *after* hooks
   if (isManagementRoute && (!user || user.role === "Client")) {
     return <Navigate to="/login" replace />;
   }
 
   return (
     <>
-      {/* Non-management paths */}
       {!isManagementRoute && <NavBar />}
 
-      {/* Management routes */}
       {isManagementRoute ? (
         <div className="d-flex vh-100">
           <NavPanel />
           <div className="flex-fill d-flex flex-column">
-            <Header /> {/* Dynamic header from context */}
+            <Header />
             <main role="main" className="flex-fill bg-light overflow-auto">
               <Suspense fallback={<div className="p-4">Loading…</div>}>
                 <Routes>
                   <Route path="/dashboard" element={<Outlet />}>
+                    {/* Relative paths for child routes */}
                     <Route index element={<p>Dashboard Main</p>} />
                     <Route path="bookings" element={<p>Bookings</p>} />
                     <Route path="resources" element={<p>Resources</p>} />
-                   <Route path="profile" element={<p>Profile</p>} />
+                    <Route path="profile" element={<p>Profile</p>} />
                     <Route path="payments" element={<p>Payments</p>} />
                     <Route path="blog" element={<p>Blog</p>} />
-                     <Route path="services" element={<p>Services</p>} />
+                    <Route path="services" element={<p>Services</p>} />
                     <Route path="about" element={<p>About (management)</p>} />
                     <Route path="users" element={<UserManagement />} />
-                   <Route path="tickets" element={<p>Tickets</p>} />
-                   <Route path="*" element={<Navigate to="." replace />} />
+                    <Route path="tickets" element={<p>Tickets</p>} />
+                    <Route path="*" element={<Navigate to="." replace />} />
                   </Route>
                 </Routes>
               </Suspense>
@@ -106,8 +102,8 @@ function App() {
           </div>
         </div>
       ) : (
-        /* Public routes */
         <Routes>
+          {/* Public routes */}
           <Route index element={<Homepage />} />
           <Route path="/home" element={<Homepage />} />
           <Route path="/playground" element={<Playground />} />
@@ -121,7 +117,6 @@ function App() {
         </Routes>
       )}
 
-      {/* Toast Notifications */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -134,7 +129,6 @@ function App() {
         pauseOnHover
       />
 
-      {/* Footer */}
       {!isManagementRoute && <FooterWrapper />}
     </>
   );
