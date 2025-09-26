@@ -8,5 +8,8 @@ export const ENDPOINTS = {
   //verify
   verify: "/verify",
 
+  // users
+  users: "/users",
+  userManagement: "/user-management",
   // Add more endpoints as needed here
 };
