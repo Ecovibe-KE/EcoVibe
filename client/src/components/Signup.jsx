@@ -18,6 +18,7 @@ const SignUpForm = () => {
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     industry: "",
@@ -50,6 +51,7 @@ const SignUpForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!recaptchaRef.current) {
       toast.error(
         "reCAPTCHA not loaded. Please refresh the page and try again.",
@@ -77,43 +79,49 @@ const SignUpForm = () => {
       return;
     }
     try {
-      const payload = {
-        ...formData,
-        recaptchaToken: captchaToken,
-      };
-      const response = await createUser(payload)
-      if (response.ok) {
-        toast.success("An activation link was sent to your email address.");
-        // Reset form and reCAPTCHA
-        setFormData({
-          name: "",
-          industry: "",
-          email: "",
-          phone: "254",
-          password: "",
-          confirmPassword: "",
-          receiveEmails: false,
-          privacyPolicy: false,
-        });
-        recaptchaRef.current.reset();
-        setIsValidPassword(false);
-        setPasswordTouched(false);
+      try {
+        const payload = {
+          ...formData,
+          recaptchaToken: captchaToken,
+        };
+        const response = await createUser(payload)
+        if (response.ok) {
+          toast.success("An activation link was sent to your email address.");
+          // Reset form and reCAPTCHA
+          setFormData({
+            name: "",
+            industry: "",
+            email: "",
+            phone: "254",
+            password: "",
+            confirmPassword: "",
+            receiveEmails: false,
+            privacyPolicy: false,
+          });
+          recaptchaRef.current.reset();
+          setIsValidPassword(false);
+          setPasswordTouched(false);
 
-        setTimeout(() => {
-          navigate("/login");
-        }, 1500);
-      } else {
-        toast.error(
-          response.message || "There was an error submitting your form.",
-        );
-        recaptchaRef.current.reset();
-      }
+          setTimeout(() => {
+            navigate("/login");
+          }, 1500);
+        } else {
+          toast.error(
+            response.message || "There was an error submitting your form.",
+          );
+          recaptchaRef.current.reset();
+        }
 
-    } catch (error) {
-      toast.error("An error occurred. Please try again.", error);
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset();
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred. Please try again.");
+        if (recaptchaRef.current) {
+          recaptchaRef.current.reset();
+        }
       }
+    }
+    finally {
+      setIsSubmitting(false);
     }
   };
   const handleClickShowPassword = () => {
@@ -314,6 +322,7 @@ const SignUpForm = () => {
                   type="submit"
                   className="rounded-pill"
                   hoverColor="none"
+                  disabled={isSubmitting}
                 >
                   Sign up
                 </Button>
