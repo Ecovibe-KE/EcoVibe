@@ -7,6 +7,9 @@ export const ENDPOINTS = {
   contact: "/contact",
   //verify
   verify: "/verify",
+  // Blog
+  blogs: "/blogs",
+  blogById: (id) => `/blogs/${id}`,
 
   // users
   users: "/users",
