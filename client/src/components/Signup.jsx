@@ -330,7 +330,7 @@ const SignUpForm = () => {
                   type="submit"
                   className="rounded-pill"
                   hoverColor="none"
-                  disabled={isSubmitting || !isValidPassword}
+                  disabled={isSubmitting}
                 >
                   Sign up
                 </Button>
