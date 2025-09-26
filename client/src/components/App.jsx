@@ -239,8 +239,7 @@ function App() {
                 </>
               }
             />
-             <Route path="/login" element={<Login />} />
-             
+            <Route path="/login" element={<Login />} />
 
             {/* Catch-all */}
             <Route path="*" element={<Navigate to="/" replace />} />
