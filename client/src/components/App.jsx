@@ -1,6 +1,6 @@
 import { useEffect, Suspense, useMemo, lazy } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Homepage from "./Homepage";
 import NavBar from "./Navbar.jsx";
@@ -8,13 +8,15 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import AboutUs from "./AboutUs.jsx";
 import Blog from "./Blog.jsx";
+import BlogPost from "./BlogPost.jsx";
 import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -59,6 +61,7 @@ function App() {
             element={
               <>
                 <TopNavbar />
+                <Outlet />
                 <FooterWrapper />
               </>
             }
@@ -228,7 +231,28 @@ function App() {
             }
           />
           <Route
+            path="/blog/:id"
+            element={
+              <>
+                <NavBar />
+                <BlogPost />
+                <FooterWrapper />
+              </>
+            }
+          />
+
+          <Route
             path="/privacy"
+            element={
+              <>
+                <NavBar />
+                <PrivacyPolicy />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/privacy-policy"
             element={
               <>
                 <NavBar />
@@ -243,29 +267,6 @@ function App() {
               <>
                 <NavBar />
                 <Terms />
-                <FooterWrapper />
-              </>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <>
-                <NavBar />
-                <SignUpForm />
-                <FooterWrapper />
-              </>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <>
-                <NavBar />
-                <div className="justify-content-center align-items-center">
-                  <p className="">welcome to ecovibe</p>
-                  <p className="">something good is coming</p>
-                </div>
                 <FooterWrapper />
               </>
             }

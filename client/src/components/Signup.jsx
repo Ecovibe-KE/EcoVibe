@@ -1,8 +1,7 @@
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Input from "../utils/Input";
-import { useRef } from "react";
 import { toast } from "react-toastify";
 import Button from "../utils/Button";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -15,10 +14,10 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
-  const [isValidPassword, setIsValidPassword] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     industry: "",
@@ -30,7 +29,7 @@ const SignUpForm = () => {
     privacyPolicy: false,
   });
 
-  // Check if reCAPTCHA key is loaded
+  // Load reCAPTCHA key
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
@@ -49,83 +48,6 @@ const SignUpForm = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-    if (!recaptchaRef.current) {
-      toast.error(
-        "reCAPTCHA not loaded. Please refresh the page and try again.",
-      );
-      return;
-    }
-    if (!validatePassword(formData.password)) {
-      setPasswordTouched(true);
-      toast.error(
-        "Password must be at least 8 characters and include a letter, a number, and a symbol.",
-      );
-      return;
-    }
-    if (!formData.confirmPassword) {
-      toast.error("Please confirm your password.");
-      return;
-    }
-    if (formData.confirmPassword !== formData.password) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-    const captchaToken = recaptchaRef.current.getValue();
-    if (!captchaToken) {
-      toast.error("Please complete the reCAPTCHA challenge.");
-      return;
-    }
-    try {
-      try {
-        const payload = {
-          ...formData,
-          recaptchaToken: captchaToken,
-        };
-        const response = await createUser(payload);
-        if (response.ok) {
-          toast.success("An activation link was sent to your email address.");
-          // Reset form and reCAPTCHA
-          setFormData({
-            name: "",
-            industry: "",
-            email: "",
-            phone: "254",
-            password: "",
-            confirmPassword: "",
-            receiveEmails: false,
-            privacyPolicy: false,
-          });
-          recaptchaRef.current.reset();
-          setIsValidPassword(false);
-          setPasswordTouched(false);
-
-          setTimeout(() => {
-            navigate("/login");
-          }, 1500);
-        } else {
-          toast.error(
-            response.message || "There was an error submitting your form.",
-          );
-          recaptchaRef.current.reset();
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("An error occurred. Please try again.");
-        if (recaptchaRef.current) {
-          recaptchaRef.current.reset();
-        }
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
   const validatePassword = (value) => {
     const hasMinLength = value.length >= 8;
     const hasNumber = /\d/.test(value);
@@ -137,8 +59,79 @@ const SignUpForm = () => {
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setFormData((prev) => ({ ...prev, password: value }));
-    setIsValidPassword(validatePassword(value));
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!recaptchaRef.current) {
+      toast.error(
+        "reCAPTCHA not loaded. Please refresh the page and try again.",
+      );
+      return;
+    }
+
+    if (!validatePassword(formData.password)) {
+      setPasswordTouched(true);
+      toast.error(
+        "Password must be at least 8 characters and include a letter, a number, and a symbol.",
+      );
+      return;
+    }
+
+    if (!formData.confirmPassword) {
+      toast.error("Please confirm your password.");
+      return;
+    }
+
+    if (formData.confirmPassword !== formData.password) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    const captchaToken = recaptchaRef.current.getValue();
+    if (!captchaToken) {
+      toast.error("Please complete the reCAPTCHA challenge.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const payload = { ...formData, recaptchaToken: captchaToken };
+      const response = await createUser(payload);
+
+      if (response.ok) {
+        toast.success("An activation link was sent to your email address.");
+        setFormData({
+          name: "",
+          industry: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: "",
+          receiveEmails: false,
+          privacyPolicy: false,
+        });
+        recaptchaRef.current.reset();
+        setPasswordTouched(false);
+
+        setTimeout(() => navigate("/login"), 1500);
+      } else {
+        toast.error(
+          response.message || "There was an error submitting your form.",
+        );
+        recaptchaRef.current.reset();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred. Please try again.");
+      if (recaptchaRef.current) recaptchaRef.current.reset();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="container-fluid justify-content-center align-items-center signup-form-section p-md-3 p-lg-5">
       <div className="row">
@@ -151,10 +144,12 @@ const SignUpForm = () => {
             <img src="/3826376 1.png" alt="Ecovibe" className="img-fluid" />
           </div>
         </div>
+
         <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center p-5">
           <div className="bg-white text-dark p-4 rounded-4 shadow w-100">
             <h2 className="mb-4 fw-bold fs-4">Sign up now</h2>
             <form onSubmit={handleSubmit}>
+              {/* Name & Industry */}
               <div className="row">
                 <div className="mb-3 col-6">
                   <Input
@@ -190,6 +185,8 @@ const SignUpForm = () => {
                   </select>
                 </div>
               </div>
+
+              {/* Email */}
               <div className="mb-3">
                 <Input
                   type="email"
@@ -200,6 +197,8 @@ const SignUpForm = () => {
                   required
                 />
               </div>
+
+              {/* Phone */}
               <div className="mb-3">
                 <label className="form-label" htmlFor="phone">
                   Phone number
@@ -220,15 +219,15 @@ const SignUpForm = () => {
                   }}
                 />
               </div>
+
+              {/* Password */}
               <div className="d-flex justify-content-between form-label">
                 <label htmlFor="password" className="form-label mb-0">
                   Password
                 </label>
                 <a
                   className="btn-sm btn-link p-0 text-muted mb-0 text-decoration-none"
-                  onClick={() => {
-                    handleClickShowPassword();
-                  }}
+                  onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
                     <div className="d-flex gap-1 text-muted mb-0">
@@ -236,8 +235,7 @@ const SignUpForm = () => {
                     </div>
                   ) : (
                     <div className="d-flex gap-1 text-muted mb-0">
-                      <Visibility />
-                      <p className="mb-0">Show</p>
+                      <Visibility /> <p className="mb-0">Show</p>
                     </div>
                   )}
                 </a>
@@ -247,9 +245,7 @@ const SignUpForm = () => {
                 id="password"
                 required
                 value={formData.password}
-                onChange={(e) => {
-                  handlePasswordChange(e);
-                }}
+                onChange={handlePasswordChange}
                 onBlur={() => setPasswordTouched(true)}
                 success={
                   passwordTouched && validatePassword(formData.password)
@@ -257,6 +253,8 @@ const SignUpForm = () => {
                     : undefined
                 }
               />
+
+              {/* Confirm Password */}
               <div className="mb-3">
                 <Input
                   required
@@ -277,6 +275,8 @@ const SignUpForm = () => {
                   }
                 />
               </div>
+
+              {/* Checkboxes */}
               <div className="form-check mb-2">
                 <input
                   name="privacyPolicy"
@@ -308,11 +308,12 @@ const SignUpForm = () => {
                   onChange={handleChange}
                 />
                 <label className="form-check-label" htmlFor="receiveEmails">
-                  By creating an account, I am also consenting to receive SMS
-                  messages and emails, including product new feature updates,
-                  events, and marketing promotions.
+                  By creating an account, I consent to receive SMS messages and
+                  emails about updates, events, and promotions.
                 </label>
               </div>
+
+              {/* reCAPTCHA */}
               <div className="">
                 {siteKey ? (
                   <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
@@ -322,6 +323,8 @@ const SignUpForm = () => {
                   </div>
                 )}
               </div>
+
+              {/* Submit */}
               <div className="d-flex">
                 <Button
                   type="submit"
@@ -342,4 +345,5 @@ const SignUpForm = () => {
     </section>
   );
 };
+
 export default SignUpForm;
