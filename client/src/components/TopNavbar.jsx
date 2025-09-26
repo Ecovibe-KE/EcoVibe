@@ -1,9 +1,19 @@
-// TopNavbar.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { Offcanvas, Container, Dropdown } from "react-bootstrap";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import useBreakpoint from "../hooks/useBreakpoint";
+import home from "../assets/home.png";
+import bookings from "../assets/bookings.png";
+import resources from "../assets/resources.png";
+import profile from "../assets/profile.png";
+import payments from "../assets/payment.png";
+import blog from "../assets/blog.png";
+import services from "../assets/services.png";
+import about from "../assets/about.png";
+import users from "../assets/users.png";
+import tickets from "../assets/tickets.png";
+
 import "../css/TopNavBar.css";
 
 const SIDEBAR_WIDTH = 280;
