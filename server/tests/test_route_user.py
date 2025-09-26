@@ -1,5 +1,15 @@
 import json
+import pytest
 from models.user import User
+
+
+@pytest.fixture(autouse=True)
+def patch_email(monkeypatch):
+    """Disable actual email sending for all tests in this file."""
+    monkeypatch.setattr(
+        "utils.mail_templates.send_verification_email",
+        lambda *a, **k: None,
+    )
 
 
 def test_register_user_success(client, session):
@@ -9,7 +19,7 @@ def test_register_user_success(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
@@ -25,7 +35,7 @@ def test_register_user_existing_email(client, session):
     """Test registration with an existing email."""
     user = User(
         full_name="Jane Doe",
-        email="jane.doe@example.com",
+        email="jane.doe@gmail.com",
         industry="Health",
         phone_number="+254712345679",
     )
@@ -38,7 +48,7 @@ def test_register_user_existing_email(client, session):
         data=json.dumps(
             {
                 "full_name": "Jane Doe",
-                "email": "jane.doe@example.com",
+                "email": "jane.doe@gmail.com",
                 "password": "Password123",
                 "industry": "Health",
                 "phone_number": "+254712345670",
@@ -56,7 +66,7 @@ def test_register_user_missing_full_name(client, session):
         "/api/register",
         data=json.dumps(
             {
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
@@ -83,7 +93,7 @@ def test_register_user_missing_email(client, session):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert "The email address is not valid" in response.get_data(as_text=True)
+    assert "The email address is not valid." in response.get_data(as_text=True)
 
 
 def test_register_user_missing_password(client, session):
@@ -93,7 +103,7 @@ def test_register_user_missing_password(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
             }
@@ -114,7 +124,7 @@ def test_register_user_missing_industry(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "password": "Password123",
                 "phone_number": "+254712345678",
             }
@@ -132,7 +142,7 @@ def test_register_user_missing_phone_number(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
             }
@@ -150,7 +160,7 @@ def test_register_user_invalid_password(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "password": "short",
                 "industry": "Tech",
                 "phone_number": "+254712345678",
@@ -188,7 +198,7 @@ def test_register_user_existing_phone_number(client, session):
     """Test registration with an existing phone number."""
     user = User(
         full_name="Jane Doe",
-        email="jane.doe@example.com",
+        email="jane.doe@gmail.com",
         industry="Health",
         phone_number="+254712345678",
     )
@@ -201,7 +211,7 @@ def test_register_user_existing_phone_number(client, session):
         data=json.dumps(
             {
                 "full_name": "John Doe",
-                "email": "john.doe@example.com",
+                "email": "john.doe@gmail.com",
                 "password": "Password123",
                 "industry": "Tech",
                 "phone_number": "+254712345678",

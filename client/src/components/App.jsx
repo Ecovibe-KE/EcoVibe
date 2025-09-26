@@ -1,10 +1,12 @@
-import { useEffect, useMemo, Suspense } from "react";
+import { useEffect, useMemo, Suspense, lazy } from "react";
 import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useAnalytics } from "../hooks/useAnalytics";
-
+import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Homepage from "./Homepage";
 import NavBar from "./Navbar.jsx";
 import NavPanel from "./NavPanel.jsx";
 import Homepage from "./Homepage.jsx";
@@ -12,12 +14,15 @@ import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import AboutUs from "./AboutUs.jsx";
 import Blog from "./Blog.jsx";
-import PrivacyPolicy from "./PrivacyPolicy.jsx";
+import BlogPost from "./BlogPost.jsx";
 import Terms from "./Terms.jsx";
+import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
-
 import Footer from "./Footer.jsx";
+import SignUpForm from "./Signup.jsx";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -38,6 +43,8 @@ function FooterWrapper() {
 
   return <Footer pageType={pageType} />;
 }
+
+const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
 function App() {
   const location = useLocation();
@@ -71,55 +78,229 @@ function App() {
 
   return (
     <>
-      {/*  Non-management paths - show NavBar*/}
-      {!isManagementRoute && <NavBar />}
-
-      {/* Management routes - show NavPanel layout */}
-      {isManagementRoute ? (
-        <div className="d-flex vh-100">
-          <NavPanel />
-          <main role="main" className="flex-fill bg-light overflow-auto">
-            <Suspense fallback={<div className="p-4">Loading…</div>}>
-              <Routes>
-                <Route path="/dashboard" element={<Outlet />}>
-                  <Route path="/dashboard" element={<p>Dashboard Main</p>} />
-                  <Route index element={<Navigate to="main" replace />} />
-                  <Route path="/dashboard/bookings" element={<p>Bookings</p>} />
-                  <Route
-                    path="/dashboard/resources"
-                    element={<p>Resources</p>}
-                  />
-                  <Route path="/dashboard/profile" element={<p>Profile</p>} />
-                  <Route path="/dashboard/payments" element={<p>Payments</p>} />
-                  <Route path="/dashboard/blog" element={<p>Blog</p>} />
-                  <Route path="/dashboard/services" element={<p>Services</p>} />
-                  <Route
-                    path="/dashboard/about"
-                    element={<p>About (management)</p>}
-                  />
-                  <Route path="/dashboard/users" element={<UserManagement />} />
-                  <Route path="/dashboard/tickets" element={<p>Tickets</p>} />
-                  <Route
-                    path="/dashboard/*"
-                    element={<Navigate to="/dashboard" replace />}
-                  />
-                </Route>
-              </Routes>
-            </Suspense>
-          </main>
-        </div>
-      ) : (
-        /* Public routes - normal layout */
+      <Suspense fallback={<div className="p-4">Loading…</div>}>
         <Routes>
-          <Route index element={<Homepage />} />
-          <Route path="/home" element={<Homepage />} />
-          <Route path="/playground" element={<Playground />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="*" element={<Navigate to="/home" replace />} />
+          {/* Dashboard routes - TopNavbar handles the layout and nested routing */}
+          <Route
+            path="/dashboard/*"
+            element={
+              <>
+                <TopNavbar />
+                <Outlet />
+                <FooterWrapper />
+              </>
+            }
+          >
+            <Route
+              index
+              element={
+                <div className="p-4">
+                  <h2>Dashboard Main</h2>
+                  <p>Welcome to your dashboard!</p>
+                </div>
+              }
+            />
+            <Route
+              path="main"
+              element={
+                <div className="p-4">
+                  <h2>Dashboard Main</h2>
+                  <p>Welcome to your dashboard!</p>
+                </div>
+              }
+            />
+            <Route
+              path="bookings"
+              element={
+                <div className="p-4">
+                  <h2>Bookings</h2>
+                  <p>Manage your bookings here.</p>
+                </div>
+              }
+            />
+            <Route
+              path="resources"
+              element={
+                <div className="p-4">
+                  <h2>Resources</h2>
+                  <p>Access your resources.</p>
+                </div>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <div className="p-4">
+                  <h2>Profile</h2>
+                  <p>Manage your profile.</p>
+                </div>
+              }
+            />
+            <Route
+              path="payments"
+              element={
+                <div className="p-4">
+                  <h2>Payments</h2>
+                  <p>View payment history.</p>
+                </div>
+              }
+            />
+            <Route
+              path="blog"
+              element={
+                <div className="p-4">
+                  <h2>Blog</h2>
+                  <p>Manage blog content.</p>
+                </div>
+              }
+            />
+            <Route
+              path="services"
+              element={
+                <div className="p-4">
+                  <h2>Services</h2>
+                  <p>Manage your services.</p>
+                </div>
+              }
+            />
+            <Route
+              path="about"
+              element={
+                <div className="p-4">
+                  <h2>About Management</h2>
+                  <p>Update about information.</p>
+                </div>
+              }
+            />
+            <Route path="users" element={<UserManagement />} />
+            <Route
+              path="tickets"
+              element={
+                <div className="p-4">
+                  <h2>Tickets</h2>
+                  <p>Manage support tickets.</p>
+                </div>
+              }
+            />
+          </Route>
+
+          {/* Public routes - NO NESTED ROUTES */}
+          <Route
+            path="/"
+            element={
+              <>
+                <NavBar />
+                <Homepage />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <>
+                <NavBar />
+                <Homepage />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/playground"
+            element={
+              <>
+                <NavBar />
+                <Playground />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <>
+                <NavBar />
+                <Contact />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <>
+                <NavBar />
+                <AboutUs />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/verify"
+            element={
+              <>
+                <NavBar />
+                <VerifyPage />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/blog"
+            element={
+              <>
+                <NavBar />
+                <Blog />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/blog/:id"
+            element={
+              <>
+                <NavBar />
+                <BlogPost />
+                <FooterWrapper />
+              </>
+            }
+          />
+
+          <Route
+            path="/privacy"
+            element={
+              <>
+                <NavBar />
+                <PrivacyPolicy />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/privacy-policy"
+            element={
+              <>
+                <NavBar />
+                <PrivacyPolicy />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <>
+                <NavBar />
+                <Terms />
+                <FooterWrapper />
+              </>
+            }
+          />
+
+          {/* Catch-all redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      )}
+      </Suspense>
 
       {/* Toast Notifications */}
       <ToastContainer

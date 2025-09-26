@@ -2,8 +2,13 @@
   color: white !important;
   background-color: #37b137 !important;
   border-color: #37b137 !important;
+  color: white !important;
+  background-color: #37b137 !important;
+  border-color: #37b137 !important;
 }
-
+.my-custom-button.active {
+  color: white !important;
+}
 .my-custom-button:hover {
   background-color: white !important;
   border-color: #37b137 !important;
