@@ -81,7 +81,7 @@ def _validate_user_data(payload, is_update=False):
     }
 
 
-@user_management_bp.route("/users", methods=["GET"])
+@user_management_bp.route("/user-management", methods=["GET"])
 @require_role([Role.ADMIN, Role.SUPER_ADMIN])
 def get_users(current_user):
     """Get paginated list of users with filtering"""
@@ -146,7 +146,7 @@ def get_users(current_user):
         return jsonify({"status": "error", "message": "Server error"}), 500
 
 
-@user_management_bp.route("/users", methods=["POST"])
+@user_management_bp.route("/user-management", methods=["POST"])
 @require_role([Role.ADMIN, Role.SUPER_ADMIN])
 def create_user(current_user):
     """Create a new user (Admin functionality)"""
@@ -232,7 +232,7 @@ def create_user(current_user):
         return jsonify({"status": "error", "message": "Server error"}), 500
 
 
-@user_management_bp.route("/users/<int:user_id>", methods=["PUT"])
+@user_management_bp.route("/user-management/<int:user_id>", methods=["PUT"])
 @require_role([Role.ADMIN, Role.SUPER_ADMIN])
 def update_user(current_user, user_id):
     """Update user information"""
@@ -292,7 +292,7 @@ def update_user(current_user, user_id):
         return jsonify({"status": "error", "message": "Server error"}), 500
 
 
-@user_management_bp.route("/users/<int:user_id>/status", methods=["PATCH"])
+@user_management_bp.route("/user-management/<int:user_id>/status", methods=["PATCH"])
 @require_role([Role.ADMIN, Role.SUPER_ADMIN])
 def update_user_status(current_user, user_id):
     """Activate/deactivate user account"""
@@ -331,7 +331,7 @@ def update_user_status(current_user, user_id):
         return jsonify({"status": "error", "message": "Server error"}), 500
 
 
-@user_management_bp.route("/users/<int:user_id>", methods=["DELETE"])
+@user_management_bp.route("/user-management/<int:user_id>", methods=["DELETE"])
 @require_role([Role.SUPER_ADMIN])
 def delete_user(current_user, user_id):
     """Delete a user (only for SUPER_ADMIN)"""
