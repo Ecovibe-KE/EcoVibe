@@ -1,6 +1,6 @@
 from flask_restful import Resource, Api
 from flask import Blueprint
-from models import Blog
+from models.blog import Blog
 
 # Create a Blueprint
 blogs_bp = Blueprint("blogs", __name__, url_prefix="/blogs")
