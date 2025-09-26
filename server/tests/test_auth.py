@@ -131,6 +131,8 @@ def test_me_success(client, session):
 def test_me_unauthorized(client):
     response = client.get("/api/me")
     assert response.status_code == 401
+
+
 # TODO:check why this tests are not running as expected.
 # import pytest
 # from flask_jwt_extended import create_access_token

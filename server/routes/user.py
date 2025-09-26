@@ -196,7 +196,7 @@ def register_user():
         constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "")
 
         if constraint in {"uq_user_email", "uq_user_phone_number"}:
-            field = "Email" if "email" in constraint else "Phone number"
+
             return (
                 jsonify(
                     {

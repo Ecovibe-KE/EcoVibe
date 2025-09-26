@@ -36,19 +36,6 @@ def client(app):
 @pytest.fixture(scope="function")
 def db(app, request):
     """Session-wide test database."""
-    _db.app = app
-    _db.create_all()
-
-    def teardown():
-        _db.drop_all()
-
-    request.addfinalizer(teardown)
-    return _db
-
-
-@pytest.fixture(scope="function")
-def db(app, request):
-    """Session-wide test database."""
 
     _db.app = app
     _db.create_all()  # <-- creates *all* tables every test run
