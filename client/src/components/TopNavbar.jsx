@@ -8,8 +8,57 @@ import "../css/TopNavBar.css";
 
 const SIDEBAR_WIDTH = 280;
 
-function TopNavbar({ navItems, userData: initialUserData }) {
-  const [userData, setUserData] = useState(initialUserData);
+const NAV_ITEMS = [
+  { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
+  {
+    to: "/dashboard/bookings",
+    icon: bookings,
+    label: "Bookings",
+    alt: "Bookings",
+  },
+  {
+    to: "/dashboard/resources",
+    icon: resources,
+    label: "Resource Center",
+    alt: "Resources",
+  },
+  { to: "/dashboard/profile", icon: profile, label: "Profile", alt: "Profile" },
+  {
+    to: "/dashboard/payments",
+    icon: payments,
+    label: "Payment History",
+    alt: "Payments",
+  },
+  { to: "/dashboard/blog", icon: blog, label: "Blog Management", alt: "Blog" },
+  {
+    to: "/dashboard/services",
+    icon: services,
+    label: "Service Management",
+    alt: "Services",
+  },
+  {
+    to: "/dashboard/about",
+    icon: about,
+    label: "About Us Management",
+    alt: "About Us",
+  },
+  {
+    to: "/dashboard/users",
+    icon: users,
+    label: "User Management",
+    alt: "User Management",
+  },
+  { to: "/dashboard/tickets", icon: tickets, label: "Tickets", alt: "Tickets" },
+];
+
+function TopNavbar() {
+  const [userData, setUserData] = useState({
+    name: "Sharon Maina",
+    role: "Admin",
+    avatar:
+      "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
+  });
+
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
   const navigate = useNavigate();
@@ -52,7 +101,11 @@ function TopNavbar({ navItems, userData: initialUserData }) {
     >
       <Container fluid className="p-3 border-bottom flex-shrink-0">
         <div className="d-flex align-items-center justify-content-between">
-          <Link to="/home" onClick={isMobile ? onClose : undefined} className="logo-link">
+          <Link
+            to="/home"
+            onClick={isMobile ? onClose : undefined}
+            className="logo-link"
+          >
             <img
               src="/EcovibeLogo.png"
               alt="EcoVibe Logo"
@@ -69,18 +122,58 @@ function TopNavbar({ navItems, userData: initialUserData }) {
       </Container>
 
       <Container fluid className="p-3 flex-grow-1 overflow-auto">
-        {navItems.map((item) => (
+        {/* Main Section */}
+        <div className="mb-3">
+          <h6
+            className="text-muted fw-bold text-uppercase mb-2"
+            style={{ fontSize: "14px", letterSpacing: "0.5px" }}
+          >
+            MAIN
+          </h6>
           <NavLink
-            key={item.to}
-            to={item.to}
+            to="/dashboard/main"
             className={getLinkClass}
+            style={{ fontSize: "15px" }}
             onClick={isMobile ? onClose : undefined}
             end
           >
-            {item.icon && <img src={item.icon} alt={item.alt} className="me-2" style={{ width: 20, height: 20 }} />}
-            <span>{item.label}</span>
+            <img
+              src={home}
+              alt="Home"
+              className="me-2"
+              style={{ width: "18px", height: "18px" }}
+            />
+            <span>Dashboard</span>
           </NavLink>
-        ))}
+        </div>
+
+        {/* Management Modules */}
+        <div>
+          <h6
+            className="text-muted fw-bold text-uppercase mb-2"
+            style={{ fontSize: "15px", letterSpacing: "0.5px" }}
+          >
+            MANAGEMENT MODULES
+          </h6>
+
+          {NAV_ITEMS.slice(1).map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={getLinkClass}
+              onClick={isMobile ? onClose : undefined}
+              end
+            >
+              <img
+                src={item.icon}
+                alt={item.alt}
+                className="me-3"
+                style={{ width: 20, height: 20 }}
+              />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
       </Container>
     </div>
   );
@@ -134,7 +227,10 @@ function TopNavbar({ navItems, userData: initialUserData }) {
               <FiMenu size={20} />
             </button>
           )}
-          <h1 className="page-title mb-0" style={{ fontSize: "1.5rem", fontWeight: 600, color: "#5a5c69" }}>
+          <h1
+            className="page-title mb-0"
+            style={{ fontSize: "1.5rem", fontWeight: 600, color: "#5a5c69" }}
+          >
             Dashboard
           </h1>
         </div>
