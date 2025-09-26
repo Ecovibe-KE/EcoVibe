@@ -208,34 +208,3 @@ def send_verification_email(to_email, user_name, verify_link):
     """
 
     return send_email(to_email, subject, body, is_html=True)
-
-def send_invitation_email(recipient_email, recipient_name, invitation_link, invited_by):
-    """Send user invitation email"""
-    subject = "You've been invited to join our platform"
-
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: Arial, sans-serif; line-height: 1.6; }}
-            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-            .button {{ background-color: #007bff; color: white; padding: 12px 24px; 
-                     text-decoration: none; border-radius: 4px; display: inline-block; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h2>Welcome to Our Platform!</h2>
-            <p>Hello {recipient_name},</p>
-            <p>You have been invited by {invited_by} to join our platform.</p>
-            <p>Please click the button below to set your password and activate your account:</p>
-            <p>
-                <a href="{invitation_link}" class="button">Set Your Password</a>
-            </p>
-            <p><small>This invitation link will expire in 24 hours.</small></p>
-        </div>
-    </body>
-    </html>
-    """
-    send_email(recipient_email, subject, html_content)

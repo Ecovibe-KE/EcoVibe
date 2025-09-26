@@ -27,7 +27,6 @@ class VerifyResource(Resource):
             user_id = int(get_jwt_identity())
             claims = get_jwt()
         except Exception:
-            print("error Exception")
             return {
                 "status": "error",
                 "message": "Invalid or expired token",
@@ -35,8 +34,6 @@ class VerifyResource(Resource):
 
         # Ensure token was generated for verification, not login
         if claims.get("purpose") != "account_verification":
-
-            print("error account_verification")
             return {
                 "status": "error",
                 "message": "Invalid token purpose",
@@ -45,7 +42,6 @@ class VerifyResource(Resource):
         # Look up the user in the database
         user = User.query.get(user_id)
         if not user:
-            print("error User not found")
             return {
                 "status": "error",
                 "message": "User not found",
