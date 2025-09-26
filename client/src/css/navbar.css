@@ -18,6 +18,6 @@
     color: #f5a030 !important;
 }
 
-.active {
+.nav-link.active {
     color: #37b137 !important;
 }

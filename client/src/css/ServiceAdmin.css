@@ -1,0 +1,24 @@
+.fixed-card-img {
+    height: 200px;
+    /* choose your uniform height */
+    width: 100%;
+    /* fill the card’s width */
+    object-fit: cover;
+    /* crop to fill without distortion */
+}
+
+.primary-color {
+    color: #37b137;
+}
+
+.active-status-color {
+    background-color: #a8faa8;
+    color: #37b137
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    outline: 0;
+}
