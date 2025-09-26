@@ -4,7 +4,7 @@
     "method": "GET",
     "description": "Retrieve all users as a plain array.",
     "responses": {
-      "200": { "$ref": "../examples/users/list.200.json" },
+      "200": { "$ref": "../examples/usermanagement/list.200.json" },
       "401": { "$ref": "../examples/errors/401.json" },
       "403": { "$ref": "../examples/errors/403.json" },
       "500": { "$ref": "../examples/errors/500.json" }
@@ -25,7 +25,7 @@
       }
     },
     "responses": {
-      "201": { "$ref": "../examples/users/create.201.json" },
+      "201": { "$ref": "../examples/usermanagement/create.201.json" },
       "400": { "$ref": "../examples/errors/400.json" },
       "401": { "$ref": "../examples/errors/401.json" },
       "403": { "$ref": "../examples/errors/403.json" },
@@ -43,7 +43,7 @@
       }
     },
     "responses": {
-      "200": { "$ref": "../examples/users/delete.200.json" },
+      "200": { "$ref": "../examples/usermanagement/delete.200.json" },
       "401": { "$ref": "../examples/errors/401.json" },
       "403": { "$ref": "../examples/errors/403.json" },
       "404": { "$ref": "../examples/errors/404.json" },
@@ -67,7 +67,7 @@
       }
     },
     "responses": {
-      "200": { "$ref": "../examples/users/update.200.json" },
+      "200": { "$ref": "../examples/usermanagement/update.200.json" },
       "400": { "$ref": "../examples/errors/400.json" },
       "401": { "$ref": "../examples/errors/401.json" },
       "403": { "$ref": "../examples/errors/403.json" },
@@ -89,7 +89,7 @@
       }
     },
     "responses": {
-      "200": { "$ref": "../examples/users/block.200.json" },
+      "200": { "$ref": "../examples/usermanagement/block.200.json" },
       "401": { "$ref": "../examples/errors/401.json" },
       "403": { "$ref": "../examples/errors/403.json" },
       "404": { "$ref": "../examples/errors/404.json" },
@@ -109,7 +109,7 @@
       }
     },
     "responses": {
-      "200": { "$ref": "../examples/users/activate.200.json" },
+      "200": { "$ref": "../examples/usermanagement/activate.200.json" },
       "401": { "$ref": "../examples/errors/401.json" },
       "403": { "$ref": "../examples/errors/403.json" },
       "404": { "$ref": "../examples/errors/404.json" },
