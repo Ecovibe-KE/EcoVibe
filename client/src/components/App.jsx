@@ -1,4 +1,4 @@
-import { useEffect, Suspense, useMemo, lazy } from "react";
+import { useEffect, Suspense,  useMemo,  lazy } from "react";
 import { useAnalytics } from "../hooks/useAnalytics";
 import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -14,42 +14,42 @@ import VerifyPage from "./Verify.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import Footer from "./Footer.jsx";
-
+import SignUpForm from "./Signup.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
-    const location = useLocation();
+      const location = useLocation();
 
-    const pageType = useMemo(() => {
-        const path = location.pathname.toLowerCase();
-        if (path.startsWith("/about")) return "about";
-        if (path.startsWith("/blog")) return "blog";
-        if (path.startsWith("/services")) return "services";
-        if (path.startsWith("/contact")) return "contact";
-        return "landing";
-    }, [location.pathname]);
+      const pageType = useMemo(() => {
+            const path = location.pathname.toLowerCase();
+            if (path.startsWith("/about")) return "about";
+            if (path.startsWith("/blog")) return "blog";
+            if (path.startsWith("/services")) return "services";
+            if (path.startsWith("/contact")) return "contact";
+            return "landing";
+      }, [location.pathname]);
 
-    if (import.meta.env?.MODE === "development") {
-        console.debug("Rendering FooterWrapper with pageType:", pageType);
-    }
+      if (import.meta.env?.MODE === "development") {
+            console.debug("Rendering FooterWrapper with pageType:", pageType);
+      }
 
-    return <Footer pageType={pageType} />;
+      return <Footer pageType={pageType} />;
 }
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
 function App() {
-    const { logEvent } = useAnalytics();
-    const location = useLocation();
+      const { logEvent } = useAnalytics();
+      const location = useLocation();
 
-    useEffect(() => {
-        logEvent("screen_view", {
-            firebase_screen: location.pathname || "/",
-            firebase_screen_class: "App",
-        });
-    }, [logEvent, location.pathname]);
+      useEffect(() => {
+            logEvent("screen_view", {
+                  firebase_screen: location.pathname || "/",
+                  firebase_screen_class: "App",
+            });
+      }, [logEvent, location.pathname]);
 
     return (
         <>
@@ -267,20 +267,20 @@ function App() {
                 </Routes>
             </Suspense>
 
-            {/* Reusable toast */}
-            <ToastContainer
-                position='top-right'
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
-        </>
-    );
+                  {/* Reusable toast */}
+                  <ToastContainer
+                        position='top-right'
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                  />
+            </>
+      );
 }
 
 export default App;

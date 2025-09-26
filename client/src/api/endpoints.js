@@ -11,5 +11,8 @@ export const ENDPOINTS = {
   blogs: "/blogs",
   blogById: (id) => `/blogs/${id}`,
 
+  // users
+  users: "/users",
+  userManagement: "/user-management",
   // Add more endpoints as needed here
 };
