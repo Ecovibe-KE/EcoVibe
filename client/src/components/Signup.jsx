@@ -278,8 +278,8 @@ const SignUpForm = () => {
                   required
                 />
                 <label className="form-check-label" htmlFor="privacyPolicy">
-                  I agree to the <Link to="/termsOfUse" className="text-decoration-none">Terms of use</Link> and{" "}
-                  <Link to="/privacypolicy" className="text-decoration-none">Privacy Policy</Link>
+                  I agree to the <Link to="/terms" className="text-decoration-none">Terms of use</Link> and{" "}
+                  <Link to="/privacy" className="text-decoration-none">Privacy Policy</Link>
                 </label>
               </div>
               <div className="form-check mb-3">
