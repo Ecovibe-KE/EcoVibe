@@ -25,7 +25,7 @@ def upgrade():
     op.execute(
         """
         UPDATE tokens
-        SET expiry_time = COALESCE(expiry_time, NOW())
+        SET expiry_time = COALESCE(expiry_time, timezone('UTC', NOW()))
         WHERE expiry_time IS NULL
         """
     )
