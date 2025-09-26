@@ -97,6 +97,7 @@ const SignUpForm = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const payload = { ...formData, recaptchaToken: captchaToken };
       const response = await createUser(payload);
 
@@ -106,7 +107,7 @@ const SignUpForm = () => {
           name: "",
           industry: "",
           email: "",
-          phone: "254",
+          phone: "",
           password: "",
           confirmPassword: "",
           receiveEmails: false,

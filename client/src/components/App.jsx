@@ -252,6 +252,16 @@ function App() {
             }
           />
           <Route
+            path="/privacy-policy"
+            element={
+              <>
+                <NavBar />
+                <PrivacyPolicy />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
             path="/terms"
             element={
               <>
