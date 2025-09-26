@@ -8,7 +8,7 @@ export default function FooterWrapper() {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
 
-  if (FOOTER_EXCLUDE.some(p => path.startsWith(p))) return null;
+  if (FOOTER_EXCLUDE.some((p) => path.startsWith(p))) return null;
 
   return <Footer pageType="landing" />;
 }

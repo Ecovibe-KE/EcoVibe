@@ -1,5 +1,7 @@
 /* Sticky footer layout */
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
 }
@@ -11,7 +13,7 @@ html, body, #root {
 }
 
 .main-content {
-  flex: 1; 
+  flex: 1;
 }
 
 /* Existing footer styles */
@@ -92,11 +94,10 @@ footer {
   outline-offset: 2px;
 }
 
-
 .footer-top-row {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
@@ -123,11 +124,11 @@ footer {
   .footer-top-row {
     flex-direction: column;
     align-items: center;
-    position: relative; 
+    position: relative;
   }
 
   .footer-nav-wrapper {
-    position: static; 
+    position: static;
     transform: none;
     margin: 1rem 0;
   }
