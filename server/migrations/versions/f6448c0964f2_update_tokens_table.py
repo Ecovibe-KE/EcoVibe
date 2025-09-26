@@ -5,13 +5,14 @@ Revises: cea4d948af0d
 Create Date: 2025-09-26 14:08:55.370260
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'f6448c0964f2'
-down_revision = 'cea4d948af0d'
+revision = "f6448c0964f2"
+down_revision = "cea4d948af0d"
 branch_labels = None
 depends_on = None
 
