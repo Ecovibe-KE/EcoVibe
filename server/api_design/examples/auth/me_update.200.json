@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "message": "Profile updated successfully",
+  "data": {
+    "id": 1,
+    "full_name": "John Doe",
+    "email": "john@greentech.co.ke",
+    "industry": "Technology",
+    "phone_number": "+254 712 345 678",
+    "role": "CLIENT",
+    "profile_image_url": "https://example.com/avatar.jpg"
+  }
+}
