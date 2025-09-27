@@ -167,7 +167,7 @@ def test_me_success(client, session):
 
     assert response.status_code == 200
     assert body["status"] == "success"
-    assert body["message"] == "User retrieved successfully"
+    assert body["message"] is None
     assert body["data"]["email"] == user.email
     assert body["data"]["full_name"] == user.full_name
 
@@ -176,6 +176,24 @@ def test_me_unauthorized(client):
     """Requesting /me without token should fail"""
     response = client.get("/api/me")
     assert response.status_code == 401
+
+
+def test_me_rejects_wrong_purpose_token(client, session):
+    """ME should reject tokens without purpose=auth"""
+    user = create_active_user(session)
+    bad_token = create_access_token(
+        identity=str(user.id),
+        additional_claims={"purpose": "password_reset"},
+    )
+    response = client.get(
+        "/api/me",
+        headers={"Authorization": f"Bearer {bad_token}"},
+    )
+    body = response.get_json()
+
+    assert response.status_code == 401
+    assert body["status"] == "error"
+    assert "invalid token purpose" in body["message"].lower()
 
 
 # ------------------------------------------------------------
@@ -204,7 +222,6 @@ def test_reset_password_success(client, session):
     """User should be able to reset password with valid reset token"""
     user = create_active_user(session)
 
-    # Create reset token (purpose: password_reset)
     reset_token = create_access_token(
         identity=str(user.id),
         expires_delta=False,
@@ -228,8 +245,6 @@ def test_reset_password_success(client, session):
 def test_reset_password_invalid_token(client, session):
     """Reset should fail if token purpose is wrong"""
     user = create_active_user(session)
-
-    # Wrong-purpose token
     bad_token = create_access_token(identity=str(user.id))
 
     response = client.post(
@@ -251,8 +266,6 @@ def test_reset_password_invalid_token(client, session):
 def test_change_password_success(client, session):
     """Logged-in user should be able to change password"""
     user = create_active_user(session)
-
-    # Log in to get access token
     login_res = client.post(
         "/api/login",
         data=json.dumps({"email": user.email, "password": "Password123"}),
@@ -300,6 +313,29 @@ def test_change_password_wrong_current(client, session):
     assert body["status"] == "error"
     assert "current password is incorrect" in body["message"].lower()
     assert body["data"] is None
+
+
+def test_change_password_rejects_wrong_purpose_token(client, session):
+    """Change password should reject tokens without purpose=auth"""
+    user = create_active_user(session)
+    bad_token = create_access_token(
+        identity=str(user.id),
+        additional_claims={"purpose": "password_reset"},
+    )
+
+    response = client.post(
+        "/api/change-password",
+        data=json.dumps(
+            {"current_password": "Password123", "new_password": "NewPassword123"}
+        ),
+        content_type="application/json",
+        headers={"Authorization": f"Bearer {bad_token}"},
+    )
+    body = response.get_json()
+
+    assert response.status_code == 401
+    assert body["status"] == "error"
+    assert "invalid token purpose" in body["message"].lower()
 
 
 # TODO:check why this tests are not running as expected.

@@ -10,7 +10,7 @@ from email_validator import validate_email, EmailNotValidError
 from models import db
 from models.user import User, AccountStatus
 from utils.mail_templates import send_verification_email
-from utils.password import is_valid_password
+from utils.password import _is_valid_password
 
 user_bp = Blueprint("user", __name__)
 
@@ -75,7 +75,7 @@ def register_user():
         )
 
     # Validate password strength
-    if not is_valid_password(password):
+    if not _is_valid_password(password):
         return (
             jsonify(
                 {

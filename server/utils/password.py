@@ -1,4 +1,4 @@
-def is_valid_password(password: str) -> bool:
+def _is_valid_password(password: str) -> bool:
     """Check password length + at least one uppercase + one digit"""
     if not isinstance(password, str) or not password.strip():
         return False

@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 
-
 vi.mock("react-router-dom", () => {
   const actual = vi.importActual("react-router-dom");
   return {
@@ -32,27 +31,32 @@ describe("SignUpForm", () => {
   it("renders inputs and button", () => {
     render(<SignUpForm />);
     expect(screen.getByText(/Sign Up Now/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign up/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign up/i })
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/Email address/i)).toBeInTheDocument();
   });
 
-  it("toggles password visibility", () => {
-    render(<SignUpForm />);
-    const toggle = screen.getByText(/Show/i);
-    fireEvent.click(toggle);
-    expect(screen.getByText(/Hide/i)).toBeInTheDocument();
-  });
+ it("toggles password visibility", async () => {
+  render(<SignUpForm />);
+  const toggle = await screen.findByText(/Show/i);   // 👈 changed
+  fireEvent.click(toggle);
+  expect(await screen.findByText(/Hide/i)).toBeInTheDocument();  // 👈 changed
+});
 
-  it("validates password and confirm password", () => {
-    render(<SignUpForm />);
-    const password = screen.getByLabelText(/^Password$/i);
-    fireEvent.change(password, { target: { value: "abc123!" } }); 
-    fireEvent.blur(password);
+it("validates password and confirm password", async () => {
+  render(<SignUpForm />);
+  const password = screen.getByLabelText(/^Password$/i);
+  fireEvent.change(password, { target: { value: "Valid123!" } });
 
-    fireEvent.change(password, { target: { value: "Valid123!" } });
-    const confirm = screen.getByLabelText(/confirm password/i);
-    fireEvent.change(confirm, { target: { value: "Different!" } });
-  });
+  const confirm = screen.getByLabelText(/confirm password/i);
+  fireEvent.change(confirm, { target: { value: "Different!" } });
+  fireEvent.blur(confirm);
+
+  expect(
+    await screen.findByText(/Confirm Passwords must match/i)
+  ).toBeInTheDocument();
+});
 
   it("checks privacy policy checkbox", () => {
     render(<SignUpForm />);
@@ -65,6 +69,5 @@ describe("SignUpForm", () => {
     render(<SignUpForm />);
     const submit = screen.getByRole("button", { name: /sign up/i });
     fireEvent.click(submit);
-
   });
 });

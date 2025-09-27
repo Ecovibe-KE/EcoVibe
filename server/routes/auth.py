@@ -17,7 +17,7 @@ from models.user import User, AccountStatus
 from models.token import Token
 from utils.token import create_refresh_token_for_user
 from utils.mail_templates import send_reset_email
-from utils.password import is_valid_password
+from utils.password import _is_valid_password
 
 
 # ------------------------------------------------------------
@@ -84,6 +84,10 @@ class VerifyResource(Resource):
 # LOGIN
 # Authenticate user -> return access + refresh tokens
 # ------------------------------------------------------------
+# ------------------------------------------------------------
+# LOGIN
+# Authenticate user -> return access + refresh tokens
+# ------------------------------------------------------------
 class LoginResource(Resource):
     def post(self):
         data = request.get_json(silent=True) or {}
@@ -129,7 +133,10 @@ class LoginResource(Resource):
 
         # Create fresh tokens
         refresh_token = create_refresh_token_for_user(user)
-        access_token = create_access_token(identity=str(user.id))
+        access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims={"purpose": "auth"},
+        )
 
         # User data returned to client
         user_data = {
@@ -241,18 +248,40 @@ class LogoutResource(Resource):
 
 
 # ------------------------------------------------------------
-# ME
-# Return current user info (requires valid access token)
+# ME RESOURCE
+# Return the authenticated user's profile
 # ------------------------------------------------------------
 class MeResource(Resource):
     @jwt_required()
     def get(self):
+        claims = get_jwt()
+        if claims.get("purpose") != "auth":
+            return {
+                "status": "error",
+                "message": "Invalid token purpose",
+                "data": None,
+            }, 401
+
         uid = int(get_jwt_identity())
         user = User.query.get_or_404(uid)
+
         return {
             "status": "success",
-            "message": "User retrieved successfully",
-            "data": user.to_safe_dict(include_email=True, include_phone=True),
+            "message": None,
+            "data": {
+                "id": user.id,
+                "industry": user.industry,
+                "full_name": user.full_name,
+                "email": user.email,
+                "phone_number": user.phone_number,
+                "role": user.role.value if user.role else None,
+                "profile_image_url": user.profile_image_url,
+                "account_status": (
+                    user.account_status.value if user.account_status else None
+                ),
+                "created_at": user.created_at.isoformat() if user.created_at else None,
+                "updated_at": user.updated_at.isoformat() if user.updated_at else None,
+            },
         }, 200
 
 
@@ -354,7 +383,7 @@ class ResetPasswordResource(Resource):
                 "data": None,
             }, 400
 
-        if not is_valid_password(new_password):
+        if not _is_valid_password(new_password):
             return {
                 "status": "error",
                 "message": (
@@ -389,11 +418,19 @@ class ResetPasswordResource(Resource):
 
 # ------------------------------------------------------------
 # CHANGE PASSWORD
-# Logged-in user changes password (requires old + new)
+# Logged-in user changes their password (must provide current)
 # ------------------------------------------------------------
 class ChangePasswordResource(Resource):
     @jwt_required()
     def post(self):
+        claims = get_jwt()
+        if claims.get("purpose") != "auth":
+            return {
+                "status": "error",
+                "message": "Invalid token purpose",
+                "data": None,
+            }, 401
+
         uid = int(get_jwt_identity())
         user = User.query.get(uid)
         if not user:
@@ -421,7 +458,7 @@ class ChangePasswordResource(Resource):
                 "data": None,
             }, 401
 
-        if not is_valid_password(new_password):
+        if not _is_valid_password(new_password):
             return {
                 "status": "error",
                 "message": (
