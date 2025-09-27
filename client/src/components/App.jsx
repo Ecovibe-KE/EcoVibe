@@ -103,20 +103,17 @@ function App() {
                 </div>
               }
             />
-          
 
-              <Route
-                path="profile"
-                element={
-                  <div className="p-4">
-                    <h2>Profile</h2>
-                    <ProfilePage />
-                  </div>
-                }
-              />
+            <Route
+              path="profile"
+              element={
+                <div className="p-4">
+                  <h2>Profile</h2>
+                  <ProfilePage />
+                </div>
+              }
+            />
 
-            
-  
             <Route
               path="payments"
               element={

@@ -7,6 +7,7 @@ export const ENDPOINTS = {
   contact: "/contact",
   //verify
   verify: "/verify",
+  resendVerification: "/resend-verification",
   // Blog
   blogs: "/blogs",
   blogById: (id) => `/blogs/${id}`,
@@ -19,7 +20,10 @@ export const ENDPOINTS = {
   newsletter_subscribers: "/newsletter-subscribers",
 
   // Profile
-  me: "/me"
-  
+  me: "/me",
+  // Change password
+
+  changePassword: "/change-password",
+
   // Add more endpoints as needed here
 };

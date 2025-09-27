@@ -6,16 +6,3 @@ export const createUser = async (clientData) => {
   const response = await api.post(ENDPOINTS.register, clientData);
   return response.data;
 };
-
-
-// Fetch current user
-export const getCurrentUser = async () => {
-  const response = await api.get(ENDPOINTS.me);
-  return response.data;
-};
-
-// Update user profile
-export const updateUserProfile = async (data) => {
-  const response = await api.put(ENDPOINTS.me, data);
-  return response.data;
-};

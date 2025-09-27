@@ -288,6 +288,47 @@ class MeResource(Resource):
             },
         }, 200
 
+    @jwt_required()
+    def put(self):
+        claims = get_jwt()
+        if claims.get("purpose") != "auth":
+            return {
+                "status": "error",
+                "message": "Invalid token purpose",
+                "data": None,
+            }, 401
+
+        uid = int(get_jwt_identity())
+        user = User.query.get_or_404(uid)
+
+        data = request.get_json() or {}
+
+        # Update only allowed fields
+        if "full_name" in data:
+            user.full_name = data["full_name"]
+        if "industry" in data:
+            user.industry = data["industry"]
+        if "phone_number" in data:
+            user.phone_number = data["phone_number"]
+        if "profile_image_url" in data:
+            user.profile_image_url = data["profile_image_url"]
+
+        db.session.commit()
+
+        return {
+            "status": "success",
+            "message": "Profile updated successfully",
+            "data": {
+                "id": user.id,
+                "full_name": user.full_name,
+                "email": user.email,
+                "industry": user.industry,
+                "phone_number": user.phone_number,
+                "role": user.role.value if user.role else None,
+                "profile_image_url": user.profile_image_url,
+            },
+        }, 200
+
 
 # ------------------------------------------------------------
 # FORGOT PASSWORD
@@ -496,6 +537,73 @@ class ChangePasswordResource(Resource):
 
 
 # ------------------------------------------------------------
+# RESEND VERIFICATION
+# User requests a new account verification email
+# ------------------------------------------------------------
+class ResendVerificationResource(Resource):
+    def post(self):
+        data = request.get_json(silent=True) or {}
+        email = (data.get("email") or "").strip().lower()
+
+        if not email:
+            return {
+                "status": "error",
+                "message": "Email is required",
+                "data": None,
+            }, 400
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return {
+                "status": "error",
+                "message": "User not found",
+                "data": None,
+            }, 404
+
+        if user.account_status == AccountStatus.ACTIVE:
+            return {
+                "status": "success",
+                "message": "Account already verified",
+                "data": None,
+            }, 200
+
+        try:
+            # Generate new verification token
+            verification_token = create_access_token(
+                identity=str(user.id),
+                expires_delta=timedelta(hours=24),
+                additional_claims={"purpose": "account_verification"},
+            )
+
+            # Build verification link
+            frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
+            verify_link = f"{frontend_url}/verify?token={verification_token}"
+
+            # Send email (non-blocking)
+            from utils.mail_templates import send_invitation_email
+
+            threading.Thread(
+                target=send_invitation_email,
+                args=(user.email, user.full_name, verify_link, "System", None),
+                daemon=True,
+            ).start()
+
+            return {
+                "status": "success",
+                "message": "Verification link resent successfully",
+                "data": None,
+            }, 200
+
+        except Exception:
+            current_app.logger.exception("Error resending verification email")
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
+
+
+# ------------------------------------------------------------
 # Register all routes
 # ------------------------------------------------------------
 api.add_resource(VerifyResource, "/verify")
@@ -506,3 +614,4 @@ api.add_resource(MeResource, "/me")
 api.add_resource(ForgotPasswordResource, "/forgot-password")
 api.add_resource(ResetPasswordResource, "/reset-password")
 api.add_resource(ChangePasswordResource, "/change-password")
+api.add_resource(ResendVerificationResource, "/resend-verification")
