@@ -151,7 +151,7 @@ def test_create_blog_success(mock_thread_start, client, admin_user):
     data = {
         "title": "New Blog Post",
         "content": "This is a brand new blog post.",
-        "image": (BytesIO(b"my-fake-image"), "test.jpg"),
+        "image": (BytesIO(b"my-fake-image"), "test.jpg", "image/jpeg"),
     }
 
     response = client.post(

@@ -184,7 +184,7 @@ For the client-side application to connect to Firebase, you will need to create 
    
     ```
 
-The integration environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-staging.web.app/), remember to update the server to point to this endpoint in the appropriate places.
+The integration environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-develop.netlify.app/), remember to update the server to point to this endpoint in the appropriate places.
 
 The staging environment client can be found here: [https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/). Remember to update the server to point to this endpoint in the appropriate places, and ensure CORS settings are configured on the server.
 

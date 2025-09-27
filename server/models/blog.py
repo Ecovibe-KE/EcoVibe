@@ -5,7 +5,7 @@ from sqlalchemy.orm import validates
 from . import db
 import base64
 
-SERVER_HOST = os.getenv("FLASK_SERVER_URL", "localhost:5000")
+SERVER_HOST = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
 
 class BlogType(enum.Enum):

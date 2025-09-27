@@ -19,8 +19,8 @@ from utils.mail_templates import send_newsletter_email
 blogs_bp = Blueprint("blogs", __name__)
 api = Api(blogs_bp)
 
-client_host = os.getenv("FLASK_CLIENT_URL", "localhost:3000")
-server_host = os.getenv("FLASK_SERVER_URL", "localhost:5000")
+client_host = os.getenv("FLASK_CLIENT_URL", "http://localhost:3000").rstrip("/")
+server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
 
 # --- Resource for all blogs ---
@@ -92,9 +92,14 @@ class BlogNewsletterResource(Resource):
 
         # Additional optional fields from form
         type_ = request.form.get("type", BlogType.ARTICLE.value)
-        category = request.form.get("category", "").split(
-            ","
-        )  # Assuming categories are comma-separated
+
+        categories_raw = request.form.get("category", "")
+        categories = [
+            c.strip() for c in categories_raw.split(",") if c.strip()
+        ]  # comma-separated
+        category_str = ",".join(categories)
+        category = category_str or "general"
+
         # excerpt = request.form.get("excerpt", "").strip()
         draft = request.form.get("draft", "false")
         author_name = request.form.get("author_name", "EcoVibe Team").strip()
@@ -214,6 +219,22 @@ class BlogImageResource(Resource):
 class SendNewsletterResource(Resource):
     @jwt_required()
     def post(self, blog_id):
+        # enforce admin permissions
+        try:
+            admin_id = int(get_jwt_identity())
+        except (TypeError, ValueError):
+            return restful_response(
+                status="error", message="Unauthorized", status_code=403
+            )
+        admin = User.query.get(admin_id)
+        if not admin or admin.role.value not in [
+            Role.ADMIN.value,
+            Role.SUPER_ADMIN.value,
+        ]:
+            return restful_response(
+                status="error", message="Unauthorized", status_code=403
+            )
+
         # retrieve newsletter subscribers
         blog = Blog.query.get_or_404(blog_id)
         if blog.type != BlogType.NEWSLETTER:
