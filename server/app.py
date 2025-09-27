@@ -74,7 +74,7 @@ def create_app(config_name="development"):
     origins = (
         os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",") + dynamic_pr_cors_origins
     )
-    CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
+    CORS(app, resources={r"/api/*": {"origins": origins}, r"/verify": {"origins": origins}}, supports_credentials=True)
     return app
 
 
