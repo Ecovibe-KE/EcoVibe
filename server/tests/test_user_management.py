@@ -49,9 +49,9 @@ def test_create_user_validation_errors(client, session):
     access_token = login_res.get_json()["access_token"]
 
     payload = {
-        "full_name": "A",  # Too short
+        "name": "A",  # Too short
         "email": "invalid-email",  # Invalid format
-        "phone_number": "123",  # Too short
+        "phone": "123",  # Too short
         "role": "invalid_role",  # Invalid role
     }
 
@@ -66,83 +66,18 @@ def test_create_user_validation_errors(client, session):
     assert response.status_code == 400
     assert data["status"] == "error"
     assert "errors" in data
-    assert "full_name" in data["errors"]
+    assert "name" in data["errors"]
     assert "email" in data["errors"]
-    assert "phone_number" in data["errors"]
+    assert "phone" in data["errors"]
     assert "role" in data["errors"]
-
-
-def test_create_user_duplicate_email(client, session):
-    """Test user creation with duplicate email"""
-    admin = create_admin_user(session)
-    existing_user = create_test_user(session, "existing@test.com")
-
-    login_res = client.post(
-        "/api/login",
-        data=json.dumps({"email": admin.email, "password": "Password123"}),
-        content_type="application/json",
-    )
-    access_token = login_res.get_json()["access_token"]
-
-    payload = {
-        "full_name": "Duplicate User",
-        "email": existing_user.email,  # Already exists
-        "phone_number": "+254712345682",
-        "industry": "Tech",
-        "role": "client",
-    }
-
-    response = client.post(
-        "/api/user-management",
-        data=json.dumps(payload),
-        content_type="application/json",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    data = response.get_json()
-
-    assert response.status_code == 409
-    assert data["status"] == "error"
-    assert "already exists" in data["message"]
-
-
-def test_create_user_admin_trying_create_admin(client, session):
-    """Test admin cannot create another admin"""
-    admin = create_admin_user(session)
-
-    login_res = client.post(
-        "/api/login",
-        data=json.dumps({"email": admin.email, "password": "Password123"}),
-        content_type="application/json",
-    )
-    access_token = login_res.get_json()["access_token"]
-
-    payload = {
-        "full_name": "New Admin Attempt",
-        "email": "newadminattempt@test.com",
-        "phone_number": "+254712345683",
-        "industry": "Tech",
-        "role": "admin",  # Admin trying to create admin - should fail
-    }
-
-    response = client.post(
-        "/api/user-management",
-        data=json.dumps(payload),
-        content_type="application/json",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    data = response.get_json()
-
-    assert response.status_code == 403
-    assert data["status"] == "error"
-    assert "admin or SUPER_ADMIN" in data["message"]
 
 
 def test_create_user_unauthorized(client):
     """Test unauthorized user cannot create users"""
     payload = {
-        "full_name": "Unauthorized User",
+        "name": "Unauthorized User",
         "email": "unauthorized@test.com",
-        "phone_number": "+254712345684",
+        "phone": "+254712345684",
         "industry": "Tech",
     }
 

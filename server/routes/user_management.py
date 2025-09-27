@@ -24,7 +24,7 @@ def require_role(required_roles):
         @jwt_required()
         def decorated_function(*args, **kwargs):
             current_user_id = get_jwt_identity()
-            current_user = User.query.get(current_user_id)
+            current_user = db.session.get(User, current_user_id)
 
             if not current_user:
                 return {"status": "error", "message": "User not found"}, 404
@@ -49,13 +49,13 @@ class UserValidator:
         validated_data = {}
 
         # Full name validation
-        full_name = str(payload.get("full_name", "")).strip()
+        full_name = str(payload.get("name", "")).strip()
         if not full_name and not is_update:
-            errors["full_name"] = "Full name is required"
+            errors["name"] = "Full name is required"
         elif full_name and len(full_name) < 2:
-            errors["full_name"] = "Full name must be at least 2 characters"
+            errors["name"] = "Full name must be at least 2 characters"
         else:
-            validated_data["full_name"] = full_name
+            validated_data["name"] = full_name
 
         # Email validation
         email_raw = str(payload.get("email", "")).strip().lower()
@@ -63,19 +63,20 @@ class UserValidator:
             errors["email"] = "Email is required"
         elif email_raw:
             try:
-                email = validate_email(email_raw).email.lower()
+                validated_email = validate_email(email_raw)
+                email = validated_email.normalized.lower()
                 validated_data["email"] = email
             except EmailNotValidError:
                 errors["email"] = "Invalid email format"
 
         # Phone validation
-        phone_number = str(payload.get("phone_number", "")).strip()
+        phone_number = str(payload.get("phone", "")).strip()
         if not phone_number and not is_update:
-            errors["phone_number"] = "Phone number is required"
+            errors["phone"] = "Phone number is required"
         elif phone_number and len(phone_number) < 10:
-            errors["phone_number"] = "Phone number must be at least 10 digits"
+            errors["phone"] = "Phone number must be at least 10 digits"
         else:
-            validated_data["phone_number"] = phone_number
+            validated_data["phone"] = phone_number
 
         # Role validation
         role = payload.get("role")
@@ -90,6 +91,16 @@ class UserValidator:
             errors["industry"] = "Industry is required"
         else:
             validated_data["industry"] = industry
+
+        status = str(payload.get("status", "")).strip()
+        if not status and not is_update:
+            errors["status"] = "status is required"
+        else:
+            validated_data["status"] = status
+
+        profile_image = str(payload.get("profileImage", "")).strip()
+        if profile_image:
+            validated_data["profileImage"] = profile_image
 
         return errors, validated_data
 
@@ -150,7 +161,7 @@ class UserListResource(Resource):
     def get(self, current_user):
         """Get list of users with role-based filtering"""
         try:
-            query = User.query
+            query = db.session.query(User).filter(User.id != current_user.id)
 
             if current_user.role == Role.ADMIN:
                 query = query.filter(User.role == Role.CLIENT)
@@ -185,19 +196,19 @@ class UserListResource(Resource):
             }, 400
 
         try:
-            # Check for duplicates
-            if User.query.filter_by(email=validated_data["email"]).first():
+            if db.session.query(User).filter_by(email=validated_data["email"]).first():
                 return {"status": "error", "message": "Email already exists"}, 409
 
-            if User.query.filter_by(
-                phone_number=validated_data["phone_number"]
-            ).first():
+            if (
+                db.session.query(User)
+                .filter_by(phone_number=validated_data["phone"])
+                .first()
+            ):
                 return {
                     "status": "error",
                     "message": "Phone number already exists",
                 }, 409
 
-            # Check role permissions
             requested_role = validated_data["role"] or Role.CLIENT
             if current_user.role == Role.ADMIN and requested_role in [
                 Role.SUPER_ADMIN,
@@ -208,11 +219,10 @@ class UserListResource(Resource):
                     "message": "Cannot create users with admin or SUPER_ADMIN role",
                 }, 403
 
-            # Create user
             user = User(
-                full_name=validated_data["full_name"],
+                full_name=validated_data["name"],
                 email=validated_data["email"],
-                phone_number=validated_data["phone_number"],
+                phone_number=validated_data["phone"],
                 industry=validated_data["industry"],
                 role=requested_role,
                 account_status=AccountStatus.INACTIVE,
@@ -223,7 +233,6 @@ class UserListResource(Resource):
             db.session.add(user)
             db.session.commit()
 
-            # Send invitation email
             verification_token = create_access_token(
                 identity=str(user.id),
                 expires_delta=timedelta(hours=24),
@@ -270,7 +279,13 @@ class UserResource(Resource):
     def get(self, user_id, current_user):
         """Get specific user details"""
         try:
-            user = User.query.get(user_id)
+            if current_user.id == user_id:
+                return {
+                    "status": "error",
+                    "message": "Use profile endpoint for your own information",
+                }, 400
+
+            user = db.session.get(User, user_id)
             if not user:
                 return {"status": "error", "message": "User not found"}, 404
 
@@ -292,11 +307,13 @@ class UserResource(Resource):
         """Update user information"""
         payload = request.get_json(silent=True)
 
+        print(f"payload {payload}")
+
         if not payload:
             return {"status": "error", "message": "Invalid JSON format"}, 400
 
         try:
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             if not user:
                 return {"status": "error", "message": "User not found"}, 404
 
@@ -313,16 +330,19 @@ class UserResource(Resource):
                     "errors": errors,
                 }, 400
 
-            # Update fields if provided
-            if validated_data["full_name"]:
-                user.full_name = validated_data["full_name"]
-            if validated_data["email"]:
+            if validated_data.get("name"):
+                user.full_name = validated_data["name"]
+            if validated_data.get("email"):
                 user.email = validated_data["email"]
-            if validated_data["phone_number"]:
-                user.phone_number = validated_data["phone_number"]
-            if validated_data["industry"]:
+            if validated_data.get("phone"):
+                user.phone_number = validated_data["phone"]
+            if validated_data.get("industry"):
                 user.industry = validated_data["industry"]
-            if validated_data["role"] and current_user.role == Role.SUPER_ADMIN:
+            if validated_data.get("status"):
+                user.account_status = AccountStatus(validated_data["status"])
+            if validated_data.get("profileImage"):
+                user.profile_image_url = validated_data["profileImage"]
+            if validated_data.get("role") and current_user.role == Role.SUPER_ADMIN:
                 user.role = validated_data["role"]
 
             db.session.commit()
@@ -354,7 +374,7 @@ class UserResource(Resource):
                     "message": "Cannot delete your own account",
                 }, 400
 
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             if not user:
                 return {"status": "error", "message": "User not found"}, 404
 
@@ -388,7 +408,7 @@ class UserStatusResource(Resource):
             }, 400
 
         try:
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             if not user:
                 return {"status": "error", "message": "User not found"}, 404
 

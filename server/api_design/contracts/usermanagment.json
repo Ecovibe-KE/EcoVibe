@@ -17,8 +17,7 @@
     "request": {
       "body": {
         "email": "string (required, valid email, unique)",
-        "firstName": "string (required)",
-        "lastName": "string (required)",
+        "name": "string (required)",
         "password": "string (required, min 8 characters)",
         "role": "string (required)",
         "status": "string (optional, default: 'Active', enum: [Active, Suspended, Inactive])"
@@ -60,8 +59,7 @@
       },
       "body": {
         "email": "string (optional, valid email, unique)",
-        "firstName": "string (optional)",
-        "lastName": "string (optional)",
+        "name": "string (optional)",
         "role": "string (optional)",
         "status": "string (optional, enum: [Active, Suspended, Inactive])"
       }
@@ -85,7 +83,7 @@
         "userId": "string (required, unique identifier of the user)"
       },
       "body": {
-        "status": "string (required, must be 'Suspended')"
+        "status": "string (required, must be 'suspended')"
       }
     },
     "responses": {
@@ -105,7 +103,7 @@
         "userId": "string (required, unique identifier of the user)"
       },
       "body": {
-        "status": "string (required, must be 'Active')"
+        "status": "string (required, must be 'active')"
       }
     },
     "responses": {
