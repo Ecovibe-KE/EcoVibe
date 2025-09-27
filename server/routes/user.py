@@ -160,7 +160,7 @@ def register_user():
         )
 
         # Build link for frontend verify page
-        frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
+        frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5177")
         verify_link = f"{frontend_url}/verify?token={verification_token}"
 
         # Send email in background thread (non-blocking)
