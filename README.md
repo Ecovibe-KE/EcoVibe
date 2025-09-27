@@ -184,7 +184,7 @@ For the client-side application to connect to Firebase, you will need to create 
    
     ```
 
--The staging environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-staging.web.app/), remember to update the server to point to this endpoint in the appropriate places.
+The integration environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-develop.netlify.app/), remember to update the server to point to this endpoint in the appropriate places.
 
 The staging environment client can be found here: [https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/). Remember to update the server to point to this endpoint in the appropriate places, and ensure CORS settings are configured on the server.
 
@@ -205,6 +205,8 @@ The server-side application uses Flask's prefixed environment variables. The rec
     FLASK_ADMIN_EMAIL= # Admin email address for system notifications and contact
     FLASK_SMTP_PASS= # SMTP authentication password
     FLASK_API= # API route prefix (e.g., "/api" - all routes will be prefixed with this)
+    FLASK_CLIENT_URL= # URL where the client application is hosted (e.g., http://localhost:3000 for local development)
+    FLASK_SERVER_URL= # URL where the server is hosted (e.g., http://
     ```
 
     Any other configuration your app needs should be added here as well.
