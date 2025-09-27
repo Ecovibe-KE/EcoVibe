@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../utils/Button";
+import { subscribeNewsletter } from "../api/services/newsletter";
+import { toast } from "react-toastify";
 
 const BlogSideBar = ({
   style,
@@ -14,6 +16,58 @@ const BlogSideBar = ({
     acc[blog.category] = (acc[blog.category] || 0) + 1;
     return acc;
   }, {});
+
+  const [subscribeNewsletterState, setSubscribeNewsletterState] = useState({
+    email: "",
+    isLoading: false,
+    error: null,
+    success: null,
+  });
+
+  const handleNewsletterSubscribe = async (e) => {
+    e.preventDefault();
+    setSubscribeNewsletterState((prev) => ({
+      ...prev,
+      isLoading: true,
+      error: null,
+      success: null,
+    }));
+
+    try {
+      const response = await subscribeNewsletter(
+        subscribeNewsletterState.email,
+      );
+      if (response.status === "success") {
+        setSubscribeNewsletterState((prev) => ({
+          ...prev,
+          success: response.message,
+          email: "", // Clear email on success
+        }));
+        toast.success(response.message);
+      } else {
+        // The error message is in response.message
+        const errorMessage = response.message;
+        setSubscribeNewsletterState((prev) => ({
+          ...prev,
+          error: errorMessage,
+        }));
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      const errorMessage =
+        error.message || "Failed to subscribe. Please try again later.";
+      setSubscribeNewsletterState((prev) => ({
+        ...prev,
+        error: errorMessage,
+      }));
+      toast.error(errorMessage);
+    } finally {
+      setSubscribeNewsletterState((prev) => ({
+        ...prev,
+        isLoading: false,
+      }));
+    }
+  };
 
   const totalCount = blogs.length;
 
@@ -96,7 +150,7 @@ const BlogSideBar = ({
           business practices.
         </p>
         <form
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={handleNewsletterSubscribe}
           className="d-flex flex-column align-items-start"
         >
           <input
@@ -105,8 +159,26 @@ const BlogSideBar = ({
             className="form-control mb-3"
             style={{ maxWidth: "250px" }}
             aria-label="Enter your email address"
+            value={subscribeNewsletterState.email}
+            onChange={(e) =>
+              setSubscribeNewsletterState((prev) => ({
+                ...prev,
+                email: e.target.value,
+              }))
+            }
           />
-          <Button type="submit">Subscribe</Button>
+
+          {!subscribeNewsletterState.isLoading && (
+            <Button type="submit" disabled={subscribeNewsletterState.isLoading}>
+              Subscribe
+            </Button>
+          )}
+
+          {subscribeNewsletterState.isLoading && (
+            <div className="spinner-border text-success" role="status">
+              <span className="sr-only"></span>
+            </div>
+          )}
         </form>
       </div>
     </>
