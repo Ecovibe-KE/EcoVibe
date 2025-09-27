@@ -16,14 +16,21 @@
 # Example:
 #   make help
 #   make propose m="feat: add new feature"
+#   make validate-contracts
 #
-.PHONY: help propose
+.PHONY: help propose validate-contracts
 
 help:
 	@echo "Available commands:"
 	@echo "  propose   - Lints, formats, commits, and pushes your changes for a new PR."
 	@echo "            Usage: make propose m=\"feat: your new feature\""
+	@echo "  validate-contracts - Ensure API contracts have valid examples and match schema.json"
 
 propose:
 	@if [ -z "$(m)" ]; then echo "❌ Commit message is required. Usage: make propose m=\"your commit message\""; exit 1; fi
 	@bash scripts/propose-changes.sh "$(m)"
+
+validate-contracts:
+	@echo "🔎 Validating API contracts..."
+	cd server && pipenv run python api_design/validate_contracts.py && echo "✅ API contracts validation completed."
+

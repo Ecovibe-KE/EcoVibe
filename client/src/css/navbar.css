@@ -1,23 +1,27 @@
 .my-custom-button {
-    color: white !important;
-    background-color: #37b137 !important;
-    border-color: #37b137 !important;
+  color: white !important;
+  background-color: #37b137 !important;
+  border-color: #37b137 !important;
+}
+
+.my-custom-button.active {
+  color: white !important;
 }
 
 .my-custom-button:hover {
-    background-color: white !important;
-    border-color: #37b137 !important;
-    color: #37b137 !important;
+  background-color: white !important;
+  border-color: #37b137 !important;
+  color: #37b137 !important;
 }
 
 .nav-link {
-    color: black;
+  color: black;
 }
 
 .nav-link:hover {
-    color: #f5a030 !important;
+  color: #f5a030 !important;
 }
 
 .nav-link.active {
-    color: #37b137 !important;
+  color: #37b137 !important;
 }
