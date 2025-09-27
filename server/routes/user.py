@@ -10,21 +10,9 @@ from email_validator import validate_email, EmailNotValidError
 from models import db
 from models.user import User, AccountStatus
 from utils.mail_templates import send_verification_email
+from utils.password import is_valid_password
 
 user_bp = Blueprint("user", __name__)
-
-
-def _is_valid_password(password: str) -> bool:
-    """Check password length + at least one uppercase + one digit"""
-    if not isinstance(password, str) or not password.strip():
-        return False
-    if len(password) < 8:
-        return False
-    if not any(ch.isupper() for ch in password):
-        return False
-    if not any(ch.isdigit() for ch in password):
-        return False
-    return True
 
 
 @user_bp.route("/register", methods=["POST"])
@@ -87,7 +75,7 @@ def register_user():
         )
 
     # Validate password strength
-    if not _is_valid_password(password):
+    if not is_valid_password(password):
         return (
             jsonify(
                 {
