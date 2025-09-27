@@ -41,6 +41,7 @@ function App() {
   }, [logEvent, location.pathname]);
 
   return (
+    
     <div className="app-wrapper">
       <div className="main-content">
         <Suspense fallback={<div className="p-4">Loading…</div>}>
@@ -131,6 +132,20 @@ function App() {
             </Route>
 
             {/* Public pages (footer shown) */}
+
+    <>
+      <Suspense fallback={<div className="p-4">Loading…</div>}>
+        <Routes>
+          {/* Dashboard routes - TopNavbar handles the layout and nested routing */}
+          <Route
+            path="/dashboard/*"
+            element={
+              <>
+                <TopNavbar />
+              </>
+            }
+          >
+
             <Route
               path="/"
               element={
