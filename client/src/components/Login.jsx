@@ -27,7 +27,8 @@ const Login = () => {
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
-    if (!key) toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
+    if (!key)
+      toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
   }, []);
 
   const handleChange = (e) => {
@@ -36,43 +37,42 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.email || !formData.password) {
-    toast.error("Please enter email and password.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    // Only log in development mode, no sensitive info
-    if (import.meta.env.MODE !== "production") {
-      console.log("Login form submitted"); 
+    if (!formData.email || !formData.password) {
+      toast.error("Please enter email and password.");
+      return;
     }
 
-    const data = await loginUser(formData);
+    try {
+      setLoading(true);
 
-    if (data?.token && data?.user) {
-      setUser(data.user);
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("userData", JSON.stringify(data.user));
-      toast.success("Login successful! Redirecting...");
-      setTimeout(() => navigate("/dashboard"), 1200);
-    } else {
-      toast.error("Invalid login response. Please try again.");
-    }
-  } catch (err) {
-    // Safe error logging, doesn't expose passwords
-    if (import.meta.env.MODE !== "production") {
-      console.error("Login failed:", err);
-    }
-    toast.error(err?.message || "Login failed. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      // Only log in development mode, no sensitive info
+      if (import.meta.env.MODE !== "production") {
+        console.log("Login form submitted");
+      }
 
+      const data = await loginUser(formData);
+
+      if (data?.token && data?.user) {
+        setUser(data.user);
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userData", JSON.stringify(data.user));
+        toast.success("Login successful! Redirecting...");
+        setTimeout(() => navigate("/dashboard"), 1200);
+      } else {
+        toast.error("Invalid login response. Please try again.");
+      }
+    } catch (err) {
+      // Safe error logging, doesn't expose passwords
+      if (import.meta.env.MODE !== "production") {
+        console.error("Login failed:", err);
+      }
+      toast.error(err?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -80,14 +80,20 @@ const Login = () => {
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
         <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
-        <img src="/Empower.png" alt="EcoVibe Illustration" className={styles.empowerImage} />
+        <img
+          src="/Empower.png"
+          alt="EcoVibe Illustration"
+          className={styles.empowerImage}
+        />
       </div>
 
       {/* Right Section */}
       <div className={styles.rightSection}>
         <div className={styles.loginCard}>
           <form onSubmit={handleSubmit}>
-            <h2 className="mb-4 text-dark" style={{ fontSize: "40px" }}>Log In</h2>
+            <h2 className="mb-4 text-dark" style={{ fontSize: "40px" }}>
+              Log In
+            </h2>
 
             <div className="mb-3">
               <Input
@@ -104,13 +110,17 @@ const Login = () => {
 
             {/* Password label with eye toggle */}
             <div className="mb-3">
-              <label className={styles.passwordLabel}>
+              <label className={styles.passwordLabel} htmlFor="password">
                 Password
-                <span className={styles.passwordToggle} onClick={handleClickShowPassword}>
+                <span
+                  className={styles.passwordToggle}
+                  onClick={handleClickShowPassword}
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </span>
               </label>
               <Input
+                id="password" // add this
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
@@ -130,7 +140,9 @@ const Login = () => {
                   theme="light"
                 />
               ) : (
-                <div className="alert alert-warning">reCAPTCHA not configured.</div>
+                <div className="alert alert-warning">
+                  reCAPTCHA not configured.
+                </div>
               )}
             </div>
 
@@ -145,7 +157,9 @@ const Login = () => {
                 {loading ? "Logging in..." : "Login"}
               </Button>
 
-              <Link to="/forgot-password" className={styles.forgotLink}>Forgot your password?</Link>
+              <Link to="/forgot-password" className={styles.forgotLink}>
+                Forgot your password?
+              </Link>
             </div>
           </form>
         </div>

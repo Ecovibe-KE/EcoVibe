@@ -93,7 +93,10 @@ function TopNavbar() {
     }
   }, [isDesktop, showMobileSidebar]);
 
-  const toggleMobileSidebar = useCallback(() => setShowMobileSidebar((prev) => !prev), []);
+  const toggleMobileSidebar = useCallback(
+    () => setShowMobileSidebar((prev) => !prev),
+    [],
+  );
   const closeMobileSidebar = useCallback(() => setShowMobileSidebar(false), []);
 
   const getLinkClass = ({ isActive }) =>
@@ -124,7 +127,11 @@ function TopNavbar() {
             />
           </Link>
           {isMobile && (
-            <button onClick={onClose} className="btn btn-light btn-sm" aria-label="Close sidebar">
+            <button
+              onClick={onClose}
+              className="btn btn-light btn-sm"
+              aria-label="Close sidebar"
+            >
               <FiX size={18} />
             </button>
           )}
@@ -194,7 +201,14 @@ function TopNavbar() {
       {isDesktop && (
         <div
           className="desktop-sidebar"
-          style={{ position: "fixed", top: 0, left: 0, height: "100vh", width: `${SIDEBAR_WIDTH}px`, zIndex: 1040 }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            height: "100vh",
+            width: `${SIDEBAR_WIDTH}px`,
+            zIndex: 1040,
+          }}
         >
           <SidebarContent />
         </div>
@@ -258,48 +272,73 @@ function TopNavbar() {
                 src={userData.avatar}
                 className="user-avatar rounded-circle"
                 alt="User Avatar"
-                style={{ width: "40px", height: "40px", border: "2px solid #e3e6f0" }}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  border: "2px solid #e3e6f0",
+                }}
               />
               <div className="user-details d-none d-sm-block">
-                <div className="user-name" style={{ fontWeight: 600, fontSize: "0.9rem", color: "#5a5c69" }}>
+                <div
+                  className="user-name"
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "0.9rem",
+                    color: "#5a5c69",
+                  }}
+                >
                   {userData.name}
                 </div>
-                <div className="user-role" style={{ fontSize: "0.8rem", color: "#858796" }}>
+                <div
+                  className="user-role"
+                  style={{ fontSize: "0.8rem", color: "#858796" }}
+                >
                   {userData.role}
                 </div>
               </div>
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-<Dropdown.Item
-  onClick={() => {
-    localStorage.removeItem("userData");
-    navigate("/login");
-  }}
-  style={{
-    backgroundColor: "#28a745", // green
-    color: "#fff",
-    fontWeight: 600,
-    textAlign: "center",
-    cursor: "pointer",
-    borderRadius: "4px",
-    display: "block",
-    width: "100%",
-    padding: "10px 15px",
-    margin: "0",
-  }}
-  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#fd7e14")} // orange on hover
-  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#28a745")} // back to green
->
-  Logout
-</Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => {
+                  localStorage.removeItem("userData");
+                  navigate("/login");
+                }}
+                style={{
+                  backgroundColor: "#28a745", // green
+                  color: "#fff",
+                  fontWeight: 600,
+                  textAlign: "center",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  display: "block",
+                  width: "100%",
+                  padding: "10px 15px",
+                  margin: "0",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#fd7e14")
+                } // orange on hover
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#28a745")
+                } // back to green
+              >
+                Logout
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
       </nav>
 
       {/* Mobile Sidebar */}
-      <Offcanvas show={showMobileSidebar && !isDesktop} onHide={closeMobileSidebar} placement="start" backdrop scroll={false} style={{ width: `${SIDEBAR_WIDTH}px` }}>
+      <Offcanvas
+        show={showMobileSidebar && !isDesktop}
+        onHide={closeMobileSidebar}
+        placement="start"
+        backdrop
+        scroll={false}
+        style={{ width: `${SIDEBAR_WIDTH}px` }}
+      >
         <SidebarContent onClose={closeMobileSidebar} isMobile={true} />
       </Offcanvas>
 

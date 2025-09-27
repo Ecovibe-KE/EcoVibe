@@ -17,7 +17,6 @@ export const ENDPOINTS = {
   //forgot-password
   forgotPassword: "/forgot-password",
 
-
   // users
   users: "/users",
   userManagement: "/user-management",

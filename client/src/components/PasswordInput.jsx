@@ -7,7 +7,9 @@ const PasswordInput = ({ label, value, onChange, show, setShow, id }) => {
   return (
     <div className={styles.passwordField}>
       <div className={styles.labelRow}>
-        <label htmlFor={id} className={styles.label}>{label}</label>
+        <label htmlFor={id} className={styles.label}>
+          {label}
+        </label>
         <button
           type="button"
           className={styles.eyeIcon}

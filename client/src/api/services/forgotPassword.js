@@ -7,7 +7,9 @@ export const forgotPassword = async (email) => {
     return response.data; // backend should return { message: "Check your email" }
   } catch (error) {
     if (error.response) {
-      throw new Error(error.response.data.message || "Failed to reset password");
+      throw new Error(
+        error.response.data.message || "Failed to reset password",
+      );
     }
     throw new Error("Network error. Please try again.");
   }

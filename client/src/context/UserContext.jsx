@@ -4,7 +4,11 @@ import { createContext, useState, useEffect } from "react";
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const DEFAULT_USER = { name: "Guest", role: "Client", avatar: "/default-avatar.png" };
+  const DEFAULT_USER = {
+    name: "Guest",
+    role: "Client",
+    avatar: "/default-avatar.png",
+  };
   const [user, setUser] = useState(() => {
     if (typeof window === "undefined") return DEFAULT_USER;
     try {

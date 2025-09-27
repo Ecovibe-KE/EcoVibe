@@ -1,7 +1,6 @@
 import { ENDPOINTS } from "../endpoints";
 import api from "../axiosConfig";
 
-
 const USE_MOCK = true; // flip to false when backend is ready
 
 //  Login user
@@ -37,12 +36,15 @@ export const forgotPassword = async (newPassword) => {
     await new Promise((res) => setTimeout(res, 800));
 
     return {
-      message: "Password has been reset successfully! Please log in with your new password.",
+      message:
+        "Password has been reset successfully! Please log in with your new password.",
     };
   }
 
   // Real API call
-  const response = await api.post(ENDPOINTS.forgotPassword, { password: newPassword });
+  const response = await api.post(ENDPOINTS.forgotPassword, {
+    password: newPassword,
+  });
   return response.data;
 };
 

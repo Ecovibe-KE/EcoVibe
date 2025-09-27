@@ -32,7 +32,8 @@ const ForgotPassword = () => {
       const response = await forgotPassword(newPassword);
 
       toast.success(
-        response?.message || "Password reset successfully! Redirecting to login...",
+        response?.message ||
+          "Password reset successfully! Redirecting to login...",
         {
           position: "top-right",
           autoClose: 3000,
@@ -41,7 +42,7 @@ const ForgotPassword = () => {
           pauseOnHover: true,
           draggable: true,
           theme: "colored",
-        }
+        },
       );
 
       setTimeout(() => navigate("/login"), 3000);
@@ -87,7 +88,9 @@ const ForgotPassword = () => {
         <div className={styles.formContainer}>
           <h2 className={styles.subheading}>Forgot Password</h2>
 
-          {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
+          {error && (
+            <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>
+          )}
 
           <form onSubmit={handleReset}>
             <PasswordInput
@@ -108,7 +111,11 @@ const ForgotPassword = () => {
               setShow={setShowConfirmPassword}
             />
 
-            <button type="submit" className={styles.resetButton} disabled={loading}>
+            <button
+              type="submit"
+              className={styles.resetButton}
+              disabled={loading}
+            >
               {loading ? "Resetting..." : "RESET PASSWORD"}
             </button>
           </form>

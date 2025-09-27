@@ -1,54 +1,77 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import TopNavbar from '../../src/components/TopNavbar';
+// tests/components/TopNavbar.test.jsx
 import React from "react";
-import { MemoryRouter } from "react-router-dom";
-import { UserContext } from "../../src/context/UserContext";
+import { render, screen, fireEvent } from "@testing-library/react";
+import TopNavbar from "../../src/components/TopNavbar";
+import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from "vitest";
 
-// Mock window.matchMedia for jsdom / Offcanvas
-beforeAll(() => {
-  window.matchMedia = window.matchMedia || function(query) {
-    return {
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    };
+// Mock useNavigate from react-router-dom
+const mockedNavigate = vi.fn();
+
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useNavigate: () => mockedNavigate,
+    MemoryRouter: actual.MemoryRouter, // ensure MemoryRouter is available
   };
 });
 
-describe("TopNavbar Component", () => {
-  const mockUser = { name: "John Doe", avatar: "avatar.png" };
-  const mockSetUser = vi.fn();
+// Mock window.matchMedia for desktop view
+beforeAll(() => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: (query) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  });
+});
 
-  it("renders page title", () => {
+describe("TopNavbar Desktop Tests", () => {
+  beforeEach(() => {
+    const { MemoryRouter } = require("react-router-dom");
+
+    // Set fake localStorage for user session
+    localStorage.setItem("token", "fakeToken");
+    localStorage.setItem("user", JSON.stringify({ name: "Sharon Maina" }));
+
+    // Render TopNavbar inside MemoryRouter
     render(
       <MemoryRouter>
-        <UserContext.Provider value={{ user: mockUser, setUser: mockSetUser }}>
-          <TopNavbar />
-        </UserContext.Provider>
+        <TopNavbar />
       </MemoryRouter>
     );
-    expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
   });
 
-  it("renders user avatar and name", () => {
-    render(
-      <MemoryRouter>
-        <UserContext.Provider value={{ user: mockUser, setUser: mockSetUser }}>
-          <TopNavbar />
-        </UserContext.Provider>
-      </MemoryRouter>
-    );
+  afterEach(() => {
+    localStorage.clear();
+    mockedNavigate.mockReset();
+  });
 
-    const avatar = screen.getByAltText(/john doe/i); // Alt text should match user's name
-    const name = screen.getByText(/john doe/i);
+  it("renders desktop sidebar elements", () => {
+    // Sidebar links
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
 
-    expect(avatar).toBeInTheDocument();
-    expect(name).toBeInTheDocument();
+    // User info
+    expect(screen.getByText("Sharon Maina")).toBeInTheDocument();
+
+    // Logout button
+    const logoutBtn = screen.getByRole("button", { name: /logout/i });
+    expect(logoutBtn).toBeInTheDocument();
+  });
+
+  it("logs out and navigates to /login", () => {
+    const logoutBtn = screen.getByRole("button", { name: /logout/i });
+    fireEvent.click(logoutBtn);
+
+    expect(localStorage.getItem("token")).toBeNull();
+    expect(localStorage.getItem("user")).toBeNull();
+    expect(mockedNavigate).toHaveBeenCalledWith("/login");
   });
 });

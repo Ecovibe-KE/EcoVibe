@@ -16,7 +16,7 @@ import TopNavbar from "./TopNavbar.jsx";
 import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
 import Login from "./Login.jsx";
-import ForgotPassword from "./ForgotPassword.jsx"
+import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -271,8 +271,26 @@ function App() {
               </>
             }
           />
-          <Route path="/login" element={<><NavBar /><Login /><FooterWrapper /></>} />
-          <Route path="/forgot-password" element={<><NavBar /><ForgotPassword /><FooterWrapper /></>} />
+          <Route
+            path="/login"
+            element={
+              <>
+                <NavBar />
+                <Login />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <>
+                <NavBar />
+                <ForgotPassword />
+                <FooterWrapper />
+              </>
+            }
+          />
 
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
