@@ -21,5 +21,8 @@ export const ENDPOINTS = {
   users: "/users",
   userManagement: "/user-management",
 
+  // newsletter
+  newsletter_subscribers: "/newsletter-subscribers",
+
   // Add more endpoints as needed here
 };
