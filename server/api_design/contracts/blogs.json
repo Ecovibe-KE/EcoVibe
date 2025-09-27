@@ -16,7 +16,7 @@
     },
     "responses": {
       "200": { "$ref": "../examples/blogs/get.200.json" },
-      "404": { "$ref": "../examples/errors/404.json" }   
+      "404": { "$ref": "../examples/errors/404.json" }
     }
   },
   {
