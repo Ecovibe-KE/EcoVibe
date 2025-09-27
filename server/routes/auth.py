@@ -364,15 +364,27 @@ class ResetPasswordResource(Resource):
                 "data": None,
             }, 400
 
-        # Save new password
-        user.set_password(new_password)
-        db.session.commit()
+        try:
+            # Revoke all refresh tokens for this user
+            Token.query.filter_by(user_id=user.id).delete()
 
-        return {
-            "status": "success",
-            "message": "Password reset successful",
-            "data": None,
-        }, 200
+            # Save new password
+            user.set_password(new_password)
+            db.session.commit()
+
+            return {
+                "status": "success",
+                "message": "Password reset successful",
+                "data": None,
+            }, 200
+
+        except Exception:
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
 
 
 # ------------------------------------------------------------
@@ -419,14 +431,27 @@ class ChangePasswordResource(Resource):
                 "data": None,
             }, 400
 
-        user.set_password(new_password)
-        db.session.commit()
+        try:
+            # Revoke all refresh tokens for this user
+            Token.query.filter_by(user_id=user.id).delete()
 
-        return {
-            "status": "success",
-            "message": "Password changed successfully",
-            "data": None,
-        }, 200
+            # Save new password
+            user.set_password(new_password)
+            db.session.commit()
+
+            return {
+                "status": "success",
+                "message": "Password changed successfully",
+                "data": None,
+            }, 200
+
+        except Exception:
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
 
 
 # ------------------------------------------------------------
