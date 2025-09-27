@@ -208,3 +208,133 @@ def send_verification_email(to_email, user_name, verify_link):
     """
 
     return send_email(to_email, subject, body, is_html=True)
+
+
+def send_newsletter_email(
+    to_email,
+    subject,
+    content,
+    call_to_action_link,
+    unsubscribe_link,
+    view_online_link,
+    preheader_text,
+    current_year,
+    blog_thumbnail_url,
+):
+    """Send newsletter email to subscribers"""
+    body = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{subject}</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?
+family=Roboto:wght@400;700&display=swap');
+      body {{
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }}
+        .email-container {{
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }}
+        .header {{
+            background-color: #37B137;
+            padding: 40px 20px;
+            text-align: center;
+            color: #ffffff;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }}
+        .content {{
+            padding: 40px 30px;
+        }}
+        .content p {{
+            margin: 0 0 20px;
+            font-size: 16px;
+        }}
+        .button {{
+            display: inline-block;
+            background-color: #37B137;
+            color: #ffffff;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 700;
+            text-align: center;
+        }}
+        .footer {{
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 12px;
+            color: #999;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }}
+        .footer a {{
+            color: #37B137;
+            text-decoration: underline;
+        }}
+        .footer p {{
+            margin: 0;
+            line-height: 1.5;
+        }}
+        .preheader {{
+            display: none !important;
+            visibility: hidden;
+            opacity: 0;
+            color: transparent;
+            height: 0;
+            width: 0;
+            font-size: 1px;
+            line-height: 1px;
+        }}
+    </style>
+</head>
+<body>
+
+    <span class="preheader">{preheader_text}</span>
+
+    <div class="email-container">
+        <div class="header">
+            <h1>{subject}</h1>
+        </div>
+        <div class="content">
+            <img src="{blog_thumbnail_url}" alt="EcoVibe Logo"
+                 style="display: block; margin: 0 auto;">
+            {content}
+            <p style="text-align: center; margin-top: 30px;">
+                <a href="{call_to_action_link}" class="button">Read More</a>
+            </p>
+        </div>
+        <div class="footer">
+            <p>
+                You are receiving this email because you signed up for our newsletter.
+            </p>
+            <p>
+                <a href="{unsubscribe_link}">Unsubscribe</a> |
+                <a href="{view_online_link}">View this email in your browser</a>
+            </p>
+            <p>&copy; {current_year} Ecovibe Ke. All Rights Reserved.</p>
+            <p>The Mint Hub Offices Western Heights, Nairobi</p>
+        </div>
+    </div>
+
+</body>
+</html>
+    """
+
+    return send_email(to_email, subject, body, is_html=True)

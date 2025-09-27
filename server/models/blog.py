@@ -1,7 +1,11 @@
 import enum
 from datetime import datetime, timezone
+import os
 from sqlalchemy.orm import validates
 from . import db
+import base64
+
+SERVER_HOST = os.getenv("FLASK_SERVER_URL", "localhost:5000")
 
 
 class BlogType(enum.Enum):
@@ -9,6 +13,12 @@ class BlogType(enum.Enum):
     NEWSLETTER = "newsletter"
     TUTORIAL = "tutorial"
     CASE_STUDY = "case_study"
+
+
+class BlogStatus(enum.Enum):
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"
 
 
 class Blog(db.Model):
@@ -27,7 +37,8 @@ class Blog(db.Model):
     title = db.Column(db.String(255), nullable=False)
     likes = db.Column(db.Integer, default=0)
     views = db.Column(db.Integer, default=0)
-    image = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.LargeBinary, nullable=False)  # Storing image as binary
+    image_content_type = db.Column(db.String(50), nullable=False)
     category = db.Column(db.String(100), nullable=False)
     author_name = db.Column(db.String(100), nullable=False)
     admin_id = db.Column(
@@ -55,6 +66,7 @@ class Blog(db.Model):
         "reading_duration",
         "content",
         "image",
+        "image_content_type",
     )
     def validate_not_empty(self, key, value):
         """
@@ -69,6 +81,14 @@ class Blog(db.Model):
         """
         if not value or not value.strip():
             raise ValueError(f"{key.replace('_', ' ').capitalize()} cannot be empty.")
+
+        if key == "image_content_type":
+            allowed_types = ["image/jpeg", "image/png", "image/jpg"]
+            if value not in allowed_types:
+                allowed_str = ", ".join(allowed_types)
+                msg = f"Invalid image content type. Allowed types are: {allowed_str}"
+                raise ValueError(msg)
+
         return value.strip()
 
     @validates("likes", "views")
@@ -85,6 +105,7 @@ class Blog(db.Model):
         """
         Return a JSON-serializable dictionary representation of the Blog.
         """
+
         return {
             "id": self.id,
             "date_created": (
@@ -96,9 +117,9 @@ class Blog(db.Model):
             "title": self.title,
             "likes": self.likes,
             "views": self.views,
-            "image": self.image,
             "category": self.category,
             "author_name": self.author_name,
+            "image": f"{SERVER_HOST}/blogs/image/{self.id}",
             "admin_id": self.admin_id,
             "content": self.content,
             "reading_duration": self.reading_duration,

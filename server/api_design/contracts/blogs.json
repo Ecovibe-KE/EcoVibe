@@ -26,7 +26,11 @@
     "request": {
       "body": {
         "title": "string (required)",
-        "content": "string (required)"
+        "content": "string (required)",
+        "type": "string (optional)",
+        "category": "array of strings (optional)",
+        "excerpt": "string (optional)",
+        "draft": "boolean (optional)"
       }
     },
     "responses": {
