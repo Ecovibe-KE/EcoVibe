@@ -36,6 +36,7 @@ def create_test_user(session, email="user@test.com", role=Role.CLIENT):
     session.commit()
     return user
 
+
 def test_create_user_validation_errors(client, session):
     """Test user creation with invalid data"""
     admin = create_admin_user(session)
