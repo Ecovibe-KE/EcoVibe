@@ -18,5 +18,8 @@ export const ENDPOINTS = {
   // newsletter
   newsletter_subscribers: "/newsletter-subscribers",
 
+  // Profile
+  me: "/me"
+  
   // Add more endpoints as needed here
 };
