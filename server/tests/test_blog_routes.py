@@ -94,7 +94,7 @@ def get_auth_token(client, user):
         data=json.dumps({"email": user.email, "password": "password.123@Champion"}),
         content_type="application/json",
     )
-    return response.get_json()["access_token"]
+    return response.get_json()["data"]["access_token"]
 
 
 # --- Test BlogListResource ---
