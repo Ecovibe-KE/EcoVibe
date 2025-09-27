@@ -84,7 +84,12 @@ class UserValidator:
         else:
             validated_data["role"] = Role(role) if role else None
 
-        validated_data["industry"] = str(payload.get("industry", "")).strip()
+        industry = str(payload.get("industry", "")).strip()
+
+        if not industry and not is_update:
+            errors["industry"] = "Industry is required"
+        else:
+            validated_data["industry"] = industry
 
         return errors, validated_data
 
@@ -148,7 +153,7 @@ class UserListResource(Resource):
             query = User.query
 
             if current_user.role == Role.ADMIN:
-                query = query.filter(User.role != Role.SUPER_ADMIN)
+                query = query.filter(User.role == Role.CLIENT)
 
             users = query.all()
             users_data = [UserService.serialize_user(user) for user in users]
@@ -185,7 +190,7 @@ class UserListResource(Resource):
                 return {"status": "error", "message": "Email already exists"}, 409
 
             if User.query.filter_by(
-                phone_number=validated_data["phone_number"]
+                    phone_number=validated_data["phone_number"]
             ).first():
                 return {
                     "status": "error",
