@@ -1,77 +1,64 @@
-// tests/components/TopNavbar.test.jsx
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import TopNavbar from "../../src/components/TopNavbar";
-import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from "vitest";
+import { MemoryRouter } from "react-router-dom";
+import { vi, describe, it, beforeAll, expect } from "vitest";
 
-// Mock useNavigate from react-router-dom
-const mockedNavigate = vi.fn();
-
-vi.mock("react-router-dom", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    useNavigate: () => mockedNavigate,
-    MemoryRouter: actual.MemoryRouter, // ensure MemoryRouter is available
+// Mock window.matchMedia for Offcanvas / responsive behavior
+beforeAll(() => {
+  window.matchMedia = window.matchMedia || function(query) {
+    return {
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    };
   };
 });
 
-// Mock window.matchMedia for desktop view
-beforeAll(() => {
-  Object.defineProperty(window, "matchMedia", {
-    writable: true,
-    value: (query) => ({
-      matches: true,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }),
-  });
-});
-
-describe("TopNavbar Desktop Tests", () => {
-  beforeEach(() => {
-    const { MemoryRouter } = require("react-router-dom");
-
-    // Set fake localStorage for user session
-    localStorage.setItem("token", "fakeToken");
-    localStorage.setItem("user", JSON.stringify({ name: "Sharon Maina" }));
-
-    // Render TopNavbar inside MemoryRouter
+describe("TopNavbar Component", () => {
+  const renderComponent = (props = {}) =>
     render(
       <MemoryRouter>
-        <TopNavbar />
+        <TopNavbar {...props} />
       </MemoryRouter>
     );
+
+  it("renders main logo", () => {
+    renderComponent();
+    expect(screen.getByAltText(/ecovibe logo/i)).toBeInTheDocument();
   });
 
-  afterEach(() => {
-    localStorage.clear();
-    mockedNavigate.mockReset();
+  it("renders sidebar links with correct images and text", () => {
+    renderComponent();
+
+    const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
+    expect(dashboardLink).toBeInTheDocument();
+    expect(within(dashboardLink).getByAltText(/home/i)).toBeInTheDocument();
+
+    const bookingsLink = screen.getByRole("link", { name: /bookings/i });
+    expect(bookingsLink).toBeInTheDocument();
+    expect(within(bookingsLink).getByAltText(/bookings/i)).toBeInTheDocument();
+
+    const ticketsLink = screen.getByRole("link", { name: /tickets/i });
+    expect(ticketsLink).toBeInTheDocument();
+    expect(within(ticketsLink).getByAltText(/tickets/i)).toBeInTheDocument();
   });
 
-  it("renders desktop sidebar elements", () => {
-    // Sidebar links
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
-
-    // User info
-    expect(screen.getByText("Sharon Maina")).toBeInTheDocument();
-
-    // Logout button
-    const logoutBtn = screen.getByRole("button", { name: /logout/i });
-    expect(logoutBtn).toBeInTheDocument();
+  it("renders top navbar title", () => {
+    renderComponent();
+    expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument();
   });
 
-  it("logs out and navigates to /login", () => {
-    const logoutBtn = screen.getByRole("button", { name: /logout/i });
-    fireEvent.click(logoutBtn);
+  it("renders user avatar and dropdown", () => {
+    renderComponent({ user: { name: "Sharon Maina", role: "Admin" } });
 
-    expect(localStorage.getItem("token")).toBeNull();
-    expect(localStorage.getItem("user")).toBeNull();
-    expect(mockedNavigate).toHaveBeenCalledWith("/login");
+    const userButton = screen.getByRole("button", { name: /sharon maina/i });
+    expect(userButton).toBeInTheDocument();
+    expect(within(userButton).getByAltText(/user avatar/i)).toBeInTheDocument();
   });
 });

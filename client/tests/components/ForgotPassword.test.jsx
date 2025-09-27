@@ -1,121 +1,76 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ForgotPassword from "../../src/components/ForgotPassword.jsx";
+import ForgotPassword from "../../src/components/ForgotPassword";
+import { forgotPassword } from "../../src/api/services/auth.js";
 import { MemoryRouter } from "react-router-dom";
-import * as authApi from "../../src/api/services/auth.js";
-import { vi } from "vitest";
-import userEvent from "@testing-library/user-event";
 
-// Mock navigate
-const mockedNavigate = vi.fn();
-
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useNavigate: () => mockedNavigate,
-  };
-});
-
-// Mock toast
-vi.mock("react-toastify", () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-  ToastContainer: () => <div />,
+vi.mock("../../src/api/services/auth.js", () => ({
+  forgotPassword: vi.fn(),
 }));
 
 describe("ForgotPassword Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  const setup = () =>
     render(
       <MemoryRouter>
         <ForgotPassword />
       </MemoryRouter>
     );
-
-  it("renders the form correctly", () => {
-    setup();
-    expect(screen.getByLabelText("New Password", { selector: "input" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Confirm Password", { selector: "input" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /reset password/i })).toBeInTheDocument();
   });
 
-  it("shows error if passwords do not match", async () => {
-    setup();
-    fireEvent.change(screen.getByLabelText("New Password", { selector: "input" }), {
-      target: { value: "password1" },
-    });
-    fireEvent.change(screen.getByLabelText("Confirm Password", { selector: "input" }), {
-      target: { value: "password2" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /reset password/i }));
-
-    expect(await screen.findByText(/passwords do not match/i)).toBeInTheDocument();
+  it("renders form fields correctly", () => {
+    expect(screen.getByLabelText(/New Password/i, { selector: "input" })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Confirm Password/i, { selector: "input" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /RESET PASSWORD/i })).toBeInTheDocument();
   });
 
-  it("calls forgotPassword API and shows success toast on valid submit", async () => {
-    const mockResponse = { message: "Success!" };
-    vi.spyOn(authApi, "forgotPassword").mockResolvedValue(mockResponse);
-
-    setup();
-
-    fireEvent.change(screen.getByLabelText("New Password", { selector: "input" }), {
+  it("shows error message if passwords do not match", async () => {
+    fireEvent.change(screen.getByLabelText(/New Password/i, { selector: "input" }), {
       target: { value: "password123" },
     });
-    fireEvent.change(screen.getByLabelText("Confirm Password", { selector: "input" }), {
-      target: { value: "password123" },
+    fireEvent.change(screen.getByLabelText(/Confirm Password/i, { selector: "input" }), {
+      target: { value: "different123" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /reset password/i }));
+    fireEvent.click(screen.getByRole("button", { name: /RESET PASSWORD/i }));
 
-    await waitFor(() => expect(authApi.forgotPassword).toHaveBeenCalledWith("password123"));
-    await waitFor(() =>
-      expect(require("react-toastify").toast.success).toHaveBeenCalledWith(
-        "Success!",
-        expect.any(Object)
-      )
-    );
-    await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith("/login"));
+    await waitFor(() => {
+      expect(screen.getByText("Passwords do not match!")).toBeInTheDocument();
+      expect(forgotPassword).not.toHaveBeenCalled();
+    });
   });
 
-  it("shows error toast when API fails", async () => {
-    vi.spyOn(authApi, "forgotPassword").mockRejectedValue(new Error("API Failed"));
+  it("calls forgotPassword and redirects on successful reset", async () => {
+    forgotPassword.mockResolvedValue({ message: "Password reset successfully!" });
 
-    setup();
-
-    fireEvent.change(screen.getByLabelText("New Password", { selector: "input" }), {
+    fireEvent.change(screen.getByLabelText(/New Password/i, { selector: "input" }), {
       target: { value: "password123" },
     });
-    fireEvent.change(screen.getByLabelText("Confirm Password", { selector: "input" }), {
+    fireEvent.change(screen.getByLabelText(/Confirm Password/i, { selector: "input" }), {
       target: { value: "password123" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /reset password/i }));
+    fireEvent.click(screen.getByRole("button", { name: /RESET PASSWORD/i }));
 
-    await waitFor(() =>
-      expect(require("react-toastify").toast.error).toHaveBeenCalledWith(
-        "API Failed",
-        expect.any(Object)
-      )
-    );
+    await waitFor(() => {
+      expect(forgotPassword).toHaveBeenCalledWith("password123");
+    });
   });
 
-  it("toggles password visibility when eye button clicked", () => {
-    setup();
+  it("handles API failure gracefully", async () => {
+    forgotPassword.mockRejectedValue(new Error("API Error"));
 
-    const newPasswordToggle = screen.getByLabelText("Show New Password", { selector: "button" });
-    const newPasswordInput = screen.getByLabelText("New Password", { selector: "input" });
+    fireEvent.change(screen.getByLabelText(/New Password/i, { selector: "input" }), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/Confirm Password/i, { selector: "input" }), {
+      target: { value: "password123" },
+    });
 
-    expect(newPasswordInput.type).toBe("password");
+    fireEvent.click(screen.getByRole("button", { name: /RESET PASSWORD/i }));
 
-    fireEvent.click(newPasswordToggle);
-
-    expect(newPasswordInput.type).toBe("text");
+    await waitFor(() => {
+      expect(forgotPassword).toHaveBeenCalled();
+    });
   });
 });

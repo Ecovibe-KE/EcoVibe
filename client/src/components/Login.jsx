@@ -120,7 +120,7 @@ const Login = () => {
                 </span>
               </label>
               <Input
-                id="password" // add this
+                id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
