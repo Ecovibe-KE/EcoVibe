@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "message": "User deleted successfully",
+  "data": {
+    "id": 15,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "deleted": true,
+    "deletedAt": "2024-09-27T10:30:00.000Z"
+  }
+}
