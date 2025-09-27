@@ -6,6 +6,7 @@ from models import db
 from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
+import re
 
 load_dotenv()
 
@@ -64,7 +65,15 @@ def create_app(config_name="development"):
     register_routes(app)
 
     # CORs setup
-    origins = os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",")
+    netlify_pr_regex = r"^https:\/\/deploy-preview-\d+--ecovibe-develop\.netlify\.app$"
+    firebase_pr_regex = r"^https:\/\/pr-\d+-.*\.web\.app$"
+    dynamic_pr_cors_origins = [
+        re.compile(netlify_pr_regex),
+        re.compile(firebase_pr_regex),
+    ]
+    origins = (
+        os.getenv("FLASK_CORS_ALLOWED_ORIGINS").split(",") + dynamic_pr_cors_origins
+    )
     CORS(app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
     return app
 
