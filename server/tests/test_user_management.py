@@ -46,7 +46,7 @@ def test_create_user_validation_errors(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     payload = {
         "name": "A",  # Too short
@@ -100,7 +100,7 @@ def test_get_user_success(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     response = client.get(
         f"/api/user-management/{user.id}",
@@ -123,7 +123,7 @@ def test_get_user_not_found(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     response = client.get(
         "/api/user-management/9999",  # Non-existent ID
@@ -146,7 +146,7 @@ def test_delete_user_success(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     response = client.delete(
         f"/api/user-management/{user.id}",
@@ -168,7 +168,7 @@ def test_delete_own_account(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     response = client.delete(
         f"/api/user-management/{admin.id}",  # Trying to delete own account
@@ -191,7 +191,7 @@ def test_update_user_status_success(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     payload = {"status": "inactive"}
 
@@ -218,7 +218,7 @@ def test_update_user_status_invalid(client, session):
         data=json.dumps({"email": admin.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     payload = {"status": "invalid_status"}
 
@@ -244,7 +244,7 @@ def test_client_access_denied(client, session):
         data=json.dumps({"email": client_user.email, "password": "Password123"}),
         content_type="application/json",
     )
-    access_token = login_res.get_json()["access_token"]
+    access_token = login_res.get_json()["data"]["access_token"]
 
     response = client.get(
         "/api/user-management",
