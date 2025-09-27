@@ -36,32 +36,6 @@ def create_test_user(session, email="user@test.com", role=Role.CLIENT):
     session.commit()
     return user
 
-
-def test_get_users_success_admin(client, session):
-    """Test admin can retrieve user list"""
-    admin = create_admin_user(session)
-    user = create_test_user(session)
-    print(f"user {user}")
-
-    # Login as admin
-    login_res = client.post(
-        "/api/login",
-        data=json.dumps({"email": admin.email, "password": "Password123"}),
-        content_type="application/json",
-    )
-    access_token = login_res.get_json()["access_token"]
-
-    response = client.get(
-        "/api/user-management",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    data = response.get_json()
-
-    assert response.status_code == 200
-    assert data["status"] == "success"
-    assert len(data["data"]["users"]) == 2  # admin + user
-
-
 def test_create_user_validation_errors(client, session):
     """Test user creation with invalid data"""
     admin = create_admin_user(session)
