@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "message": "User blocked successfully",
+  "data": {
+    "id": 15,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "status": "Suspended",
+    "updatedAt": "2024-09-27T10:30:00.000Z"
+  }
+}
