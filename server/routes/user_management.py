@@ -190,7 +190,7 @@ class UserListResource(Resource):
                 return {"status": "error", "message": "Email already exists"}, 409
 
             if User.query.filter_by(
-                    phone_number=validated_data["phone_number"]
+                phone_number=validated_data["phone_number"]
             ).first():
                 return {
                     "status": "error",
