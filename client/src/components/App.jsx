@@ -181,6 +181,16 @@ function App() {
             }
           />
           <Route
+            path="/signup"
+            element={
+              <>
+                <NavBar />
+                <SignUpForm />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
             path="/playground"
             element={
               <>
@@ -240,7 +250,6 @@ function App() {
               </>
             }
           />
-
           <Route
             path="/privacy"
             element={
