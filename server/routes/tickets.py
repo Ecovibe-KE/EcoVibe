@@ -50,8 +50,17 @@ class TicketListResource(Resource):
             status_filter = request.args.get("status")
             search = request.args.get("search", "").strip()
             assigned_to = request.args.get("assigned_to")
-            page = int(request.args.get("page", 1))
-            per_page = min(int(request.args.get("per_page", 10)), 100)
+            try:
+                page = max(1, int(request.args.get("page", 1)))
+                per_page = max(
+                    1, min(int(request.args.get("per_page", 10)), 100)
+                )
+            except (TypeError, ValueError):
+                return restful_response(
+                    status="error",
+                    message="Invalid pagination parameters",
+                    status_code=400,
+                )
 
             query = Ticket.query
 
@@ -153,8 +162,22 @@ class TicketListResource(Resource):
                     status="error", message="No JSON data provided", status_code=400
                 )
 
-            subject = data.get("subject", "").strip()
-            description = data.get("description", "").strip()
+            subject_raw = data.get("subject", "")
+            description_raw = data.get("description", "")
+            if not isinstance(subject_raw, str):
+                return restful_response(
+                    status="error",
+                    message="Subject must be a non-empty string",
+                    status_code=400,
+                )
+            if not isinstance(description_raw, str):
+                return restful_response(
+                    status="error",
+                    message="Description must be a non-empty string",
+                    status_code=400,
+                )
+            subject = subject_raw.strip()
+            description = description_raw.strip()
             priority = data.get("priority", "medium")
             category = data.get("category", "general")
 
