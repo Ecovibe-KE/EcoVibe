@@ -1,5 +1,6 @@
 import pytest
 from app import create_app, db as _db
+import os
 
 
 @pytest.fixture(autouse=True)
@@ -13,8 +14,19 @@ def patch_email(monkeypatch):
 
 @pytest.fixture(scope="session")
 def app(request):
+
+    os.environ["FLASK_TEST_SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+
     """Session-wide test `Flask` application."""
     app = create_app("testing")
+
+    # Force test configs here
+    app.config.update(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI="sqlite://",  # in-memory DB
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        JWT_SECRET_KEY="test-secret-key",
+    )
 
     # Establish an application context before running the tests.
     ctx = app.app_context()
