@@ -52,9 +52,7 @@ class TicketListResource(Resource):
             assigned_to = request.args.get("assigned_to")
             try:
                 page = max(1, int(request.args.get("page", 1)))
-                per_page = max(
-                    1, min(int(request.args.get("per_page", 10)), 100)
-                )
+                per_page = max(1, min(int(request.args.get("per_page", 10)), 100))
             except (TypeError, ValueError):
                 return restful_response(
                     status="error",
