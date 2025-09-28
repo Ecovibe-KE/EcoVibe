@@ -21,7 +21,7 @@ def app():
     db.init_app(app)
 
     from flask_jwt_extended import JWTManager
-    jwt = JWTManager(app)
+    JWTManager(app)
 
     # Register blueprint
     app.register_blueprint(tickets_bp, url_prefix='/api')
