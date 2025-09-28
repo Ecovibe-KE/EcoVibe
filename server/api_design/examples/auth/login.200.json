@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 1,
+      "full_name": "John Doe",
+      "email": "john@greentech.co.ke",
+      "industry": "Manufacturing",
+      "phone_number": "+254 712 345 678",
+      "role": "CLIENT"
+    },
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+  }
+}
