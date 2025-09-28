@@ -10,6 +10,7 @@ import Input from "../utils/Input";
 import styles from "../css/ProfilePage.module.css";
 
 const ProfilePage = () => {
+  // form state for editable fields
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -19,12 +20,14 @@ const ProfilePage = () => {
     role: "",
   });
 
-  // baseline copy from backend – used for reset/cancel
+  // keep a copy of the server data so we can reset/cancel changes
   const [originalData, setOriginalData] = useState(null);
+
+  // loading + saving states
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // password change state
+  // password change form state
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwords, setPasswords] = useState({
     current_password: "",
@@ -32,7 +35,7 @@ const ProfilePage = () => {
   });
   const [changingPw, setChangingPw] = useState(false);
 
-  // fetch profile when page mounts
+  // load profile data on first render
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -55,12 +58,12 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  // handle input field changes
+  // handle text input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // save profile updates
+  // save profile updates to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -76,7 +79,7 @@ const ProfilePage = () => {
       if (response?.status === "success") {
         toast.success("Profile updated successfully 🎉");
 
-        // guard against null baseline and keep form in sync
+        // merge new changes with safe fallback if baseline wasn't set
         const updatedBaseline = response?.data ?? {
           ...(originalData ?? formData),
           ...payload,
@@ -99,14 +102,14 @@ const ProfilePage = () => {
     }
   };
 
-  // reset form back to baseline
+  // restore form values back to the original data
   const handleCancel = () => {
     if (originalData) {
       setFormData(originalData);
     }
   };
 
-  // change password flow
+  // update password for logged-in user
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setChangingPw(true);
@@ -133,7 +136,7 @@ const ProfilePage = () => {
 
   return (
     <div className={`container-fluid py-4 ${styles.profilePage}`}>
-      {/* Header with name, role and action buttons */}
+      {/* header: shows name, role, and action buttons */}
       <div className="card shadow-sm mb-4 p-4 d-flex flex-row align-items-center justify-content-between">
         <div className="d-flex align-items-center">
           <div className={`${styles.avatarCircle} me-3`}>
@@ -183,7 +186,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Profile Form */}
+      {/* profile form section */}
       <div className="card shadow-sm p-4 mb-4">
         <h6 className="mb-3">Personal Information</h6>
         <form id="profileForm" onSubmit={handleSubmit}>
@@ -224,7 +227,7 @@ const ProfilePage = () => {
         </form>
       </div>
 
-      {/* Password Update Section */}
+      {/* password change section */}
       <div className="card shadow-sm p-4">
         <h6 className="mb-3">Password</h6>
         {!showPasswordForm ? (

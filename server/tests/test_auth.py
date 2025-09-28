@@ -143,7 +143,7 @@ def test_logout_success(client, session):
     assert response.status_code == 200
     assert body["status"] == "success"
     assert body["message"] == "Logged out successfully"
-    assert body["data"] == {}  # ✅ changed
+    assert body["data"] == {}  # ✅ success returns empty object
 
 
 # ------------------------------------------------------------
@@ -167,7 +167,9 @@ def test_me_success(client, session):
 
     assert response.status_code == 200
     assert body["status"] == "success"
-    assert body["message"] == "Details retrieved successfully"  # ✅ changed
+    assert (
+        body["message"] == "Details retrieved successfully"
+    )  # ✅ backend now sets this
     assert body["data"]["email"] == user.email
     assert body["data"]["full_name"] == user.full_name
 
@@ -239,7 +241,7 @@ def test_reset_password_success(client, session):
     assert response.status_code == 200
     assert body["status"] == "success"
     assert body["message"] == "Password reset successful"
-    assert body["data"] == {}  # ✅ changed
+    assert body["data"] == {}  # ✅ success returns empty object
 
 
 def test_reset_password_invalid_token(client, session):
@@ -286,7 +288,7 @@ def test_change_password_success(client, session):
     assert response.status_code == 200
     assert body["status"] == "success"
     assert body["message"] == "Password changed successfully"
-    assert body["data"] == {}  # ✅ changed
+    assert body["data"] == {}  # ✅ success returns empty object
 
 
 def test_change_password_wrong_current(client, session):
