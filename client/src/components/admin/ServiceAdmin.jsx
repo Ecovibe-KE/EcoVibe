@@ -1,5 +1,9 @@
-import { Tab, Tabs, Row, Container, Col } from "react-bootstrap"
-import { useState, useRef } from "react"
+import { Tab, Tabs, Row, Container, Col, Modal, Button } from "react-bootstrap"
+import {
+    useState,
+    useRef,
+    useEffect
+} from "react"
 import handsImg from "../../assets/hands.jpg"
 import collabImg1 from "../../assets/collaboration1.jpg"
 import collabImg2 from "../../assets/collaboration2.jpg"
@@ -9,8 +13,37 @@ import "../../css/ServiceAdmin.css"
 import ServiceAdminTop from "./ServiceAdminTop"
 import ServiceAdminMain from "./ServiceAdminMain"
 import ServiceForm from "./ServiceForm"
+import EditServiceModal from "./EditServiceModal"
+import {
+    addService,
+    getServices,
+    updateService,
+    deleteService
+} from "../../api/services/servicemanagement"
+import { toast } from "react-toastify"
 
 function ServiceAdmin() {
+    // modal usestate
+    const [show, setShow] = useState(false);
+    // for displaying services
+    const [allServices, setAllServices] = useState([])
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // Get all services
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const servicesArray = await getServices();
+                setAllServices(servicesArray)
+            } catch (error) {
+                toast.error(error)
+                toast.error("Failed to fetch services. Please try again later.")
+            }
+        }
+        // fetchServices();
+    }, [])
 
     const [formData, setFormData] = useState({
         serviceTitle: "",
@@ -45,7 +78,7 @@ function ServiceAdmin() {
         }
     ]
 
-    const allServices = [
+    const allServicesTest = [
         {
             serviceImage: handsImg,
             serviceTitle: "ESG Strategy Development",
@@ -105,7 +138,7 @@ function ServiceAdmin() {
         })
     }
 
-    function displayAllServices(allServices) {
+    function displayAllServices(allServices, showModalFunc) {
         // check if param is an empty array or object
         if ((Array.isArray(allServices) && allServices.length === 0) || (Object.keys(allServices).length === 0)) {
             return (<p>No Services added</p>)
@@ -129,6 +162,7 @@ function ServiceAdmin() {
                         priceCurrency={priceCurrency}
                         servicePrice={servicePrice}
                         serviceStatus={serviceStatus}
+                        handleShow={showModalFunc}
                     ></ServiceAdminMain>
 
                 )
@@ -178,13 +212,30 @@ function ServiceAdmin() {
 
     }
 
-    function handleSubmit(e) {
+    const addNewService = async (e) => {
         e.preventDefault()
-        console.log(formData)
 
         const { hours, minutes } = formData.serviceDuration;
-        console.log(`${hours} hours ${minutes} minutes`)
-        // resetForm()
+        const combinedDuration = `${hours} hr ${minutes} min`
+
+        try {
+            const serviceData = {
+                name: formData.serviceTitle.trim(),
+                description: formData.serviceDescription.trim(),
+                currency: formData.priceCurrency.trim(),
+                price: formData.servicePrice,
+                duration: combinedDuration,
+                image: formData.serviceImage,
+                status: formData.serviceStatus.toLowerCase()
+            }
+
+            await addService(serviceData)
+            toast.success("Service added successfully")
+            resetForm()
+        } catch (error) {
+            toast.error(`${error}: Failed to add service. Try again`)
+            resetForm()
+        }
     }
 
     function resetForm() {
@@ -207,6 +258,19 @@ function ServiceAdmin() {
     return (
         <>
             <main className="p-3 bg-light">
+                {/* TEST CASE */}
+                <EditServiceModal
+                    show={show}
+                    handleClose={handleClose}
+                    formData={formData}
+                    handleSubmit={addNewService} // change this function to addEditedService
+                    handleChange={handleChange}
+                    handleFileChange={handleFileChange}
+                    fileInputRef={fileInputRef}
+                    resetForm={resetForm}
+                    previewUrl={previewUrl}
+                />
+
                 <Container className="mb-3">
                     <Row>
                         {displayTopServiceData(topServiceData)}
@@ -226,7 +290,8 @@ function ServiceAdmin() {
                                         <h2>All Services</h2>
                                         <hr />
                                         <Row className="g-3">
-                                            {displayAllServices(allServices)}
+                                            {displayAllServices(allServices, handleShow)}
+                                            {displayAllServices(allServicesTest, handleShow)}
                                         </Row>
                                     </Container>
                                 </Tab>
@@ -235,7 +300,7 @@ function ServiceAdmin() {
                                     <ServiceForm
                                         formTitle="Add New Service"
                                         formData={formData}
-                                        handleSubmit={handleSubmit}
+                                        handleSubmit={addNewService}
                                         handleChange={handleChange}
                                         handleFileChange={handleFileChange}
                                         fileInputRef={fileInputRef}

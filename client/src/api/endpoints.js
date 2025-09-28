@@ -15,4 +15,8 @@ export const ENDPOINTS = {
   users: "/users",
   userManagement: "/user-management",
   // Add more endpoints as needed here
+
+  // services
+  services: "/services",
+
 };

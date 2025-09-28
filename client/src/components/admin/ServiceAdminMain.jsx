@@ -7,7 +7,8 @@ function ServiceAdminMain({
     serviceDuration,
     priceCurrency,
     servicePrice,
-    serviceStatus
+    serviceStatus,
+    handleShow
 }) {
 
     function determineVisibility() {
@@ -31,7 +32,7 @@ function ServiceAdminMain({
 
                         {/* Overlay with buttons (hidden by default) */}
                         <div className="hover-overlay">
-                            <button className="btn btn-light btn-sm mx-1">Edit</button>
+                            <button className="btn btn-light btn-sm mx-1" onClick={handleShow}>Edit</button>
                             <button className="btn btn-danger btn-sm mx-1">Delete</button>
                         </div>
                     </div>
