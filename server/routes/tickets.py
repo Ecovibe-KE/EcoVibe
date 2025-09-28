@@ -74,9 +74,7 @@ class TicketListResource(Resource):
                     query = query.filter(Ticket.status == status_enum)
                 except ValueError:
                     return restful_response(
-                        status="error",
-                        message="Invalid status value",
-                        status_code=400
+                        status="error", message="Invalid status value", status_code=400
                     )
 
             if search:
@@ -84,7 +82,7 @@ class TicketListResource(Resource):
                 query = query.filter(
                     or_(
                         Ticket.subject.ilike(search_term),
-                        cast(Ticket.id, db.String).ilike(search_term)
+                        cast(Ticket.id, db.String).ilike(search_term),
                     )
                 )
 
@@ -96,18 +94,23 @@ class TicketListResource(Resource):
                 client = User.query.get(ticket.client_id)
                 admin = User.query.get(ticket.admin_id) if ticket.admin_id else None
                 message_count = TicketMessage.query.filter_by(
-                    ticket_id=ticket.id).count()
+                    ticket_id=ticket.id
+                ).count()
 
                 ticket_data = ticket.to_dict()
-                ticket_data.update({
-                    "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
-                    "client_name": client.full_name if client else "Unknown",
-                    "client_email": client.email if client else "",
-                    "client_company": getattr(client, "industry", "") if client else "",
-                    "admin_name": admin.full_name if admin else "Unassigned",
-                    "admin_email": admin.email if admin else "",
-                    "message_count": message_count,
-                })
+                ticket_data.update(
+                    {
+                        "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
+                        "client_name": client.full_name if client else "Unknown",
+                        "client_email": client.email if client else "",
+                        "client_company": (
+                            getattr(client, "industry", "") if client else ""
+                        ),
+                        "admin_name": admin.full_name if admin else "Unassigned",
+                        "admin_email": admin.email if admin else "",
+                        "message_count": message_count,
+                    }
+                )
 
                 tickets.append(ticket_data)
 
@@ -189,9 +192,11 @@ class TicketListResource(Resource):
                     )
 
                 if admin_id:
-                    admin = User.query.filter_by(id=admin_id).filter(
-                        User.role.in_([Role.ADMIN, Role.SUPER_ADMIN])
-                    ).first()
+                    admin = (
+                        User.query.filter_by(id=admin_id)
+                        .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                        .first()
+                    )
                     if not admin:
                         return restful_response(
                             status="error", message="Invalid admin", status_code=400
@@ -217,13 +222,15 @@ class TicketListResource(Resource):
             admin = User.query.get(ticket.admin_id) if ticket.admin_id else None
 
             ticket_data = ticket.to_dict()
-            ticket_data.update({
-                "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
-                "client_name": client.full_name if client else "Unknown",
-                "admin_name": admin.full_name if admin else "Unassigned",
-                "priority": priority,
-                "category": category,
-            })
+            ticket_data.update(
+                {
+                    "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
+                    "client_name": client.full_name if client else "Unknown",
+                    "admin_name": admin.full_name if admin else "Unassigned",
+                    "priority": priority,
+                    "category": category,
+                }
+            )
 
             return restful_response(
                 status="success",
