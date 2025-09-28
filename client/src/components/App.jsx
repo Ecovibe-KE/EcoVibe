@@ -17,6 +17,7 @@ import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import BlogManagementUi from "./admin/BlogManagment.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -123,10 +124,7 @@ function App() {
             <Route
               path="blog"
               element={
-                <div className="p-4">
-                  <h2>Blog</h2>
-                  <p>Manage blog content.</p>
-                </div>
+                <BlogManagementUi />
               }
             />
             <Route
