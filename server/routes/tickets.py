@@ -8,7 +8,7 @@ from models import db
 from models.ticket import Ticket, TicketStatus
 from models.ticket_message import TicketMessage
 from models.user import User, Role
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, cast
 
 
 # Create a Blueprint
@@ -92,12 +92,11 @@ class TicketListResource(Resource):
             if search:
                 search_term = f"%{search}%"
                 query = query.filter(
-                    or_(
+                     or_(
                         Ticket.subject.ilike(search_term),
-                        Ticket.id.like(search_term)
+                        cast(Ticket.id, db.String).ilike(search_term)
                     )
                 )
-
             # Order by created_at descending
             query = query.order_by(Ticket.created_at.desc())
 
