@@ -252,14 +252,14 @@ class TicketListResource(Resource):
                         status_code=400,
                     )
                 admin = (
-                        User.query.filter_by(id=admin_id)
-                        .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
-                        .first()
-                    )
+                    User.query.filter_by(id=admin_id)
+                    .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                    .first()
+                )
                 if not admin:
-                        return restful_response(
-                            status="error", message="Invalid admin", status_code=400
-                        )
+                    return restful_response(
+                        status="error", message="Invalid admin", status_code=400
+                    )
 
             ticket = Ticket(
                 client_id=client_id,
