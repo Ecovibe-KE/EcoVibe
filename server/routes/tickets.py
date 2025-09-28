@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import os
 from flask_restful import Resource, Api
 from flask import Blueprint, request, current_app

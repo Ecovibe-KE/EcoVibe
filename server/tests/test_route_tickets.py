@@ -1,6 +1,4 @@
 import pytest
-import json
-from datetime import datetime, timezone
 from flask import Flask
 from flask_jwt_extended import create_access_token
 from models import db
