@@ -7,7 +7,7 @@ from models import db
 from models.ticket import Ticket, TicketStatus
 from models.ticket_message import TicketMessage
 from models.user import User, Role
-from sqlalchemy import or_, cast
+from sqlalchemy import or_, cast, func
 
 tickets_bp = Blueprint("tickets", __name__)
 api = Api(tickets_bp)
@@ -96,13 +96,28 @@ class TicketListResource(Resource):
             query = query.order_by(Ticket.created_at.desc())
             paginated = query.paginate(page=page, per_page=per_page, error_out=False)
 
+            # Batch-load related data to avoid N1
             tickets = []
+            ticket_ids = [t.id for t in paginated.items]
+            message_counts = {
+                tid: cnt
+                for (tid, cnt) in db.session.query(
+                    TicketMessage.ticket_id, func.count(TicketMessage.id)
+                )
+                .filter(TicketMessage.ticket_id.in_(ticket_ids))
+                .group_by(TicketMessage.ticket_id)
+            }
+            user_ids = set()
+            for t in paginated.items:
+                user_ids.add(t.client_id)
+                if t.admin_id:
+                    user_ids.add(t.admin_id)
+            users = db.session.query(User).filter(User.id.in_(user_ids)).all()
+            user_map = {u.id: u for u in users}
             for ticket in paginated.items:
-                client = User.query.get(ticket.client_id)
-                admin = User.query.get(ticket.admin_id) if ticket.admin_id else None
-                message_count = TicketMessage.query.filter_by(
-                    ticket_id=ticket.id
-                ).count()
+                client = user_map.get(ticket.client_id)
+                admin = user_map.get(ticket.admin_id) if ticket.admin_id else None
+                message_count = message_counts.get(ticket.id, 0)
 
                 ticket_data = ticket.to_dict()
                 ticket_data.update(
@@ -191,14 +206,29 @@ class TicketListResource(Resource):
 
             if user_role == Role.CLIENT:
                 client_id = user.id
-                admin = User.query.filter(
-                    User.role.in_([Role.ADMIN, Role.SUPER_ADMIN])
-                ).first()
-                admin_id = admin.id if admin else None
+                admin = (
+                    User.query.filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                    .order_by(User.id.asc())
+                    .first()
+                )
+                if not admin:
+                    return restful_response(
+                        status="error",
+                        message="No admin available to assign ticket",
+                        status_code=503,
+                    )
+                admin_id = admin.id
             else:
                 client_id = data.get("client_id")
                 admin_id = data.get("admin_id", user.id)
-
+                try:
+                    client_id = int(client_id)
+                except (TypeError, ValueError):
+                    return restful_response(
+                        status="error",
+                        message="client_id must be an integer",
+                        status_code=400,
+                    )
                 if not client_id:
                     return restful_response(
                         status="error",
@@ -212,13 +242,21 @@ class TicketListResource(Resource):
                         status="error", message="Invalid client", status_code=400
                     )
 
-                if admin_id:
-                    admin = (
+            if admin_id is not None:
+                try:
+                    admin_id = int(admin_id)
+                except (TypeError, ValueError):
+                    return restful_response(
+                        status="error",
+                        message="admin_id must be an integer",
+                        status_code=400,
+                    )
+                admin = (
                         User.query.filter_by(id=admin_id)
                         .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
                         .first()
                     )
-                    if not admin:
+                if not admin:
                         return restful_response(
                             status="error", message="Invalid admin", status_code=400
                         )
