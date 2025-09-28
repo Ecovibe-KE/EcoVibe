@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getCurrentUser, updateUserProfile } from "../api/services/profile";
-import { changePassword } from "../api/services/profile"; // uses /change-password
+import {
+  getCurrentUser,
+  updateUserProfile,
+  changePassword,
+} from "../api/services/profile";
 import Button from "../utils/Button";
 import Input from "../utils/Input";
 import styles from "../css/ProfilePage.module.css";
@@ -16,6 +19,7 @@ const ProfilePage = () => {
     role: "",
   });
 
+  // baseline copy from backend – used for reset/cancel
   const [originalData, setOriginalData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -28,7 +32,7 @@ const ProfilePage = () => {
   });
   const [changingPw, setChangingPw] = useState(false);
 
-  // --- Fetch profile on mount ---
+  // fetch profile when page mounts
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -51,17 +55,16 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  // --- Handle input changes ---
+  // handle input field changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- Save profile updates ---
+  // save profile updates
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Only send fields allowed by the backend
       const payload = {
         full_name: formData.full_name,
         phone_number: formData.phone_number,
@@ -72,9 +75,21 @@ const ProfilePage = () => {
       const response = await updateUserProfile(payload);
       if (response?.status === "success") {
         toast.success("Profile updated successfully 🎉");
-        setOriginalData({ ...originalData, ...payload }); // update baseline
+
+        // guard against null baseline and keep form in sync
+        const updatedBaseline = response?.data ?? {
+          ...(originalData ?? formData),
+          ...payload,
+        };
+
+        setFormData((prev) => ({ ...prev, ...updatedBaseline }));
+        setOriginalData(updatedBaseline);
       } else {
-        toast.error(`Error: ${response?.message || "Update failed"}`);
+        if (response?.errors) {
+          Object.values(response.errors).forEach((msg) => toast.error(msg));
+        } else {
+          toast.error(`Error: ${response?.message || "Update failed"}`);
+        }
       }
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -84,12 +99,14 @@ const ProfilePage = () => {
     }
   };
 
-  // --- Cancel → reset form ---
+  // reset form back to baseline
   const handleCancel = () => {
-    if (originalData) setFormData(originalData);
+    if (originalData) {
+      setFormData(originalData);
+    }
   };
 
-  // --- Handle password change ---
+  // change password flow
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setChangingPw(true);
@@ -116,7 +133,7 @@ const ProfilePage = () => {
 
   return (
     <div className={`container-fluid py-4 ${styles.profilePage}`}>
-      {/* Header */}
+      {/* Header with name, role and action buttons */}
       <div className="card shadow-sm mb-4 p-4 d-flex flex-row align-items-center justify-content-between">
         <div className="d-flex align-items-center">
           <div className={`${styles.avatarCircle} me-3`}>
@@ -150,6 +167,7 @@ const ProfilePage = () => {
             form="profileForm"
             variant="success"
             disabled={saving}
+            aria-label="Save Profile"
           >
             💾 {saving ? "Saving…" : "Save"}
           </Button>
@@ -157,7 +175,8 @@ const ProfilePage = () => {
             type="button"
             onClick={handleCancel}
             variant="white"
-            disabled={saving}
+            disabled={saving || !originalData}
+            aria-label="Cancel Changes"
           >
             ✕ Cancel
           </Button>

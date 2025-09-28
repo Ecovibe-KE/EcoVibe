@@ -11,7 +11,7 @@ from flask_jwt_extended import (
     get_jwt,
     create_access_token,
 )
-
+from sqlalchemy.exc import SQLAlchemyError
 from models import db
 from models.user import User, AccountStatus
 from models.token import Token
@@ -70,7 +70,7 @@ class VerifyResource(Resource):
             return {
                 "status": "success",
                 "message": "Account already verified",
-                "data": None,
+                "data": {},
             }, 200
 
         # Otherwise activate the account
@@ -80,7 +80,7 @@ class VerifyResource(Resource):
         return {
             "status": "success",
             "message": "Account verified successfully",
-            "data": None,
+            "data": {},
         }, 200
 
 
@@ -240,7 +240,7 @@ class LogoutResource(Resource):
             return {
                 "status": "success",
                 "message": "Logged out successfully",
-                "data": None,
+                "data": {},
             }, 200
         except Exception:
             db.session.rollback()
@@ -255,6 +255,8 @@ class LogoutResource(Resource):
 # ME RESOURCE
 # Return the authenticated user's profile
 # ------------------------------------------------------------
+
+
 class MeResource(Resource):
     @jwt_required()
     def get(self):
@@ -271,7 +273,7 @@ class MeResource(Resource):
 
         return {
             "status": "success",
-            "message": None,
+            "message": "Details retrieved successfully",
             "data": {
                 "id": user.id,
                 "industry": user.industry,
@@ -303,31 +305,48 @@ class MeResource(Resource):
 
         data = request.get_json() or {}
 
-        # Update only allowed fields
-        if "full_name" in data:
-            user.full_name = data["full_name"]
-        if "industry" in data:
-            user.industry = data["industry"]
-        if "phone_number" in data:
-            user.phone_number = data["phone_number"]
-        if "profile_image_url" in data:
-            user.profile_image_url = data["profile_image_url"]
+        try:
+            # Update only allowed fields
+            if "full_name" in data:
+                user.full_name = data["full_name"]
+            if "industry" in data:
+                user.industry = data["industry"]
+            if "phone_number" in data:
+                user.phone_number = data["phone_number"]
+            if "profile_image_url" in data:
+                user.profile_image_url = data["profile_image_url"]
 
-        db.session.commit()
+            db.session.commit()
 
-        return {
-            "status": "success",
-            "message": "Profile updated successfully",
-            "data": {
-                "id": user.id,
-                "full_name": user.full_name,
-                "email": user.email,
-                "industry": user.industry,
-                "phone_number": user.phone_number,
-                "role": user.role.value if user.role else None,
-                "profile_image_url": user.profile_image_url,
-            },
-        }, 200
+            return {
+                "status": "success",
+                "message": "Profile updated successfully",
+                "data": {
+                    "id": user.id,
+                    "full_name": user.full_name,
+                    "email": user.email,
+                    "industry": user.industry,
+                    "phone_number": user.phone_number,
+                    "role": user.role.value if user.role else None,
+                    "profile_image_url": user.profile_image_url,
+                },
+            }, 200
+
+        except ValueError as exc:  # bad model field assignment
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": str(exc),
+                "data": None,
+            }, 400
+
+        except SQLAlchemyError:
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
 
 
 # ------------------------------------------------------------
@@ -382,7 +401,7 @@ class ForgotPasswordResource(Resource):
                 "message": (
                     "If this email is registered, a reset link has " "been sent"
                 ),
-                "data": None,
+                "data": {},
             }, 200
 
         except Exception:
@@ -449,7 +468,7 @@ class ResetPasswordResource(Resource):
             return {
                 "status": "success",
                 "message": "Password reset successful",
-                "data": None,
+                "data": {},
             }, 200
 
         except Exception:
@@ -524,78 +543,11 @@ class ChangePasswordResource(Resource):
             return {
                 "status": "success",
                 "message": "Password changed successfully",
-                "data": None,
+                "data": {},
             }, 200
 
         except Exception:
             db.session.rollback()
-            return {
-                "status": "error",
-                "message": "Server error. Please try again later.",
-                "data": None,
-            }, 500
-
-
-# ------------------------------------------------------------
-# RESEND VERIFICATION
-# User requests a new account verification email
-# ------------------------------------------------------------
-class ResendVerificationResource(Resource):
-    def post(self):
-        data = request.get_json(silent=True) or {}
-        email = (data.get("email") or "").strip().lower()
-
-        if not email:
-            return {
-                "status": "error",
-                "message": "Email is required",
-                "data": None,
-            }, 400
-
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            return {
-                "status": "error",
-                "message": "User not found",
-                "data": None,
-            }, 404
-
-        if user.account_status == AccountStatus.ACTIVE:
-            return {
-                "status": "success",
-                "message": "Account already verified",
-                "data": None,
-            }, 200
-
-        try:
-            # Generate new verification token
-            verification_token = create_access_token(
-                identity=str(user.id),
-                expires_delta=timedelta(hours=24),
-                additional_claims={"purpose": "account_verification"},
-            )
-
-            # Build verification link
-            frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
-            verify_link = f"{frontend_url}/verify?token={verification_token}"
-
-            # Send email (non-blocking)
-            from utils.mail_templates import send_invitation_email
-
-            threading.Thread(
-                target=send_invitation_email,
-                args=(user.email, user.full_name, verify_link, "System", None),
-                daemon=True,
-            ).start()
-
-            return {
-                "status": "success",
-                "message": "Verification link resent successfully",
-                "data": None,
-            }, 200
-
-        except Exception:
-            current_app.logger.exception("Error resending verification email")
             return {
                 "status": "error",
                 "message": "Server error. Please try again later.",
@@ -614,4 +566,3 @@ api.add_resource(MeResource, "/me")
 api.add_resource(ForgotPasswordResource, "/forgot-password")
 api.add_resource(ResetPasswordResource, "/reset-password")
 api.add_resource(ChangePasswordResource, "/change-password")
-api.add_resource(ResendVerificationResource, "/resend-verification")
