@@ -134,7 +134,7 @@ const Input = ({
         </label>
       )}
 
-      { type === "textarea" ? (
+      {type === "textarea" ? (
         <textarea
           id={id}
           className={`form-control ${sizeClass} ${error ? "is-invalid" : ""} ${
@@ -159,30 +159,30 @@ const Input = ({
           {...props}
         />
       ) : (
-
-      <input
-        id={id}
-        type={type}
-        className={`form-control ${sizeClass} ${error ? "is-invalid" : ""} ${
-          success && !error ? "is-valid" : ""
-        }`}
-        style={inputStyles}
-        onFocus={(e) => {
-          Object.assign(e.target.style, getFocusStyles());
-        }}
-        onBlur={(e) => {
-          e.target.style.borderColor = error
-            ? "#dc3545"
-            : success && !error
-              ? "#28a745"
-              : "#ced4da";
-          e.target.style.boxShadow = "none";
-        }}
-        disabled={disabled}
-        aria-invalid={error ? "true" : undefined}
-        aria-describedby={describedBy}
-        {...props}
-      />) }
+        <input
+          id={id}
+          type={type}
+          className={`form-control ${sizeClass} ${error ? "is-invalid" : ""} ${
+            success && !error ? "is-valid" : ""
+          }`}
+          style={inputStyles}
+          onFocus={(e) => {
+            Object.assign(e.target.style, getFocusStyles());
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = error
+              ? "#dc3545"
+              : success && !error
+                ? "#28a745"
+                : "#ced4da";
+            e.target.style.boxShadow = "none";
+          }}
+          disabled={disabled}
+          aria-invalid={error ? "true" : undefined}
+          aria-describedby={describedBy}
+          {...props}
+        />
+      )}
       {error && (
         <div id={`${id}-error`} className="invalid-feedback">
           {error}
@@ -257,7 +257,7 @@ export const Select = ({
     border: "1px solid #ced4da",
     appearance: "none",
     backgroundImage:
-      'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' class=\'feather feather-chevron-down\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
+      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "right 0.75rem center",
     backgroundSize: "1em",
@@ -306,7 +306,6 @@ export const Select = ({
       lineHeight: "1.5",
     },
   };
-  
 
   // Determine size class
   const sizeClass =
@@ -370,7 +369,7 @@ export const Select = ({
       )}
     </div>
   );
-}
+};
 
 Select.propTypes = {
   /** Input size */
@@ -393,7 +392,6 @@ Select.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-
 export const Option = ({ value, children }) => (
   <option value={value}>{children}</option>
 );
@@ -403,6 +401,6 @@ Option.propTypes = {
   value: PropTypes.string.isRequired,
   /** Option display text */
   children: PropTypes.node.isRequired,
-};  
+};
 
 export default Input;

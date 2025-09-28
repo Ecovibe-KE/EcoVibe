@@ -121,12 +121,7 @@ function App() {
                 </div>
               }
             />
-            <Route
-              path="blog"
-              element={
-                <BlogManagementUi />
-              }
-            />
+            <Route path="blog" element={<BlogManagementUi />} />
             <Route
               path="services"
               element={

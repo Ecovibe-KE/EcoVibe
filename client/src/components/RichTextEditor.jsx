@@ -1,13 +1,12 @@
-import React, { useState, useCallback, useId } from 'react';
-import { createEditor, Editor, Transforms, Text } from 'slate';
-import { Slate, Editable, withReact, useSlate } from 'slate-react';
-
+import React, { useState, useCallback, useId } from "react";
+import { createEditor, Editor, Transforms, Text } from "slate";
+import { Slate, Editable, withReact, useSlate } from "slate-react";
 
 // Helper object for custom editor commands
 const CustomEditor = {
   isBoldMarkActive(editor) {
     const [match] = Editor.nodes(editor, {
-      match: n => n.bold === true,
+      match: (n) => n.bold === true,
       universal: true,
     });
     return !!match;
@@ -15,7 +14,7 @@ const CustomEditor = {
 
   isItalicMarkActive(editor) {
     const [match] = Editor.nodes(editor, {
-      match: n => n.italic === true,
+      match: (n) => n.italic === true,
       universal: true,
     });
     return !!match;
@@ -23,7 +22,7 @@ const CustomEditor = {
 
   isUnderlineMarkActive(editor) {
     const [match] = Editor.nodes(editor, {
-      match: n => n.underline === true,
+      match: (n) => n.underline === true,
       universal: true,
     });
     return !!match;
@@ -31,7 +30,7 @@ const CustomEditor = {
 
   isCodeBlockActive(editor) {
     const [match] = Editor.nodes(editor, {
-      match: n => n.type === 'code',
+      match: (n) => n.type === "code",
     });
     return !!match;
   },
@@ -41,7 +40,7 @@ const CustomEditor = {
     Transforms.setNodes(
       editor,
       { bold: isActive ? null : true },
-      { match: n => Text.isText(n), split: true }
+      { match: (n) => Text.isText(n), split: true },
     );
   },
 
@@ -50,16 +49,16 @@ const CustomEditor = {
     Transforms.setNodes(
       editor,
       { italic: isActive ? null : true },
-      { match: n => Text.isText(n), split: true }
+      { match: (n) => Text.isText(n), split: true },
     );
   },
-  
+
   toggleUnderlineMark(editor) {
     const isActive = CustomEditor.isUnderlineMarkActive(editor);
     Transforms.setNodes(
       editor,
       { underline: isActive ? null : true },
-      { match: n => Text.isText(n), split: true }
+      { match: (n) => Text.isText(n), split: true },
     );
   },
 
@@ -67,27 +66,27 @@ const CustomEditor = {
     const isActive = CustomEditor.isCodeBlockActive(editor);
     Transforms.setNodes(
       editor,
-      { type: isActive ? 'paragraph' : 'code' },
-      { match: n => Editor.isBlock(editor, n) }
+      { type: isActive ? "paragraph" : "code" },
+      { match: (n) => Editor.isBlock(editor, n) },
     );
   },
 };
 
 // The Rich Text Editor Component
 export const RichTextEditor = ({ value, onChange, label, error, success }) => {
-  const [editor] = useState(() => withReact(createEditor()))
+  const [editor] = useState(() => withReact(createEditor()));
   const id = useId();
 
-  const renderElement = useCallback(props => {
+  const renderElement = useCallback((props) => {
     switch (props.element.type) {
-      case 'code':
+      case "code":
         return <CodeElement {...props} />;
       default:
         return <DefaultElement {...props} />;
     }
   }, []);
 
-  const renderLeaf = useCallback(props => {
+  const renderLeaf = useCallback((props) => {
     return <Leaf {...props} />;
   }, []);
 
@@ -113,52 +112,47 @@ export const RichTextEditor = ({ value, onChange, label, error, success }) => {
           <div className="p-2">
             <Editable
               id={id}
-              style={{ minHeight: "150px", outline: 'none' }}
+              style={{ minHeight: "150px", outline: "none" }}
               renderElement={renderElement}
               renderLeaf={renderLeaf}
               placeholder="Enter some rich text..."
               spellCheck
-              onKeyDown={event => {
-                  if (!event.ctrlKey) {
-                      return;
+              onKeyDown={(event) => {
+                if (!event.ctrlKey) {
+                  return;
+                }
+                switch (event.key) {
+                  case "`": {
+                    event.preventDefault();
+                    CustomEditor.toggleCodeBlock(editor);
+                    break;
                   }
-                  switch (event.key) {
-                      case '`': {
-                          event.preventDefault();
-                          CustomEditor.toggleCodeBlock(editor);
-                          break;
-                      }
-                      case 'b': {
-                          event.preventDefault();
-                          CustomEditor.toggleBoldMark(editor);
-                          break;
-                      }
-                      case 'i': {
-                          event.preventDefault();
-                          CustomEditor.toggleItalicMark(editor);
-                          break;
-                      }
-                      case 'u': {
-                          event.preventDefault();
-                          CustomEditor.toggleUnderlineMark(editor);
-                          break;
-                      }
+                  case "b": {
+                    event.preventDefault();
+                    CustomEditor.toggleBoldMark(editor);
+                    break;
                   }
+                  case "i": {
+                    event.preventDefault();
+                    CustomEditor.toggleItalicMark(editor);
+                    break;
+                  }
+                  case "u": {
+                    event.preventDefault();
+                    CustomEditor.toggleUnderlineMark(editor);
+                    break;
+                  }
+                }
               }}
             />
           </div>
         </Slate>
       </div>
-      {error && (
-        <div className="invalid-feedback">{error}</div>
-      )}
-      {success && !error && (
-        <div className="valid-feedback">{success}</div>
-      )}
+      {error && <div className="invalid-feedback">{error}</div>}
+      {success && !error && <div className="valid-feedback">{success}</div>}
     </div>
   );
 };
-
 
 // Toolbar component with formatting buttons
 const Toolbar = () => {
@@ -177,72 +171,76 @@ const MarkButton = ({ format, icon }) => {
   const editor = useSlate();
   let isActive;
   switch (format) {
-      case 'bold':
-        isActive = CustomEditor.isBoldMarkActive(editor);
-        break;
-      case 'italic':
-        isActive = CustomEditor.isItalicMarkActive(editor);
-        break;
-      case 'underline':
-        isActive = CustomEditor.isUnderlineMarkActive(editor);
-        break;
-      default:
-        isActive = false;
+    case "bold":
+      isActive = CustomEditor.isBoldMarkActive(editor);
+      break;
+    case "italic":
+      isActive = CustomEditor.isItalicMarkActive(editor);
+      break;
+    case "underline":
+      isActive = CustomEditor.isUnderlineMarkActive(editor);
+      break;
+    default:
+      isActive = false;
   }
-  
+
   const baseClasses = "btn btn-sm";
   const activeClasses = "btn-primary active";
   const inactiveClasses = "btn-outline-secondary";
 
   return (
     <button
-    type='button'
+      type="button"
       className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
-      onMouseDown={event => {
+      onMouseDown={(event) => {
         event.preventDefault();
         switch (format) {
-            case 'bold':
-                CustomEditor.toggleBoldMark(editor);
-                break;
-            case 'italic':
-                CustomEditor.toggleItalicMark(editor);
-                break;
-            case 'underline':
-                CustomEditor.toggleUnderlineMark(editor);
-                break;
+          case "bold":
+            CustomEditor.toggleBoldMark(editor);
+            break;
+          case "italic":
+            CustomEditor.toggleItalicMark(editor);
+            break;
+          case "underline":
+            CustomEditor.toggleUnderlineMark(editor);
+            break;
         }
       }}
     >
-      <span className={`${format === 'bold' ? 'fw-bold' : ''} ${format === 'italic' ? 'fst-italic' : ''} ${format === 'underline' ? 'text-decoration-underline' : ''}`}>{icon}</span>
+      <span
+        className={`${format === "bold" ? "fw-bold" : ""} ${format === "italic" ? "fst-italic" : ""} ${format === "underline" ? "text-decoration-underline" : ""}`}
+      >
+        {icon}
+      </span>
     </button>
   );
 };
 
 // Button for toggling block types (code block)
 const BlockButton = ({ icon }) => {
-    const editor = useSlate();
-    const isActive = CustomEditor.isCodeBlockActive(editor);
+  const editor = useSlate();
+  const isActive = CustomEditor.isCodeBlockActive(editor);
 
-    const baseClasses = "btn btn-sm";
-    const activeClasses = "btn-primary active";
-    const inactiveClasses = "btn-outline-secondary";
+  const baseClasses = "btn btn-sm";
+  const activeClasses = "btn-primary active";
+  const inactiveClasses = "btn-outline-secondary";
 
-    return (
-        <button
-            type='button'
-            className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
-            onMouseDown={event => {
-                event.preventDefault();
-                CustomEditor.toggleCodeBlock(editor);
-            }}
-        >
-          <span className="font-monospace">{icon}</span>
-        </button>
-    );
-}
+  return (
+    <button
+      type="button"
+      className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
+      onMouseDown={(event) => {
+        event.preventDefault();
+        CustomEditor.toggleCodeBlock(editor);
+      }}
+    >
+      <span className="font-monospace">{icon}</span>
+    </button>
+  );
+};
 
 // Renderer for code block elements
-const CodeElement = props => {
+const CodeElement = (props) => {
   return (
     <pre {...props.attributes} className="bg-light p-3 rounded">
       <code className="font-monospace">{props.children}</code>
@@ -250,10 +248,9 @@ const CodeElement = props => {
   );
 };
 
-const DefaultElement = props => {
+const DefaultElement = (props) => {
   return <p {...props.attributes}>{props.children}</p>;
 };
-
 
 const Leaf = ({ attributes, children, leaf }) => {
   if (leaf.bold) {
@@ -263,7 +260,7 @@ const Leaf = ({ attributes, children, leaf }) => {
   if (leaf.italic) {
     children = <em>{children}</em>;
   }
-  
+
   if (leaf.underline) {
     children = <u>{children}</u>;
   }
