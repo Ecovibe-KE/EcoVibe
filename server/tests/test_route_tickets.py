@@ -40,8 +40,8 @@ def test_create_ticket(client, auth_headers):
     data = resp.get_json()
     assert data["status"] == "success"
     assert data["data"]["subject"] == "Test Subject"
+    assert resp.status_code == 201
 
-assert resp.status_code == 201
 def test_get_ticket_list(client, auth_headers):
     headers, user = auth_headers
     # Create one ticket manually
