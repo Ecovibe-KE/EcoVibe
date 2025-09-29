@@ -17,7 +17,6 @@ client_host = os.getenv("FLASK_CLIENT_URL", "http://localhost:3000").rstrip("/")
 server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
 
-
 def is_admin(role):
     """Check if user has admin privileges"""
     return role in [Role.ADMIN, Role.SUPER_ADMIN]
