@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../css/ForgotPassword.module.css";
 import { forgotPassword } from "../api/services/auth.js";
@@ -33,26 +33,12 @@ const ForgotPassword = () => {
       toast.success(
         response?.message ||
           "Password reset successfully! Redirecting to login...",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        },
       );
 
       setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
       console.error(err);
-      toast.error(err?.message || "Password reset failed. Try again.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        theme: "colored",
-      });
+      toast.error(err?.message || "Password reset failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -60,19 +46,6 @@ const ForgotPassword = () => {
 
   return (
     <div className={styles.wrapper}>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
-
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
         <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
