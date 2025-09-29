@@ -12,7 +12,7 @@ import { createUser } from "../api/services/user";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [, setPasswordTouched] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,8 +47,7 @@ const SignUpForm = () => {
   // ----------------------
   // Validation helpers
   // ----------------------
-  const validateEmail = (value) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const validatePassword = (value) => {
     const hasMinLength = value.length >= 8;
@@ -110,7 +109,9 @@ const SignUpForm = () => {
     if (!validateForm()) return;
 
     if (!recaptchaRef.current) {
-      toast.error("reCAPTCHA not loaded. Please refresh the page and try again.");
+      toast.error(
+        "reCAPTCHA not loaded. Please refresh the page and try again.",
+      );
       return;
     }
 
@@ -156,7 +157,9 @@ const SignUpForm = () => {
         } else if (response.message?.toLowerCase().includes("phone")) {
           setErrors({ phone: response.message });
         }
-        toast.error(response.message || "There was an error submitting your form.");
+        toast.error(
+          response.message || "There was an error submitting your form.",
+        );
         if (recaptchaRef.current) recaptchaRef.current.reset();
       }
     } catch (error) {

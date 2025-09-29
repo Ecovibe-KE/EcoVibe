@@ -6,4 +6,3 @@ export const createUser = async (clientData) => {
   const response = await api.post(ENDPOINTS.register, clientData);
   return response.data;
 };
-
