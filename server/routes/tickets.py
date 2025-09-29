@@ -179,9 +179,11 @@ class TicketListResource(Resource):
             priority = data.get("priority", "medium")
             category = data.get("category", "general")
 
-            if not subject:
-                return restful_response(
-                    status="error", message="Subject is required", status_code=400
+            if len(subject) > 255:
+              return restful_response(
+                    status="error",
+                    message="Subject too long (max 255 characters)",
+                    status_code=400,
                 )
 
             if not description:
