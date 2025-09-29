@@ -8,6 +8,7 @@ from models.ticket import Ticket, TicketStatus
 from models.ticket_message import TicketMessage
 from models.user import User, Role
 from sqlalchemy import or_, cast, func
+from utils.auth_helpers import get_current_user_and_role
 
 tickets_bp = Blueprint("tickets", __name__)
 api = Api(tickets_bp)
@@ -15,18 +16,6 @@ api = Api(tickets_bp)
 client_host = os.getenv("FLASK_CLIENT_URL", "http://localhost:3000").rstrip("/")
 server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
-
-def get_current_user_role():
-    """Helper function to get current user and validate role"""
-    try:
-        user_id = get_jwt_identity()
-        user = User.query.get(user_id)
-        if not user:
-            return None, None
-        return user, user.role
-    except Exception as e:
-        current_app.logger.error(f"Error getting current user: {str(e)}")
-        return None, None
 
 
 def is_admin(role):
@@ -41,7 +30,7 @@ class TicketListResource(Resource):
     def get(self):
         """Get tickets - clients see their tickets, admins see all"""
         try:
-            user, user_role = get_current_user_role()
+            user, user_role = get_current_user_and_role()
             if not user:
                 return restful_response(
                     status="error", message="User not found", status_code=404
@@ -242,9 +231,14 @@ class TicketListResource(Resource):
                         status="error", message="Invalid client", status_code=400
                     )
 
-            if admin_id is not None:
+                if admin_id is None:
+                    return restful_response(
+                        status="error",
+                        message="admin_id is required",
+                        status_code=400,
+                )
                 try:
-                    admin_id = int(admin_id)
+                 admin_id = int(admin_id)
                 except (TypeError, ValueError):
                     return restful_response(
                         status="error",
