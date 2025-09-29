@@ -10,6 +10,7 @@ export const verifyAccount = async (token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      skipAuth: true,
     },
   );
   return response.data;

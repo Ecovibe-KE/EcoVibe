@@ -10,21 +10,9 @@ from email_validator import validate_email, EmailNotValidError
 from models import db
 from models.user import User, AccountStatus
 from utils.mail_templates import send_verification_email
+from utils.password import _is_valid_password
 
 user_bp = Blueprint("user", __name__)
-
-
-def _is_valid_password(password: str) -> bool:
-    """Check password length + at least one uppercase + one digit"""
-    if not isinstance(password, str) or not password.strip():
-        return False
-    if len(password) < 8:
-        return False
-    if not any(ch.isupper() for ch in password):
-        return False
-    if not any(ch.isdigit() for ch in password):
-        return False
-    return True
 
 
 @user_bp.route("/register", methods=["POST"])
@@ -160,7 +148,7 @@ def register_user():
         )
 
         # Build link for frontend verify page
-        frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
+        frontend_url = os.getenv("FLASK_CLIENT_URL", "http://localhost:5173")
         verify_link = f"{frontend_url}/verify?token={verification_token}"
 
         # Send email in background thread (non-blocking)
@@ -195,13 +183,17 @@ def register_user():
 
         constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "")
 
-        if constraint in {"uq_user_email", "uq_user_phone_number"}:
-            field = "Email" if "email" in constraint else "Phone number"
+        error_messages = {
+            "uq_user_email": "Email already exists",
+            "uq_user_phone_number": "Phone number already exists",
+        }
+
+        if constraint in error_messages:
             return (
                 jsonify(
                     {
                         "status": "error",
-                        "message": f"{field} already exists.",
+                        "message": error_messages[constraint],
                         "data": None,
                     }
                 ),

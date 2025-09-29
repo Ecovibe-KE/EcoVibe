@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "message": "Access token refreshed",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+    "user": {
+      "id": 1,
+      "full_name": "John Doe",
+      "email": "john@greentech.co.ke",
+      "industry": "Manufacturing",
+      "phone_number": "+254 712 345 678",
+      "role": "CLIENT"
+    }
+  }
+}
