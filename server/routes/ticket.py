@@ -152,7 +152,7 @@ class TicketListResource(Resource):
     def post(self):
         """Create a new ticket"""
         try:
-            user, user_role = get_current_user_role()
+            user, user_role = get_current_user_and_role()
             if not user:
                 return restful_response(
                     status="error", message="User not found", status_code=404
@@ -236,9 +236,9 @@ class TicketListResource(Resource):
                         status="error",
                         message="admin_id is required",
                         status_code=400,
-                )
+                    )
                 try:
-                 admin_id = int(admin_id)
+                    admin_id = int(admin_id)
                 except (TypeError, ValueError):
                     return restful_response(
                         status="error",
