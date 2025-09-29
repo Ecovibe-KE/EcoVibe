@@ -46,7 +46,7 @@ const EditUserModal = ({
             name="industry"
             value={form.industry}
             onChange={onChange}
-            error={form.industry}
+            error={errors.industry}
           />
           <Input
             type="email"
