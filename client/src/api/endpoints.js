@@ -19,4 +19,9 @@ export const ENDPOINTS = {
   newsletter_subscribers: "/newsletter-subscribers",
 
   // Add more endpoints as needed here
+  // Tickets
+  tickets: "/tickets",
+  ticketById: (id) => `/tickets/${id}`,
+  ticketStats: "/tickets/stats",
+  ticketMessages: (id) => `/tickets/${id}/messages`,
 };
