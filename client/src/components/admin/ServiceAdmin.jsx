@@ -311,7 +311,7 @@ function ServiceAdmin() {
                 />
 
                 <Container className="mb-3">
-                    <Row>
+                    <Row className="d-flex flex-nowrap">
                         {displayTopServiceData(topServiceData)}
                     </Row>
                 </Container>
