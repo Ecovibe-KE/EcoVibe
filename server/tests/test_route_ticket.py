@@ -52,7 +52,9 @@ def sample_users(session):
     return {
         "client": session.query(User).filter_by(email="client@test.com").first(),
         "admin": session.query(User).filter_by(email="admin@test.com").first(),
-        "super_admin": session.query(User).filter_by(email="superadmin@test.com").first(),
+        "super_admin": session.query(User)
+        .filter_by(email="superadmin@test.com")
+        .first(),
         "client2": session.query(User).filter_by(email="client2@test.com").first(),
     }
 
