@@ -1,76 +1,103 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ForgotPassword from "../../src/components/ForgotPassword";
-import { forgotPassword } from "../../src/api/services/auth.js";
 import { MemoryRouter } from "react-router-dom";
+import { vi, describe, it, beforeEach, expect } from "vitest";
 
-vi.mock("../../src/api/services/auth.js", () => ({
-  forgotPassword: vi.fn(),
+import ForgotPassword from "../../src/components/ForgotPassword";
+import * as authService from "../../src/api/services/auth.js";
+import { toast } from "react-toastify";
+
+// 🔹 Mock toastify and authService
+vi.mock("react-toastify", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+  ToastContainer: () => <div />,
 }));
+vi.mock("../../src/api/services/auth.js");
 
 describe("ForgotPassword Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  const renderComponent = () =>
     render(
       <MemoryRouter>
         <ForgotPassword />
       </MemoryRouter>
     );
+
+  it("renders email input and submit button", () => {
+    renderComponent();
+    expect(screen.getByLabelText(/Email Address/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Send Reset Link/i })
+    ).toBeInTheDocument();
   });
 
-  it("renders form fields correctly", () => {
-    expect(screen.getByLabelText(/New Password/i, { selector: "input" })).toBeInTheDocument();
-    expect(screen.getByLabelText(/Confirm Password/i, { selector: "input" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /RESET PASSWORD/i })).toBeInTheDocument();
-  });
+  it("shows error when email is invalid", async () => {
+    renderComponent();
 
-  it("shows error message if passwords do not match", async () => {
-    fireEvent.change(screen.getByLabelText(/New Password/i, { selector: "input" }), {
-      target: { value: "password123" },
+    fireEvent.change(screen.getByLabelText(/Email Address/i), {
+      target: { value: "not-an-email" },
     });
-    fireEvent.change(screen.getByLabelText(/Confirm Password/i, { selector: "input" }), {
-      target: { value: "different123" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /RESET PASSWORD/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Send Reset Link/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Passwords do not match!")).toBeInTheDocument();
-      expect(forgotPassword).not.toHaveBeenCalled();
+      expect(screen.getByText(/valid email/i)).toBeInTheDocument();
     });
   });
 
-  it("calls forgotPassword and redirects on successful reset", async () => {
-    forgotPassword.mockResolvedValue({ message: "Password reset successfully!" });
-
-    fireEvent.change(screen.getByLabelText(/New Password/i, { selector: "input" }), {
-      target: { value: "password123" },
-    });
-    fireEvent.change(screen.getByLabelText(/Confirm Password/i, { selector: "input" }), {
-      target: { value: "password123" },
+  it("successful request shows success toast", async () => {
+    authService.forgotPassword.mockResolvedValue({
+      status: "success",
+      message: "Reset link sent!",
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /RESET PASSWORD/i }));
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/Email Address/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Send Reset Link/i }));
 
     await waitFor(() => {
-      expect(forgotPassword).toHaveBeenCalledWith("password123");
+      expect(toast.success).toHaveBeenCalledWith("Reset link sent!");
     });
   });
 
-  it("handles API failure gracefully", async () => {
-    forgotPassword.mockRejectedValue(new Error("API Error"));
-
-    fireEvent.change(screen.getByLabelText(/New Password/i, { selector: "input" }), {
-      target: { value: "password123" },
-    });
-    fireEvent.change(screen.getByLabelText(/Confirm Password/i, { selector: "input" }), {
-      target: { value: "password123" },
+  it("failed request shows error toast", async () => {
+    authService.forgotPassword.mockResolvedValue({
+      status: "error",
+      message: "No user found",
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /RESET PASSWORD/i }));
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/Email Address/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Send Reset Link/i }));
 
     await waitFor(() => {
-      expect(forgotPassword).toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith("No user found");
+    });
+  });
+
+  it("handles API error gracefully", async () => {
+    authService.forgotPassword.mockRejectedValue(new Error("Server error"));
+
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/Email Address/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Send Reset Link/i }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Server error");
     });
   });
 });

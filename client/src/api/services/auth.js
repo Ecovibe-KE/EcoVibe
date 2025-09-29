@@ -1,69 +1,135 @@
-import { ENDPOINTS } from "../endpoints";
+// src/api/services/auth.js
 import api from "../axiosConfig";
+import { ENDPOINTS } from "../endpoints";
 
-const USE_MOCK = true; // flip to false when backend is ready
+// Small helper to normalize errors
+const handleError = (error) => {
+  throw error.response?.data || { message: error.message || "Unknown error" };
+};
 
-//  Login user
+// ----------------------------
+// Register a new user
+// ----------------------------
+export const createUser = async (clientData) => {
+  try {
+    const response = await api.post(ENDPOINTS.register, clientData, {
+      skipAuth: true, // no token when signing up
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+// ----------------------------
+// Login user
+// ----------------------------
 export const loginUser = async (credentials) => {
-  if (USE_MOCK) {
-    console.log("[MOCK] loginUser called with:", credentials);
+  try {
+    const response = await api.post(ENDPOINTS.login, credentials, {
+      skipAuth: true, // don’t attach old tokens
+    });
 
-    // Simulate API delay
-    await new Promise((res) => setTimeout(res, 800));
+    const { status, data, message } = response.data;
 
-    // Return fake response
+    if (status !== "success" || !data?.access_token || !data?.user) {
+      throw new Error(message || "Invalid login response");
+    }
+
     return {
-      token: "dummy_token_123",
-      user: {
-        name: "Mock User",
-        role: "Admin",
-        avatar: "/profile.jpg",
-        email: credentials.email,
+      token: data.access_token,
+      refreshToken: data.refresh_token,
+      user: data.user,
+    };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+// ----------------------------
+// Logout user
+// ----------------------------
+export const logoutUser = async (refreshToken) => {
+  try {
+    const response = await api.post(
+      ENDPOINTS.logout,
+      { refresh_token: refreshToken },
+      { skipAuth: true }, // logout doesn't require access token
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+// ----------------------------
+// Forgot Password
+// ----------------------------
+export const forgotPassword = async (email) => {
+  try {
+    const response = await api.post(
+      ENDPOINTS.forgotPassword,
+      { email },
+      { skipAuth: true },
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+// ----------------------------
+// Reset Password
+// ----------------------------
+export const resetPassword = async ({ token, newPassword }) => {
+  try {
+    const response = await api.post(
+      ENDPOINTS.resetPassword,
+      { new_password: newPassword },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        skipAuth: true, // supply reset token manually
       },
-    };
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
   }
-
-  //  Real API call (when backend is ready)
-  const response = await api.post(ENDPOINTS.login, credentials);
-  return response.data;
 };
 
-// Forgot password (send email for new password)
-export const forgotPassword = async (newPassword) => {
-  if (USE_MOCK) {
-    console.log("[MOCK] forgotPassword called with:", newPassword);
-
-    await new Promise((res) => setTimeout(res, 800));
-
-    return {
-      message:
-        "Password has been reset successfully! Please log in with your new password.",
-    };
-  }
-
-  // Real API call
-  const response = await api.post(ENDPOINTS.forgotPassword, {
-    password: newPassword,
-  });
-  return response.data;
-};
-
+// ----------------------------
 // Verify account
+// ----------------------------
 export const verifyAccount = async (token) => {
-  const response = await api.post(
-    ENDPOINTS.verify,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+  try {
+    const response = await api.post(
+      ENDPOINTS.verify,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        skipAuth: true,
       },
-      skipAuth: true,
-    },
-  );
-  return response.data;
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
 };
 
+// ----------------------------
+// Resend verification email
+// ----------------------------
 export const resendVerification = async (email) => {
-  const response = await api.post(ENDPOINTS.resendVerification, { email });
-  return response.data;
+  try {
+    const response = await api.post(
+      ENDPOINTS.resendVerification,
+      { email },
+      { skipAuth: true },
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
 };

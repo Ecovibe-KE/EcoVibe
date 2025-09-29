@@ -1,44 +1,39 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import Input from "../utils/Input.jsx";
+import Button from "../utils/Button.jsx";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styles from "../css/ForgotPassword.module.css";
+import styles from "../css/Login.module.css";
 import { forgotPassword } from "../api/services/auth.js";
-import PasswordInput from "../components/PasswordInput.jsx";
+import { validateEmail } from "../utils/Validations.js";
+import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const navigate = useNavigate();
-
-  const handleReset = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match!");
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setErrors({ email: emailError });
       return;
     }
 
-    setLoading(true);
-
     try {
-      const response = await forgotPassword(newPassword);
+      setLoading(true);
+      const response = await forgotPassword(email);
 
-      toast.success(
-        response?.message ||
-          "Password reset successfully! Redirecting to login...",
-      );
-
-      setTimeout(() => navigate("/login"), 3000);
+      if (response.status === "success") {
+        toast.success(response.message);
+        setEmail("");
+      } else {
+        toast.error(response.message || "Failed to process request.");
+      }
     } catch (err) {
-      console.error(err);
-      toast.error(err?.message || "Password reset failed. Try again.");
+      toast.error(err.message || "Error sending reset link.");
     } finally {
       setLoading(false);
     }
@@ -46,53 +41,54 @@ const ForgotPassword = () => {
 
   return (
     <div className={styles.wrapper}>
+      {/* Left side branding */}
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
         <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
-        <img
-          src="/Empower.png"
-          alt="EcoVibe Illustration"
-          className={styles.logoImage}
-        />
+        <img src="/Empower.png" alt="EcoVibe" className={styles.empowerImage} />
       </div>
 
+      {/* Right side form */}
       <div className={styles.rightSection}>
-        <div className={styles.formContainer}>
-          <h2 className={styles.subheading}>Forgot Password</h2>
+        <div className={styles.loginCard}>
+          <form onSubmit={handleSubmit} noValidate>
+            <h2 className="mb-4 text-dark" style={{ fontSize: "32px" }}>
+              Forgot Password
+            </h2>
 
-          {error && (
-            <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>
-          )}
+            {/* Email field */}
+            <div className="mb-3">
+              <Input
+                type="email"
+                label="Email Address"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors({});
+                }}
+                required
+                error={errors.email}
+              />
+            </div>
 
-          <form onSubmit={handleReset}>
-            <PasswordInput
-              id="newPassword"
-              label="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              show={showNewPassword}
-              setShow={setShowNewPassword}
-            />
-
-            <PasswordInput
-              id="confirmPassword"
-              label="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              show={showConfirmPassword}
-              setShow={setShowConfirmPassword}
-            />
-
-            <button
+            <Button
               type="submit"
-              className={styles.resetButton}
+              size="16px"
               disabled={loading}
+              className={`btn btn-success ${styles.loginButton}`}
+              borderRadius="10rem"
             >
-              {loading ? "Resetting..." : "RESET PASSWORD"}
-            </button>
+              {loading ? "Sending..." : "Send Reset Link"}
+            </Button>
+
+            <p className="mt-3 text-center">
+              <Link to="/login">Back to Login</Link>
+            </p>
           </form>
         </div>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };

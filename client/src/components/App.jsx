@@ -20,6 +20,7 @@ import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
+import ResetPassword from "./ResetPassword.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -299,6 +300,17 @@ function App() {
               <>
                 <NavBar />
                 <ForgotPassword />
+                <FooterWrapper />
+              </>
+            }
+          />
+
+          <Route
+            path="/reset-password"
+            element={
+              <>
+                <NavBar />
+                <ResetPassword />
                 <FooterWrapper />
               </>
             }

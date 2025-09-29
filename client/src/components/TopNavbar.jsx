@@ -13,6 +13,8 @@ import services from "../assets/services.png";
 import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
+import { logoutUser } from "../api/services/auth";
+import { toast } from "react-toastify";
 
 import "../css/TopNavBar.css";
 
@@ -297,15 +299,29 @@ function TopNavbar() {
                 </div>
               </div>
             </Dropdown.Toggle>
-
             <Dropdown.Menu>
               <Dropdown.Item
-                onClick={() => {
-                  localStorage.removeItem("userData");
-                  navigate("/login");
+                onClick={async () => {
+                  try {
+                    const refreshToken = localStorage.getItem("refreshToken");
+                    if (refreshToken) {
+                      await logoutUser(refreshToken); // call backend to invalidate
+                    }
+
+                    // Clear tokens and user data
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("refreshToken");
+                    localStorage.removeItem("userData");
+
+                    toast.success("Logged out successfully");
+                    navigate("/login");
+                  } catch (err) {
+                    console.error("Logout failed:", err);
+                    toast.error("Logout failed, please try again");
+                  }
                 }}
                 style={{
-                  backgroundColor: "#28a745", // green
+                  backgroundColor: "#28a745",
                   color: "#fff",
                   fontWeight: 600,
                   textAlign: "center",
@@ -318,10 +334,10 @@ function TopNavbar() {
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = "#fd7e14")
-                } // orange on hover
+                }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.backgroundColor = "#28a745")
-                } // back to green
+                }
               >
                 Logout
               </Dropdown.Item>
