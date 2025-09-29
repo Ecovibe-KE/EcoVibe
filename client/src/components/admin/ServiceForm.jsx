@@ -25,6 +25,7 @@ function ServiceForm({
                     placeholder="Enter Service Title"
                     value={formData.serviceTitle}
                     onChange={handleChange}
+                    required
                 />
 
                 <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -36,6 +37,7 @@ function ServiceForm({
                         name="serviceDescription"
                         value={formData.serviceDescription}
                         onChange={handleChange}
+                        required
                     />
                 </Form.Group>
 
@@ -46,6 +48,7 @@ function ServiceForm({
                     placeholder="Enter Price Currency"
                     value={formData.priceCurrency}
                     onChange={handleChange}
+                    required
                 />
 
                 <Input
@@ -56,6 +59,7 @@ function ServiceForm({
                     min="0"
                     value={formData.servicePrice}
                     onChange={handleChange}
+                    required
                 />
 
                 <p>Duration</p>
@@ -69,6 +73,7 @@ function ServiceForm({
                         className="me-4"
                         value={formData.serviceDuration.hours}
                         onChange={handleChange}
+                        required
                     />
                     <p className="me-2">Minutes:</p>
                     <Input
@@ -78,6 +83,7 @@ function ServiceForm({
                         max="60"
                         value={formData.serviceDuration.minutes}
                         onChange={handleChange}
+                        required
                     />
                 </div>
 
@@ -89,6 +95,7 @@ function ServiceForm({
                         accept="image/*"
                         onChange={handleFileChange}
                         ref={fileInputRef}
+                        required
                     />
                 </Form.Group>
 

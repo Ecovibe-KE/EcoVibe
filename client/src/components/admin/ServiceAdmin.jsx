@@ -1,12 +1,9 @@
-import { Tab, Tabs, Row, Container, Col, Modal, Button } from "react-bootstrap"
+import { Tab, Tabs, Row, Container, Col } from "react-bootstrap"
 import {
     useState,
     useRef,
     useEffect
 } from "react"
-import handsImg from "../../assets/hands.jpg"
-import collabImg1 from "../../assets/collaboration1.jpg"
-import collabImg2 from "../../assets/collaboration2.jpg"
 import gearImg from "../../assets/gears.png"
 import tickImg from "../../assets/tick.png"
 import "../../css/ServiceAdmin.css"
@@ -14,6 +11,7 @@ import ServiceAdminTop from "./ServiceAdminTop"
 import ServiceAdminMain from "./ServiceAdminMain"
 import ServiceForm from "./ServiceForm"
 import EditServiceModal from "./EditServiceModal"
+import DeleteServiceModal from "./DeleteServiceModal"
 import {
     addService,
     getServices,
@@ -23,13 +21,21 @@ import {
 import { toast } from "react-toastify"
 
 function ServiceAdmin() {
-    // modal usestate
-    const [show, setShow] = useState(false);
+    // for edit modal component
+    const [showEditServiceModal, setShowEditServiceModal] = useState(false);
+    // for delete modal component
+    const [showDeleteServiceModal, setShowDeleteServiceModal] = useState(false);
     // for displaying services
     const [allServices, setAllServices] = useState([])
+    // get serviceId
+    const [idService, setIdService] = useState(null)
+    // for original data when in edit modal component
+    const [originalServiceData, setOriginalServiceData] = useState(null)
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleCloseEdit = () => setShowEditServiceModal(false);
+    const handleShowEdit = () => setShowEditServiceModal(true);
+    const handleCloseDelete = () => setShowDeleteServiceModal(false);
+    const handleShowDelete = () => setShowDeleteServiceModal(true);
 
     // Get all services
     useEffect(() => {
@@ -38,11 +44,10 @@ function ServiceAdmin() {
                 const servicesArray = await getServices();
                 setAllServices(servicesArray)
             } catch (error) {
-                toast.error(error)
-                toast.error("Failed to fetch services. Please try again later.")
+                console.error(error)
             }
         }
-        // fetchServices();
+        fetchServices();
     }, [])
 
     const [formData, setFormData] = useState({
@@ -64,57 +69,18 @@ function ServiceAdmin() {
     const topServiceData = [
         {
             imageSource: gearImg,
-            number: 12,
+            number: (allServices.length),
             text: "Total Services",
             imageSetting: "info",
             colSetting: "me-3"
         },
         {
             imageSource: tickImg,
-            number: 9,
+            number: (allServices.filter(service => service.status.toLowerCase() === "active").length),
             text: "Active Services",
             imageSetting: "success",
             colSetting: ""
         }
-    ]
-
-    const allServicesTest = [
-        {
-            serviceImage: handsImg,
-            serviceTitle: "ESG Strategy Development",
-            serviceDescription: "Comprehensive ESG framework creation aligned with your business objectives and global sustainability standards.",
-            serviceDuration: "2 hrs",
-            priceCurrency: "$",
-            servicePrice: "1200",
-            serviceStatus: "Active"
-        },
-        {
-            serviceImage: collabImg1,
-            serviceTitle: "Sustainability Reporting",
-            serviceDescription: "Transparent and compliant reporting following global frameworks to showcase your sustainability efforts.",
-            serviceDuration: "2 hrs",
-            priceCurrency: "$",
-            servicePrice: "950",
-            serviceStatus: "inactive"
-        },
-        {
-            serviceImage: collabImg2,
-            serviceTitle: "Carbon Footprint Assessment",
-            serviceDescription: "Detailed analysis of your organization's carbon emissions with actionable reduction strategies.",
-            serviceDuration: "2 hrs",
-            priceCurrency: "$",
-            servicePrice: "1500",
-            serviceStatus: "Active"
-        },
-        {
-            serviceImage: collabImg2,
-            serviceTitle: "A short engaging title",
-            serviceDescription: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tristique nec sapien vel bibendum.",
-            serviceDuration: "1 hr",
-            priceCurrency: "$",
-            servicePrice: "1000",
-            serviceStatus: "Inactive"
-        },
     ]
 
     function displayTopServiceData(dataArray) {
@@ -138,31 +104,38 @@ function ServiceAdmin() {
         })
     }
 
-    function displayAllServices(allServices, showModalFunc) {
+    function displayAllServices(allServices, handleShowEdit, getServiceId, setFormData, setPreviewUrl, setOriginalServiceData, handleShowDelete) {
         // check if param is an empty array or object
         if ((Array.isArray(allServices) && allServices.length === 0) || (Object.keys(allServices).length === 0)) {
             return (<p>No Services added</p>)
         } else {
-            return allServices.map(({
-                serviceImage,
-                serviceTitle,
-                serviceDescription,
-                serviceDuration,
-                priceCurrency,
-                servicePrice,
-                serviceStatus
-            }, index) => {
+            return [...allServices].reverse().map(({
+                id,
+                image,
+                name,
+                description,
+                duration,
+                currency,
+                price,
+                status
+            }) => {
                 return (
                     <ServiceAdminMain
-                        key={index}
-                        serviceImage={serviceImage}
-                        serviceTitle={serviceTitle}
-                        serviceDescription={serviceDescription}
-                        serviceDuration={serviceDuration}
-                        priceCurrency={priceCurrency}
-                        servicePrice={servicePrice}
-                        serviceStatus={serviceStatus}
-                        handleShow={showModalFunc}
+                        key={id}
+                        serviceId={id}
+                        serviceImage={image}
+                        serviceTitle={name}
+                        serviceDescription={description}
+                        serviceDuration={duration}
+                        priceCurrency={currency}
+                        servicePrice={price}
+                        serviceStatus={status}
+                        handleShowEdit={handleShowEdit}
+                        getServiceId={getServiceId}
+                        setFormData={setFormData}
+                        setPreviewUrl={setPreviewUrl}
+                        setOriginalServiceData={setOriginalServiceData}
+                        handleShowDelete={handleShowDelete}
                     ></ServiceAdminMain>
 
                 )
@@ -212,6 +185,7 @@ function ServiceAdmin() {
 
     }
 
+    // handle submitting newly added service
     const addNewService = async (e) => {
         e.preventDefault()
 
@@ -238,6 +212,61 @@ function ServiceAdmin() {
         }
     }
 
+    // handle submitting edited service
+    const editExistingService = async (e) => {
+        e.preventDefault()
+
+        const { hours, minutes } = formData.serviceDuration;
+        const combinedDuration = `${hours} hr ${minutes} min`
+
+        const serviceData = {
+            name: formData.serviceTitle.trim(),
+            description: formData.serviceDescription.trim(),
+            currency: formData.priceCurrency.trim(),
+            price: formData.servicePrice,
+            duration: combinedDuration,
+            image: formData.serviceImage,
+            status: formData.serviceStatus.toLowerCase()
+        }
+
+        // Compare with originalServiceData
+        const isUnchanged =
+            originalServiceData &&
+            serviceData.name === originalServiceData.name &&
+            serviceData.description === originalServiceData.description &&
+            serviceData.currency === originalServiceData.currency &&
+            serviceData.price === originalServiceData.price &&
+            serviceData.duration === originalServiceData.duration &&
+            serviceData.status === originalServiceData.status &&
+            serviceData.image === originalServiceData.image;
+
+        if (isUnchanged) {
+            toast.info("No changes detected. Edit one or more service fields to save");
+            return;
+        }
+
+        try {
+            await updateService(idService, serviceData)
+            toast.success("Service updated successfully")
+            resetForm()
+        } catch (error) {
+            toast.error(`${error}: Failed to update service. Try again`)
+        }
+    }
+
+    // handle deleting service
+    const deleteExistingService = async () => {
+
+        try {
+            await deleteService(idService);
+            handleCloseDelete()
+            toast.success("Service deleted Successfully!");
+        } catch (error) {
+            console.error("Failed to delete service:", error);
+            toast.error("Failed to delete service. Please try again.");
+        }
+    };
+
     function resetForm() {
         setFormData({
             serviceTitle: "",
@@ -258,17 +287,27 @@ function ServiceAdmin() {
     return (
         <>
             <main className="p-3 bg-light">
-                {/* TEST CASE */}
+
+                {/* edit service */}
                 <EditServiceModal
-                    show={show}
-                    handleClose={handleClose}
+                    showEditServiceModal={showEditServiceModal}
+                    handleCloseEdit={handleCloseEdit}
                     formData={formData}
-                    handleSubmit={addNewService} // change this function to addEditedService
+                    handleSubmit={editExistingService}
                     handleChange={handleChange}
                     handleFileChange={handleFileChange}
                     fileInputRef={fileInputRef}
-                    resetForm={resetForm}
                     previewUrl={previewUrl}
+                    setPreviewUrl={setPreviewUrl}
+                    resetForm={resetForm}
+                />
+
+                {/* Delete service */}
+                <DeleteServiceModal
+                    showDeleteServiceModal={showDeleteServiceModal}
+                    handleCloseDelete={handleCloseDelete}
+                    handleDelete={deleteExistingService}
+                    serviceTitle={originalServiceData ? originalServiceData.name : ""}
                 />
 
                 <Container className="mb-3">
@@ -290,8 +329,15 @@ function ServiceAdmin() {
                                         <h2>All Services</h2>
                                         <hr />
                                         <Row className="g-3">
-                                            {displayAllServices(allServices, handleShow)}
-                                            {displayAllServices(allServicesTest, handleShow)}
+                                            {displayAllServices(
+                                                allServices,
+                                                handleShowEdit,
+                                                setIdService,
+                                                setFormData,
+                                                setPreviewUrl,
+                                                setOriginalServiceData,
+                                                handleShowDelete
+                                            )}
                                         </Row>
                                     </Container>
                                 </Tab>
@@ -309,10 +355,6 @@ function ServiceAdmin() {
                                     ></ServiceForm>
                                 </Tab>
 
-                                {/* <Tab eventKey="edit" title="Edit Services" className="d-none d-md-block container">
-                                    <h2>Edit Service</h2>
-                                    <hr />
-                                </Tab> */}
                             </Tabs>
 
                         </Col>

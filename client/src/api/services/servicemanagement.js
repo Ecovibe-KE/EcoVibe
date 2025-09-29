@@ -15,7 +15,7 @@ export const getServices = async () => {
 
 // Update a service by ID
 export const updateService = async (serviceId, serviceData) => {
-    const response = await api.patch(
+    const response = await api.put(
         `${ENDPOINTS.services}/${serviceId}`,
         serviceData,
     );

@@ -2,21 +2,27 @@ import { Modal, Button } from "react-bootstrap"
 import ServiceForm from "./ServiceForm"
 
 function EditServiceModal({
-    show,
-    handleClose,
+    showEditServiceModal,
+    handleCloseEdit,
     formData,
     handleSubmit,
     handleChange,
     handleFileChange,
     fileInputRef,
+    previewUrl,
     resetForm,
-    previewUrl
 }) {
+
+    function resetAfterClose() {
+        handleCloseEdit()
+        resetForm()
+    }
+
     return (
         <>
             <Modal
-                show={show}
-                onHide={handleClose}
+                show={showEditServiceModal}
+                onHide={resetAfterClose}
                 backdrop="static"
                 keyboard={false}
                 centered
@@ -32,16 +38,10 @@ function EditServiceModal({
                         handleChange={handleChange}
                         handleFileChange={handleFileChange}
                         fileInputRef={fileInputRef}
-                        resetForm={resetForm}
+                        resetForm={resetAfterClose}
                         previewUrl={previewUrl}
                     ></ServiceForm>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Understood</Button>
-                </Modal.Footer>
             </Modal>
         </>
     )

@@ -1,6 +1,7 @@
 import { Col } from "react-bootstrap"
 
 function ServiceAdminMain({
+    serviceId,
     serviceImage,
     serviceTitle,
     serviceDescription,
@@ -8,7 +9,12 @@ function ServiceAdminMain({
     priceCurrency,
     servicePrice,
     serviceStatus,
-    handleShow
+    handleShowEdit,
+    getServiceId,
+    setFormData,
+    setPreviewUrl,
+    setOriginalServiceData,
+    handleShowDelete
 }) {
 
     function determineVisibility() {
@@ -17,6 +23,67 @@ function ServiceAdminMain({
         } else {
             return "invisible"
         }
+    }
+
+    // Separates duration into hours and minutes
+    const separateDuration = str => {
+        // 1. hrs? – matches "hr" or "hrs"
+        // 2. (?: … )? – makes the entire minutes group optional
+        const pattern = /(?:(?<h>\d+)\s*hrs?)?\s*(?:(?<m>\d+)\s*min)?/i;
+        const groups = str.match(pattern)?.groups || {};
+
+        const hours = parseInt(groups.h || "0", 10);
+        const minutes = parseInt(groups.m || "0", 10);
+
+        return { hours, minutes };
+    };
+
+    function displayDuration() {
+        const { hours, minutes } = separateDuration(serviceDuration);
+        if (minutes < 1) {
+            return `${hours} hr`
+        } else if (hours < 1) {
+            return `${minutes} min`
+        } else {
+            return `${hours} hr ${minutes} min`
+        }
+    }
+
+    // Purpose 
+    // - display editServiceModal
+    // - serviceId of clicked service
+    // - populate formdata with clicked service data
+    // - update clicked originalServiceData
+    function handleEditClick() {
+        handleShowEdit();
+        getServiceId(() => serviceId);
+        setFormData({
+            serviceTitle: serviceTitle,
+            serviceDescription: serviceDescription,
+            priceCurrency: priceCurrency,
+            servicePrice: servicePrice,
+            serviceDuration: separateDuration(serviceDuration),
+            serviceImage: serviceImage,
+            serviceStatus: serviceStatus
+        })
+        setOriginalServiceData({
+            name: serviceTitle,
+            description: serviceDescription,
+            currency: priceCurrency,
+            price: servicePrice,
+            duration: serviceDuration,
+            image: serviceImage,
+            status: serviceStatus
+        })
+        setPreviewUrl(() => serviceImage)
+    }
+
+    function handleDeleteClick() {
+        handleShowDelete()
+        getServiceId(() => serviceId);
+        setOriginalServiceData({
+            name: serviceTitle
+        })
     }
 
     return (
@@ -32,8 +99,8 @@ function ServiceAdminMain({
 
                         {/* Overlay with buttons (hidden by default) */}
                         <div className="hover-overlay">
-                            <button className="btn btn-light btn-sm mx-1" onClick={handleShow}>Edit</button>
-                            <button className="btn btn-danger btn-sm mx-1">Delete</button>
+                            <button className="btn btn-warning btn-sm mx-1" onClick={handleEditClick}>Edit</button>
+                            <button className="btn btn-danger btn-sm mx-1" onClick={handleDeleteClick}>Delete</button>
                         </div>
                     </div>
 
@@ -42,7 +109,7 @@ function ServiceAdminMain({
                         <p className="mt-2">{serviceDescription}</p>
                         <hr />
                         <section className="d-flex justify-content-between align-items-center">
-                            <p className="primary-color fw-bold m-0">{serviceDuration}</p>
+                            <p className="primary-color fw-bold m-0">{displayDuration()}</p>
                             <p className="primary-color fw-bold m-0">
                                 {priceCurrency}{servicePrice}
                             </p>
