@@ -164,7 +164,21 @@ const SignUpForm = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred. Please try again.");
+
+      // ✅ Improved error handling for backend validation errors
+      const backendMessage =
+        error.response?.data?.message || error.message || null;
+
+      if (backendMessage?.toLowerCase().includes("email")) {
+        setErrors({ email: backendMessage });
+        toast.error(backendMessage);
+      } else if (backendMessage?.toLowerCase().includes("phone")) {
+        setErrors({ phone: backendMessage });
+        toast.error(backendMessage);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+
       if (recaptchaRef.current) recaptchaRef.current.reset();
     } finally {
       setIsSubmitting(false);
@@ -213,7 +227,9 @@ const SignUpForm = () => {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className={`form-select ${errors.industry ? "is-invalid" : ""}`}
+                    className={`form-select ${
+                      errors.industry ? "is-invalid" : ""
+                    }`}
                     required
                   >
                     <option value="" disabled>
