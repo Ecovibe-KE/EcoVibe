@@ -1,0 +1,21 @@
+.profilePage {
+  background-color: #f8f9fa; /* subtle Bootstrap-ish gray */
+  min-height: 85vh;
+}
+
+.avatarCircle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #37b137; /* your EcoVibe green */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.initials {
+  font-weight: bold;
+  color: #fff;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
