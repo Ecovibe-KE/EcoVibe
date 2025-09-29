@@ -1,11 +1,8 @@
-// TopNavbar.jsx
 import React, { useState, useEffect, useCallback } from "react";
-import { Offcanvas, Container } from "react-bootstrap";
-import { NavLink, Link, Outlet } from "react-router-dom";
+import { Offcanvas, Container, Dropdown } from "react-bootstrap";
+import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import useBreakpoint from "../hooks/useBreakpoint";
-import "../css/TopNavBar.css";
-
 import home from "../assets/home.png";
 import bookings from "../assets/bookings.png";
 import resources from "../assets/resources.png";
@@ -16,6 +13,10 @@ import services from "../assets/services.png";
 import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
+import { logoutUser } from "../api/services/auth";
+import { toast } from "react-toastify";
+
+import "../css/TopNavBar.css";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -72,7 +73,9 @@ function TopNavbar() {
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
+  const navigate = useNavigate();
 
+  // Load user data from localStorage if available
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
     if (storedUserData) {
@@ -85,20 +88,18 @@ function TopNavbar() {
     }
   }, []);
 
-  // Close mobile sidebar when switching to desktop
+  // Close mobile sidebar on desktop
   useEffect(() => {
     if (isDesktop && showMobileSidebar) {
       setShowMobileSidebar(false);
     }
   }, [isDesktop, showMobileSidebar]);
 
-  const toggleMobileSidebar = useCallback(() => {
-    setShowMobileSidebar((prev) => !prev);
-  }, []);
-
-  const closeMobileSidebar = useCallback(() => {
-    setShowMobileSidebar(false);
-  }, []);
+  const toggleMobileSidebar = useCallback(
+    () => setShowMobileSidebar((prev) => !prev),
+    [],
+  );
+  const closeMobileSidebar = useCallback(() => setShowMobileSidebar(false), []);
 
   const getLinkClass = ({ isActive }) =>
     `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${
@@ -113,7 +114,6 @@ function TopNavbar() {
         background: "linear-gradient(180deg, #F5E6D3 0%, #E8F5E8 100%)",
       }}
     >
-      {/* Header */}
       <Container fluid className="p-3 border-bottom flex-shrink-0">
         <div className="d-flex align-items-center justify-content-between">
           <Link
@@ -140,7 +140,6 @@ function TopNavbar() {
         </div>
       </Container>
 
-      {/* Navigation Links */}
       <Container fluid className="p-3 flex-grow-1 overflow-auto">
         {/* Main Section */}
         <div className="mb-3">
@@ -200,7 +199,7 @@ function TopNavbar() {
 
   return (
     <>
-      {/* Desktop Sidebar - Fixed */}
+      {/* Desktop Sidebar */}
       {isDesktop && (
         <div
           className="desktop-sidebar"
@@ -236,7 +235,6 @@ function TopNavbar() {
           transition: "left 0.3s ease",
         }}
       >
-        {/* Left Side */}
         <div className="d-flex align-items-center gap-3">
           {!isDesktop && (
             <button
@@ -263,48 +261,104 @@ function TopNavbar() {
           </h1>
         </div>
 
-        {/* Right Side - User Info */}
+        {/* User Profile with Logout Dropdown */}
         <div className="user-profile d-flex align-items-center">
-          <img
-            src={userData.avatar}
-            className="user-avatar rounded-circle me-2"
-            alt="User Avatar"
-            style={{
-              width: "40px",
-              height: "40px",
-              border: "2px solid #e3e6f0",
-            }}
-          />
-          <div className="user-details d-none d-sm-block">
-            <div
-              className="user-name"
-              style={{ fontWeight: 600, fontSize: "0.9rem", color: "#5a5c69" }}
+          <Dropdown align="end">
+            <Dropdown.Toggle
+              variant="light"
+              id="dropdown-user"
+              className="d-flex align-items-center gap-2"
+              style={{ border: "none", background: "transparent" }}
             >
-              {userData.name}
-            </div>
-            <div
-              className="user-role"
-              style={{ fontSize: "0.8rem", color: "#858796" }}
-            >
-              {userData.role}
-            </div>
-          </div>
+              <img
+                src={userData.avatar}
+                className="user-avatar rounded-circle"
+                alt="User Avatar"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  border: "2px solid #e3e6f0",
+                }}
+              />
+              <div className="user-details d-none d-sm-block">
+                <div
+                  className="user-name"
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "0.9rem",
+                    color: "#5a5c69",
+                  }}
+                >
+                  {userData.name}
+                </div>
+                <div
+                  className="user-role"
+                  style={{ fontSize: "0.8rem", color: "#858796" }}
+                >
+                  {userData.role}
+                </div>
+              </div>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item
+                onClick={async () => {
+                  try {
+                    const refreshToken = localStorage.getItem("refreshToken");
+                    if (refreshToken) {
+                      await logoutUser(refreshToken); // call backend to invalidate
+                    }
+
+                    // Clear tokens and user data
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("refreshToken");
+                    localStorage.removeItem("userData");
+
+                    toast.success("Logged out successfully");
+                    navigate("/login");
+                  } catch (err) {
+                    console.error("Logout failed:", err);
+                    toast.error("Logout failed, please try again");
+                  }
+                }}
+                style={{
+                  backgroundColor: "#28a745",
+                  color: "#fff",
+                  fontWeight: 600,
+                  textAlign: "center",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  display: "block",
+                  width: "100%",
+                  padding: "10px 15px",
+                  margin: "0",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#fd7e14")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#28a745")
+                }
+              >
+                Logout
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </div>
       </nav>
 
-      {/* Mobile Sidebar - Offcanvas */}
+      {/* Mobile Sidebar */}
       <Offcanvas
         show={showMobileSidebar && !isDesktop}
         onHide={closeMobileSidebar}
         placement="start"
-        backdrop={true}
+        backdrop
         scroll={false}
         style={{ width: `${SIDEBAR_WIDTH}px` }}
       >
         <SidebarContent onClose={closeMobileSidebar} isMobile={true} />
       </Offcanvas>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div
         className="main-content"
         style={{
