@@ -19,6 +19,7 @@ import Login from "./Login.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import ProfilePage from "./ProfilePage.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -102,15 +103,17 @@ function App() {
                 </div>
               }
             />
+
             <Route
               path="profile"
               element={
                 <div className="p-4">
                   <h2>Profile</h2>
-                  <p>Manage your profile.</p>
+                  <ProfilePage />
                 </div>
               }
             />
+
             <Route
               path="payments"
               element={
@@ -181,6 +184,16 @@ function App() {
             }
           />
           <Route
+            path="/signup"
+            element={
+              <>
+                <NavBar />
+                <SignUpForm />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
             path="/playground"
             element={
               <>
@@ -240,7 +253,6 @@ function App() {
               </>
             }
           />
-
           <Route
             path="/privacy"
             element={

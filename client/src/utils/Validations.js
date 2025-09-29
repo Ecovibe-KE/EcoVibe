@@ -14,3 +14,8 @@ export const validateName = (value) => {
   if (!value || !value.trim()) return "Name is required";
   return value.trim().length >= 2 ? "" : "Name is too short";
 };
+
+export const validateIndustry = (value) => {
+  if (!value || !value.trim()) return "Industry is required";
+  return value.trim().length >= 2 ? "" : "Industry is too short";
+};

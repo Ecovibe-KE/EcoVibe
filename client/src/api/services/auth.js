@@ -62,3 +62,8 @@ export const verifyAccount = async (token) => {
   );
   return response.data;
 };
+
+export const resendVerification = async (email) => {
+  const response = await api.post(ENDPOINTS.resendVerification, { email });
+  return response.data;
+};
