@@ -9,8 +9,9 @@ class Token(db.Model):
     created_at = db.Column(
         db.DateTime(timezone=True), nullable=False, default=db.func.now()
     )
-    value = db.Column(db.String)
-    expiry_time = db.Column(db.DateTime)
+    value = db.Column(db.String, unique=True, index=True, nullable=False)
+    # expiry_time = db.Column(db.DateTime)
+    expiry_time = db.Column(db.DateTime(timezone=True), nullable=False)
 
     # --- Relationship ---
     user = db.relationship("User", back_populates="tokens")

@@ -18,6 +18,7 @@ import {
 } from "../../api/services/usermanagement.js";
 import {
   validateEmail,
+  validateIndustry,
   validateName,
   validatePhone,
 } from "../../utils/Validations.js";
@@ -51,8 +52,9 @@ const UserManagement = () => {
     name: "",
     email: "",
     phone: "",
-    role: "Client",
+    role: "client",
     status: "Inactive",
+    industry: "",
   });
   const [addError, setAddError] = useState("");
   const [addFieldErrors, setAddFieldErrors] = useState({});
@@ -67,6 +69,7 @@ const UserManagement = () => {
       try {
         setLoading(true);
         const usersList = await fetchUsers();
+        console.log(usersList + "sss");
         setUsers(usersList);
       } catch (error) {
         console.error("Failed to load users:", error);
@@ -148,10 +151,10 @@ const UserManagement = () => {
     if (!selectedUser) return;
 
     try {
-      await blockUser(selectedUser.id, "Suspended");
+      await blockUser(selectedUser.id, "suspended");
       setUsers((prev) =>
         prev.map((u) =>
-          u.id === selectedUser.id ? { ...u, status: "Suspended" } : u,
+          u.id === selectedUser.id ? { ...u, status: "suspended" } : u,
         ),
       );
       closeBlock();
@@ -169,14 +172,17 @@ const UserManagement = () => {
       await activateUser(selectedUser.id);
       setUsers((prev) =>
         prev.map((u) =>
-          u.id === selectedUser.id ? { ...u, status: "Active" } : u,
+          u.id === selectedUser.id ? { ...u, status: "active" } : u,
         ),
       );
       closeUnblock();
       toast.success("User Unblocked Successfully!");
     } catch (error) {
       console.error("Failed to unblock user:", error);
-      toast.error("Failed to unblock user. Please try again.");
+      const errorMessage = error?.message || error?.msg;
+      toast.error(
+        `Failed to unblock user.${errorMessage ? ` ${errorMessage}` : ""} Please try again.`,
+      );
     }
   };
 
@@ -186,6 +192,7 @@ const UserManagement = () => {
       name: user.name || "",
       email: user.email || "",
       phone: user.phone || "",
+      industry: user.industry || "",
     });
     setShowEditModal(true);
   };
@@ -212,17 +219,44 @@ const UserManagement = () => {
         name: editForm.name.trim(),
         email: editForm.email.trim(),
         phone: editForm.phone.trim(),
+        industry: editForm.industry.trim(),
       };
 
-      const updatedUser = await editUsers(selectedUser.id, userData);
+      const response = await editUsers(selectedUser.id, userData);
+
+      const apiUser = response.data;
+      const updatedUser = {
+        id: apiUser.id,
+        name: apiUser.name,
+        email: apiUser.email,
+        phone: apiUser.phone,
+        role: apiUser.role,
+        status: apiUser.status,
+        industry: apiUser.industry,
+        profileImage: apiUser.profileImage,
+        createdAt: apiUser.created_at,
+        updatedAt: apiUser.updatedAt,
+      };
+
       setUsers((prev) =>
         prev.map((u) => (u.id === selectedUser.id ? updatedUser : u)),
       );
-      toast.success("User Successfully edited");
+
+      setEditForm({
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        industry: updatedUser.industry,
+      });
+
+      toast.success("User successfully edited");
       closeEdit();
     } catch (error) {
       console.error("Failed to edit user:", error);
-      toast.error("Failed to update user. Please try again.");
+      const errorMessage = error?.message || error?.msg;
+      toast.error(
+        `Failed to update user.${errorMessage ? ` ${errorMessage}` : ""} Please try again.`,
+      );
       setEditErrors({ general: "Failed to update user. Please try again." });
     }
   };
@@ -242,8 +276,9 @@ const UserManagement = () => {
       name: "",
       email: "",
       phone: "",
-      role: "Client",
+      role: "client",
       status: "Inactive",
+      industry: "",
     });
     setAddError("");
     setShowAddModal(true);
@@ -270,7 +305,7 @@ const UserManagement = () => {
 
   const saveAdd = async () => {
     // Enforce role restriction: only SuperAdmin may create Admins
-    if (currentUserRole !== "SuperAdmin" && addForm.role === "Admin") {
+    if (currentUserRole !== "super_admin" && addForm.role === "admin") {
       toast.error("Only SuperAdmin can create Admin accounts.");
       setAddError("Only SuperAdmin can create Admin accounts.");
       return;
@@ -286,16 +321,38 @@ const UserManagement = () => {
         phone: addForm.phone.trim(),
         role: addForm.role,
         status: "Inactive",
+        industry: addForm.industry.trim(),
       };
 
-      const newUser = await addUsers(userData);
+      const response = await addUsers(userData);
+
+      // Extract and transform the API response to match your user structure
+      const apiUser = response.data;
+      const newUser = {
+        id: apiUser.id,
+        name: apiUser.name,
+        email: apiUser.email,
+        phone: apiUser.phone,
+        role: apiUser.role,
+        status: apiUser.status,
+        industry: apiUser.industry,
+        profileImage: apiUser.profileImage,
+        createdAt: apiUser.created_at,
+        updatedAt: apiUser.updatedAt,
+      };
+
       setUsers((prev) => [newUser, ...prev]);
       setShowAddModal(false);
       toast.success("User added successfully.");
     } catch (error) {
       console.error("Failed to add user:", error);
-      toast.error("Failed to add user. Please try again.");
-      setAddError("Failed to add user. Please try again.");
+      const errorMessage = error?.message || error?.msg;
+      toast.error(
+        `Failed to add user.${errorMessage ? ` ${errorMessage}` : ""} Please try again.`,
+      );
+      setAddError(
+        `Failed to add user.${errorMessage ? ` ${errorMessage}` : ""} Please try again.`,
+      );
     }
   };
 
@@ -303,6 +360,7 @@ const UserManagement = () => {
     if (name === "email") return validateEmail(value);
     if (name === "phone") return validatePhone(value);
     if (name === "name") return validateName(value);
+    if (name === "industry") return validateIndustry(value);
     return "";
   };
 
@@ -311,6 +369,7 @@ const UserManagement = () => {
       name: validateName(payload.name),
       email: validateEmail(payload.email),
       phone: validatePhone(payload.phone),
+      industry: validateIndustry(payload.industry),
     };
   };
 
@@ -376,75 +435,76 @@ const UserManagement = () => {
                 <>
                   {pagedUsers.length > 0 ? (
                     pagedUsers.map((user) => (
-                        <tr key={user.id}>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.phone}</td>
-                            <td>{user.role}</td>
-                            <td>
-                                <StatusInfo status={user.status}/>
-                            </td>
-                            <td className="text-nowrap text-end">
-                                <Button
-                                    action="view"
-                                    label="View"
-                                    size="sm"
-                                    className="btn-fixed-width"
-                                    onClick={() => openView(user)}
-                                />
-                                <Button
-                                    action="update"
-                                    label="Edit"
-                                    size="sm"
-                                    className="btn-fixed-width"
-                                    onClick={() => openEdit(user)}
-                                />
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.phone}</td>
+                        <td>{user.role}</td>
+                        <td>
+                          <StatusInfo status={user.status} />
+                        </td>
+                        <td className="text-nowrap text-end">
+                          <Button
+                            action="view"
+                            label="View"
+                            size="sm"
+                            className="btn-fixed-width"
+                            onClick={() => openView(user)}
+                          />
+                          <Button
+                            action="update"
+                            label="Edit"
+                            size="sm"
+                            className="btn-fixed-width"
+                            onClick={() => openEdit(user)}
+                          />
 
-                                {/* Block/Unblock button logic */}
-                                {user.status === "Active" && (
-                                    <Button
-                                        action="block"
-                                        label="Block"
-                                        size="sm"
-                                        className="btn-fixed-width"
-                                        onClick={() => openBlock(user)}
-                                    />
-                                )}
-                                {user.status === "Suspended" && (
-                                    <Button
-                                        action="unblock"
-                                        label="Unblock"
-                                        size="sm"
-                                        className="btn-fixed-width"
-                                        onClick={() => openUnblock(user)}
-                                    />
-                                )}
-                                {(user.status === "Inactive" || user.status === "Blocked") && (
-                                    <Button
-                                        action="block"
-                                        label="Block"
-                                        size="sm"
-                                        className="btn-fixed-width"
-                                        disabled
-                                    />
-                                )}
+                          {/* Block/Unblock button logic */}
+                          {user.status === "active" && (
+                            <Button
+                              action="block"
+                              label="Block"
+                              size="sm"
+                              className="btn-fixed-width"
+                              onClick={() => openBlock(user)}
+                            />
+                          )}
+                          {user.status === "suspended" && (
+                            <Button
+                              action="unblock"
+                              label="Unblock"
+                              size="sm"
+                              className="btn-fixed-width"
+                              onClick={() => openUnblock(user)}
+                            />
+                          )}
+                          {(user.status === "inactive" ||
+                            user.status === "blocked") && (
+                            <Button
+                              action="block"
+                              label="Block"
+                              size="sm"
+                              className="btn-fixed-width"
+                              disabled
+                            />
+                          )}
 
-                                <Button
-                                    action="delete"
-                                    label="Delete"
-                                    size="sm"
-                                    className="btn-fixed-width"
-                                    onClick={() => openDelete(user)}
-                                />
-                            </td>
-                        </tr>
+                          <Button
+                            action="delete"
+                            label="Delete"
+                            size="sm"
+                            className="btn-fixed-width"
+                            onClick={() => openDelete(user)}
+                          />
+                        </td>
+                      </tr>
                     ))
                   ) : (
-                      <tr>
-                          <td colSpan="6" className="text-center py-4">
-                              No users
-                          </td>
-                      </tr>
+                    <tr>
+                      <td colSpan="6" className="text-center py-4">
+                        No users
+                      </td>
+                    </tr>
                   )}
                 </>
               )}
@@ -452,19 +512,19 @@ const UserManagement = () => {
           </table>
         </div>
 
-          {pageSize !== "All" && (
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                  <small className="text-muted">
-                      Showing {(page - 1) * Number(pageSize) + 1} to{" "}
-                      {Math.min(page * Number(pageSize), totalItems)} of {totalItems}{" "}
-                      entries
-                  </small>
-                  <nav>
-                      <ul className="pagination pagination-sm mb-0">
-                          <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-                              <button
-                                  className="page-link"
-                                  onClick={() => gotoPage(page - 1)}
+        {pageSize !== "All" && (
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <small className="text-muted">
+              Showing {(page - 1) * Number(pageSize) + 1} to{" "}
+              {Math.min(page * Number(pageSize), totalItems)} of {totalItems}{" "}
+              entries
+            </small>
+            <nav>
+              <ul className="pagination pagination-sm mb-0">
+                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => gotoPage(page - 1)}
                   >
                     Previous
                   </button>
