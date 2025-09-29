@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
 import { createUser } from "../api/services/user";
+import { validateEmail } from "../utils/Validations";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +17,6 @@ const SignUpForm = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
 
@@ -32,7 +32,7 @@ const SignUpForm = () => {
   });
 
   // ----------------------
-  // Load reCAPTCHA key
+  // Load reCAPTCHA site key on mount
   // ----------------------
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
@@ -45,10 +45,8 @@ const SignUpForm = () => {
   }, []);
 
   // ----------------------
-  // Validation helpers
+  // Password validator
   // ----------------------
-  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
   const validatePassword = (value) => {
     const hasMinLength = value.length >= 8;
     const hasUppercase = /[A-Z]/.test(value);
@@ -56,6 +54,9 @@ const SignUpForm = () => {
     return hasMinLength && hasUppercase && hasNumber;
   };
 
+  // ----------------------
+  // Validate the entire form
+  // ----------------------
   const validateForm = () => {
     const newErrors = {};
 
@@ -65,9 +66,13 @@ const SignUpForm = () => {
     if (!formData.industry) {
       newErrors.industry = "Please select your industry";
     }
-    if (!formData.email || !validateEmail(formData.email)) {
-      newErrors.email = "Enter a valid email address";
+
+    // use the centralized email validator
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
     }
+
     if (!formData.phone) {
       newErrors.phone = "Phone number is required";
     }
@@ -83,11 +88,11 @@ const SignUpForm = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0; // true if no errors
   };
 
   // ----------------------
-  // Handlers
+  // Handle form field changes
   // ----------------------
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -97,16 +102,20 @@ const SignUpForm = () => {
     }));
   };
 
+  // track when password input changes
   const handlePasswordChange = (e) => {
     setFormData((prev) => ({ ...prev, password: e.target.value }));
     setPasswordTouched(true);
   };
 
+  // ----------------------
+  // Handle form submit
+  // ----------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting) return; // prevent double click submit
 
-    if (!validateForm()) return;
+    if (!validateForm()) return; // stop if validation fails
 
     if (!recaptchaRef.current) {
       toast.error(
@@ -124,6 +133,7 @@ const SignUpForm = () => {
     try {
       setIsSubmitting(true);
 
+      // prepare data to send to backend
       const payload = {
         full_name: formData.name,
         email: formData.email,
@@ -136,6 +146,7 @@ const SignUpForm = () => {
       const response = await createUser(payload);
 
       if (response.status === "success") {
+        // success -> show toast + reset form
         toast.success("An activation link was sent to your email address.");
         setFormData({
           name: "",
@@ -152,6 +163,7 @@ const SignUpForm = () => {
         if (recaptchaRef.current) recaptchaRef.current.reset();
         setTimeout(() => navigate("/login"), 2500);
       } else {
+        // backend responded but not success
         if (response.message?.toLowerCase().includes("email")) {
           setErrors({ email: response.message });
         } else if (response.message?.toLowerCase().includes("phone")) {
@@ -165,7 +177,7 @@ const SignUpForm = () => {
     } catch (error) {
       console.error(error);
 
-      // ✅ Improved error handling for backend validation errors
+      // handle thrown errors (Axios/network/backend)
       const backendMessage =
         error.response?.data?.message || error.message || null;
 
@@ -186,11 +198,12 @@ const SignUpForm = () => {
   };
 
   // ----------------------
-  // Render
+  // Render form UI
   // ----------------------
   return (
     <section className="container-fluid justify-content-center align-items-center signup-form-section p-md-3 p-lg-5">
       <div className="row">
+        {/* Left side with branding */}
         <div className="col-lg-6 col-12 text-dark d-flex flex-column justify-content-center align-items-center p-3 p-lg-5 mb-0">
           <h4 className="mb-3 register-text fw-bold fs-1">Ecovibe</h4>
           <h2 className="mb-0 mb-lg-4 fs-3 text-light">
@@ -201,6 +214,7 @@ const SignUpForm = () => {
           </div>
         </div>
 
+        {/* Right side with sign up form */}
         <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center p-5">
           <div className="bg-white text-dark p-4 rounded-4 shadow w-100">
             <h2 className="mb-4 fw-bold fs-4">Sign up now</h2>
@@ -227,9 +241,7 @@ const SignUpForm = () => {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className={`form-select ${
-                      errors.industry ? "is-invalid" : ""
-                    }`}
+                    className={`form-select ${errors.industry ? "is-invalid" : ""}`}
                     required
                   >
                     <option value="" disabled>
@@ -335,13 +347,11 @@ const SignUpForm = () => {
                 />
               </div>
 
-              {/* Checkboxes */}
+              {/* Privacy Policy */}
               <div className="form-check mb-2">
                 <input
                   name="privacyPolicy"
-                  className={`form-check-input ${
-                    errors.privacyPolicy ? "is-invalid" : ""
-                  }`}
+                  className={`form-check-input ${errors.privacyPolicy ? "is-invalid" : ""}`}
                   type="checkbox"
                   id="privacyPolicy"
                   checked={formData.privacyPolicy}
@@ -365,6 +375,7 @@ const SignUpForm = () => {
                 )}
               </div>
 
+              {/* Marketing opt-in */}
               <div className="form-check mb-3">
                 <input
                   name="receiveEmails"
@@ -391,7 +402,7 @@ const SignUpForm = () => {
                 )}
               </div>
 
-              {/* Submit */}
+              {/* Submit button */}
               <div className="d-flex">
                 <Button
                   type="submit"
