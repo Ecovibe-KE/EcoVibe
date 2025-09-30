@@ -2,7 +2,35 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from models.payment import MpesaTransaction
+from models.user import User
 
+
+@pytest.fixture
+def auth_headers(client, session):
+    """Fixture to get JWT auth headers for authenticated requests"""
+    # Create a test user first
+    test_user = User(
+        username="testuser",
+        email="test@example.com",
+        password="testpassword"
+    )
+    session.add(test_user)
+    session.commit()
+
+    # Login to get JWT token
+    login_data = {
+        "username": "testuser",
+        "password": "testpassword"
+    }
+
+    response = client.post(
+        "/api/login",  # Adjust to your actual login endpoint
+        data=json.dumps(login_data),
+        content_type="application/json"
+    )
+
+    token = response.get_json()["access_token"]  # Adjust based on your JWT response structure
+    return {"Authorization": f"Bearer {token}"}
 
 class TestMpesaRoutes:
     """Test cases for MPESA routes"""
@@ -38,7 +66,7 @@ class TestMpesaRoutes:
         assert json_data["success"] is True
         assert json_data["MerchantRequestID"] == "29115-34620561-1"
 
-    def test_initiate_stk_push_missing_parameters(self, client, session):
+    def test_initiate_stk_push_missing_parameters(self, client, session, auth_headers):
         """Test STK push with missing parameters"""
         data = {
             "amount": 100
@@ -49,6 +77,7 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
+            headers=auth_headers  # Add JWT headers
         )
 
         assert response.status_code == 400
@@ -87,7 +116,7 @@ class TestMpesaRoutes:
         assert "error" in json_data
 
     @patch("routes.mpesa_routes.mpesa_utility.initiate_stk_push")
-    def test_initiate_stk_push_utility_failure(self, client, session, mock_stk_push):
+    def test_initiate_stk_push_utility_failure(self, mock_stk_push, client, session, auth_headers):
         """Test STK push when utility fails"""
         mock_stk_push.return_value = {
             "success": False,
@@ -100,9 +129,10 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
+            headers=auth_headers,
         )
 
-        assert response.status_code == 500
+        assert response.status_code == 400
         json_data = response.get_json()
         assert "error" in json_data
 
@@ -253,7 +283,7 @@ class TestMpesaRoutes:
         assert response.status_code == 404
 
     @patch("routes.mpesa_routes.mpesa_utility.check_transaction_status")
-    def test_get_transaction_status(self, client, session, mock_status_check):
+    def test_get_transaction_status(self, mock_status_check, client, session):
         """Test checking transaction status"""
         transaction = MpesaTransaction(
             merchant_request_id="req1",

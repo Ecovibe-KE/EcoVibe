@@ -136,6 +136,7 @@ class MpesaTransaction(db.Model):
             "created_at": self.created_at.isoformat(),
             "transaction_code": self.transaction_code,
             "paid_by": self.paid_by,
+            "phone_number": self.phone_number,
             "currency": self.currency,
             # New fields
             "merchant_request_id": self.merchant_request_id,
