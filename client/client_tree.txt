@@ -1,0 +1,118 @@
+.
+├── README.md
+├── client_tree.txt
+├── eslint.config.js
+├── firebase.json
+├── firebaseConfig.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   ├── 3826376 1.png
+│   ├── EcovibeLogo.png
+│   ├── Eye.png
+│   ├── Target.png
+│   ├── ceo.png
+│   ├── chairs.png
+│   ├── creativeDirector.png
+│   ├── forest-272595_1280 2.png
+│   ├── index.html
+│   ├── investment-5241253_1280 2.png
+│   └── leadDeveloper.png
+├── src
+│   ├── api
+│   │   ├── axiosConfig.js
+│   │   ├── endpoints.js
+│   │   └── services
+│   ├── assets
+│   │   ├── Calendar.png
+│   │   ├── User.png
+│   │   ├── about.png
+│   │   ├── blog.png
+│   │   ├── bookings.png
+│   │   ├── chairs-2181960_1280 2.png
+│   │   ├── home.png
+│   │   ├── payment.png
+│   │   ├── placeholder.png
+│   │   ├── profile.png
+│   │   ├── resources.png
+│   │   ├── services.png
+│   │   ├── tickets.png
+│   │   └── users.png
+│   ├── components
+│   │   ├── About.jsx
+│   │   ├── AboutUs.jsx
+│   │   ├── AboutUsCard.jsx
+│   │   ├── AboutUsPartition.jsx
+│   │   ├── App.jsx
+│   │   ├── Blog.jsx
+│   │   ├── BlogCard.jsx
+│   │   ├── BlogPost.jsx
+│   │   ├── BlogSideBar.jsx
+│   │   ├── Contact.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Homepage.jsx
+│   │   ├── Login.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Playground.jsx
+│   │   ├── PrivacyPolicy.jsx
+│   │   ├── Signup.jsx
+│   │   ├── Terms.jsx
+│   │   ├── TopNavbar.jsx
+│   │   ├── Verify.jsx
+│   │   └── admin
+│   ├── css
+│   │   ├── App.css
+│   │   ├── Blog.module.css
+│   │   ├── Footer.css
+│   │   ├── TopNavBar.css
+│   │   ├── UserManagement.css
+│   │   ├── aboutus.css
+│   │   ├── index.css
+│   │   ├── navbar.css
+│   │   └── signup.css
+│   ├── hooks
+│   │   ├── useAnalytics.jsx
+│   │   └── useBreakpoint.jsx
+│   ├── main.jsx
+│   ├── sum.js
+│   └── utils
+│       ├── Button.jsx
+│       ├── Input.jsx
+│       └── Validations.js
+├── tests
+│   ├── api
+│   │   ├── handlers.js
+│   │   ├── server.js
+│   │   └── services
+│   ├── components
+│   │   ├── AboutUs.test.jsx
+│   │   ├── AboutUsCard.test.jsx
+│   │   ├── AboutUsPartition.test.jsx
+│   │   ├── AddUserModal.test.jsx
+│   │   ├── BlockUserModal.test.jsx
+│   │   ├── Blog.test.jsx
+│   │   ├── BlogSideBar.test.jsx
+│   │   ├── Contact.test.jsx
+│   │   ├── DeleteUserModal.test.jsx
+│   │   ├── EditUserModal.test.jsx
+│   │   ├── Footer.test.jsx
+│   │   ├── Playground.test.jsx
+│   │   ├── Signup.test.jsx
+│   │   ├── StatusInfo.test.jsx
+│   │   ├── TopNavbar.test.jsx
+│   │   ├── UserManagement.test.jsx
+│   │   ├── Validation.test.jsx
+│   │   ├── Verify.test.jsx
+│   │   └── ViewUserModal.test.jsx
+│   ├── hooks
+│   │   ├── useAnalytics.test.js
+│   │   └── useBreakpoint.test.jsx
+│   ├── setup.js
+│   ├── sum.test.js
+│   └── utils
+│       ├── Button.test.jsx
+│       └── Input.test.jsx
+└── vite.config.js
+
+17 directories, 99 files

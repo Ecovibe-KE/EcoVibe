@@ -15,9 +15,13 @@ import UserManagement from "./admin/UserManagement.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
+import Login from "./Login.jsx";
+import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ResourceCenter from "./admin/ResourceCenter.jsx";
+import ProfilePage from "./ProfilePage.jsx";
+import ResetPassword from "./ResetPassword.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -62,8 +66,6 @@ function App() {
             element={
               <>
                 <TopNavbar />
-                <Outlet />
-                <FooterWrapper />
               </>
             }
           >
@@ -102,15 +104,17 @@ function App() {
                 </div>
               }
             />
+
             <Route
               path="profile"
               element={
                 <div className="p-4">
                   <h2>Profile</h2>
-                  <p>Manage your profile.</p>
+                  <ProfilePage />
                 </div>
               }
             />
+
             <Route
               path="payments"
               element={
@@ -181,6 +185,16 @@ function App() {
             }
           />
           <Route
+            path="/signup"
+            element={
+              <>
+                <NavBar />
+                <SignUpForm />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
             path="/playground"
             element={
               <>
@@ -240,7 +254,6 @@ function App() {
               </>
             }
           />
-
           <Route
             path="/privacy"
             element={
@@ -267,6 +280,37 @@ function App() {
               <>
                 <NavBar />
                 <Terms />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <>
+                <NavBar />
+                <Login />
+                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <>
+                <NavBar />
+                <ForgotPassword />
+                <FooterWrapper />
+              </>
+            }
+          />
+
+          <Route
+            path="/reset-password"
+            element={
+              <>
+                <NavBar />
+                <ResetPassword />
                 <FooterWrapper />
               </>
             }

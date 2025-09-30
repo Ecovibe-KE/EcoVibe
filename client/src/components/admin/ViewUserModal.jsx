@@ -100,6 +100,15 @@ const ViewUserModal = ({ visible, user, onClose }) => {
                 </span>
               </div>
             </div>
+            <div className="col-sm-6">
+              <div
+                className="d-flex justify-content-between border rounded p-2"
+                style={{ background: "#f8fafc" }}
+              >
+                <span className="text-muted">Industry</span>
+                <span className="fw-semibold">{user.industry}</span>
+              </div>
+            </div>
           </div>
         </div>
         <div className="p-3 border-top d-flex justify-content-end">
