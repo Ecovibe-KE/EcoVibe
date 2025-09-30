@@ -44,6 +44,14 @@ const AddUserModal = ({
             error={addFieldErrors.name}
           />
           <Input
+            type="text"
+            label="Industry"
+            name="industry"
+            value={addForm.industry}
+            onChange={onChange}
+            error={addFieldErrors.industry}
+          />
+          <Input
             type="email"
             label="Email"
             name="email"
@@ -68,9 +76,9 @@ const AddUserModal = ({
               value={addForm.role}
               onChange={onChange}
             >
-              <option value="Client">Client</option>
-              {currentUserRole === "SuperAdmin" && (
-                <option value="Admin">Admin</option>
+              <option value="client">Client</option>
+              {currentUserRole === "super_admin" && (
+                <option value="admin">Admin</option>
               )}
             </select>
           </div>

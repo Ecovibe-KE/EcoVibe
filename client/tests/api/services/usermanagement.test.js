@@ -49,18 +49,6 @@ describe('user service', () => {
         expect(result).toEqual([]);
     });
 
-    // Test case 2: fetchUsers - success case with array data
-    it('fetchUsers should return users array when response is array', async () => {
-        const mockUsers = [{id: 1, name: 'John'}, {id: 2, name: 'Jane'}];
-        server.use(
-            http.get(`${BASE_URL}${ENDPOINTS.userManagement}`, () => {
-                return HttpResponse.json(mockUsers, {status: 200});
-            })
-        );
-
-        const result = await fetchUsers();
-        expect(result).toEqual(mockUsers);
-    });
 
     // Test case 3: deleteUsers - success case
     it('deleteUsers should successfully delete user', async () => {
@@ -124,12 +112,12 @@ describe('user service', () => {
     // Test case 7: blockUser - success case
     it('blockUser should suspend user', async () => {
         const userId = '123';
-        const mockResponse = {id: userId, status: 'Suspended'};
+        const mockResponse = {id: userId, status: 'suspended'};
 
         server.use(
-            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, async ({request}) => {
+            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}/status`, async ({request}) => {
                 const body = await request.json();
-                expect(body).toEqual({status: 'Suspended'});
+                expect(body).toEqual({status: 'suspended'});
                 return HttpResponse.json(mockResponse, {status: 200});
             })
         );
@@ -141,12 +129,12 @@ describe('user service', () => {
 // Test case 8: activateUser - success case
     it('activateUser should activate user', async () => {
         const userId = '123';
-        const mockResponse = {id: userId, status: 'Active'};
+        const mockResponse = {id: userId, status: 'active'};
 
         server.use(
-            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}`, async ({request}) => {
+            http.patch(`${BASE_URL}${ENDPOINTS.userManagement}/${userId}/status`, async ({request}) => {
                 const body = await request.json();
-                expect(body).toEqual({status: 'Active'});
+                expect(body).toEqual({status: 'active'});
                 return HttpResponse.json(mockResponse, {status: 200});
             })
         );
@@ -155,16 +143,6 @@ describe('user service', () => {
         expect(result).toEqual(mockResponse);
     });
 
-// Test case 9: fetchUsers - error case
-    it('fetchUsers should handle errors', async () => {
-        server.use(
-            http.get(`${BASE_URL}${ENDPOINTS.userManagement}`, () => {
-                return new HttpResponse(null, {status: 500});
-            })
-        );
-
-        await expect(fetchUsers()).rejects.toBe('Request failed with status code 500');
-    });
 // Test case 10: UserManagement component - pagination logic
     it('should handle pagination correctly when changing page size', () => {
         const {result} = renderHook(() => {

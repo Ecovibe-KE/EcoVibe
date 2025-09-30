@@ -8,15 +8,17 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
-import { createUser } from "../api/services/user";
+import { createUser } from "../api/services/auth";
+import { validateEmail } from "../utils/Validations";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const recaptchaRef = useRef();
-  const [siteKey, setSiteKey] = useState("");
-  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [, setPasswordTouched] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const recaptchaRef = useRef();
+  const [siteKey, setSiteKey] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,7 +31,9 @@ const SignUpForm = () => {
     privacyPolicy: false,
   });
 
-  // Load reCAPTCHA key
+  // ----------------------
+  // Load reCAPTCHA site key on mount
+  // ----------------------
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
@@ -40,6 +44,56 @@ const SignUpForm = () => {
     }
   }, []);
 
+  // ----------------------
+  // Password validator
+  // ----------------------
+  const validatePassword = (value) => {
+    const hasMinLength = value.length >= 8;
+    const hasUppercase = /[A-Z]/.test(value);
+    const hasNumber = /\d/.test(value);
+    return hasMinLength && hasUppercase && hasNumber;
+  };
+
+  // ----------------------
+  // Validate the entire form
+  // ----------------------
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+    if (!formData.industry) {
+      newErrors.industry = "Please select your industry";
+    }
+
+    // use the centralized email validator
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
+    }
+
+    if (!formData.phone) {
+      newErrors.phone = "Phone number is required";
+    }
+    if (!validatePassword(formData.password)) {
+      newErrors.password =
+        "Password must be at least 8 characters, include one uppercase letter and one number";
+    }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    if (!formData.privacyPolicy) {
+      newErrors.privacyPolicy = "You must agree to the terms";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // true if no errors
+  };
+
+  // ----------------------
+  // Handle form field changes
+  // ----------------------
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -48,45 +102,25 @@ const SignUpForm = () => {
     }));
   };
 
-  const validatePassword = (value) => {
-    const hasMinLength = value.length >= 8;
-    const hasNumber = /\d/.test(value);
-    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(value);
-    const hasLetter = /[a-zA-Z]/.test(value);
-    return hasMinLength && hasNumber && hasSymbol && hasLetter;
-  };
-
+  // track when password input changes
   const handlePasswordChange = (e) => {
-    const value = e.target.value;
-    setFormData((prev) => ({ ...prev, password: value }));
+    setFormData((prev) => ({ ...prev, password: e.target.value }));
+    setPasswordTouched(true);
   };
 
+  // ----------------------
+  // Handle form submit
+  // ----------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting) return; // prevent double click submit
+
+    if (!validateForm()) return; // stop if validation fails
 
     if (!recaptchaRef.current) {
       toast.error(
         "reCAPTCHA not loaded. Please refresh the page and try again.",
       );
-      return;
-    }
-
-    if (!validatePassword(formData.password)) {
-      setPasswordTouched(true);
-      toast.error(
-        "Password must be at least 8 characters and include a letter, a number, and a symbol.",
-      );
-      return;
-    }
-
-    if (!formData.confirmPassword) {
-      toast.error("Please confirm your password.");
-      return;
-    }
-
-    if (formData.confirmPassword !== formData.password) {
-      toast.error("Passwords do not match.");
       return;
     }
 
@@ -98,10 +132,21 @@ const SignUpForm = () => {
 
     try {
       setIsSubmitting(true);
-      const payload = { ...formData, recaptchaToken: captchaToken };
+
+      // prepare data to send to backend
+      const payload = {
+        full_name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        industry: formData.industry,
+        phone_number: formData.phone,
+        recaptchaToken: captchaToken,
+      };
+
       const response = await createUser(payload);
 
-      if (response.ok) {
+      if (response.status === "success") {
+        // success -> show toast + reset form
         toast.success("An activation link was sent to your email address.");
         setFormData({
           name: "",
@@ -113,28 +158,52 @@ const SignUpForm = () => {
           receiveEmails: false,
           privacyPolicy: false,
         });
-        recaptchaRef.current.reset();
+        setErrors({});
         setPasswordTouched(false);
-
-        setTimeout(() => navigate("/login"), 1500);
+        if (recaptchaRef.current) recaptchaRef.current.reset();
+        setTimeout(() => navigate("/login"), 2500);
       } else {
+        // backend responded but not success
+        if (response.message?.toLowerCase().includes("email")) {
+          setErrors({ email: response.message });
+        } else if (response.message?.toLowerCase().includes("phone")) {
+          setErrors({ phone: response.message });
+        }
         toast.error(
           response.message || "There was an error submitting your form.",
         );
-        recaptchaRef.current.reset();
+        if (recaptchaRef.current) recaptchaRef.current.reset();
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred. Please try again.");
+
+      // handle thrown errors (Axios/network/backend)
+      const backendMessage =
+        error.response?.data?.message || error.message || null;
+
+      if (backendMessage?.toLowerCase().includes("email")) {
+        setErrors({ email: backendMessage });
+        toast.error(backendMessage);
+      } else if (backendMessage?.toLowerCase().includes("phone")) {
+        setErrors({ phone: backendMessage });
+        toast.error(backendMessage);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+
       if (recaptchaRef.current) recaptchaRef.current.reset();
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ----------------------
+  // Render form UI
+  // ----------------------
   return (
     <section className="container-fluid justify-content-center align-items-center signup-form-section p-md-3 p-lg-5">
       <div className="row">
+        {/* Left side with branding */}
         <div className="col-lg-6 col-12 text-dark d-flex flex-column justify-content-center align-items-center p-3 p-lg-5 mb-0">
           <h4 className="mb-3 register-text fw-bold fs-1">Ecovibe</h4>
           <h2 className="mb-0 mb-lg-4 fs-3 text-light">
@@ -145,10 +214,11 @@ const SignUpForm = () => {
           </div>
         </div>
 
+        {/* Right side with sign up form */}
         <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center p-5">
           <div className="bg-white text-dark p-4 rounded-4 shadow w-100">
             <h2 className="mb-4 fw-bold fs-4">Sign up now</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               {/* Name & Industry */}
               <div className="row">
                 <div className="mb-3 col-6">
@@ -159,6 +229,7 @@ const SignUpForm = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    error={errors.name}
                   />
                 </div>
                 <div className="col-6">
@@ -170,7 +241,7 @@ const SignUpForm = () => {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className="form-select"
+                    className={`form-select ${errors.industry ? "is-invalid" : ""}`}
                     required
                   >
                     <option value="" disabled>
@@ -183,6 +254,9 @@ const SignUpForm = () => {
                     <option value="energy">Energy</option>
                     <option value="other">Other</option>
                   </select>
+                  {errors.industry && (
+                    <div className="invalid-feedback">{errors.industry}</div>
+                  )}
                 </div>
               </div>
 
@@ -195,6 +269,7 @@ const SignUpForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  error={errors.email}
                 />
               </div>
 
@@ -209,15 +284,19 @@ const SignUpForm = () => {
                   onChange={(phone) =>
                     setFormData((prev) => ({ ...prev, phone }))
                   }
-                  inputClassName="w-100 custom-phone-input-text"
+                  inputClassName={`w-100 custom-phone-input-text ${
+                    errors.phone ? "is-invalid" : ""
+                  }`}
                   className="custom-phone-input"
                   inputProps={{
                     name: "phone",
                     required: true,
-                    autoFocus: true,
                     id: "phone",
                   }}
                 />
+                {errors.phone && (
+                  <div className="invalid-feedback d-block">{errors.phone}</div>
+                )}
               </div>
 
               {/* Password */}
@@ -225,20 +304,21 @@ const SignUpForm = () => {
                 <label htmlFor="password" className="form-label mb-0">
                   Password
                 </label>
-                <a
-                  className="btn-sm btn-link p-0 text-muted mb-0 text-decoration-none"
+                <button
+                  type="button"
+                  className="btn btn-link p-0 text-muted mb-0 text-decoration-none"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
                     <div className="d-flex gap-1 text-muted mb-0">
-                      <VisibilityOff /> <p className="mb-0">Hide</p>
+                      <VisibilityOff /> <span>Hide</span>
                     </div>
                   ) : (
                     <div className="d-flex gap-1 text-muted mb-0">
-                      <Visibility /> <p className="mb-0">Show</p>
+                      <Visibility /> <span>Show</span>
                     </div>
                   )}
-                </a>
+                </button>
               </div>
               <Input
                 type={showPassword ? "text" : "password"}
@@ -247,11 +327,7 @@ const SignUpForm = () => {
                 value={formData.password}
                 onChange={handlePasswordChange}
                 onBlur={() => setPasswordTouched(true)}
-                success={
-                  passwordTouched && validatePassword(formData.password)
-                    ? " "
-                    : undefined
-                }
+                error={errors.password}
               />
 
               {/* Confirm Password */}
@@ -259,7 +335,7 @@ const SignUpForm = () => {
                 <Input
                   required
                   type={showPassword ? "text" : "password"}
-                  label="confirm password"
+                  label="Confirm password"
                   value={formData.confirmPassword}
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -267,20 +343,15 @@ const SignUpForm = () => {
                       confirmPassword: e.target.value,
                     }))
                   }
-                  success={
-                    formData.confirmPassword &&
-                    formData.confirmPassword === formData.password
-                      ? " "
-                      : undefined
-                  }
+                  error={errors.confirmPassword}
                 />
               </div>
 
-              {/* Checkboxes */}
+              {/* Privacy Policy */}
               <div className="form-check mb-2">
                 <input
                   name="privacyPolicy"
-                  className="form-check-input"
+                  className={`form-check-input ${errors.privacyPolicy ? "is-invalid" : ""}`}
                   type="checkbox"
                   id="privacyPolicy"
                   checked={formData.privacyPolicy}
@@ -297,7 +368,14 @@ const SignUpForm = () => {
                     Privacy Policy
                   </Link>
                 </label>
+                {errors.privacyPolicy && (
+                  <div className="invalid-feedback d-block">
+                    {errors.privacyPolicy}
+                  </div>
+                )}
               </div>
+
+              {/* Marketing opt-in */}
               <div className="form-check mb-3">
                 <input
                   name="receiveEmails"
@@ -314,7 +392,7 @@ const SignUpForm = () => {
               </div>
 
               {/* reCAPTCHA */}
-              <div className="">
+              <div className="mb-3">
                 {siteKey ? (
                   <ReCAPTCHA sitekey={siteKey} ref={recaptchaRef} />
                 ) : (
@@ -324,7 +402,7 @@ const SignUpForm = () => {
                 )}
               </div>
 
-              {/* Submit */}
+              {/* Submit button */}
               <div className="d-flex">
                 <Button
                   type="submit"
@@ -332,7 +410,7 @@ const SignUpForm = () => {
                   hoverColor="none"
                   disabled={isSubmitting}
                 >
-                  Sign up
+                  {isSubmitting ? "Signing up…" : "Sign up"}
                 </Button>
                 <p className="text-center mt-3">
                   Already have an account? <Link to="/login">Login</Link>
