@@ -222,8 +222,17 @@ class TestMpesaUtility:
 
     def test_initiate_stk_push_missing_credentials(self):
         """Test STK push with missing environment variables"""
-        # Clear required environment variables
-        original_shortcode = os.environ.pop("FLASK_MPESA_BUSINESS_SHORTCODE", None)
+        # Clear ALL required environment variables to trigger the missing credentials error
+        original_vars = {}
+        required_vars = [
+            "FLASK_MPESA_BUSINESS_SHORTCODE",
+            "FLASK_MPESA_PASSKEY",
+            "FLASK_MPESA_CONSUMER_KEY",
+            "FLASK_MPESA_CONSUMER_SECRET"
+        ]
+
+        for var in required_vars:
+            original_vars[var] = os.environ.pop(var, None)
 
         result = self.mpesa_utility.initiate_stk_push(
             amount=100, phone_number="254712345678"
@@ -232,9 +241,10 @@ class TestMpesaUtility:
         assert result["success"] is False
         assert "Missing MPESA environment variables" in result["error"]
 
-        # Restore environment variable
-        if original_shortcode:
-            os.environ["FLASK_MPESA_BUSINESS_SHORTCODE"] = original_shortcode
+        # Restore environment variables
+        for var, value in original_vars.items():
+            if value is not None:
+                os.environ[var] = value
 
     @patch("utils.mpesa_utils.MpesaTokenManager.get_token")
     @patch("utils.mpesa_utils.requests.post")

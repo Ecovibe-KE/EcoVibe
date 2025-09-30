@@ -8,9 +8,7 @@ from models.user import User
 @pytest.fixture
 def auth_headers(client, session):
     """Fixture to get JWT auth headers for authenticated requests"""
-    # Create a test user first
     test_user = User(
-        username="testuser",
         email="test@example.com",
         password="testpassword"
     )
@@ -19,24 +17,25 @@ def auth_headers(client, session):
 
     # Login to get JWT token
     login_data = {
-        "username": "testuser",
+        "email": "test@example.com",
         "password": "testpassword"
     }
 
     response = client.post(
-        "/api/login",  # Adjust to your actual login endpoint
+        "/api/login",
         data=json.dumps(login_data),
         content_type="application/json"
     )
 
-    token = response.get_json()["access_token"]  # Adjust based on your JWT response structure
+    token = response.get_json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
 
 class TestMpesaRoutes:
     """Test cases for MPESA routes"""
 
-    @patch("routes.mpesa_routes.mpesa_utility.initiate_stk_push")
-    def test_initiate_stk_push_success(self, client, session, mock_stk_push):
+    @patch("routes.mpesa.mpesa_utility.initiate_stk_push")
+    def test_initiate_stk_push_success(self, mock_stk_push, client, session, auth_headers):
         """Test successful STK push initiation"""
         # Mock the STK push response
         mock_stk_push.return_value = {
@@ -59,6 +58,7 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
+            headers=auth_headers  # FIX: Add auth headers
         )
 
         assert response.status_code == 200
@@ -77,14 +77,14 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
-            headers=auth_headers  # Add JWT headers
+            headers=auth_headers
         )
 
         assert response.status_code == 400
         json_data = response.get_json()
         assert "error" in json_data
 
-    def test_initiate_stk_push_invalid_amount(self, client, session):
+    def test_initiate_stk_push_invalid_amount(self, client, session, auth_headers):
         """Test STK push with invalid amount"""
         data = {
             "amount": -100,  # Invalid negative amount
@@ -95,13 +95,14 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
+            headers=auth_headers
         )
 
         assert response.status_code == 400
         json_data = response.get_json()
         assert "error" in json_data
 
-    def test_initiate_stk_push_invalid_phone(self, client, session):
+    def test_initiate_stk_push_invalid_phone(self, client, session, auth_headers):
         """Test STK push with invalid phone number"""
         data = {"amount": 100, "phone_number": "123456"}  # Invalid phone format
 
@@ -109,13 +110,14 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
+            headers=auth_headers  # FIX: Add auth headers
         )
 
         assert response.status_code == 400
         json_data = response.get_json()
         assert "error" in json_data
 
-    @patch("routes.mpesa_routes.mpesa_utility.initiate_stk_push")
+    @patch("routes.mpesa.mpesa_utility.initiate_stk_push")
     def test_initiate_stk_push_utility_failure(self, mock_stk_push, client, session, auth_headers):
         """Test STK push when utility fails"""
         mock_stk_push.return_value = {
@@ -138,14 +140,12 @@ class TestMpesaRoutes:
 
     def test_mpesa_callback_success(self, client, session):
         """Test MPESA callback for successful payment"""
-        # First create a transaction
         transaction = MpesaTransaction(
             merchant_request_id="29115-34620561-1",
             checkout_request_id="ws_CO_191220191020363925",
             amount=100,
             phone_number="254712345678",
-            invoice_id=1,
-            account_reference="Test123",
+            paid_by=1,
         )
         session.add(transaction)
         session.commit()
@@ -192,6 +192,7 @@ class TestMpesaRoutes:
             checkout_request_id="ws_CO_191220191020363926",
             amount=100,
             phone_number="254712345678",
+            paid_by=1,  # FIX: Add required paid_by field
         )
         session.add(transaction)
         session.commit()
@@ -232,7 +233,7 @@ class TestMpesaRoutes:
 
         assert response.status_code == 400
 
-    def test_get_mpesa_transactions(self, client, session):
+    def test_get_mpesa_transactions(self, client, session, auth_headers):  # FIX: Add auth_headers
         """Test retrieving MPESA transactions"""
         # Create test transactions
         transaction1 = MpesaTransaction(
@@ -241,6 +242,7 @@ class TestMpesaRoutes:
             amount=100,
             phone_number="254712345678",
             status="completed",
+            paid_by=1,  # FIX: Add required paid_by field
         )
         transaction2 = MpesaTransaction(
             merchant_request_id="req2",
@@ -248,48 +250,60 @@ class TestMpesaRoutes:
             amount=200,
             phone_number="254712345679",
             status="pending",
+            paid_by=1,  # FIX: Add required paid_by field
         )
         session.add_all([transaction1, transaction2])
         session.commit()
 
-        response = client.get("/api/transactions")
+        response = client.get(
+            "/api/transactions",
+            headers=auth_headers  # FIX: Add auth headers
+        )
 
         assert response.status_code == 200
         json_data = response.get_json()
         assert len(json_data) == 2
 
-    def test_get_mpesa_transaction(self, client, session):
+    def test_get_mpesa_transaction(self, client, session, auth_headers):  # FIX: Add auth_headers
         """Test retrieving a single MPESA transaction"""
         transaction = MpesaTransaction(
             merchant_request_id="req1",
             checkout_request_id="check1",
             amount=100,
             phone_number="254712345678",
+            paid_by=1,  # FIX: Add required paid_by field
         )
         session.add(transaction)
         session.commit()
 
-        response = client.get(f"/api/transactions/{transaction.id}")
+        response = client.get(
+            f"/api/transactions/{transaction.id}",
+            headers=auth_headers  # FIX: Add auth headers
+        )
 
         assert response.status_code == 200
         json_data = response.get_json()
         assert json_data["merchant_request_id"] == "req1"
         assert json_data["amount"] == 100
 
-    def test_get_mpesa_transaction_not_found(self, client, session):
+    def test_get_mpesa_transaction_not_found(self, client, session, auth_headers):  # FIX: Add auth_headers
         """Test retrieving non-existent MPESA transaction"""
-        response = client.get("/api/transactions/999")
+        response = client.get(
+            "/api/transactions/999",
+            headers=auth_headers  # FIX: Add auth headers
+        )
 
         assert response.status_code == 404
 
-    @patch("routes.mpesa_routes.mpesa_utility.check_transaction_status")
-    def test_get_transaction_status(self, mock_status_check, client, session):
+    @patch("routes.mpesa.mpesa_utility.check_transaction_status")  # FIX: Correct import path
+    def test_get_transaction_status(self, mock_status_check, client, session, auth_headers):  # FIX: Add auth_headers
         """Test checking transaction status"""
         transaction = MpesaTransaction(
             merchant_request_id="req1",
             checkout_request_id="check1",
             amount=100,
             phone_number="254712345678",
+            paid_by=1,  # FIX: Add required paid_by field
         )
         session.add(transaction)
         session.commit()
@@ -300,15 +314,21 @@ class TestMpesaRoutes:
             "result_desc": "Transaction completed successfully",
         }
 
-        response = client.get(f"/api/transactions/{transaction.id}/status")
+        response = client.get(
+            f"/api/transactions/{transaction.id}/status",
+            headers=auth_headers  # FIX: Add auth headers
+        )
 
         assert response.status_code == 200
         json_data = response.get_json()
         assert json_data["success"] is True
         assert json_data["result_code"] == "0"
 
-    def test_get_transaction_status_not_found(self, client, session):
+    def test_get_transaction_status_not_found(self, client, session, auth_headers):  # FIX: Add auth_headers
         """Test checking status of non-existent transaction"""
-        response = client.get("/api/transactions/999/status")
+        response = client.get(
+            "/api/transactions/999/status",
+            headers=auth_headers  # FIX: Add auth headers
+        )
 
         assert response.status_code == 404
