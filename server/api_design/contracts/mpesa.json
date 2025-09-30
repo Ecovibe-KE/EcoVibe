@@ -1,0 +1,81 @@
+[
+  {
+    "endpoint": "/api/mpesa/stk-push",
+    "method": "POST",
+    "description": "Initiate STK push payment",
+    "request": {
+      "body": {
+        "amount": "integer (required, amount to be paid in KES)",
+        "phone_number": "string (required, format: 254XXXXXXXXX)",
+        "invoice_id": "integer (optional, must exist in Invoice)",
+        "description": "string (optional, Transaction description)"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/stk-push.200.json" },
+      "400": { "$ref": "../examples/errors/400.json" },
+      "500": { "$ref": "../examples/errors/500.json" }
+    }
+  },
+  {
+    "endpoint": "/api/mpesa/callback",
+    "method": "POST",
+    "description": "MPESA payment callback webhook",
+    "request": {
+      "body": {
+        "Body": {
+          "stkCallback": {
+            "MerchantRequestID": "string",
+            "CheckoutRequestID": "string",
+            "ResultCode": "integer",
+            "ResultDesc": "string",
+            "CallbackMetadata": "object (optional)"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/mpesa/callback.200.json" },
+      "400": { "$ref": "../examples/errors/400.json" }
+    }
+  },
+  {
+    "endpoint": "/api/mpesa/transactions",
+    "method": "GET",
+    "description": "Retrieve all MPESA transactions with pagination",
+    "request": {
+      "query": {
+        "page": "integer (optional, default: 1)",
+        "per_page": "integer (optional, default: 20, max: 100)",
+        "status": "string (optional, enum: [pending, completed, failed])"
+      }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/mpesa/transactions.200.json" }
+    }
+  },
+  {
+    "endpoint": "/api/mpesa/transactions/{id}",
+    "method": "GET",
+    "description": "Retrieve a specific MPESA transaction by ID",
+    "request": {
+      "params": { "id": "integer (required)" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/mpesa/transaction.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  },
+  {
+    "endpoint": "/api/mpesa/transaction/status/{checkout_request_id}",
+    "method": "GET",
+    "description": "Check transaction status by checkout request ID",
+    "request": {
+      "params": { "checkout_request_id": "string (required)" }
+    },
+    "responses": {
+      "200": { "$ref": "../examples/mpesa/status.200.json" },
+      "404": { "$ref": "../examples/errors/404.json" }
+    }
+  }
+]
