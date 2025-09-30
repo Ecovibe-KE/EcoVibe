@@ -62,7 +62,9 @@ class MpesaTransaction(db.Model):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    transaction_code = db.Column(db.String(15), unique=True, nullable=True)  # Changed to nullable=True
+    transaction_code = db.Column(
+        db.String(15), unique=True, nullable=True
+    )  # Changed to nullable=True
     paid_by = db.Column(db.String(15), nullable=False)
     created_at = db.Column(
         db.DateTime(timezone=True),
@@ -85,7 +87,9 @@ class MpesaTransaction(db.Model):
     transaction_date = db.Column(db.String(50), nullable=True)
 
     # Status tracking
-    status = db.Column(db.String(50), default='pending')  # pending, completed, failed, cancelled
+    status = db.Column(
+        db.String(50), default="pending"
+    )  # pending, completed, failed, cancelled
     callback_received = db.Column(db.Boolean, default=False)
     callback_received_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
@@ -93,7 +97,7 @@ class MpesaTransaction(db.Model):
     raw_callback_data = db.Column(db.JSON, nullable=True)
 
     # Invoice reference
-    invoice_id = db.Column(db.Integer, db.ForeignKey('invoices.id'), nullable=True)
+    invoice_id = db.Column(db.Integer, db.ForeignKey("invoices.id"), nullable=True)
 
     @validates("amount")
     def validate_amount(self, key, amount_to_check):
@@ -144,8 +148,12 @@ class MpesaTransaction(db.Model):
             "transaction_date": self.transaction_date,
             "status": self.status,
             "callback_received": self.callback_received,
-            "callback_received_at": self.callback_received_at.isoformat() if self.callback_received_at else None,
-            "invoice_id": self.invoice_id
+            "callback_received_at": (
+                self.callback_received_at.isoformat()
+                if self.callback_received_at
+                else None
+            ),
+            "invoice_id": self.invoice_id,
         }
 
 

@@ -31,17 +31,15 @@ class MpesaTokenManager:
             credentials = f"{consumer_key}:{consumer_secret}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
-            headers = {
-                'Authorization': f'Basic {encoded_credentials}'
-            }
+            headers = {"Authorization": f"Basic {encoded_credentials}"}
             response = requests.get(auth_url, headers=headers, timeout=mpesa_timeout)
             response.raise_for_status()
 
             token_data = response.json()
-            self.token = token_data.get('access_token')
+            self.token = token_data.get("access_token")
 
             # FIX: Convert expires_in to integer safely
-            expires_in = token_data.get('expires_in', 3600)
+            expires_in = token_data.get("expires_in", 3600)
             try:
                 expires_in = int(expires_in)
             except (ValueError, TypeError):
@@ -73,12 +71,12 @@ class MpesaUtility:
             business_shortcode = str(business_shortcode)
 
         return {
-            'business_shortcode': business_shortcode,
-            'passkey': os.getenv("FLASK_MPESA_PASSKEY"),
-            'callback_url': os.getenv("FLASK_MPESA_CALLBACK_URL"),
-            'stk_push_url': os.getenv("FLASK_MPESA_STK_PUSH_URL"),
-            'query_url': os.getenv("FLASK_MPESA_QUERY_URL"),
-            'timeout': int(os.getenv("FLASK_MPESA_TIMEOUT", "30"))
+            "business_shortcode": business_shortcode,
+            "passkey": os.getenv("FLASK_MPESA_PASSKEY"),
+            "callback_url": os.getenv("FLASK_MPESA_CALLBACK_URL"),
+            "stk_push_url": os.getenv("FLASK_MPESA_STK_PUSH_URL"),
+            "query_url": os.getenv("FLASK_MPESA_QUERY_URL"),
+            "timeout": int(os.getenv("FLASK_MPESA_TIMEOUT", "30")),
         }
 
     def generate_password(self, business_shortcode, passkey):
@@ -91,7 +89,9 @@ class MpesaUtility:
         encoded_string = base64.b64encode(data_to_encode.encode()).decode()
         return encoded_string, timestamp
 
-    def initiate_stk_push(self, amount, phone_number, invoice_id=None, description="Payment"):
+    def initiate_stk_push(
+        self, amount, phone_number, invoice_id=None, description="Payment"
+    ):
         """
         Initiate STK push to customer phone
         """
@@ -101,19 +101,25 @@ class MpesaUtility:
 
             # Get MPESA credentials from environment
             credentials = self.get_mpesa_credentials()
-            business_shortcode = credentials['business_shortcode']
-            passkey = credentials['passkey']
-            callback_url = credentials['callback_url']
-            stk_push_url = credentials['stk_push_url']
-            timeout = credentials['timeout']
+            business_shortcode = credentials["business_shortcode"]
+            passkey = credentials["passkey"]
+            callback_url = credentials["callback_url"]
+            stk_push_url = credentials["stk_push_url"]
+            timeout = credentials["timeout"]
 
             if not all([business_shortcode, passkey, callback_url, stk_push_url]):
                 missing = []
-                if not business_shortcode: missing.append("FLASK_MPESA_BUSINESS_SHORTCODE")
-                if not passkey: missing.append("FLASK_MPESA_PASSKEY")
-                if not callback_url: missing.append("FLASK_MPESA_CALLBACK_URL")
-                if not stk_push_url: missing.append("FLASK_MPESA_STK_PUSH_URL")
-                raise Exception(f"Missing MPESA environment variables: {', '.join(missing)}")
+                if not business_shortcode:
+                    missing.append("FLASK_MPESA_BUSINESS_SHORTCODE")
+                if not passkey:
+                    missing.append("FLASK_MPESA_PASSKEY")
+                if not callback_url:
+                    missing.append("FLASK_MPESA_CALLBACK_URL")
+                if not stk_push_url:
+                    missing.append("FLASK_MPESA_STK_PUSH_URL")
+                raise Exception(
+                    f"Missing MPESA environment variables: {', '.join(missing)}"
+                )
 
             # Generate password and timestamp
             password, timestamp = self.generate_password(business_shortcode, passkey)
@@ -130,64 +136,76 @@ class MpesaUtility:
                 "PartyB": business_shortcode,
                 "PhoneNumber": str(phone_number),
                 "CallBackURL": callback_url,
-                "AccountReference": f"Invoice{invoice_id}" if invoice_id else "Ecovibe payment",
-                "TransactionDesc": description[:20]
+                "AccountReference": (
+                    f"Invoice{invoice_id}" if invoice_id else "Ecovibe payment"
+                ),
+                "TransactionDesc": description[:20],
             }
 
             headers = {
-                'Authorization': f'Bearer {access_token}',
-                'Content-Type': 'application/json'
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
             }
 
             # print(f"Payload {payload}")
             # print(f"headers {headers}")
 
             # Make API request
-            response = requests.post(stk_push_url, json=payload, headers=headers, timeout=timeout)
+            response = requests.post(
+                stk_push_url, json=payload, headers=headers, timeout=timeout
+            )
             response.raise_for_status()
 
             response_data = response.json()
 
             # Check if request was successful
-            if response_data.get('ResponseCode') == '0':
+            if response_data.get("ResponseCode") == "0":
                 return {
-                    'success': True,
-                    'MerchantRequestID': response_data.get('MerchantRequestID'),
-                    'CheckoutRequestID': response_data.get('CheckoutRequestID'),
-                    'ResponseCode': response_data.get('ResponseCode'),
-                    'ResponseDescription': response_data.get('ResponseDescription'),
-                    'CustomerMessage': response_data.get('CustomerMessage')
+                    "success": True,
+                    "MerchantRequestID": response_data.get("MerchantRequestID"),
+                    "CheckoutRequestID": response_data.get("CheckoutRequestID"),
+                    "ResponseCode": response_data.get("ResponseCode"),
+                    "ResponseDescription": response_data.get("ResponseDescription"),
+                    "CustomerMessage": response_data.get("CustomerMessage"),
                 }
             else:
-                error_message = response_data.get('ResponseDescription', 'STK push failed')
+                error_message = response_data.get(
+                    "ResponseDescription", "STK push failed"
+                )
                 return {
-                    'success': False,
-                    'error': error_message,
-                    'response_code': response_data.get('ResponseCode')
+                    "success": False,
+                    "error": error_message,
+                    "response_code": response_data.get("ResponseCode"),
                 }
 
         except requests.exceptions.RequestException as e:
             # Extract error message from response if available
             error_msg = str(e)
-            if hasattr(e, 'response') and e.response is not None:
+            if hasattr(e, "response") and e.response is not None:
                 try:
                     error_data = e.response.json()
-                    error_msg = error_data.get('errorMessage', error_data.get('errorMessage', str(e)))
-                except:
-                    error_msg = e.response.text or str(e)
+                    error_msg = error_data.get(
+                        "errorMessage", error_data.get("errorMessage", str(e))
+                    )
+                except Exception as e:
+                    error_msg = (
+                        getattr(e, "response", None).text
+                        if hasattr(e, "response")
+                        else str(e)
+                    )
 
-            return {
-                'success': False,
-                'error': f"STK push failed: {error_msg}"
-            }
+            return {"success": False, "error": f"STK push failed: {error_msg}"}
         except Exception as e:
-            return {
-                'success': False,
-                'error': f"Error initiating STK push: {str(e)}"
-            }
+            return {"success": False, "error": f"Error initiating STK push: {str(e)}"}
 
-    def update_mpesa_transaction(self, checkout_request_id, result_code, result_desc,
-                                 transaction_code=None, callback_data=None):
+    def update_mpesa_transaction(
+        self,
+        checkout_request_id,
+        result_code,
+        result_desc,
+        transaction_code=None,
+        callback_data=None,
+    ):
         """
         Update MpesaTransaction with callback data
         """
@@ -209,17 +227,18 @@ class MpesaUtility:
 
             # Update status based on result code
             if result_code == 0:
-                transaction.status = 'completed'
+                transaction.status = "completed"
                 if transaction_code:
                     transaction.transaction_code = transaction_code
             else:
-                transaction.status = 'failed'
+                transaction.status = "failed"
 
             db.session.commit()
 
             return transaction
 
         except Exception as e:
+            current_app.logger.exception(f"Error update_mpesa_transaction {e}")
             db.session.rollback()
             raise
 
@@ -230,10 +249,10 @@ class MpesaUtility:
         try:
             access_token = self.token_manager.get_token()
             credentials = self.get_mpesa_credentials()
-            business_shortcode = credentials['business_shortcode']
-            passkey = credentials['passkey']
-            query_url = credentials['query_url']
-            timeout = credentials['timeout']
+            business_shortcode = credentials["business_shortcode"]
+            passkey = credentials["passkey"]
+            query_url = credentials["query_url"]
+            timeout = credentials["timeout"]
 
             if not all([business_shortcode, passkey, query_url]):
                 raise Exception("MPESA query environment variables not configured")
@@ -244,34 +263,33 @@ class MpesaUtility:
                 "BusinessShortCode": business_shortcode,
                 "Password": password,
                 "Timestamp": timestamp,
-                "CheckoutRequestID": checkout_request_id
+                "CheckoutRequestID": checkout_request_id,
             }
 
             headers = {
-                'Authorization': f'Bearer {access_token}',
-                'Content-Type': 'application/json'
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
             }
 
-            response = requests.post(query_url, json=payload, headers=headers, timeout=timeout)
+            response = requests.post(
+                query_url, json=payload, headers=headers, timeout=timeout
+            )
             response_data = response.json()
 
-            if response_data.get('ResponseCode') == '0':
+            if response_data.get("ResponseCode") == "0":
                 return {
-                    'success': True,
-                    'result_code': response_data.get('ResultCode'),
-                    'result_desc': response_data.get('ResultDesc')
+                    "success": True,
+                    "result_code": response_data.get("ResultCode"),
+                    "result_desc": response_data.get("ResultDesc"),
                 }
             else:
                 return {
-                    'success': False,
-                    'error': response_data.get('ResponseDescription')
+                    "success": False,
+                    "error": response_data.get("ResponseDescription"),
                 }
 
         except Exception as e:
-            return {
-                'success': False,
-                'error': str(e)
-            }
+            return {"success": False, "error": str(e)}
 
 
 # Global instance
