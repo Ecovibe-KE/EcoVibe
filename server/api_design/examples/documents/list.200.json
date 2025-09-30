@@ -5,6 +5,7 @@
     {
       "id": 1,
       "admin_id": 1,
+      "title": "title test",
       "description": "Company Policy Document",
       "file_path": "/files/docs/policy.pdf",
       "created_at": "2025-09-20T12:00:00+00:00"
@@ -12,6 +13,7 @@
     {
       "id": 2,
       "admin_id": 1,
+      "title": "title test",
       "description": "Employee Handbook",
       "file_path": "/files/docs/handbook.pdf",
       "created_at": "2025-09-21T09:30:00+00:00"

@@ -240,7 +240,9 @@ class UserListResource(Resource):
             )
 
             frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5177")
-            verify_link = f"{frontend_url}/verify?token={verification_token}"
+            verify_link = (
+                f"{frontend_url}/verify?token={verification_token}&email={user.email}"
+            )
 
             threading.Thread(
                 target=send_invitation_email,
