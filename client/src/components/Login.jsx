@@ -67,10 +67,11 @@ const Login = () => {
     }
 
     const captchaToken = recaptchaRef.current.getValue();
-    // if (!captchaToken) {
-    //   toast.error("Please complete the reCAPTCHA challenge.");
-    //   return;
-    // }
+    const captchaToken = recaptchaRef.current.getValue();
+    if (!captchaToken) {
+      toast.error("Please complete the reCAPTCHA challenge.");
+      return;
+    }
 
     try {
       setLoading(true);
