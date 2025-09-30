@@ -1,10 +1,7 @@
 from .mail_config import send_email
 
 
-def send_contact_email(
-        to_email,
-        email_type,
-        data):
+def send_contact_email(to_email, email_type, data):
     """Send contact form email based on type (admin or user)"""
 
     # Admin email template
@@ -133,11 +130,7 @@ def send_contact_email(
     return send_email(to_email, subject, body, is_html=True)
 
 
-def send_verification_email(
-        to_email,
-        user_name,
-        verify_link
-):
+def send_verification_email(to_email, user_name, verify_link):
     """Send account verification email to a new user"""
     subject = "Verify Your EcoVibe Account"
 
@@ -217,11 +210,7 @@ def send_verification_email(
     return send_email(to_email, subject, body, is_html=True)
 
 
-def send_invitation_email(
-        recipient_email,
-        recipient_name,
-        invitation_link,
-        invited_by):
+def send_invitation_email(recipient_email, recipient_name, invitation_link, invited_by):
     """Send user invitation email"""
     subject = "You've been invited to join our platform"
 
@@ -342,15 +331,15 @@ def send_reset_email(to_email, user_name, reset_link):
 
 
 def send_newsletter_email(
-        to_email,
-        subject,
-        content,
-        call_to_action_link,
-        unsubscribe_link,
-        view_online_link,
-        preheader_text,
-        current_year,
-        blog_thumbnail_url,
+    to_email,
+    subject,
+    content,
+    call_to_action_link,
+    unsubscribe_link,
+    view_online_link,
+    preheader_text,
+    current_year,
+    blog_thumbnail_url,
 ):
     """Send newsletter email to subscribers"""
     body = f"""

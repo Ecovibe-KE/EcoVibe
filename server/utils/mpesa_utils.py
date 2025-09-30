@@ -226,7 +226,7 @@ class MpesaUtility:
             transaction.callback_received_at = datetime.now(timezone.utc)
 
             # Update status based on result code
-            if str(result_code) == '0':
+            if str(result_code) == "0":
                 transaction.status = "completed"
                 if transaction_code:
                     transaction.transaction_code = transaction_code
@@ -239,8 +239,7 @@ class MpesaUtility:
 
         except Exception:
             current_app.logger.exception(
-                f"Error updating MPESA transaction "
-                f"{checkout_request_id}"
+                f"Error updating MPESA transaction " f"{checkout_request_id}"
             )
             db.session.rollback()
             raise
