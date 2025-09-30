@@ -8,4 +8,7 @@ export const handlers = [
   http.post(`${API_BASE_URL}${ENDPOINTS.register}`, () => {
     return HttpResponse.json({ message: 'User created successfully' });
   }),
+  http.post(`${API_BASE_URL}${ENDPOINTS.newsletter_subscribers}`, () => {
+    return HttpResponse.json({ message: 'Subscription successful' });
+  }),
 ];

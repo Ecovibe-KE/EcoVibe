@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "MerchantRequestID": "29115-34620561-1",
+  "CheckoutRequestID": "ws_CO_30092025091834408714509888",
+  "ResponseCode": "0",
+  "ResponseDescription": "Success. Request accepted for processing",
+  "CustomerMessage": "Success. Request accepted for processing",
+  "transaction_id": 32
+}

@@ -10,21 +10,9 @@ from email_validator import validate_email, EmailNotValidError
 from models import db
 from models.user import User, AccountStatus
 from utils.mail_templates import send_verification_email
+from utils.password import _is_valid_password
 
 user_bp = Blueprint("user", __name__)
-
-
-def _is_valid_password(password: str) -> bool:
-    """Check password length + at least one uppercase + one digit"""
-    if not isinstance(password, str) or not password.strip():
-        return False
-    if len(password) < 8:
-        return False
-    if not any(ch.isupper() for ch in password):
-        return False
-    if not any(ch.isdigit() for ch in password):
-        return False
-    return True
 
 
 @user_bp.route("/register", methods=["POST"])
@@ -160,8 +148,10 @@ def register_user():
         )
 
         # Build link for frontend verify page
-        frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
-        verify_link = f"{frontend_url}/verify?token={verification_token}"
+        frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5177")
+        verify_link = (
+            f"{frontend_url}/verify?token={verification_token}&email={user.email}"
+        )
 
         # Send email in background thread (non-blocking)
         threading.Thread(

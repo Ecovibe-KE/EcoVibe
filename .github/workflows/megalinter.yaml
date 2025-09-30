@@ -54,7 +54,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MEGALINTER_PAT || secrets.GITHUB_TOKEN }}
 
           # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to
           # improve performance

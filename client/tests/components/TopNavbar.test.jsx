@@ -1,240 +1,64 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
-import { vi, describe, test, expect, beforeEach, beforeAll, afterAll } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
-import TopNavbar from '../../src/components/TopNavbar.jsx';
-import useBreakpoint from '../../src/hooks/useBreakpoint';
+import React from "react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
+import TopNavbar from "../../src/components/TopNavbar";
+import { MemoryRouter } from "react-router-dom";
+import { vi, describe, it, beforeAll, expect } from "vitest";
 
-// Mock localStorage
-const localStorageMock = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    clear: vi.fn(),
-    removeItem: vi.fn(),
-};
-global.localStorage = localStorageMock;
-
-// Mock CSS imports
-vi.mock('../../src/css/TopNavBar.css', () => ({}));
-
-// Mock React Icons
-vi.mock('react-icons/fi', () => ({
-    FiMenu: () => <div data-testid="menu-icon">Menu</div>,
-    FiX: () => <div data-testid="close-icon">Close</div>,
-}));
-
-// Mock useBreakpoint hook
-vi.mock('../../src/hooks/useBreakpoint', () => ({
-    default: vi.fn(() => false), // Default to mobile view
-}));
-
-// Mock asset imports
-vi.mock('../../src/assets/home.png', () => ({ default: '/mock-home.png' }));
-vi.mock('../../src/assets/bookings.png', () => ({ default: '/mock-bookings.png' }));
-vi.mock('../../src/assets/resources.png', () => ({ default: '/mock-resources.png' }));
-vi.mock('../../src/assets/profile.png', () => ({ default: '/mock-profile.png' }));
-vi.mock('../../src/assets/payment.png', () => ({ default: '/mock-payment.png' }));
-vi.mock('../../src/assets/blog.png', () => ({ default: '/mock-blog.png' }));
-vi.mock('../../src/assets/services.png', () => ({ default: '/mock-services.png' }));
-vi.mock('../../src/assets/about.png', () => ({ default: '/mock-about.png' }));
-vi.mock('../../src/assets/users.png', () => ({ default: '/mock-users.png' }));
-vi.mock('../../src/assets/tickets.png', () => ({ default: '/mock-tickets.png' }));
-
-// Mock Bootstrap components
-vi.mock('react-bootstrap', () => ({
-    Offcanvas: ({ children, show, onHide, ...props }) => 
-        show ? (
-            <div data-testid="offcanvas" onClick={onHide}>
-                {children}
-            </div>
-        ) : null,
-    Container: ({ children, fluid, className, ...props }) => (
-        <div className={`container ${fluid ? 'container-fluid' : ''} ${className || ''}`} {...props}>
-            {children}
-        </div>
-    ),
-}));
-
-// Helper component to wrap with Router
-const RouterWrapper = ({ children }) => (
-    <BrowserRouter>
-        {children}
-    </BrowserRouter>
-);
-
-describe('TopNavbar Component', () => {
-    const mockUserData = {
-        name: 'John Doe',
-        role: 'Admin',
-        avatar: 'https://example.com/avatar.jpg'
-    };
-
-    const defaultUserData = {
-        name: 'Sharon Maina',
-        role: 'Admin',
-        avatar: 'https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff'
-    };
-
-    beforeEach(() => {
-        vi.clearAllMocks();
-        localStorageMock.getItem.mockClear();
-        
-        // Reset useBreakpoint mock to mobile by default
-        useBreakpoint.mockReturnValue(false);
-    });
-
-    describe('Rendering', () => {
-        test('renders TopNavbar component with default content', () => {
-            localStorageMock.getItem.mockReturnValue(null);
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            // Check if main elements are rendered
-            expect(screen.getByRole('navigation')).toBeInTheDocument();
-            expect(screen.getByText('Dashboard')).toBeInTheDocument();
-            expect(screen.getByAltText('User Avatar')).toBeInTheDocument();
-        });
-
-        test('renders with default user data when localStorage is empty', () => {
-            localStorageMock.getItem.mockReturnValue(null);
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            expect(screen.getByText('Sharon Maina')).toBeInTheDocument();
-            expect(screen.getByText('Admin')).toBeInTheDocument();
-        });
-
-        test('renders with user data from localStorage', async () => {
-            localStorageMock.getItem.mockReturnValue(JSON.stringify(mockUserData));
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            // Wait for useEffect to run and update state
-            await waitFor(() => {
-                expect(screen.getByText('John Doe')).toBeInTheDocument();
-            });
-
-            expect(screen.getByText('Admin')).toBeInTheDocument();
-            expect(screen.getByAltText('User Avatar')).toHaveAttribute('src', mockUserData.avatar);
-        });
-
-        test('renders user avatar with correct attributes', () => {
-            localStorageMock.getItem.mockReturnValue(null);
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            const avatar = screen.getByAltText('User Avatar');
-            expect(avatar).toBeInTheDocument();
-            expect(avatar).toHaveClass('user-avatar');
-            expect(avatar).toHaveAttribute('src', defaultUserData.avatar);
-        });
-
-        test('renders mobile hamburger menu button on mobile', () => {
-            localStorageMock.getItem.mockReturnValue(null);
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            expect(screen.getByTestId('menu-icon')).toBeInTheDocument();
-        });
-
-        test.skip('renders EcoVibe logo', () => {
-         // Skipped: TopNavbar does not include a logo
-        });
-    });
-
-    describe('Mobile Functionality', () => {
-        test('opens mobile sidebar when hamburger menu is clicked', async () => {
-            localStorageMock.getItem.mockReturnValue(null);
-            const user = userEvent.setup();
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            const menuButton = screen.getByLabelText('Toggle sidebar');
-            await user.click(menuButton);
-
-            await waitFor(() => {
-                expect(screen.getByTestId('offcanvas')).toBeInTheDocument();
-            });
-        });
-
-        test('closes mobile sidebar when close button is clicked', async () => {
-            localStorageMock.getItem.mockReturnValue(null);
-            const user = userEvent.setup();
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            // Open sidebar
-            const menuButton = screen.getByLabelText('Toggle sidebar');
-            await user.click(menuButton);
-
-            await waitFor(() => {
-                expect(screen.getByTestId('offcanvas')).toBeInTheDocument();
-            });
-
-            // Close sidebar
-            const offcanvas = screen.getByTestId('offcanvas');
-            await user.click(offcanvas);
-
-            await waitFor(() => {
-                expect(screen.queryByTestId('offcanvas')).not.toBeInTheDocument();
-            });
-        });
-    });
-
-    describe('Error Handling', () => {
-        test('handles invalid localStorage data gracefully', () => {
-            localStorageMock.getItem.mockReturnValue('invalid-json');
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-            render(
-                <RouterWrapper>
-                    <TopNavbar />
-                </RouterWrapper>
-            );
-
-            expect(consoleSpy).toHaveBeenCalledWith('Error parsing user data:', expect.any(Error));
-            expect(screen.getByText('Sharon Maina')).toBeInTheDocument(); // Falls back to default
-
-            consoleSpy.mockRestore();
-        });
-    });
-});
-
-// Setup and teardown for all tests
+// Mock window.matchMedia for Offcanvas / responsive behavior
 beforeAll(() => {
-    // Any global setup
+  window.matchMedia = window.matchMedia || function(query) {
+    return {
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    };
+  };
 });
 
-afterAll(() => {
-    vi.restoreAllMocks();
+describe("TopNavbar Component", () => {
+  const renderComponent = (props = {}) =>
+    render(
+      <MemoryRouter>
+        <TopNavbar {...props} />
+      </MemoryRouter>
+    );
+
+  it("renders main logo", () => {
+    renderComponent();
+    expect(screen.getByAltText(/ecovibe logo/i)).toBeInTheDocument();
+  });
+
+  it("renders sidebar links with correct images and text", () => {
+    renderComponent();
+
+    const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
+    expect(dashboardLink).toBeInTheDocument();
+    expect(within(dashboardLink).getByAltText(/home/i)).toBeInTheDocument();
+
+    const bookingsLink = screen.getByRole("link", { name: /bookings/i });
+    expect(bookingsLink).toBeInTheDocument();
+    expect(within(bookingsLink).getByAltText(/bookings/i)).toBeInTheDocument();
+
+    const ticketsLink = screen.getByRole("link", { name: /tickets/i });
+    expect(ticketsLink).toBeInTheDocument();
+    expect(within(ticketsLink).getByAltText(/tickets/i)).toBeInTheDocument();
+  });
+
+  it("renders top navbar title", () => {
+    renderComponent();
+    expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument();
+  });
+
+  it("renders user avatar and dropdown", () => {
+    renderComponent({ user: { name: "Sharon Maina", role: "Admin" } });
+
+    const userButton = screen.getByRole("button", { name: /sharon maina/i });
+    expect(userButton).toBeInTheDocument();
+    expect(within(userButton).getByAltText(/user avatar/i)).toBeInTheDocument();
+  });
 });

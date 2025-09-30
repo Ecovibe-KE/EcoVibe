@@ -184,7 +184,7 @@ For the client-side application to connect to Firebase, you will need to create 
    
     ```
 
--The staging environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-staging.web.app/), remember to update the server to point to this endpoint in the appropriate places.
+The integration environment client can be found here: [https://ecovibe-develop.netlify.app/](https://ecovibe-develop.netlify.app/), remember to update the server to point to this endpoint in the appropriate places.
 
 The staging environment client can be found here: [https://ecovibe-staging.web.app/](https://ecovibe-staging.web.app/). Remember to update the server to point to this endpoint in the appropriate places, and ensure CORS settings are configured on the server.
 
@@ -196,6 +196,7 @@ The server-side application uses Flask's prefixed environment variables. The rec
 2. Add your configuration variables to this file, prefixed with `FLASK_`. For example, to run the application in debug mode, you would add:
 
     ```bash
+    # Flask Application Configuration
     FLASK_DEBUG=1
     FLASK_CORS_ALLOWED_ORIGINS= # Comma-separated list of allowed origins for CORS
     FLASK_SMTP_REPLY_EMAIL= # Email address that will appear as the reply-to address
@@ -205,6 +206,21 @@ The server-side application uses Flask's prefixed environment variables. The rec
     FLASK_ADMIN_EMAIL= # Admin email address for system notifications and contact
     FLASK_SMTP_PASS= # SMTP authentication password
     FLASK_API= # API route prefix (e.g., "/api" - all routes will be prefixed with this)
+    FLASK_CLIENT_URL= # URL where the client application is hosted (e.g., http://localhost:3000 for local development)
+    FLASK_SERVER_URL= # URL where the server is hosted (e.g., http://localhost:5000 for local development)
+    
+    # MPESA Daraja API Configuration
+    FLASK_MPESA_CONSUMER_KEY= # MPESA API consumer key from Safaricom Developer Portal
+    FLASK_MPESA_CONSUMER_SECRET= # MPESA API consumer secret from Safaricom Developer Portal
+    FLASK_MPESA_BUSINESS_SHORTCODE= # Business shortcode (PayBill or Till Number)
+    FLASK_MPESA_PASSKEY= # MPESA API passkey from Safaricom Developer Portal
+    FLASK_MPESA_CALLBACK_URL= # URL for receiving MPESA payment callbacks (e.g., https://yourdomain.com/api/mpesa/callback)
+    FLASK_MPESA_LIVE_URL= # Base URL for MPESA live/production environment
+    FLASK_MPESA_SANDBOX_URL= # Base URL for MPESA sandbox/testing environment
+    FLASK_MPESA_STK_PUSH_URL= # MPESA STK push API endpoint (e.g., https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest)
+    FLASK_MPESA_TIMEOUT= # Request timeout in seconds for MPESA API calls (default: 30)
+    FLASK_MPESA_AUTH_URL= # MPESA OAuth token generation endpoint (e.g., https://sandbox.safaricom.co.ke/oauth/v1/generate)
+    FLASK_MPESA_QUERY_URL= # MPESA transaction query API endpoint (e.g., https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query)
     ```
 
     Any other configuration your app needs should be added here as well.
