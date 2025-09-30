@@ -9,7 +9,6 @@ Create Date: 2025-09-29 22:32:24.520812
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision = "bc4d5c7c607e"
 down_revision = "7607965119bd"
@@ -80,6 +79,10 @@ def upgrade():
     op.create_foreign_key(
         None, "mpesa_transactions", "invoices", ["invoice_id"], ["id"]
     )
+    op.add_column('mpesa_transactions',
+                  sa.Column('status', sa.String(length=50), nullable=True, server_default='pending'))
+    op.add_column('mpesa_transactions', sa.Column('callback_received', sa.Boolean(), nullable=True, server_default='0'))
+
     # ### end Alembic commands ###
 
 
