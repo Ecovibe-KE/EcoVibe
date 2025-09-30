@@ -10,7 +10,8 @@ function ServiceForm({
     handleFileChange,
     fileInputRef,
     resetForm,
-    previewUrl
+    previewUrl,
+    isEditing = false
 }) {
     return (
         <Container>
@@ -80,7 +81,7 @@ function ServiceForm({
                         type="number"
                         name="durationMinutes"
                         min="0"
-                        max="60"
+                        max="59"
                         value={formData.serviceDuration.minutes}
                         onChange={handleChange}
                         required
@@ -95,7 +96,7 @@ function ServiceForm({
                         accept="image/*"
                         onChange={handleFileChange}
                         ref={fileInputRef}
-                        required
+                        required={!isEditing}
                     />
                 </Form.Group>
 

@@ -16,6 +16,7 @@ function ServiceAdminTop({
                 <img
                     src={imageSource}
                     className={`bg-${imageSetting}-subtle rounded-2 me-3 object-fit-contain`}
+                    alt="service summary icon"
                 />
                 <section>
                     <h5 className="mb-0">{number}</h5>

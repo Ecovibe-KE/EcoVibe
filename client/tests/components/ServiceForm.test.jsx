@@ -1,8 +1,10 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import ServiceForm from '../../src/components/admin/ServiceForm';
+
+// Run test
+// npm run test -- ./tests/components/ServiceForm.test.jsx
 
 // Mock custom components only (not react-bootstrap)
 vi.mock('../../src/utils/Input', () => ({

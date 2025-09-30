@@ -4,6 +4,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DeleteServiceModal from '../../src/components/admin/DeleteServiceModal';
 
+// Run test
+// npm run test -- ./tests/components/DeleteServiceModal.test.jsx
+
 // Only mock Button component
 vi.mock('../../src/utils/Button', () => ({
     default: ({

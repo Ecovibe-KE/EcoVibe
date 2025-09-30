@@ -4,7 +4,7 @@
 
 .status-color {
     background-color: #a8faa8;
-    color: #37b137
+    color: #37b137;
 }
 
 .form-control:focus,
@@ -47,4 +47,9 @@
     opacity: 1;
     pointer-events: auto;
     /* allow button clicks */
+}
+
+.nav-tabs .nav-link {
+    color: #000;
+    /* or your preferred active color */
 }

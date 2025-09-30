@@ -4,6 +4,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ServiceAdminMain from '../../src/components/admin/ServiceAdminMain';
 
+// Run test
+// npm run test -- ./tests/components/ServiceAdminMain.test.jsx
+
 // Mock react-bootstrap
 vi.mock('react-bootstrap', () => ({
     Col: ({ children, md }) => <div data-testid="col-component" data-md={md}>{children}</div>,
@@ -83,7 +86,7 @@ describe('ServiceAdminMain', () => {
 
         // Check setOriginalServiceData call
         expect(defaultProps.setOriginalServiceData).toHaveBeenCalledWith({
-            name: 'Test Service',
+            title: 'Test Service',
             description: 'This is a test service description',
             currency: 'KES',
             price: 1500,
@@ -107,7 +110,7 @@ describe('ServiceAdminMain', () => {
         expect(defaultProps.handleShowDelete).toHaveBeenCalledTimes(1);
         expect(defaultProps.getServiceId).toHaveBeenCalledWith(expect.any(Function));
         expect(defaultProps.setOriginalServiceData).toHaveBeenCalledWith({
-            name: 'Test Service'
+            title: 'Test Service'
         });
     });
 

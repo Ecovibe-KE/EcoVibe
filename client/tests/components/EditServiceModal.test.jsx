@@ -4,6 +4,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import EditServiceModal from '../../src/components/admin/EditServiceModal';
 
+// Run test
+// npm run test -- ./tests/components/EditServiceModal.test.jsx
+
 // Only mock ServiceForm, not react-bootstrap
 vi.mock('../../src/components/admin/ServiceForm', () => ({
     default: ({

@@ -26,12 +26,13 @@ function DeleteServiceModal({
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
-                        color="#e74c3c"
-                        hoverColor="#c0392b" onClick={handleCloseDelete}
-                    >Close</Button>
-                    <Button
                         color="#37b137"
                         hoverColor="#2a6e2aff"
+                        onClick={handleCloseDelete}
+                    >Close</Button>
+                    <Button
+                        color="#e74c3c"
+                        hoverColor="#c0392b"
                         onClick={handleDelete}
                     >Delete</Button>
                 </Modal.Footer>

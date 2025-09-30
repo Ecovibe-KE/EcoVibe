@@ -1,4 +1,4 @@
-import { Modal, Button } from "react-bootstrap"
+import { Modal } from "react-bootstrap"
 import ServiceForm from "./ServiceForm"
 
 function EditServiceModal({
@@ -40,6 +40,7 @@ function EditServiceModal({
                         fileInputRef={fileInputRef}
                         resetForm={resetAfterClose}
                         previewUrl={previewUrl}
+                        isEditing={true}
                     ></ServiceForm>
                 </Modal.Body>
             </Modal>

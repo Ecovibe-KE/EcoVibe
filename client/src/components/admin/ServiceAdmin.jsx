@@ -37,16 +37,17 @@ function ServiceAdmin() {
     const handleCloseDelete = () => setShowDeleteServiceModal(false);
     const handleShowDelete = () => setShowDeleteServiceModal(true);
 
+    const fetchServices = async () => {
+        try {
+            const servicesArray = await getServices();
+            setAllServices(servicesArray)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     // Get all services
     useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const servicesArray = await getServices();
-                setAllServices(servicesArray)
-            } catch (error) {
-                console.error(error)
-            }
-        }
         fetchServices();
     }, [])
 
@@ -76,7 +77,7 @@ function ServiceAdmin() {
         },
         {
             imageSource: tickImg,
-            number: (allServices.filter(service => service.status.toLowerCase() === "active").length),
+            number: (allServices.filter(service => service.status?.toLowerCase() === "active").length),
             text: "Active Services",
             imageSetting: "success",
             colSetting: ""
@@ -112,7 +113,7 @@ function ServiceAdmin() {
             return [...allServices].reverse().map(({
                 id,
                 image,
-                name,
+                title,
                 description,
                 duration,
                 currency,
@@ -124,7 +125,7 @@ function ServiceAdmin() {
                         key={id}
                         serviceId={id}
                         serviceImage={image}
-                        serviceTitle={name}
+                        serviceTitle={title}
                         serviceDescription={description}
                         serviceDuration={duration}
                         priceCurrency={currency}
@@ -171,13 +172,19 @@ function ServiceAdmin() {
 
         // Only allow image MIME types
         if (!file.type.startsWith("image/")) {
-            alert("Please select a valid image file.");
+            toast.error("Please select a valid image file.");
             e.target.value = ""; // reset input
             return;
         }
 
         // Save the File object to state
         setFormData(prev => ({ ...prev, serviceImage: file }));
+
+        // Revoke the old preview URL if it exists
+        // Prevents memory leaks if user upload multiple images during a session
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
 
         // Create a temporary preview URL
         const url = URL.createObjectURL(file);
@@ -194,7 +201,7 @@ function ServiceAdmin() {
 
         try {
             const serviceData = {
-                name: formData.serviceTitle.trim(),
+                title: formData.serviceTitle.trim(),
                 description: formData.serviceDescription.trim(),
                 currency: formData.priceCurrency.trim(),
                 price: formData.servicePrice,
@@ -205,10 +212,11 @@ function ServiceAdmin() {
 
             await addService(serviceData)
             toast.success("Service added successfully")
+            // keep allServices up to date after adding new service
+            await fetchServices()
             resetForm()
         } catch (error) {
-            toast.error(`${error}: Failed to add service. Try again`)
-            resetForm()
+            toast.error(`Failed to add service: ${error.response?.data?.message || error.message}`)
         }
     }
 
@@ -220,7 +228,7 @@ function ServiceAdmin() {
         const combinedDuration = `${hours} hr ${minutes} min`
 
         const serviceData = {
-            name: formData.serviceTitle.trim(),
+            title: formData.serviceTitle.trim(),
             description: formData.serviceDescription.trim(),
             currency: formData.priceCurrency.trim(),
             price: formData.servicePrice,
@@ -232,7 +240,7 @@ function ServiceAdmin() {
         // Compare with originalServiceData
         const isUnchanged =
             originalServiceData &&
-            serviceData.name === originalServiceData.name &&
+            serviceData.title === originalServiceData.title &&
             serviceData.description === originalServiceData.description &&
             serviceData.currency === originalServiceData.currency &&
             serviceData.price === originalServiceData.price &&
@@ -248,9 +256,12 @@ function ServiceAdmin() {
         try {
             await updateService(idService, serviceData)
             toast.success("Service updated successfully")
+            // keep allServices up to date after adding new service
+            await fetchServices()
+            handleCloseEdit()
             resetForm()
         } catch (error) {
-            toast.error(`${error}: Failed to update service. Try again`)
+            toast.error(`Failed to update service: ${error.response?.data?.message || error.message}`)
         }
     }
 
@@ -259,11 +270,12 @@ function ServiceAdmin() {
 
         try {
             await deleteService(idService);
+            await fetchServices()
             handleCloseDelete()
             toast.success("Service deleted Successfully!");
         } catch (error) {
             console.error("Failed to delete service:", error);
-            toast.error("Failed to delete service. Please try again.");
+            toast.error(`Failed to delete service: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -307,7 +319,7 @@ function ServiceAdmin() {
                     showDeleteServiceModal={showDeleteServiceModal}
                     handleCloseDelete={handleCloseDelete}
                     handleDelete={deleteExistingService}
-                    serviceTitle={originalServiceData ? originalServiceData.name : ""}
+                    serviceTitle={originalServiceData ? originalServiceData.title : ""}
                 />
 
                 <Container className="mb-3">

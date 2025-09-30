@@ -67,7 +67,7 @@ function ServiceAdminMain({
             serviceStatus: serviceStatus
         })
         setOriginalServiceData({
-            name: serviceTitle,
+            title: serviceTitle,
             description: serviceDescription,
             currency: priceCurrency,
             price: servicePrice,
@@ -82,7 +82,7 @@ function ServiceAdminMain({
         handleShowDelete()
         getServiceId(() => serviceId);
         setOriginalServiceData({
-            name: serviceTitle
+            title: serviceTitle
         })
     }
 

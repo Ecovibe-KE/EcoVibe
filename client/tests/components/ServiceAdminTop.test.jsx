@@ -3,6 +3,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ServiceAdminTop from '../../src/components/admin/ServiceAdminTop';
 
+// Run test
+// npm run test -- ./tests/components/ServiceAdminTop.test.jsx
+
 // Mock react-bootstrap - let's make it easier to test
 vi.mock('react-bootstrap', () => ({
     Col: ({ children, className }) => (
