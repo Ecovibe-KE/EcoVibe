@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "../utils/Button";
 import { subscribeNewsletter } from "../api/services/newsletter";
 import { toast } from "react-toastify";
+import Input from "../utils/Input";
 
 const BlogSideBar = ({
   style,
@@ -75,28 +76,28 @@ const BlogSideBar = ({
     <>
       {/* --- Search Box --- */}
       <div
-        className={`p-4 text-center rounded-5 w-100 position-relative ${style.sidebarBox}`}
+        className={`p-4 text-center w-100 position-relative ${style.sidebarBox}`}
       >
         <h5 className={`text-start fs-4 ${style.searchTitle}`}>Search</h5>
         <form
-          className={`position-relative d-flex rounded-4 overflow-hidden mb-3 ${style.searchForm}`}
+          className={`position-relative d-flex overflow-hidden mb-3 ${style.searchForm}`}
           onSubmit={(e) => e.preventDefault()}
         >
-          <input
+          <Input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`form-control border-0 w-100 fs-6 ${style.searchInput}`}
+            className={`border-0 w-100 fs-6 ${style.searchInput}`}
             placeholder="☰ Search articles"
             aria-label="Search articles"
           />
-          <button
+          <Button
             type="submit"
             className={`border-0 bg-transparent p-0 me-3 ${style.searchButton}`}
             aria-label="Execute search"
           >
             <i className="bi bi-search border-0"></i>
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -104,11 +105,11 @@ const BlogSideBar = ({
       <div
         className={`p-4 text-start border rounded-5 w-100 ${style.sidebarBox}`}
       >
-        <h5 className="mb-3">Categories</h5>
+        <h5 className="mb-1">Categories</h5>
         <hr />
 
         {/* All */}
-        <button
+        <Button
           type="button"
           className={`d-flex justify-content-between w-100 border-0 bg-transparent p-0 category-row ${
             !selectedCategory ? "fw-bold" : ""
@@ -118,23 +119,25 @@ const BlogSideBar = ({
         >
           <span>All</span>
           <span>({totalCount})</span>
-        </button>
+        </Button>
 
-        {/* Other categories */}
-        {Object.entries(categoryCounts).map(([category, count]) => (
-          <button
-            type="button"
-            key={category}
-            className={`d-flex justify-content-between mt-2 category-row ${
-              selectedCategory === category ? "fw-bold" : ""
-            }`}
-            onClick={() => setSelectedCategory(category)}
-            aria-pressed={selectedCategory === category}
-          >
-            <span>{category}</span>
-            <span>({count})</span>
-          </button>
-        ))}
+        <div className="mb-3 d-flex flex-row">
+          {/* Other categories */}
+          {Object.entries(categoryCounts).map(([category, count]) => (
+            <Button
+              type="button"
+              key={category}
+              className={`d-flex justify-content-between mt-2 category-row ${
+                selectedCategory === category ? "fw-bold text-dark" : ""
+              }`}
+              onClick={() => setSelectedCategory(category)}
+              aria-pressed={selectedCategory === category}
+            >
+              <span>{category}</span>
+              <span>({count})</span>
+            </Button>
+          ))}
+        </div>
 
         <hr />
       </div>

@@ -12,6 +12,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@emotion/css": "^11.13.5",
     "@emotion/styled": "^11.14.1",
     "@googlemaps/react-wrapper": "^1.2.0",
     "@mui/icons-material": "^7.3.2",
@@ -19,6 +20,7 @@
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "firebase": "^12.2.1",
+    "is-hotkey": "^0.2.0",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",
@@ -28,6 +30,9 @@
     "react-international-phone": "^4.6.0",
     "react-router-dom": "^7.9.1",
     "react-toastify": "^11.0.5",
+    "slate": "^0.118.1",
+    "slate-history": "^0.113.1",
+    "slate-react": "^0.117.4",
     "toastify": "^2.0.1"
   },
   "devDependencies": {

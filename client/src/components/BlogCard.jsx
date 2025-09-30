@@ -7,22 +7,17 @@ function BlogCard({
   id,
   title = "Untitled",
   imageUrl,
-  description = "",
   createdAt,
   author = "Unknown",
   onReadMore,
+  preview,
 }) {
-  const preview =
-    description.length > 100
-      ? description.slice(0, 100).replace(/\s+\S*$/, "") + "..."
-      : description;
-
   const formattedDate = createdAt
     ? new Date(createdAt).toLocaleDateString()
     : "Unknown date";
 
   return (
-    <div className="blog-card">
+    <div className="blog-card card bg-white shadow-sm border-0 rounded-5">
       <img
         src={imageUrl || placeholderImage}
         alt={title}
@@ -31,28 +26,29 @@ function BlogCard({
           width: "100%",
           aspectRatio: "16/9",
           objectFit: "cover",
-          borderRadius: "0.5rem",
+          borderRadius: "1rem 1rem 0 0",
         }}
       />
 
-      <div className="blog-card-meta mt-2 mb-2 d-flex align-items-center gap-2">
-        <img src={calendarIcon} alt="calendar icon" />
-        <time dateTime={createdAt}>{formattedDate}</time>
-        <img src={userIcon} alt="user icon" />
-        <span>{author}</span>
+      <div className="p-3 p-md-4">
+        <div className="blog-card-meta mt-2 mb-2 d-flex align-items-center gap-2">
+          <img src={calendarIcon} alt="calendar icon" />
+          <time dateTime={createdAt}>{formattedDate}</time>
+          <img src={userIcon} alt="user icon" />
+          <span>{author}</span>
+        </div>
+        <h3 className="blog-card-title">{title}</h3>
+        <p className="blog-card-preview">{preview}</p>
+
+        <Button
+          onClick={() => onReadMore(id)}
+          size="md"
+          color="#28a745"
+          hoverColor="#218838"
+        >
+          Read More →
+        </Button>
       </div>
-
-      <h3 className="blog-card-title">{title}</h3>
-      <p className="blog-card-preview">{preview}</p>
-
-      <Button
-        onClick={() => onReadMore(id)}
-        size="md"
-        color="#28a745"
-        hoverColor="#218838"
-      >
-        Read More →
-      </Button>
     </div>
   );
 }

@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   // Blog
   blogs: "/blogs",
   blogById: (id) => `/blogs/${id}`,
+  adminBlogs: "/admin/blogs",
 
   // Users
   users: "/users",
