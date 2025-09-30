@@ -248,7 +248,7 @@ class TestMpesaRoutes:
 
     def test_get_mpesa_transaction_not_found(self, client, session):
         """Test retrieving non-existent MPESA transaction"""
-        response = client.get("/api/mpesa/transactions/999")
+        response = client.get("/api/transactions/999")
 
         assert response.status_code == 404
 
