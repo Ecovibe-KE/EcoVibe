@@ -123,11 +123,32 @@ export const verifyAccount = async (token) => {
 // ----------------------------
 export const resendVerification = async (email) => {
   try {
+    if (!email || !email.includes("@")) {
+      throw new Error("Please enter a valid email address.");
+    }
+
     const response = await api.post(
       ENDPOINTS.resendVerification,
       { email },
       { skipAuth: true },
     );
+
+    return response.data; // ✅ only return data, no toast here
+  } catch (error) {
+    // Normalize error through handleError
+    handleError(error);
+  }
+};
+
+// ----------------------------
+// Change Password
+// ----------------------------
+export const changePassword = async ({ current_password, new_password }) => {
+  try {
+    const response = await api.put(ENDPOINTS.changePassword, {
+      current_password,
+      new_password,
+    });
     return response.data;
   } catch (error) {
     handleError(error);
