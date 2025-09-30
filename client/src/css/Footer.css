@@ -1,10 +1,34 @@
-.footer {
+/* Sticky footer layout */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* Footer styles */
+footer {
   background-color: #ffffff;
   padding: 2rem 1rem;
   margin-top: auto;
   width: 100%;
+
+  /* Flex column to push bottom row down */
+  display: flex;
+  flex-direction: column;
 }
 
+/* Top row */
 .footer-top-row {
   display: flex;
   align-items: center;
@@ -12,10 +36,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
+  position: relative;
 }
 
 .footer-logo {
   max-width: 200px;
+}
+
+/* Nav links */
+.footer-nav-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .footer-nav-links {
@@ -23,7 +55,6 @@
   gap: 2rem;
   font-weight: 500;
   flex-wrap: wrap;
-  flex-grow: 1;
   justify-content: center;
 }
 
@@ -36,19 +67,23 @@
   color: #f5a030;
 }
 
+/* Social icons */
 .footer-social-icons {
   display: flex;
   gap: 1rem;
   margin-top: 0.5rem;
 }
 
+/* Green line */
 .footer-hr {
   border: none;
   border-top: 2px solid #37b137;
   margin: 1rem 0;
 }
 
+/* Bottom row - pushed to bottom */
 .footer-bottom-row {
+  margin-top: auto; /* pushes bottom row to bottom of footer */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -57,6 +92,7 @@
   gap: 1rem;
 }
 
+/* Legal links */
 .footer-legal-links {
   display: flex;
   gap: 1.5rem;
@@ -73,4 +109,40 @@
 .footer .legal-link:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footer-top-row {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .footer-nav-wrapper {
+    position: static;
+    transform: none;
+    margin: 1rem 0;
+    width: 100%;
+    text-align: center; /* center nav links without overlap */
+  }
+
+  .footer-nav-links {
+    justify-content: center;
+    gap: 1rem; /* smaller gap for mobile */
+  }
+
+  .footer-social-icons {
+    margin-top: 0.5rem;
+  }
+
+  .footer-bottom-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .footer-legal-links {
+    justify-content: center;
+  }
 }
