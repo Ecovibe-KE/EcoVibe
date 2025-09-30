@@ -21,6 +21,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
+import Tickets from "./Tickets.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -152,15 +153,7 @@ function App() {
               }
             />
             <Route path="users" element={<UserManagement />} />
-            <Route
-              path="tickets"
-              element={
-                <div className="p-4">
-                  <h2>Tickets</h2>
-                  <p>Manage support tickets.</p>
-                </div>
-              }
-            />
+            <Route path="tickets" element={<Tickets /> } />
           </Route>
 
           {/* Public routes - NO NESTED ROUTES */}

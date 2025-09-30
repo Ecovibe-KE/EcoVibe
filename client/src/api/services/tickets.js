@@ -1,4 +1,4 @@
-// services/ticketService.js
+// services/tickets.js
 import { ENDPOINTS } from "../endpoints";
 import api from "../axiosConfig";
 
