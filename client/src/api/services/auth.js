@@ -1,6 +1,7 @@
 // src/api/services/auth.js
 import api from "../axiosConfig";
 import { ENDPOINTS } from "../endpoints";
+import { toast } from "react-toastify";
 
 // Small helper to normalize errors
 const handleError = (error) => {
@@ -123,11 +124,38 @@ export const verifyAccount = async (token) => {
 // ----------------------------
 export const resendVerification = async (email) => {
   try {
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
     const response = await api.post(
       ENDPOINTS.resendVerification,
       { email },
       { skipAuth: true },
     );
+
+    toast.success("Verification email sent. Please check your inbox.");
+    return response.data;
+  } catch (error) {
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Something went wrong. Please try again.");
+    }
+    handleError(error);
+  }
+};
+
+// ----------------------------
+// Change Password
+// ----------------------------
+export const changePassword = async ({ current_password, new_password }) => {
+  try {
+    const response = await api.put(ENDPOINTS.changePassword, {
+      current_password,
+      new_password,
+    });
     return response.data;
   } catch (error) {
     handleError(error);

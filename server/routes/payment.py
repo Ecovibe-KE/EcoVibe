@@ -28,7 +28,9 @@ class PaymentListResource(Resource):
     @jwt_required()
     def get(self):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         items = Payment.query.order_by(Payment.created_at.desc()).all()
         return {
             "status": "success",
@@ -39,7 +41,9 @@ class PaymentListResource(Resource):
     @jwt_required()
     def post(self):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         payload = request.get_json(silent=True) or {}
         invoice_id = payload.get("invoice_id")
         method = payload.get("payment_method")
@@ -52,7 +56,9 @@ class PaymentListResource(Resource):
         if not invoice:
             return error("Resource not found", 404)
 
-        pmethod = PaymentMethod.MPESA if method.lower() == "mpesa" else PaymentMethod.CASH
+        pmethod = (
+            PaymentMethod.MPESA if method.lower() == "mpesa" else PaymentMethod.CASH
+        )
         if pmethod == PaymentMethod.MPESA and not MpesaTransaction.query.get(method_id):
             return error("Invalid input provided", 400)
         if pmethod == PaymentMethod.CASH and not CashTransaction.query.get(method_id):
@@ -67,9 +73,7 @@ class PaymentListResource(Resource):
             )
             db.session.add(new_payment)
 
-            total_paid = sum(
-                p.metadata.get("amount", 0) for p in invoice.payments
-            )
+            total_paid = sum(p.metadata.get("amount", 0) for p in invoice.payments)
             if total_paid >= invoice.amount:
                 invoice.status = InvoiceStatus.paid
 
@@ -89,7 +93,9 @@ class PaymentResource(Resource):
     @jwt_required()
     def get(self, payment_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         p = Payment.query.get(payment_id)
         if not p:
             return error("Resource not found", 404)
@@ -102,7 +108,9 @@ class PaymentResource(Resource):
     @jwt_required()
     def put(self, payment_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         p = Payment.query.get(payment_id)
         if not p:
             return error("Resource not found", 404)
@@ -116,7 +124,9 @@ class PaymentResource(Resource):
 
         if "payment_method" in payload:
             method = payload["payment_method"]
-            p.payment_method = PaymentMethod.MPESA if method.lower() == "mpesa" else PaymentMethod.CASH
+            p.payment_method = (
+                PaymentMethod.MPESA if method.lower() == "mpesa" else PaymentMethod.CASH
+            )
 
         if "payment_method_id" in payload:
             p.payment_method_id = payload["payment_method_id"]
@@ -143,7 +153,9 @@ class PaymentResource(Resource):
     @jwt_required()
     def delete(self, payment_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         p = Payment.query.get(payment_id)
         if not p:
             return error("Resource not found", 404)

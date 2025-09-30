@@ -28,7 +28,9 @@ class DocumentListResource(Resource):
     @jwt_required()
     def get(self):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         docs = Document.query.order_by(Document.created_at.desc()).all()
         return {
             "status": "success",
@@ -39,7 +41,9 @@ class DocumentListResource(Resource):
     @jwt_required()
     def post(self):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
 
         file = request.files.get("file")
         title = request.form.get("title")
@@ -76,7 +80,9 @@ class DocumentResource(Resource):
     @jwt_required()
     def get(self, doc_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         doc = Document.query.get(doc_id)
         if not doc:
             return error("Resource not found", 404)
@@ -89,7 +95,9 @@ class DocumentResource(Resource):
     @jwt_required()
     def put(self, doc_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         doc = Document.query.get(doc_id)
         if not doc:
             return error("Resource not found", 404)
@@ -122,7 +130,9 @@ class DocumentResource(Resource):
     @jwt_required()
     def delete(self, doc_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         doc = Document.query.get(doc_id)
         if not doc:
             return error("Resource not found", 404)
@@ -145,7 +155,9 @@ class DocumentDownloadResource(Resource):
     @jwt_required()
     def get(self, doc_id):
         if not require_admin():
-            return error("Forbidden: You do not have permission to perform this action.", 403)
+            return error(
+                "Forbidden: You do not have permission to perform this action.", 403
+            )
         doc = Document.query.get(doc_id)
         if not doc:
             return error("Resource not found", 404)
