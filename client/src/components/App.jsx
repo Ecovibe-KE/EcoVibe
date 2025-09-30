@@ -25,26 +25,6 @@ import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 
-// Footer Wrapper to detect page type
-// function FooterWrapper() {
-//   const location = useLocation();
-
-//   const pageType = useMemo(() => {
-//     const path = location.pathname.toLowerCase();
-//     if (path.startsWith("/about")) return "about";
-//     if (path.startsWith("/blog")) return "blog";
-//     if (path.startsWith("/services")) return "services";
-//     if (path.startsWith("/contact")) return "contact";
-//     return "landing";
-//   }, [location.pathname]);
-
-//   if (import.meta.env?.MODE === "development") {
-//     console.debug("Rendering FooterWrapper with pageType:", pageType);
-//   }
-
-//   return <Footer pageType={pageType} />;
-// }
-
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
 // Dashboard Layout (Protected pages, no footer)
