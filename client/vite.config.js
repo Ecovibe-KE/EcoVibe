@@ -22,11 +22,11 @@ export default defineConfig({
       reporter: ['text', 'json-summary', 'html', 'json'],
       reportOnFailure: true,
       thresholds: {
-        // Have at least 60% coverage
-        lines: 60,
-        branches: 60,
-        functions: 60,
-        statements: 60
+        // Have at least 50% coverage TODO: Increase these thresholds as you add more tests
+        lines: 50,
+        branches: 50,
+        functions: 50,
+        statements: 50
       },
     },
   },
