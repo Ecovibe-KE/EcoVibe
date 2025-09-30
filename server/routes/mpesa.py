@@ -10,7 +10,7 @@ from utils.mpesa_utils import mpesa_utility
 mpesa_bp = Blueprint("mpesa", __name__)
 
 
-@mpesa_bp.route("/stk-push", methods=["POST"])
+@mpesa_bp.route("/mpesa/stk-push", methods=["POST"])
 @jwt_required()
 def initiate_stk_push():
     """
@@ -177,7 +177,7 @@ def validate_phone_number(phone_number):
     return True, None
 
 
-@mpesa_bp.route("/callback", methods=["POST"])
+@mpesa_bp.route("/mpesa/callback", methods=["POST"])
 def mpesa_callback():
     """
     MPESA payment callback - No JWT required for callbacks
@@ -275,7 +275,7 @@ def mpesa_callback():
         )
 
 
-@mpesa_bp.route("/transactions", methods=["GET"])
+@mpesa_bp.route("/mpesa/transactions", methods=["GET"])
 @jwt_required()
 def get_mpesa_transactions():
     """Get MPESA transactions with filtering - JWT protected"""
@@ -312,7 +312,7 @@ def get_mpesa_transactions():
         )
 
 
-@mpesa_bp.route("/transactions/<int:transaction_id>", methods=["GET"])
+@mpesa_bp.route("/mpesa/transactions/<int:transaction_id>", methods=["GET"])
 @jwt_required()
 def get_mpesa_transaction(transaction_id):
     """Get specific MPESA transaction - JWT protected"""
@@ -328,7 +328,7 @@ def get_mpesa_transaction(transaction_id):
         )
 
 
-@mpesa_bp.route("/transaction/status/<string:checkout_request_id>", methods=["GET"])
+@mpesa_bp.route("/mpesa/transaction/status/<string:checkout_request_id>", methods=["GET"])
 @jwt_required()
 def get_transaction_status(checkout_request_id):
     """Check transaction status by checkout_request_id - JWT protected"""
@@ -391,7 +391,7 @@ def get_transaction_status(checkout_request_id):
         )
 
 
-@mpesa_bp.route("/token/status", methods=["GET"])
+@mpesa_bp.route("/mpesa/token/status", methods=["GET"])
 @jwt_required()
 def get_token_status():
     """Check MPESA token status - JWT protected"""

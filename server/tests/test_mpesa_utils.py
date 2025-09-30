@@ -13,7 +13,7 @@ os.environ["FLASK_MPESA_CONSUMER_SECRET"] = "test_consumer_secret"
 os.environ["FLASK_MPESA_AUTH_URL"] = "https://sandbox.safaricom.co.ke/oauth/v1/generate"
 os.environ["FLASK_MPESA_BUSINESS_SHORTCODE"] = "174379"
 os.environ["FLASK_MPESA_PASSKEY"] = "test_passkey"
-os.environ["FLASK_MPESA_CALLBACK_URL"] = "https://example.com/callback"
+os.environ["FLASK_MPESA_CALLBACK_URL"] = "https://example.com/mpesa/callback"
 os.environ["FLASK_MPESA_STK_PUSH_URL"] = (
     "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
 )

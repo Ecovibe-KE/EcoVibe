@@ -1,6 +1,6 @@
 [
   {
-    "endpoint": "/api/stk-push",
+    "endpoint": "/api/mpesa/stk-push",
     "method": "POST",
     "description": "Initiate STK push payment",
     "request": {
@@ -18,7 +18,7 @@
     }
   },
   {
-    "endpoint": "/api/callback",
+    "endpoint": "/api/mpesa/callback",
     "method": "POST",
     "description": "MPESA payment callback webhook",
     "request": {
@@ -40,7 +40,7 @@
     }
   },
   {
-    "endpoint": "/api/transactions",
+    "endpoint": "/api/mpesa/transactions",
     "method": "GET",
     "description": "Retrieve all MPESA transactions with pagination",
     "request": {
@@ -55,7 +55,7 @@
     }
   },
   {
-    "endpoint": "/api/transactions/{id}",
+    "endpoint": "/api/mpesa/transactions/{id}",
     "method": "GET",
     "description": "Retrieve a specific MPESA transaction by ID",
     "request": {
@@ -67,7 +67,7 @@
     }
   },
   {
-    "endpoint": "/api/transaction/status/{checkout_request_id}",
+    "endpoint": "/api/mpesa/transaction/status/{checkout_request_id}",
     "method": "GET",
     "description": "Check transaction status by checkout request ID",
     "request": {

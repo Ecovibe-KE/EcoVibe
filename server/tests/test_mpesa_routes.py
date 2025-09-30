@@ -59,7 +59,7 @@ class TestMpesaRoutes:
         }
 
         response = client.post(
-            "/api/stk-push",
+            "/api/mpesa/stk-push",
             data=json.dumps(data),
             content_type="application/json",
             headers=auth_headers
@@ -82,7 +82,7 @@ class TestMpesaRoutes:
         }
 
         response = client.post(
-            "/api/stk-push",
+            "/api/mpesa/stk-push",
             data=json.dumps(data),
             content_type="application/json",
             headers=auth_headers
@@ -102,7 +102,7 @@ class TestMpesaRoutes:
         data = {"amount": 100, "phone_number": "123456"}
 
         response = client.post(
-            "/api/stk-push",
+            "/api/mpesa/stk-push",
             data=json.dumps(data),
             content_type="application/json",
             headers=auth_headers
@@ -141,7 +141,7 @@ class TestMpesaRoutes:
         session.commit()
 
         response = client.get(
-            "/api/transactions",
+            "/api/mpesa/transactions",
             headers=auth_headers
         )
 
@@ -170,7 +170,7 @@ class TestMpesaRoutes:
             pytest.skip("Authentication failed - skipping test")
 
         response = client.get(
-            "/api/transactions/999/status",
+            "/api/mpesa/transactions/999/status",
             headers=auth_headers  # FIX: Add auth headers
         )
 

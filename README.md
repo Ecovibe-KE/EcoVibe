@@ -214,7 +214,7 @@ The server-side application uses Flask's prefixed environment variables. The rec
     FLASK_MPESA_CONSUMER_SECRET= # MPESA API consumer secret from Safaricom Developer Portal
     FLASK_MPESA_BUSINESS_SHORTCODE= # Business shortcode (PayBill or Till Number)
     FLASK_MPESA_PASSKEY= # MPESA API passkey from Safaricom Developer Portal
-    FLASK_MPESA_CALLBACK_URL= # URL for receiving MPESA payment callbacks (e.g., https://yourdomain.com/api/callback)
+    FLASK_MPESA_CALLBACK_URL= # URL for receiving MPESA payment callbacks (e.g., https://yourdomain.com/api/mpesa/callback)
     FLASK_MPESA_LIVE_URL= # Base URL for MPESA live/production environment
     FLASK_MPESA_SANDBOX_URL= # Base URL for MPESA sandbox/testing environment
     FLASK_MPESA_STK_PUSH_URL= # MPESA STK push API endpoint (e.g., https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest)
