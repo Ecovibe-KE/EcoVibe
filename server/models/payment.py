@@ -66,6 +66,7 @@ class MpesaTransaction(db.Model):
         db.String(15), unique=True, nullable=True
     )  # Changed to nullable=True
     paid_by = db.Column(db.String(15), nullable=False)
+    phone_number = db.Column(db.String(15), nullable=False)
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

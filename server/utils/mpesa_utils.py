@@ -238,7 +238,7 @@ class MpesaUtility:
             return transaction
 
         except Exception as e:
-            current_app.logger.exception(f"Error update_mpesa_transaction {e}")
+            current_app.logger.exception(f"Error upating transactions {e}")
             db.session.rollback()
             raise
 

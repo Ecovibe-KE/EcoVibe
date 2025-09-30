@@ -28,7 +28,7 @@ class TestMpesaRoutes:
         }
 
         response = client.post(
-            "/api/mpesa/stk-push",
+            "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
         )
@@ -46,7 +46,7 @@ class TestMpesaRoutes:
         }
 
         response = client.post(
-            "/api/mpesa/stk-push",
+            "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
         )
@@ -63,7 +63,7 @@ class TestMpesaRoutes:
         }
 
         response = client.post(
-            "/api/mpesa/stk-push",
+            "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
         )
@@ -77,7 +77,7 @@ class TestMpesaRoutes:
         data = {"amount": 100, "phone_number": "123456"}  # Invalid phone format
 
         response = client.post(
-            "/api/mpesa/stk-push",
+            "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
         )
@@ -97,7 +97,7 @@ class TestMpesaRoutes:
         data = {"amount": 100, "phone_number": "254712345678", "invoice_id": 1}
 
         response = client.post(
-            "/api/mpesa/stk-push",
+            "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
         )

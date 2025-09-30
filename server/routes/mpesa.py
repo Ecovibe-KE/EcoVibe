@@ -98,6 +98,7 @@ def initiate_stk_push():
         mpesa_transaction = MpesaTransaction(
             amount=amount,
             paid_by=phone_number,
+            phone_number=phone_number,
             invoice_id=invoice_id,
             status="pending",
             created_at=datetime.now(timezone.utc),
@@ -343,6 +344,7 @@ def get_transaction_status(checkout_request_id):
             transaction.result_code = result.get("result_code")
             transaction.result_desc = result.get("result_desc")
 
+            # This comparison will now work correctly since result_code is integer
             if result.get("result_code") == 0:
                 transaction.status = "completed"
             else:

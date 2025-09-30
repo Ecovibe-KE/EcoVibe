@@ -12,7 +12,7 @@
       }
     },
     "responses": {
-      "200": { "$ref": "../examples/mpesa/stk-push.200.json" },
+      "200": { "$ref": "../examples/stk-push.200.json" },
       "400": { "$ref": "../examples/errors/400.json" },
       "500": { "$ref": "../examples/errors/500.json" }
     }
