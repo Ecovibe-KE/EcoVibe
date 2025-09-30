@@ -1,53 +1,42 @@
 import { ENDPOINTS } from "../endpoints";
 import api from "../axiosConfig";
 
-// Fetch all resources (with optional pagination)
-export const getResources = async (page = 1, limit = 10) => {
-  const response = await api.get(ENDPOINTS.resources, {
-    params: { page, limit },
+/** Get all documents (optionally paginated) */
+export const getDocuments = async (page = 1, limit = 10) => {
+  const response = await api.get(ENDPOINTS.documents, { params: { page, limit } });
+  return response; // return full axios response
+};
+
+/** Get a document by ID */
+export const getDocumentById = async (id) => {
+  const response = await api.get(`${ENDPOINTS.documents}/${id}`);
+  return response;
+};
+
+/** Upload a new document */
+export const uploadDocument = async (file, adminId) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("admin_id", adminId);
+
+  const response = await api.post(ENDPOINTS.documents, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
-  return response.data;
+  return response;
 };
 
-// Fetch a single resource by ID
-export const getResourceById = async (id) => {
-  const response = await api.get(`${ENDPOINTS.resources}/${id}`);
-  return response.data;
+/** Delete a document by ID */
+export const deleteDocument = async (id) => {
+  const response = await api.delete(`${ENDPOINTS.documents}/${id}`);
+  return response;
 };
 
-// Create a new resource
-export const createResource = async (data) => {
-  const response = await api.post(ENDPOINTS.resources, data);
-  return response.data;
-};
-
-// Update an existing resource
-export const updateResource = async (id, data) => {
-  const response = await api.patch(`${ENDPOINTS.resources}/${id}`, data);
-  return response.data;
-};
-
-// Delete a resource
-export const deleteResource = async (id) => {
-  try {
-    const response = await api.delete(`${ENDPOINTS.resources}/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to delete resource", error);
-    throw error;
-  }
-};
-//for downloading a resource
-export const downloadResource = (fileUrl, filename) => {
-  try {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.setAttribute("download", filename || "resource");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (error) {
-    console.error("Download failed", error);
-    throw error;
-  }
+/** Download a document (frontend utility) */
+export const downloadDocument = (fileUrl, filename) => {
+  const link = document.createElement("a");
+  link.href = fileUrl;
+  link.setAttribute("download", filename || "document");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 };

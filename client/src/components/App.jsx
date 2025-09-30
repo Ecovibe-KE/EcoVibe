@@ -17,6 +17,7 @@ import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import ResourceCenter from "./admin/ResourceCenter.jsx";
 
 // Footer Wrapper to detect page type
 function FooterWrapper() {
@@ -97,8 +98,7 @@ function App() {
               path="resources"
               element={
                 <div className="p-4">
-                  <h2>Resources</h2>
-                  <p>Access your resources.</p>
+                  <ResourceCenter />
                 </div>
               }
             />

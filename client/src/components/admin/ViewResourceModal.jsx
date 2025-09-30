@@ -44,7 +44,7 @@ const ViewResourceModal = ({ visible, resource, onCancel, onDownload }) => {
           )}
         </div>
         <div className="p-3 border-top d-flex justify-content-end">
-          <Button onClick={onCancel}>Close</Button>
+          <Button onClick={onCancel} label="Close"/>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
+import Button from "../../utils/Button";
 
 const DeleteConfirmModal = ({ visible, resource, onCancel, onConfirm }) => {
   if (!visible) return null;
@@ -10,13 +10,14 @@ const DeleteConfirmModal = ({ visible, resource, onCancel, onConfirm }) => {
       style={{ background: "rgba(0,0,0,0.45)", zIndex: 1050 }}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="delete-modal-title"
     >
       <div
         className="bg-white rounded-3 shadow"
         style={{ width: 400, maxWidth: "90%" }}
       >
         <div className="p-3 border-bottom">
-          <h6 className="mb-0">Confirm Delete</h6>
+          <h6 className="mb-0" id="delete-modal-title">Confirm Delete</h6>
         </div>
         <div className="p-3">
           <p>
@@ -28,7 +29,7 @@ const DeleteConfirmModal = ({ visible, resource, onCancel, onConfirm }) => {
           <Button variant="secondary" className="me-2" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={onConfirm}>
+          <Button label="Delete" onClick={onConfirm}>
             Delete
           </Button>
         </div>

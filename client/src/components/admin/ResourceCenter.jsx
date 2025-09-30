@@ -3,11 +3,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import "../../css/ResourceCenter.css";
 import { toast } from "react-toastify";
 import {
-  createResource,
-  getResources,
-  updateResource,
-  downloadResource,
-  deleteResource,
+  uploadDocument,
+  getDocuments,
+  getDocumentById,
+  deleteDocument,
+  downloadDocument,
 } from "../../api/services/resourceCenter";
 import AddResourceModal from "./Addresource";
 import EditResourceModal from "./Editresource";
@@ -22,12 +22,10 @@ import DeleteConfirmModal from "./DeleteConfirmModal";
 const ResourceCenter = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
-  const [setLoading] = useState(false);
-  const [error, setErrors] = useState("");
+  const [error, setErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -35,70 +33,26 @@ const ResourceCenter = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [resources, setResources] = useState([]);
 
   const [form, setForm] = useState({
     title: "",
-    author: "",
     description: "",
     category: "",
     file: null,
-    status: "active",
   });
-  const sampleResources = [
-    {
-      id: 1,
-      title: "Sustainability Report 2024",
-      category: "esgReports",
-      uploadedAt: "2024-12-12",
-      downloads: 34,
-      status: "active",
-      author: "john doe",
-      description: "test",
-      fileUrl: "https://example.com/report.pdf",
-    },
-    {
-      id: 2,
-      title: "Company Policy Template",
-      category: "templates",
-      uploadedAt: "2024-11-01",
-      downloads: 12,
-      status: "pending",
-      fileUrl: "https://example.com/template.docx",
-      author: "john doe",
-      description: "test",
-    },
-    {
-      id: 3,
-      title: "Quarterly ESG Policy",
-      category: "Policies",
-      uploadedAt: "2024-10-20",
-      downloads: 7,
-      status: "archived",
-      fileUrl: "https://example.com/policy.pdf",
-      author: "john doe",
-      description: "test",
-    },
-  ];
 
-  const [resources, setResources] = useState(sampleResources);
+
   const fetchData = async (page = 1) => {
-    setLoading(true);
     setErrors("");
     try {
-      const data = await getResources(page, pageSize);
-      setResources(data.results || data);
-
-      // Fallback to sample data (for testing/demo)
-      setResources(
-        sampleResources.slice((page - 1) * pageSize, page * pageSize),
-      );
-
-      setTotalPages(Math.ceil(sampleResources.length / pageSize));
+      const response = await getDocuments(page, pageSize);
+      const docs = response.data;
+      setResources(docs);
+      setTotalPages(1);
       setCurrentPage(page);
     } catch (err) {
-      console.error("Error fetching resources:", err);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching documents:", err);
     }
   };
   const handlePageChange = (page) => {
@@ -121,23 +75,19 @@ const ResourceCenter = () => {
     const matchesFileType =
       selectedFileType === "" || res.fileType === selectedFileType;
 
-    const matchesStatus =
-      selectedStatus === "" || res.status === selectedStatus;
-
-    return matchesSearch && matchesCategory && matchesFileType && matchesStatus;
+      return matchesSearch && matchesCategory && matchesFileType
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, type, files, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "file" ? files[0] : value,
     }));
   };
   const handleSave = async () => {
     let newErrors = {};
     if (!form.title) newErrors.title = "Title is required";
-    if (!form.author) newErrors.author = "Author is required";
     if (!form.description) newErrors.description = "Description is required";
     if (!form.file) newErrors.file = "File is required";
     if (!form.category) newErrors.category = "Category is required";
@@ -150,27 +100,23 @@ const ResourceCenter = () => {
     try {
       const formData = new FormData();
       formData.append("title", form.title);
-      formData.append("author", form.author);
       formData.append("description", form.description);
       formData.append("category", form.category);
       formData.append("file", form.file);
-      formData.append("status", form.status);
+   
 
-      const response = await createResource(formData);
+      const response = await uploadDocument(form.file, currentAdminId);
       if (response.status === 201 || response.status === 200) {
-        toast.success("Resource added successfully!");
+        toast.success("Document uploaded successfully!");
         await fetchData();
         setShowAddModal(false);
-
+        setErrors({});
         setForm({
           title: "",
-          author: "",
           description: "",
           category: "",
           file: null,
-          status: "active",
         });
-        setErrors({});
       } else {
         toast.error("Failed to save resource");
       }
@@ -193,15 +139,13 @@ const ResourceCenter = () => {
     try {
       const formData = new FormData();
       formData.append("title", form.title);
-      formData.append("author", form.author);
       formData.append("description", form.description);
       formData.append("category", form.category);
-      formData.append("status", form.status);
       if (form.file) {
         formData.append("file", form.file);
       }
 
-      const response = await updateResource(formData);
+      const response = await updateDocument(selectedResource.id, formData);
 
       if (response.status === 200) {
         toast.success("Resource updated successfully!");
@@ -223,17 +167,16 @@ const ResourceCenter = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await deleteResource(deleteTarget.id);
-
+      const response = await deleteDocument(deleteTarget.id);
       if (response.status === 200) {
-        toast.success("Resource deleted successfully");
+        toast.success("Document deleted successfully");
         await fetchData();
       } else {
-        toast.error(response.data?.message || "Failed to delete resource");
+        toast.error("Failed to delete document");
       }
     } catch (err) {
-      console.error("Error deleting resource:", err);
-      toast.error(err.response?.data?.message || "Failed to delete resource");
+      console.error("Error deleting document:", err);
+      toast.error("Failed to delete document");
     } finally {
       setShowDeleteModal(false);
       setDeleteTarget(null);
@@ -290,23 +233,6 @@ const ResourceCenter = () => {
             </select>
           </div>
           <div className="col-12 col-md-3">
-            <label htmlFor="status" className="form-label">
-              Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="form-select"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="archived">Archived</option>
-            </select>
-          </div>
-          <div className="col-12 col-md-3">
             <label className="form-label d-none d-md-block">&nbsp;</label>
             <div className="position-relative">
               <SearchIcon className="search-icon" />
@@ -327,7 +253,6 @@ const ResourceCenter = () => {
                 <th>Category</th>
                 <th>Uploaded</th>
                 <th>Downloads</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -340,23 +265,11 @@ const ResourceCenter = () => {
                     <td>{new Date(res.uploadedAt).toLocaleDateString()}</td>
                     <td>{res.downloads}</td>
                     <td>
-                      <span
-                        className={`badge-status ${
-                          res.status === "active"
-                            ? "badge-active"
-                            : res.status === "pending"
-                              ? "badge-pending"
-                              : "badge-archived"
-                        }`}
-                      >
-                        {res.status}
-                      </span>
-                    </td>
-                    <td>
                       <div className="d-flex gap-1 align-items-center h-100">
                         <button
-                          className="btn btn-sm bg-success text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
+                          className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
                           onClick={() => downloadResource(res.id, res.title)}
+                          style={{background: "#37b137",}}
                         >
                           <DownloadIcon />
                         </button>
@@ -364,6 +277,7 @@ const ResourceCenter = () => {
                           className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
                           style={{ background: "#3ba6ff" }}
                           onClick={() => handleView(res)}
+                          aria-label={`view-${res.title}`}
                         >
                           <RemoveRedEyeIcon />
                         </button>
@@ -377,6 +291,7 @@ const ResourceCenter = () => {
                         <button
                           className="btn btn-sm bg-danger text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
                           onClick={() => handleDeleteClick(res)}
+                          aria-label={`delete-${res.title}`}
                         >
                           <DeleteForeverIcon />
                         </button>
@@ -452,7 +367,7 @@ const ResourceCenter = () => {
         visible={showViewModal}
         resource={selectedResource}
         onCancel={() => setShowViewModal(false)}
-        onDownload={downloadResource} // pass function as prop
+        onDownload={downloadDocument}
       />
       <DeleteConfirmModal
         visible={showDeleteModal}

@@ -18,5 +18,7 @@ export const ENDPOINTS = {
   // newsletter
   newsletter_subscribers: "/newsletter-subscribers",
 
+  // resource centre
+  documents: "/api/documents",
   // Add more endpoints as needed here
 };

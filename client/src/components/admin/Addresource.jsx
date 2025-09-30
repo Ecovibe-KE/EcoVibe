@@ -39,22 +39,10 @@ const AddResourceModal = ({
             error={errors.title}
           />
           <div className="mb-3">
-            <label className="form-label">Author</label>
-            <input
-              type="text"
-              name="author"
-              className="form-control"
-              value={form.author || ""}
-              onChange={onChange}
-            />
-            {errors.author && (
-              <div className="text-danger">{errors.author}</div>
-            )}
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Description</label>
+            <label className="form-label" htmlFor="description">Description</label>
             <textarea
               name="description"
+              id="description"
               className="form-control"
               value={form.description || ""}
               onChange={onChange}
@@ -64,55 +52,23 @@ const AddResourceModal = ({
               <div className="text-danger">{errors.description}</div>
             )}
           </div>
-          <div className="mb-3">
-            <label className="form-label">Category</label>
-            <select
-              name="category"
-              className="form-select"
-              value={form.category}
-              onChange={onChange}
-            >
-              <option value="">-- Select Category --</option>
-              <option value="esgReports">ESG Reports</option>
-              <option value="templates">Templates</option>
-              <option value="policies">Policies</option>
-              <option value="sustainability">Sustainability</option>
-            </select>
-            {errors.category && (
-              <div className="text-danger">{errors.category}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">File Upload</label>
+           <div className="mb-3">
+            <label className="form-label" htmlFor="file">File Upload</label>
             <input
               type="file"
               name="file"
+              id="file"
               className="form-control"
               onChange={onChange}
             />
             {errors.file && <div className="text-danger">{errors.file}</div>}
           </div>
-
-          <div className="mb-3">
-            <label className="form-label">Status</label>
-            <select
-              name="status"
-              className="form-select"
-              value={form.status}
-              onChange={onChange}
-            >
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="archived">Archived</option>
-            </select>
-          </div>
         </div>
         <div className="p-3 border-top d-flex justify-content-end">
-          <Button className="btn btn-light me-2" onClick={onCancel}>
+          <Button className="" onClick={onCancel}>
             Cancel
           </Button>
-          <Button className="btn btn-success" onClick={onSave}>
+          <Button className="" onClick={onSave}>
             Save Resource
           </Button>
         </div>

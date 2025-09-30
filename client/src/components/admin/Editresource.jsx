@@ -5,10 +5,8 @@ import Input from "../../utils/Input.jsx";
 const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
   const [form, setForm] = useState({
     title: "",
-    author: "",
     description: "",
     category: "",
-    status: "active",
     file: null,
   });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -18,9 +16,7 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
       setForm({
         title: resource.title || "",
         category: resource.category || "",
-        status: resource.status || "active",
         file: null,
-        author: resource.author || "",
         description: resource.description || "",
       });
     }
@@ -36,7 +32,6 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
   const handleSubmit = () => {
     let errors = {};
     if (!form.title) errors.title = "Title is required";
-    if (!form.author) errors.author = "Author is required";
     if (!form.description) errors.description = "Description is required";
     if (!form.category) errors.category = "Category is required";
 
@@ -69,18 +64,11 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
             onChange={handleChange}
             error={fieldErrors.title}
           />
-          <Input
-            type="text"
-            label="Author"
-            name="author"
-            value={form.author}
-            onChange={handleChange}
-            error={fieldErrors.author}
-          />
           <div className="mb-3">
-            <label className="form-label">Description</label>
+            <label className="form-label" htmlFor="description">Description</label>
             <textarea
               name="description"
+              id="description"
               className="form-control"
               value={form.description}
               onChange={handleChange}
@@ -89,40 +77,6 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
               <div className="text-danger small">{fieldErrors.description}</div>
             )}
           </div>
-
-          <div className="mb-3">
-            <label className="form-label">Category</label>
-            <select
-              name="category"
-              className="form-select"
-              value={form.category}
-              onChange={handleChange}
-            >
-              <option value="">Select category</option>
-              <option value="esgReports">Esg Reports</option>
-              <option value="templates">Templates</option>
-              <option value="Policies">Policies</option>
-              <option value="sustainability">Sustainability</option>
-            </select>
-            {fieldErrors.category && (
-              <div className="text-danger small">{fieldErrors.category}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Status</label>
-            <select
-              name="status"
-              className="form-select"
-              value={form.status}
-              onChange={handleChange}
-            >
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="archived">Archived</option>
-            </select>
-          </div>
-
           <div className="mb-3">
             <label className="form-label">Replace File (optional)</label>
             <input
