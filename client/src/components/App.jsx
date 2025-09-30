@@ -25,7 +25,6 @@ import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 
-
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
 // Dashboard Layout (Protected pages, no footer)
@@ -49,7 +48,6 @@ function App() {
   }, [logEvent, location.pathname]);
 
   return (
-
     <>
       <Suspense fallback={<div className="p-4">Loading…</div>}>
         <Routes>
@@ -62,90 +60,89 @@ function App() {
               </>
             }
           >
+            <Route
+              index
+              element={
+                <div className="p-4">
+                  <h2>Dashboard Main</h2>
+                  <p>Welcome to your dashboard!</p>
+                </div>
+              }
+            />
+            <Route
+              path="main"
+              element={
+                <div className="p-4">
+                  <h2>Dashboard Main</h2>
+                  <p>Welcome to your dashboard!</p>
+                </div>
+              }
+            />
+            <Route
+              path="bookings"
+              element={
+                <div className="p-4">
+                  <h2>Bookings</h2>
+                  <p>Manage your bookings here.</p>
+                </div>
+              }
+            />
+            <Route
+              path="resources"
+              element={
+                <div className="p-4">
+                  <h2>Resources</h2>
+                  <p>Access your resources.</p>
+                </div>
+              }
+            />
 
             <Route
-              path="/"
-              element={
-                <>
-                  <NavBar />
-                  <Homepage />
-                </>
-              }
-            />
-            <Route
-              path="/home"
-              element={
-                <>
-                  <NavBar />
-                  <Homepage />
-                </>
-              }
-            />
-            <Route
-              path="/playground"
-              element={
-                <>
-                  <NavBar />
-                  <Playground />
-                </>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <>
-                  <NavBar />
-                  <Contact />
-                </>
-              }
-            />
-
-            <Route
-              path="/about"
+              path="profile"
               element={
                 <div className="p-4">
                   <h2>Profile</h2>
                   <ProfilePage />
                 </div>
-
               }
             />
 
             <Route
-              path="/verify"
+              path="payments"
               element={
-                <>
-                  <NavBar />
-                  <VerifyPage />
-                </>
+                <div className="p-4">
+                  <h2>Payments</h2>
+                  <p>View payment history.</p>
+                </div>
               }
             />
             <Route path="blog" element={<BlogManagementUi />} />
             <Route
-              path="/blog/:id"
+              path="services"
               element={
-                <>
-                  <NavBar />
-                  <BlogPost />
-                </>
+                <div className="p-4">
+                  <h2>Services</h2>
+                  <p>Manage your services.</p>
+                </div>
               }
             />
             <Route
-              path="/privacy"
+              path="about"
               element={
-                <>
-                  <NavBar />
-                  <PrivacyPolicy />
-                </>
+                <div className="p-4">
+                  <h2>About Management</h2>
+                  <p>Update about information.</p>
+                </div>
               }
             />
+            <Route path="users" element={<UserManagement />} />
             <Route
-              path="/privacy-policy"
+              path="tickets"
               element={
-                <>
-                  <NavBar />
-                  <PrivacyPolicy />
-                </>
+                <div className="p-4">
+                  <h2>Tickets</h2>
+                  <p>Manage support tickets.</p>
+                </div>
               }
             />
           </Route>
@@ -307,7 +304,7 @@ function App() {
         draggable
         pauseOnHover
       />
-    </div>
+    </>
   );
 }
 
