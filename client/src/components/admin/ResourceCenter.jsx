@@ -191,7 +191,7 @@ const ResourceCenter = () => {
           <Button
             action="add"
             label="Add Resource"
-            hoverColor="none"
+            color="#FFFFFF"
             onClick={() => setShowAddModal(true)}
           />
         </div>

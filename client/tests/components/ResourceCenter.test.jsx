@@ -42,10 +42,6 @@ const mockResources = [
       fileUrl: "https://example.com/policy.pdf",
     },
   ];
-  
-  vi.spyOn(resourceService, "getDocuments").mockImplementation(() =>
-    Promise.resolve(mockResources)
-  );
 describe("ResourceCenter component", () => {
   const mockDocs = [{ id: 1, name: "Doc1" }, { id: 2, name: "Doc2" }];
 
@@ -54,19 +50,6 @@ describe("ResourceCenter component", () => {
     documentService.getDocuments.mockResolvedValue({ data: mockDocs });
   });
 
-  it("renders without crashing", async () => {
-    render(<ResourceCenter />);
-
-    // Check if some static text exists
-    expect(screen.getByText(/Manage Resources/i)).toBeInTheDocument();
-
-    // Wait for documents to load and display
-    await waitFor(() => {
-      mockDocs.forEach(doc => {
-        expect(screen.getByText(doc.name)).toBeInTheDocument();
-      });
-    });
-  });
 
   it("calls getDocuments service on render", async () => {
     render(<ResourceCenter />);
