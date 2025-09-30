@@ -82,6 +82,7 @@ const Blog = () => {
                   description={blog.preview}
                   createdAt={blog.date_created}
                   author={blog.author_name}
+                  preview={blog.excerpt}
                   onReadMore={(id) => navigate(`/blog/${id}`)}
                 />
               ))}
@@ -103,7 +104,7 @@ const Blog = () => {
 
         {/* --- Sidebar (desktop) --- */}
         <div
-          className={`d-none d-lg-flex flex-column align-items-center justify-content-between w-50 gap-4 ${style.blogContainer}`}
+          className={`d-none d-lg-flex flex-column align-items-center w-50 gap-4 ${style.blogContainer}`}
         >
           <BlogSideBar
             style={style}

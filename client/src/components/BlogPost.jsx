@@ -5,6 +5,7 @@ import Button from "../utils/Button";
 import { getBlogById } from "../api/services/blog";
 import CalendarIcon from "../assets/Calendar.png";
 import UserIcon from "../assets/User.png";
+import { RichTextEditor } from "./RichTextEditor";
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -16,7 +17,7 @@ const BlogPost = () => {
     const fetchBlog = async () => {
       try {
         const data = await getBlogById(id);
-        setBlog(data);
+        setBlog(data.data);
       } catch (error) {
         toast.error("Failed to load blog");
         console.error("Error fetching blog:", error);
@@ -35,7 +36,7 @@ const BlogPost = () => {
   const formattedDate = new Date(blog.date_created).toLocaleDateString();
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-4 max-w-3xl mx-auto container-fluid">
       <Button
         onClick={() => navigate(-1)}
         size="sm"
@@ -45,9 +46,10 @@ const BlogPost = () => {
         ← Back
       </Button>
 
-      <h1 className="text-3xl font-bold my-4">{blog.title}</h1>
+      <h1 className="text-3xl font-bold mt-4">{blog.title}</h1>
+      <h6 className="text-xl font-semibold mb-4">{blog.category}</h6>
 
-      <div className="flex items-center text-sm text-gray-500 mb-4 gap-4">
+      <div className="d-flex justify-content-start align-items-center items-center text-sm text-gray-500 mb-4 gap-4">
         <div className="flex items-center gap-1">
           <img
             src={CalendarIcon}
@@ -66,6 +68,8 @@ const BlogPost = () => {
         </div>
       </div>
 
+      <p className="p-4 font-italic">{blog.excerpt}</p>
+
       {blog.image && (
         <img
           src={blog.image}
@@ -74,7 +78,12 @@ const BlogPost = () => {
         />
       )}
 
-      <p className="text-gray-800 leading-relaxed">{blog.content}</p>
+      <p className="text-gray-800 leading-relaxed">
+        <RichTextEditor
+          value={JSON.parse(blog.content || "{}")}
+          readOnly={true}
+        />
+      </p>
     </div>
   );
 };

@@ -73,7 +73,14 @@ const CustomEditor = {
 };
 
 // The Rich Text Editor Component
-export const RichTextEditor = ({ value, onChange, label, error, success }) => {
+export const RichTextEditor = ({
+  value,
+  onChange,
+  label,
+  error,
+  success,
+  readOnly = false,
+}) => {
   const [editor] = useState(() => withReact(createEditor()));
   const id = useId();
 
@@ -98,17 +105,19 @@ export const RichTextEditor = ({ value, onChange, label, error, success }) => {
         </label>
       )}
       <div
-        className={`form-control ${error ? "is-invalid" : ""} ${
+        className={` ${!readOnly ? "form-control" : ""}  ${error ? "is-invalid" : ""} ${
           success && !error ? "is-valid" : ""
         }`}
       >
         <Slate
+          className={readOnly ? "bg-light" : ""}
           initialValue={value}
           editor={editor}
           value={value}
-          onChange={onChange}
+          onValueChange={readOnly ? () => {} : onChange}
+          onChange={readOnly ? () => {} : onChange}
         >
-          <Toolbar />
+          {!readOnly && <Toolbar />}
           <div className="p-2">
             <Editable
               id={id}
@@ -117,6 +126,7 @@ export const RichTextEditor = ({ value, onChange, label, error, success }) => {
               renderLeaf={renderLeaf}
               placeholder="Enter some rich text..."
               spellCheck
+              readOnly={readOnly}
               onKeyDown={(event) => {
                 if (!event.ctrlKey) {
                   return;

@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 from utils.responses import restful_response
 from models import db
-from models.blog import Blog, BlogType
+from models.blog import Blog, BlogType, BlogStatus
 from models.user import User, Role
 from models.newsletter_subscriber import NewsletterSubscriber
 import threading
@@ -21,12 +21,56 @@ api = Api(blogs_bp)
 
 client_host = os.getenv("FLASK_CLIENT_URL", "http://localhost:3000").rstrip("/")
 server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
+api_endpoint = os.getenv("FLASK_API", "/api").rstrip("/")
 
 
 # --- Resource for all blogs ---
 class BlogListResource(Resource):
     def get(self):
         blogs = Blog.query.order_by(Blog.date_created.desc()).all()
+        blog_list = []
+        for blog in blogs:
+            blog_dict = blog.to_dict()
+            content = str(blog_dict.get("content") or "")
+            preview = content[:100] + "..." if len(content) > 100 else content
+            blog_dict["preview"] = preview
+            blog_list.append(blog_dict)
+
+        return {
+            "status": "success",
+            "message": "Blogs fetched successfully",
+            "data": blog_list,
+        }, 200
+
+
+# --- Resource for all blogs by admin ---
+class AdminBlogListResource(Resource):
+    @jwt_required()
+    def get(self):
+        try:
+            admin_id = int(get_jwt_identity())
+        except (TypeError, ValueError):
+            return restful_response(
+                status="error", message="Unauthorized", status_code=403
+            )
+        admin = User.query.get(admin_id)
+        if not admin or admin.role.value not in [
+            Role.ADMIN.value,
+            Role.SUPER_ADMIN.value,
+        ]:
+            return restful_response(
+                status="error", message="Unauthorized", status_code=403
+            )
+
+        if admin.role.value == Role.SUPER_ADMIN.value:
+            blogs = Blog.query.order_by(Blog.date_created.desc()).all()
+        else:
+            blogs = (
+                Blog.query.filter_by(admin_id=admin_id)
+                .order_by(Blog.date_created.desc())
+                .all()
+            )
+
         blog_list = []
         for blog in blogs:
             blog_dict = blog.to_dict()
@@ -100,8 +144,8 @@ class BlogNewsletterResource(Resource):
         category_str = ",".join(categories)
         category = category_str or "general"
 
-        # excerpt = request.form.get("excerpt", "").strip()
-        draft = request.form.get("draft", "false")
+        excerpt = request.form.get("excerpt", "").strip()
+        status = request.form.get("status", "published").strip().lower()
         author_name = request.form.get("author_name", "EcoVibe Team").strip()
         reading_duration = request.form.get("reading_duration", "5 min read").strip()
 
@@ -113,12 +157,7 @@ class BlogNewsletterResource(Resource):
                 status_code=400,
             )
 
-        draft = string_to_boolean(draft)
-
         try:
-
-            if draft:
-                pass  # Handle draft logic if needed
 
             admin_id = int(
                 get_jwt_identity()
@@ -139,21 +178,29 @@ class BlogNewsletterResource(Resource):
                 title=title,
                 content=content,
                 image=image_data,
+                excerpt=excerpt,
                 image_content_type=image_content_type,
                 type=BlogType(type_),
                 category=str(category),  # Store as string; adjust as needed
                 author_name=author_name,
                 reading_duration=reading_duration,
                 admin_id=admin_id,
-                # excerpt and draft are not in the model.
+                status=(
+                    BlogStatus(status)
+                    if status in ["published", "archived", "draft"]
+                    else BlogStatus("published")
+                ),
             )
 
             # Add to the session and commit
             db.session.add(new_blog)
             db.session.commit()
 
+            is_newsletter = new_blog.type == BlogType.NEWSLETTER
+            is_published = new_blog.status == BlogStatus.PUBLISHED
+
             # Send newsletter emails to subscribers
-            if new_blog.type == BlogType.NEWSLETTER and not draft:
+            if is_newsletter and is_published:
                 threading.Thread(
                     target=self.send_newsletter,
                     args=(current_app._get_current_object(), new_blog),
@@ -181,7 +228,7 @@ class BlogNewsletterResource(Resource):
     def send_newsletter(self, app, new_blog):
         with app.app_context():
             subscribers = NewsletterSubscriber.query.all()
-            image_url = f"{server_host}/blogs/image/{new_blog.id}"
+            image_url = f"{server_host}{api_endpoint}/blogs/image/{new_blog.id}"
             blog_url = f"{client_host}/blogs/{new_blog.id}"
             current_year = date.today().year
             for subscriber in subscribers:
@@ -197,6 +244,144 @@ class BlogNewsletterResource(Resource):
                     current_year,
                     image_url,
                 )
+
+
+class BlogNewsletterUpdateResource(Resource):
+    @jwt_required()
+    def put(self, blog_id):
+        title = request.form.get("title", "").strip()
+        content = request.form.get("content", "").strip()
+
+        if not title or not content:
+            return restful_response(
+                status="error",
+                message="Title and content are required",
+                status_code=400,
+            )
+        blog = Blog.query.get_or_404(blog_id)
+        admin_id = int(get_jwt_identity())  # Assuming admin ID is the user ID from JWT
+        admin = User.query.get(admin_id)
+        if not admin or admin.role.value not in [
+            Role.ADMIN.value,
+            Role.SUPER_ADMIN.value,
+        ]:
+            return restful_response(
+                status="error", message="Unauthorized", status_code=403
+            )
+        try:
+
+            # fetch all the fields that can be updated
+            excerpt = request.form.get("excerpt", "").strip()
+            status = request.form.get("status", "published").strip().lower()
+            reading_duration = request.form.get(
+                "reading_duration", "5 min read"
+            ).strip()
+            type_ = request.form.get("type", BlogType.ARTICLE.value)
+
+            blog.title = title
+            blog.content = content
+            blog.excerpt = excerpt
+            blog.status = (
+                BlogStatus(status)
+                if status in ["published", "archived", "draft"]
+                else BlogStatus("published")
+            )
+            blog.reading_duration = reading_duration
+            blog.type = (
+                BlogType(type_)
+                if type_ in [bt.value for bt in BlogType]
+                else BlogType.ARTICLE
+            )
+
+            print(f"Blog details: {request.form}")
+
+            # Check if a new image file is provided
+            if "image" in request.files:
+                file = request.files["image"]
+                if file and file.filename != "":
+                    image_data = file.read()
+                    image_content_type = file.content_type
+                    blog.image = image_data
+                    blog.image_content_type = image_content_type
+
+            db.session.add(blog)
+            db.session.commit()
+
+            # Send newsletter emails to subscribers
+            if blog.type == BlogType.NEWSLETTER and blog.status == BlogStatus.PUBLISHED:
+                threading.Thread(
+                    target=self.send_newsletter,
+                    args=(current_app._get_current_object(), blog),
+                ).start()
+
+            return restful_response(
+                status="success",
+                message="Blog updated successfully",
+                data=blog.to_dict(),
+                status_code=200,
+            )
+        except ValueError as e:
+            db.session.rollback()
+            return restful_response(status="error", message=str(e), status_code=400)
+        except Exception as e:
+            db.session.rollback()
+            # Log the exception for debugging
+            print(f"An unexpected error occurred: {e}")
+            return restful_response(
+                status="error",
+                message="An unexpected error occurred",
+                status_code=500,
+            )
+
+    def send_newsletter(self, app, new_blog):
+        with app.app_context():
+            subscribers = NewsletterSubscriber.query.all()
+            image_url = f"{server_host}{api_endpoint}/blogs/image/{new_blog.id}"
+            blog_url = f"{client_host}/blogs/{new_blog.id}"
+            current_year = date.today().year
+            for subscriber in subscribers:
+                # Send newsletter
+                send_newsletter_email(
+                    subscriber.email,
+                    new_blog.title,
+                    new_blog.content,
+                    blog_url,
+                    blog_url,
+                    blog_url,
+                    "Latest Newsletter from EcoVibe",
+                    current_year,
+                    image_url,
+                )
+
+    @jwt_required()
+    def delete(self, blog_id):
+        blog = Blog.query.get_or_404(blog_id)
+        admin_id = int(get_jwt_identity())  # Assuming admin ID is the user ID from JWT
+        admin = User.query.get(admin_id)
+        if not admin or admin.role.value not in [
+            Role.ADMIN.value,
+            Role.SUPER_ADMIN.value,
+        ]:
+            return restful_response(
+                status="error", message="Unauthorized", status_code=403
+            )
+        try:
+            db.session.delete(blog)
+            db.session.commit()
+            return restful_response(
+                status="success",
+                message="Blog deleted successfully",
+                status_code=200,
+            )
+        except Exception as e:
+            db.session.rollback()
+            # Log the exception for debugging
+            print(f"An unexpected error occurred: {e}")
+            return restful_response(
+                status="error",
+                message="An unexpected error occurred",
+                status_code=500,
+            )
 
 
 class BlogImageResource(Resource):
@@ -266,7 +451,9 @@ class SendNewsletterResource(Resource):
 
 
 api.add_resource(BlogListResource, "/blogs")
+api.add_resource(AdminBlogListResource, "/admin/blogs")
 api.add_resource(BlogResource, "/blogs/<int:blog_id>")
 api.add_resource(BlogNewsletterResource, "/blogs")
+api.add_resource(BlogNewsletterUpdateResource, "/blogs/<int:blog_id>")
 api.add_resource(BlogImageResource, "/blogs/image/<int:blog_id>")
 api.add_resource(SendNewsletterResource, "/blogs/send-newsletter/<int:blog_id>")

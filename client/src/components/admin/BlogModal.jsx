@@ -1,39 +1,113 @@
-import React, { useState } from "react";
-import Input, { Select } from "../../utils/Input";
+import React, { useState, useEffect } from "react";
+import Input, { Select, FileInput } from "../../utils/Input";
 import { ToggleSwitch } from "../../utils/ToggleSwitch.jsx";
 import { DropdownButton } from "../../utils/DropdownButton.jsx";
 import { RichTextEditor } from "../RichTextEditor";
+import CancelIcon from "@mui/icons-material/Cancel";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import { createBlog, updateBlog } from "../../api/services/blog.js";
+import { toast } from "react-toastify";
 
 // Define initial value for the editor
 const initialEditorValue = [
   {
     type: "paragraph",
-    children: [
-      { text: "This is a rich text editor built with " },
-      { text: "Slate.js", bold: true },
-      { text: " and " },
-      { text: "React", italic: true },
-      { text: "!" },
-    ],
-  },
-  {
-    type: "paragraph",
-    children: [
-      {
-        text: "You can format text as bold, italic, underlined, or as a code block. Try using keyboard shortcuts like Ctrl+B!",
-      },
-    ],
+    children: [{ text: "" }],
   },
 ];
 
-const PostCreationModal = ({ isOpen, onClose }) => {
+const PostCreationModal = ({ isOpen, onClose, post }) => {
+  const isEditing = post != null;
+
   // Form State
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Select category");
-  const [excerpt, setExcerpt] = useState("");
-  const [content, setContent] = useState(initialEditorValue);
-  const [isNewsletter, setIsNewsletter] = useState(false);
-  const [status, setStatus] = useState("Draft");
+  const [postFormState, setPostFormState] = useState({
+    title: "",
+    category: "Select category",
+    excerpt: "",
+    content: initialEditorValue,
+    isNewsletter: false,
+    status: "Draft",
+    image: null,
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      if (isEditing) {
+        setPostFormState({
+          title: post.title || "",
+          category: post.category || "Select category",
+          excerpt: post.excerpt || "",
+          content: post.content ? JSON.parse(post.content) : initialEditorValue,
+          isNewsletter: post.type == "newsletter" || false,
+          status: post.status || "Draft",
+          image: null, // User must re-upload image on edit
+          type: post.type || "article",
+        });
+      } else {
+        setPostFormState({
+          title: "",
+          category: "Select category",
+          excerpt: "",
+          content: initialEditorValue,
+          isNewsletter: false,
+          status: "Draft",
+          image: null,
+          type: "article",
+        });
+      }
+    }
+  }, [post, isOpen, isEditing]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateFormState = (field, value) => {
+    setPostFormState((prevState) => ({
+      ...prevState,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    setIsLoading(true);
+    e.preventDefault();
+    if (
+      postFormState.title.trim() === "" ||
+      postFormState.content.length === 0
+    ) {
+      toast.error("Title and Content are required fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    const payload = {
+      ...postFormState,
+      content: JSON.stringify(postFormState.content),
+    };
+
+    try {
+      let response;
+      if (isEditing) {
+        response = await updateBlog(post.id, payload);
+        toast.success("Blog post updated successfully!");
+      } else {
+        response = await createBlog(payload);
+        toast.success("Blog post created successfully!");
+      }
+
+      if (response) {
+        onClose();
+      } else {
+        toast.error(`Failed to ${isEditing ? "update" : "create"} blog post.`);
+      }
+    } catch (error) {
+      toast.error(
+        `Error ${isEditing ? "updating" : "creating"} blog post: ${error.message}`,
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Static options
   const categories = [
@@ -46,19 +120,6 @@ const PostCreationModal = ({ isOpen, onClose }) => {
   const statuses = ["Draft", "Review", "Published", "Archived"];
 
   if (!isOpen) return null;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Post Submitted:", {
-      title,
-      category,
-      excerpt,
-      content,
-      isNewsletter,
-      status,
-    });
-    onClose();
-  };
 
   return (
     <div
@@ -79,24 +140,8 @@ const PostCreationModal = ({ isOpen, onClose }) => {
               className="modal-title fw-semibold d-flex align-items-center text-dark"
               id="postModalLabel"
             >
-              {/* Plus icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-success me-2"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Create New Blog Post
+              <NoteAddIcon className="me-2 text-success" />
+              {isEditing ? "Edit Blog Post" : "Create New Blog Post"}
             </h5>
             {/* Close button (X icon) */}
             <button
@@ -115,13 +160,14 @@ const PostCreationModal = ({ isOpen, onClose }) => {
                 {/* Title Input */}
                 <div className="col-md-6">
                   <Input
-                    label={"Title"}
+                    label={"Title *"}
                     type="text"
                     id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    name="title"
+                    value={postFormState.title}
+                    onChange={(e) => updateFormState("title", e.target.value)}
                     placeholder="Enter blog post title..."
-                    className="form-control form-control-lg rounded-3 border-light shadow-sm"
+                    className="form-control-lg rounded-3 border-light"
                     required
                   />
                 </div>
@@ -130,10 +176,13 @@ const PostCreationModal = ({ isOpen, onClose }) => {
                 <div className="col-md-6">
                   <Select
                     id="category"
+                    name="category"
                     label={"Category"}
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className=" form-select-lg rounded-3 border-light shadow-sm"
+                    value={postFormState.category}
+                    onChange={(e) =>
+                      updateFormState("category", e.target.value)
+                    }
+                    className=" form-select-lg rounded-3 border-light"
                     aria-label="Select category"
                   >
                     {categories.map((cat) => (
@@ -156,11 +205,25 @@ const PostCreationModal = ({ isOpen, onClose }) => {
                   rows={4}
                   type="textarea"
                   id="excerpt"
-                  value={excerpt}
-                  onChange={(e) => setExcerpt(e.target.value)}
+                  name="excerpt"
+                  value={postFormState.excerpt}
+                  onChange={(e) => updateFormState("excerpt", e.target.value)}
                   placeholder="Brief description of the blog post..."
-                  className="form-control form-control-lg rounded-3 border-light shadow-sm"
-                  required
+                  className=" form-control-lg rounded-3 border-secondary"
+                />
+              </div>
+
+              {/* Featured Image Input */}
+              <div className="mb-4">
+                <FileInput
+                  type="file"
+                  id="image"
+                  name="image"
+                  label={"Thumbnail *"}
+                  accept="image/*"
+                  onChange={(e) => updateFormState("image", e.target.files[0])}
+                  className="form-control-lg rounded-3"
+                  aria-label="Upload featured image"
                 />
               </div>
 
@@ -168,9 +231,12 @@ const PostCreationModal = ({ isOpen, onClose }) => {
               <div className="mb-2">
                 <RichTextEditor
                   id="content"
-                  label="Content"
-                  value={content}
-                  onChange={setContent}
+                  label="Content *"
+                  value={postFormState.content}
+                  onChange={(value) => updateFormState("content", value)}
+                  placeholder="Write your blog content here..."
+                  className="form-control-lg rounded-3 border-secondary"
+                  required
                 />
               </div>
             </div>
@@ -181,8 +247,14 @@ const PostCreationModal = ({ isOpen, onClose }) => {
               <div className="d-flex align-items-center">
                 <ToggleSwitch
                   label="Newsletter"
-                  checked={isNewsletter}
-                  onChange={(e) => setIsNewsletter(e.target.checked)}
+                  checked={postFormState.isNewsletter}
+                  onChange={(e) => {
+                    updateFormState("isNewsletter", e.target.checked);
+                    updateFormState(
+                      "type",
+                      e.target.checked ? "newsletter" : "article",
+                    );
+                  }}
                 />
 
                 {/* Space between toggle and dropdown */}
@@ -190,62 +262,38 @@ const PostCreationModal = ({ isOpen, onClose }) => {
 
                 <DropdownButton
                   options={statuses}
-                  selected={status}
-                  onSelect={setStatus}
+                  selected={postFormState.status}
+                  onSelect={(option) => updateFormState("status", option)}
                 />
               </div>
 
-              {/* Right side buttons */}
-              <div className="d-flex align-items-center">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="btn btn-link text-secondary fw-semibold text-decoration-none me-3"
-                >
-                  {/* Close/Cancel icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="me-1"
-                    width="18"
-                    height="18"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  Cancel
-                </button>
+              {isLoading && (
+                <div className="text-secondary me-3">Saving...</div>
+              )}
 
-                <button
-                  type="submit"
-                  className="btn btn-success fw-semibold rounded-3 shadow-sm px-4 py-2"
-                >
-                  {/* Save/Create Post icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="me-1"
-                    width="18"
-                    height="18"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
+              {/* Right side buttons */}
+              {!isLoading && (
+                <div className="d-flex align-items-center">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="btn btn-link align-items-center border border-secondary text-secondary fw-semibold text-decoration-none me-3"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                    />
-                  </svg>
-                  Create Post
-                </button>
-              </div>
+                    {/* Close/Cancel icon */}
+                    <CancelIcon className="me-1" />
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="btn btn-success fw-semibold rounded-3 shadow-sm px-4 py-2 d-flex align-items-center justify-content-center"
+                  >
+                    {/* Save/Create Post icon */}
+                    <SaveAsIcon className="me-1" />
+                    {isEditing ? "Update Post" : "Create Post"}
+                  </button>
+                </div>
+              )}
             </div>
           </form>
         </div>

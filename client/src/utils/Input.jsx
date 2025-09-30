@@ -403,4 +403,118 @@ Option.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
+export const FileInput = ({
+  borderRadius = "0.375rem",
+  className = "",
+  label,
+  error,
+  success,
+  disabled = false,
+  id: propId,
+  ...props
+}) => {
+  const generatedId = useId();
+  const id = propId || generatedId;
+
+  // Base input styles
+  const baseStyles = {
+    borderRadius: borderRadius,
+    transition: "all 0.3s ease",
+    width: "100%",
+    padding: "0.375rem 0.75rem",
+    fontSize: "1rem",
+    lineHeight: "1.5",
+    color: "#495057",
+    backgroundColor: "#fff",
+    border: "1px solid #ced4da",
+  };
+
+  // Focus styles
+  const getFocusStyles = () => {
+    if (error) {
+      return {
+        borderColor: "#dc3545",
+        boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)",
+      };
+    }
+    if (success) {
+      return {
+        borderColor: "#28a745",
+        boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)",
+      };
+    }
+    return {
+      borderColor: "#37b137",
+      boxShadow: "0 0 0 0.2rem rgba(55, 177, 55, 0.25)",
+    };
+  };
+
+  // Error styles
+  const errorStyles = {
+    borderColor: "#dc3545",
+  };
+
+  // Success styles
+  const successStyles = {
+    borderColor: "#28a745",
+  };
+
+  // Combine all styles
+  const inputStyles = {
+    ...baseStyles,
+    ...(error && errorStyles),
+    ...(success && !error && successStyles),
+  };
+
+  // Determine aria-describedby
+  const ariaDescribedBy = [];
+  if (error) ariaDescribedBy.push(`${id}-error`);
+  if (success && !error) ariaDescribedBy.push(`${id}-success`);
+  const describedBy =
+    ariaDescribedBy.length > 0 ? ariaDescribedBy.join(" ") : undefined;
+
+  return (
+    <div className={`mb-3 ${className}`}>
+      {label && (
+        <label htmlFor={id} className="form-label">
+          {label}
+        </label>
+      )}
+      <input
+        id={id}
+        type="file"
+        className={`form-control ${error ? "is-invalid" : ""} ${
+          success && !error ? "is-valid" : ""
+        }`}
+        style={inputStyles}
+        onFocus={(e) => {
+          Object.assign(e.target.style, getFocusStyles());
+        }}
+        onBlur={(e) => {
+          e.target.style.borderColor = error
+            ? "#dc3545"
+            : success && !error
+              ? "#28a745"
+              : "#ced4da";
+          e.target.style.boxShadow = "none";
+        }}
+        disabled={disabled}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={describedBy}
+        {...props}
+      />
+      {error && (
+        <div id={`${id}-error`} className="invalid-feedback">
+          {error}
+        </div>
+      )}
+      {success && !error && (
+        <div id={`${id}-success`} className="valid-feedback">
+          {success}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default Input;

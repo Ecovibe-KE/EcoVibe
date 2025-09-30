@@ -1,11 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import NewspaperIcon from "@mui/icons-material/Newspaper";
 import Input from "../../utils/Input";
 import Button from "../../utils/Button";
 import PostCreationModal from "./BlogModal.jsx";
+import { fetchAdminBlogs, deleteBlog } from "../../api/services/blog.js";
+import { toast } from "react-toastify";
 
 const ChevronDown = (props) => (
   <svg
@@ -66,7 +69,7 @@ const User = (props) => (
 const StatCard = ({ icon, value, label }) => {
   return (
     // Uses Bootstrap classes: card, p-4, rounded-3, shadow-sm, border-start
-    <div className="card shadow-sm p-4 rounded-3 border-start border-4 border-light d-flex flex-row align-items-center">
+    <div className="card p-4 rounded-3 border-start border-4 border-light d-flex flex-row align-items-center">
       <div className="flex-shrink-0 me-3">{icon}</div>
       <div>
         <div className="fs-3 fw-semibold text-dark">{value}</div>
@@ -112,31 +115,90 @@ const BlogManagementUi = () => {
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedStatus, setSelectedStatus] = useState("All Status");
 
+  const [blogs, setBlogs] = useState([]);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [loadBlogsTrigger, setLoadBlogsTrigger] = useState(0); // To trigger re-fetching blogs
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
 
-  const openModal = useCallback(() => setIsModalOpen(true), []);
-  const closeModal = useCallback(() => setIsModalOpen(false), []);
+  const openModal = useCallback(
+    (postId) => {
+      if (postId && typeof postId !== "object") {
+        const postToEdit = blogs.find((p) => p.id === postId);
+        setEditingPost(postToEdit);
+      } else {
+        setEditingPost(null);
+      }
+      setIsModalOpen(true);
+    },
+    [blogs],
+  );
 
-  // Mock data for dropdown options
-  const categoryOptions = [
-    "All Categories",
-    "Compliance",
-    "ESG",
-    "Regulations",
-    "Finance",
-  ];
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setEditingPost(null);
+    setLoadBlogsTrigger(loadBlogsTrigger + 1);
+  }, [loadBlogsTrigger]);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetchAdminBlogs();
+        setBlogs(response.data);
+        setFilteredBlogs(response.data);
+      } catch (err) {
+        setError("Failed to fetch blogs. Please try again later.");
+        if (import.meta.env.MODE !== "production") {
+          console.error("Error fetching blogs:", err);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBlogs();
+  }, [loadBlogsTrigger]);
+
+  const filterBlogs = useCallback(() => {
+    let updatedBlogs = [...blogs];
+
+    if (selectedCategory !== "All Categories") {
+      updatedBlogs = updatedBlogs.filter(
+        (blog) => blog.category === selectedCategory,
+      );
+    }
+
+    if (selectedStatus !== "All Status") {
+      updatedBlogs = updatedBlogs.filter((blog) => {
+        if (selectedStatus === "Published") return blog.status === "Published";
+        if (selectedStatus === "Drafts") return blog.status === "Draft";
+        if (selectedStatus === "Archived") return blog.status === "Archived";
+        return true;
+      });
+    }
+
+    setFilteredBlogs(updatedBlogs);
+  }, [blogs, selectedCategory, selectedStatus]);
+
+  useEffect(() => {
+    filterBlogs();
+  }, [filterBlogs]);
+
+  const categoryOptions = new Set(blogs.map((blog) => blog.category));
+
+  const totalBlogs = blogs.length;
+  const publishedBlogs = blogs.filter(
+    (blog) => blog.status === "published",
+  ).length;
+  const draftBlogs = blogs.filter((blog) => blog.status === "draft").length;
+  const newsletterBlogs = blogs.filter(
+    (blog) => blog.type === "newsletter",
+  ).length;
+
   const statusOptions = ["All Status", "Published", "Drafts", "Archived"];
-
-  // Mock state for a single post item
-  const mockPost = {
-    title: "New ESG Regulations: What Your Business Needs to Know",
-    description:
-      "Kenya's updated ESG compliance requirements for 2024 and how they affect your sustainability strategy.",
-    author: "Dr. Sarah Mwangi",
-    date: "2024-03-10",
-    status: "published",
-    categories: ["ESG", "Regulations", "Compliance"],
-  };
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -152,7 +214,11 @@ const BlogManagementUi = () => {
     <div className="min-vh-100 bg-light py-4 py-sm-5 font-sans">
       <div className="container-fluid">
         {/* Post Creation Modal */}
-        <PostCreationModal isOpen={isModalOpen} onClose={closeModal} />
+        <PostCreationModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          post={editingPost}
+        />
 
         <header className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
           <div>
@@ -174,28 +240,35 @@ const BlogManagementUi = () => {
           <div className="col-12 col-md-3">
             <StatCard
               icon={<LibraryBooksIcon fontSize="large" color="primary" />}
-              value="5"
+              value={totalBlogs}
               label="Total Posts"
             />
           </div>
           <div className="col-12 col-md-3">
             <StatCard
               icon={<CardMembershipIcon fontSize="large" color="success" />}
-              value="3"
+              value={publishedBlogs}
               label="Published"
             />
           </div>
           <div className="col-12 col-md-3">
             <StatCard
               icon={<EditNoteIcon fontSize="large" color="warning" />}
-              value="1"
+              value={draftBlogs}
               label="Drafts"
+            />
+          </div>
+          <div className="col-12 col-md-3">
+            <StatCard
+              icon={<NewspaperIcon fontSize="large" color="danger" />}
+              value={newsletterBlogs}
+              label="Newsletters"
             />
           </div>
         </div>
 
         {/* Search and Filter Section - Uses Card and Form classes */}
-        <div className="card shadow-sm border-0 p-3 mb-5 rounded-3">
+        <div className="card border-0 p-3 mb-5 rounded-3">
           <div className="d-flex flex-column flex-md-row gap-3">
             {/* Search Input - Form Control and position utility */}
             <div className="flex-grow-1 position-relative">
@@ -233,7 +306,7 @@ const BlogManagementUi = () => {
                       border: "1px solid var(--bs-light-border-subtle)",
                     }}
                   >
-                    {categoryOptions.map((option) => (
+                    {[...categoryOptions].map((option) => (
                       <a
                         key={option}
                         className={`dropdown-item small ${option === selectedCategory ? "bg-primary-subtle text-primary fw-medium" : "text-dark"}`}
@@ -274,7 +347,7 @@ const BlogManagementUi = () => {
                     {statusOptions.map((option) => (
                       <a
                         key={option}
-                        className={`dropdown-item small ${option === selectedStatus ? "bg-primary-subtle text-primary fw-medium" : "text-dark"}`}
+                        className={`dropdown-item small ${option.toLocaleLowerCase() === selectedStatus.toLocaleLowerCase() ? "bg-primary-subtle text-primary fw-medium" : "text-dark"}`}
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
@@ -292,85 +365,157 @@ const BlogManagementUi = () => {
         </div>
 
         {/* Blog Post Item Section - Uses Card structure for the list item */}
-        <div className="card shadow-lg border-0 p-4 rounded-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-          <div className="flex-grow-1 min-w-0 me-md-4">
-            {/* Tags/Badges */}
-            <div className="mb-2">
-              <PostBadge
-                text="published"
-                colorClass="text-success"
-                bgColorClass="bg-success-subtle"
-                hasIcon={true}
+        {isLoading && <div className="text-secondary">Loading posts...</div>}
+        {error && <div className="text-danger">{error}</div>}
+        {!isLoading && filteredBlogs.length === 0 && (
+          <div className="text-secondary">No posts found.</div>
+        )}
+        <div className="d-flex flex-column gap-4">
+          {!isLoading &&
+            filteredBlogs.map((post) => (
+              <BlogPostItem
+                key={post.id}
+                post={post}
+                onEdit={openModal}
+                onDelete={async (postId) => {
+                  if (
+                    confirm(
+                      "Are you sure you want to delete this post? This action cannot be undone.",
+                    )
+                  ) {
+                    // Call delete API here
+                    try {
+                      setIsLoading(true);
+                      await deleteBlog(postId);
+                      toast.success("Post deleted successfully.");
+                    } catch (err) {
+                      toast.error(
+                        "Failed to delete post. Please try again later.",
+                      );
+                      if (import.meta.env.MODE !== "production") {
+                        console.error("Error deleting post:", err);
+                      }
+                    } finally {
+                      setIsLoading(false);
+                    }
+                    // After deletion, refresh the blog list
+                    setLoadBlogsTrigger(loadBlogsTrigger + 1);
+                  }
+                }}
               />
-              <PostBadge
-                text="Compliance"
-                colorClass="text-primary"
-                bgColorClass="bg-primary-subtle"
-              />
-              <PostBadge
-                text="Featured"
-                colorClass="text-warning"
-                bgColorClass="bg-warning-subtle"
-                hasIcon={true}
-              />
-            </div>
-
-            {/* Title and Description */}
-            <h2 className="fs-5 fw-semibold text-dark mb-1 lh-sm">
-              {mockPost.title}
-            </h2>
-            <p className="small text-secondary mb-3 text-truncate">
-              {mockPost.description}
-            </p>
-
-            {/* Metadata and Tags */}
-            <div className="d-flex flex-wrap align-items-center small text-secondary">
-              <div className="d-flex align-items-center me-3">
-                {/* Secondary Tags/Categories */}
-                {mockPost.categories.map((tag) => (
-                  <span
-                    key={tag}
-                    className="badge bg-secondary-subtle text-dark-emphasis rounded-pill me-1"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                <span className="badge bg-secondary-subtle text-dark-emphasis rounded-pill border border-dashed border-secondary me-1">
-                  +1
-                </span>
-              </div>
-
-              <div className="d-flex align-items-center me-3 mt-2 mt-sm-0">
-                <User
-                  className="text-secondary me-1"
-                  style={{ width: "1rem", height: "1rem" }}
-                />
-                <span className="fw-medium">{mockPost.author}</span>
-              </div>
-              <div className="d-flex align-items-center mt-2 mt-sm-0">
-                <Calendar
-                  className="text-secondary me-1"
-                  style={{ width: "1rem", height: "1rem" }}
-                />
-                <span>{mockPost.date}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons - Uses standard Bootstrap Button styling for icons */}
-          <div className="d-flex gap-2 mt-3 mt-md-0 flex-shrink-0">
-            <Button
-              action="update"
-              label="Edit Post"
-              outline
-              hoverColor={"#FFF"}
-              hoverTextColor={"#000"}
-            />
-            <Button action="delete" label="Delete Post" outline />
-          </div>
+            ))}
         </div>
       </div>
     </div>
   );
 };
+
+const BlogPostItem = ({ post, onEdit, onDelete }) => {
+  return (
+    <div className="card border-0 p-4 rounded-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+      <div className="flex-grow-1 min-w-0 me-md-4">
+        {/* Tags/Badges */}
+        <div className="mb-2">
+          <PostBadge
+            text={post.category}
+            colorClass="text-primary"
+            bgColorClass="bg-primary-subtle"
+            hasIcon={false}
+          />
+
+          <PostBadge
+            text={post.reading_duration}
+            colorClass="text-secondary"
+            bgColorClass="bg-secondary-subtle"
+          />
+
+          <PostBadge
+            text={post.status}
+            colorClass={
+              post.status === "published"
+                ? "text-success"
+                : post.status === "draft"
+                  ? "text-warning"
+                  : "text-secondary"
+            }
+            bgColorClass={
+              post.status === "published"
+                ? "bg-success-subtle"
+                : post.status === "draft"
+                  ? "bg-warning-subtle"
+                  : "bg-secondary-subtle"
+            }
+          />
+
+          <PostBadge
+            text={post.type}
+            colorClass="text-secondary"
+            bgColorClass="bg-secondary-subtle"
+            hasIcon={true}
+          />
+        </div>
+
+        {/* Title and Description */}
+        <h2 className="fs-5 fw-semibold text-dark mb-1 lh-sm">{post.title}</h2>
+        <p className="small text-secondary mb-3 text-truncate">
+          {post.excerpt}
+        </p>
+
+        {/* Metadata and Tags */}
+        <div className="d-flex flex-wrap align-items-center small text-secondary">
+          <div className="d-flex align-items-center me-3">
+            {/* Secondary Tags/Categories */}
+            {post.category.split(",").map((tag) => (
+              <span
+                key={tag}
+                className="badge bg-secondary-subtle text-dark-emphasis rounded-pill me-1"
+              >
+                {tag}
+              </span>
+            ))}
+            <span className="badge bg-secondary-subtle text-dark-emphasis rounded-pill border border-dashed border-secondary me-1">
+              +1
+            </span>
+          </div>
+
+          <div className="d-flex align-items-center me-3 mt-2 mt-sm-0">
+            <User
+              className="text-secondary me-1"
+              style={{ width: "1rem", height: "1rem" }}
+            />
+            <span className="fw-medium">{post.author_name}</span>
+          </div>
+          <div className="d-flex align-items-center mt-2 mt-sm-0">
+            <Calendar
+              className="text-secondary me-1"
+              style={{ width: "1rem", height: "1rem" }}
+            />
+            <span>{post.date_created}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons - Uses standard Bootstrap Button styling for icons */}
+      <div className="d-flex gap-2 mt-3 mt-md-0 flex-shrink-0">
+        <Button
+          action="update"
+          label="Edit Post"
+          outline
+          hoverColor={"#FFF"}
+          hoverTextColor={"#000"}
+          onClick={() => onEdit(post.id)}
+        />
+        <Button
+          action="delete"
+          label="Delete Post"
+          outline
+          hoverColor={"#FFF"}
+          hoverTextColor={"#000"}
+          onClick={() => onDelete(post.id)}
+        />
+      </div>
+    </div>
+  );
+};
+
 export default BlogManagementUi;
