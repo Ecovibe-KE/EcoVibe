@@ -8,7 +8,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
-import { createUser } from "../api/services/user";
+import { createUser } from "../api/services/auth";
 import { validateEmail } from "../utils/Validations";
 
 const SignUpForm = () => {

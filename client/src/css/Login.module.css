@@ -1,0 +1,220 @@
+/* Main wrapper covering full viewport */
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  min-height: calc(100vh - 120px);
+  background-color: #1e1e1e;
+}
+
+/* Left section */
+.leftSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  color: #ffffff;
+  padding: 4rem;
+  box-sizing: border-box;
+  text-align: left;
+  min-width: 300px;
+  flex: 1;
+}
+
+.brandTitle {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.brandSubtitle {
+  font-size: 1.5rem;
+  margin: 1rem 0 2rem 0;
+  line-height: 1.4;
+}
+
+.logoImage {
+  width: 300px;
+  height: auto;
+  margin-top: 2rem;
+}
+
+/* Right section */
+.rightSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-width: 300px;
+}
+
+/* White login card */
+.loginCard {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: 400;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 700px;
+}
+
+/* Login actions */
+.loginActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loginActions .loginButton.btn {
+  transition: background-color 0.3s ease;
+}
+
+.loginActions .loginButton.btn:hover {
+  background-color: #f5a030 !important;
+}
+
+.loginButton {
+  min-width: 120px;
+}
+
+.forgotLink {
+  color: black;
+  text-decoration: none;
+  font-size: 18px;
+  transition: text-decoration 0.2s ease;
+  white-space: nowrap;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+/* Input fields */
+.loginCard input,
+.loginCard label {
+  width: 100%;
+  font-size: 1rem;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .wrapper {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .leftSection,
+  .rightSection {
+    width: 100%;
+    padding: 1.5rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .loginCard {
+    min-height: auto;
+    padding: 1.5rem;
+    text-align: left;
+  }
+
+  .loginActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .loginButton {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .forgotLink {
+    text-align: center;
+    width: 100%;
+  }
+
+  .loginCard input,
+  .loginCard label {
+    font-size: 0.95rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .brandTitle {
+    font-size: 2rem;
+  }
+
+  .brandSubtitle {
+    font-size: 1rem;
+  }
+
+  .loginCard {
+    padding: 1rem;
+  }
+
+  .loginCard input,
+  .loginCard label {
+    font-size: 0.9rem;
+  }
+
+  /* 🔥 Hide Empower logo on mobile */
+  .logoImage {
+    display: none;
+  }
+}
+
+.empowerImage {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .empowerImage {
+    display: none; /* hide Empower logo on mobile/tablet */
+  }
+}
+
+/* Password label with toggle on same line */
+.passwordLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.passwordToggle {
+  cursor: pointer;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+}
+
+.passwordToggle:hover {
+  color: #343a40;
+}
+
+.passwordToggle svg {
+  font-size: 1.2rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .passwordLabel {
+    font-size: 0.95rem;
+  }
+
+  .passwordToggle svg {
+    font-size: 1rem;
+  }
+}
