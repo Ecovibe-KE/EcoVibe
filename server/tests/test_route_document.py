@@ -6,6 +6,11 @@ from models.user import User, Role, AccountStatus
 from models.document import Document
 
 
+# --------------------------------------------------------
+# Fixtures
+# --------------------------------------------------------
+
+
 @pytest.fixture
 def admin_user(session):
     user = User(
@@ -26,6 +31,18 @@ def admin_user(session):
 def auth_header(admin_user):
     token = create_access_token(identity=str(admin_user.id))
     return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def user_header(admin_user):
+    # Reuse admin_user but monkeypatch require_admin for forbidden test
+    token = create_access_token(identity=str(admin_user.id))
+    return {"Authorization": f"Bearer {token}"}
+
+
+# --------------------------------------------------------
+# Core happy-path tests
+# --------------------------------------------------------
 
 
 def test_upload_document(client, session, auth_header, admin_user):
@@ -49,7 +66,6 @@ def test_upload_document(client, session, auth_header, admin_user):
     assert body["status"] == "success"
     assert body["data"]["title"] == "Test Doc"
 
-    # Check in DB
     doc = session.query(Document).first()
     assert doc.title == "Test Doc"
 
@@ -134,3 +150,100 @@ def test_download_document(client, session, auth_header, admin_user):
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/pdf"
     assert response.data.startswith(b"content")
+
+
+# --------------------------------------------------------
+# Edge cases
+# --------------------------------------------------------
+
+
+def test_get_document_not_found(client, auth_header):
+    resp = client.get("/api/documents/999", headers=auth_header)
+    body = resp.get_json()
+    assert resp.status_code == 404
+    assert body["status"] == "error"
+
+
+def test_update_document_not_found(client, auth_header):
+    resp = client.put(
+        "/api/documents/12345",
+        data={"title": "Won't Work"},
+        headers=auth_header,
+        content_type="multipart/form-data",
+    )
+    body = resp.get_json()
+    assert resp.status_code == 404
+    assert body["status"] == "error"
+
+
+def test_delete_document_not_found(client, auth_header):
+    resp = client.delete("/api/documents/54321", headers=auth_header)
+    body = resp.get_json()
+    assert resp.status_code == 404
+    assert body["status"] == "error"
+
+
+def test_forbidden_user_cannot_upload(client, user_header, monkeypatch, admin_user):
+    # force require_admin to fail
+    monkeypatch.setattr("routes.document.require_admin", lambda: False)
+
+    file_data = io.BytesIO(b"fake data")
+    file_data.name = "bad.pdf"
+
+    resp = client.post(
+        "/api/documents",
+        data={
+            "title": "Blocked Doc",
+            "description": "user upload",
+            "admin_id": admin_user.id,
+            "file": (file_data, "bad.pdf"),
+        },
+        headers=user_header,
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.xfail(reason="API currently accepts all file types")
+def test_upload_invalid_file_type(client, auth_header, admin_user):
+    bad_file = io.BytesIO(b"junk data")
+    bad_file.name = "bad.txt"
+
+    resp = client.post(
+        "/api/documents",
+        data={
+            "title": "Bad File",
+            "description": "not pdf",
+            "admin_id": admin_user.id,
+            "file": (bad_file, "bad.txt"),
+        },
+        headers=auth_header,
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 400
+
+
+def test_internal_error_on_commit(client, auth_header, admin_user, monkeypatch):
+    file_data = io.BytesIO(b"dummy")
+    file_data.name = "fail.pdf"
+
+    def bad_commit():
+        raise Exception("DB failed")
+
+    monkeypatch.setattr(db.session, "commit", bad_commit)
+
+    resp = client.post(
+        "/api/documents",
+        data={
+            "title": "Break DB",
+            "description": "simulate fail",
+            "admin_id": admin_user.id,
+            "file": (file_data, "fail.pdf"),
+        },
+        headers=auth_header,
+        content_type="multipart/form-data",
+    )
+
+    body = resp.get_json()
+    assert resp.status_code == 500
+    assert body["status"] == "error"
