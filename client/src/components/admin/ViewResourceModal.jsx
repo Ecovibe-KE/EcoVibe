@@ -37,14 +37,14 @@ const ViewResourceModal = ({ visible, resource, onCancel, onDownload }) => {
             <p>
               Preview not supported for <strong>{resource.fileType}</strong>.
               <br />
-              <Button onClick={() => onDownload(resource.id, resource.title)}>
+              <Button onClick={() => onDownload(resource.fileUrl, resource.title)}>
                 Download instead
               </Button>
             </p>
           )}
         </div>
         <div className="p-3 border-top d-flex justify-content-end">
-          <Button onClick={onCancel} label="Close"/>
+          <Button onClick={onCancel} label="Close" />
         </div>
       </div>
     </div>

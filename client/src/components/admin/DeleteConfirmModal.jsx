@@ -26,7 +26,7 @@ const DeleteConfirmModal = ({ visible, resource, onCancel, onConfirm }) => {
           </p>
         </div>
         <div className="p-3 border-top d-flex justify-content-end">
-          <Button variant="secondary" className="me-2" onClick={onCancel}>
+          <Button onClick={onCancel}>
             Cancel
           </Button>
           <Button label="Delete" onClick={onConfirm}>

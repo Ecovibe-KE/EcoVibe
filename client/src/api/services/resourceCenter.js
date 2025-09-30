@@ -19,9 +19,7 @@ export const uploadDocument = async (file, adminId) => {
   formData.append("file", file);
   formData.append("admin_id", adminId);
 
-  const response = await api.post(ENDPOINTS.documents, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const response = await api.post(ENDPOINTS.documents, formData);
   return response;
 };
 
@@ -32,11 +30,20 @@ export const deleteDocument = async (id) => {
 };
 
 /** Download a document (frontend utility) */
-export const downloadDocument = (fileUrl, filename) => {
-  const link = document.createElement("a");
-  link.href = fileUrl;
-  link.setAttribute("download", filename || "document");
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+export const downloadDocument = async (fileUrl, filename) => {
+  try {
+    const response = await api.get(fileUrl, { responseType: 'blob' });
+    const blob = new Blob([response.data]);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename || "document");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Failed to download document:', error);
+    throw error;
+  }
 };

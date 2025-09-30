@@ -24,7 +24,6 @@ const ResourceCenter = () => {
   const [selectedResource, setSelectedResource] = useState(null);
   const [error, setErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -38,10 +37,8 @@ const ResourceCenter = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",
     file: null,
   });
-
 
   const fetchData = async (page = 1) => {
     setErrors("");
@@ -66,16 +63,12 @@ const ResourceCenter = () => {
   const filteredResources = resources.filter((res) => {
     const matchesSearch =
       res.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      res.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (res.fileType || "").toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCategory =
-      selectedCategory === "" || res.category === selectedCategory;
 
     const matchesFileType =
       selectedFileType === "" || res.fileType === selectedFileType;
 
-      return matchesSearch && matchesCategory && matchesFileType
+      return matchesSearch && matchesFileType
   });
 
   const handleChange = (e) => {
@@ -90,8 +83,6 @@ const ResourceCenter = () => {
     if (!form.title) newErrors.title = "Title is required";
     if (!form.description) newErrors.description = "Description is required";
     if (!form.file) newErrors.file = "File is required";
-    if (!form.category) newErrors.category = "Category is required";
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -101,7 +92,6 @@ const ResourceCenter = () => {
       const formData = new FormData();
       formData.append("title", form.title);
       formData.append("description", form.description);
-      formData.append("category", form.category);
       formData.append("file", form.file);
    
 
@@ -114,7 +104,6 @@ const ResourceCenter = () => {
         setForm({
           title: "",
           description: "",
-          category: "",
           file: null,
         });
       } else {
@@ -140,7 +129,6 @@ const ResourceCenter = () => {
       const formData = new FormData();
       formData.append("title", form.title);
       formData.append("description", form.description);
-      formData.append("category", form.category);
       if (form.file) {
         formData.append("file", form.file);
       }
@@ -197,24 +185,6 @@ const ResourceCenter = () => {
         </div>
         <div className="row g-3 m-3 align-items-end justify-content-between">
           <div className="col-12 col-md-3">
-            <label htmlFor="categories" className="form-label">
-              Category
-            </label>
-            <select
-              id="categories"
-              name="categories"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="form-select"
-            >
-              <option value="">All Categories</option>
-              <option value="esgReports">ESG Reports</option>
-              <option value="templates">Templates</option>
-              <option value="Policies">Policies</option>
-              <option value="sustainability">Sustainability</option>
-            </select>
-          </div>
-          <div className="col-12 col-md-3">
             <label htmlFor="fileTypes" className="form-label">
               File type
             </label>
@@ -250,7 +220,6 @@ const ResourceCenter = () => {
             <thead className="table-light">
               <tr>
                 <th>Resource</th>
-                <th>Category</th>
                 <th>Uploaded</th>
                 <th>Downloads</th>
                 <th>Actions</th>
@@ -261,7 +230,6 @@ const ResourceCenter = () => {
                 filteredResources.map((res) => (
                   <tr key={res.id} className="">
                     <td>{res.title}</td>
-                    <td>{res.category}</td>
                     <td>{new Date(res.uploadedAt).toLocaleDateString()}</td>
                     <td>{res.downloads}</td>
                     <td>

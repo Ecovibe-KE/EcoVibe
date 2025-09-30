@@ -58,7 +58,7 @@
   border-radius: 12px;
   width: 560px;
   max-width: 90%;
-  overflow: "hidden";
-  display: "flex";
-  flex-direction: "column";
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }

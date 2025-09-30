@@ -28,7 +28,7 @@ export const ENDPOINTS = {
   newsletter_subscribers: "/newsletter-subscribers",
 
   // resource centre
-  documents: "/api/documents",
+  documents: "/documents",
   // Profile
   me: "/me",
   changePassword: "/change-password",
