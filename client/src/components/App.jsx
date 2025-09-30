@@ -1,9 +1,12 @@
-import { useEffect, Suspense, useMemo, lazy } from "react";
-import { useAnalytics } from "../hooks/useAnalytics";
-import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
+import { useEffect, Suspense, lazy } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Homepage from "./Homepage";
+import "react-toastify/dist/ReactToastify.css";
+import { useAnalytics } from "../hooks/useAnalytics";
 import NavBar from "./Navbar.jsx";
+import TopNavbar from "./TopNavbar.jsx";
+import FooterWrapper from "./FooterWrapper.jsx";
+import Homepage from "./Homepage.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
 import AboutUs from "./AboutUs.jsx";
@@ -11,11 +14,10 @@ import Blog from "./Blog.jsx";
 import BlogPost from "./BlogPost.jsx";
 import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
-import UserManagement from "./admin/UserManagement.jsx";
-import TopNavbar from "./TopNavbar.jsx";
-import Footer from "./Footer.jsx";
 import SignUpForm from "./Signup.jsx";
 import Login from "./Login.jsx";
+import UserManagement from "./admin/UserManagement.jsx";
+import Footer from "./Footer.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -24,30 +26,39 @@ import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 
 // Footer Wrapper to detect page type
-function FooterWrapper() {
-  const location = useLocation();
+// function FooterWrapper() {
+//   const location = useLocation();
 
-  const pageType = useMemo(() => {
-    const path = location.pathname.toLowerCase();
-    if (path.startsWith("/about")) return "about";
-    if (path.startsWith("/blog")) return "blog";
-    if (path.startsWith("/services")) return "services";
-    if (path.startsWith("/contact")) return "contact";
-    return "landing";
-  }, [location.pathname]);
+//   const pageType = useMemo(() => {
+//     const path = location.pathname.toLowerCase();
+//     if (path.startsWith("/about")) return "about";
+//     if (path.startsWith("/blog")) return "blog";
+//     if (path.startsWith("/services")) return "services";
+//     if (path.startsWith("/contact")) return "contact";
+//     return "landing";
+//   }, [location.pathname]);
 
-  if (import.meta.env?.MODE === "development") {
-    console.debug("Rendering FooterWrapper with pageType:", pageType);
-  }
+//   if (import.meta.env?.MODE === "development") {
+//     console.debug("Rendering FooterWrapper with pageType:", pageType);
+//   }
 
-  return <Footer pageType={pageType} />;
-}
+//   return <Footer pageType={pageType} />;
+// }
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
+// Dashboard Layout (Protected pages, no footer)
+function DashboardLayout() {
+  return (
+    <>
+      <TopNavbar />
+    </>
+  );
+}
+
 function App() {
-  const { logEvent } = useAnalytics();
   const location = useLocation();
+  const { logEvent } = useAnalytics();
 
   useEffect(() => {
     logEvent("screen_view", {
@@ -163,7 +174,6 @@ function App() {
               <>
                 <NavBar />
                 <Homepage />
-                <FooterWrapper />
               </>
             }
           />
@@ -173,7 +183,6 @@ function App() {
               <>
                 <NavBar />
                 <Homepage />
-                <FooterWrapper />
               </>
             }
           />
@@ -183,7 +192,6 @@ function App() {
               <>
                 <NavBar />
                 <SignUpForm />
-                <FooterWrapper />
               </>
             }
           />
@@ -193,7 +201,6 @@ function App() {
               <>
                 <NavBar />
                 <Playground />
-                <FooterWrapper />
               </>
             }
           />
@@ -203,7 +210,6 @@ function App() {
               <>
                 <NavBar />
                 <Contact />
-                <FooterWrapper />
               </>
             }
           />
@@ -213,7 +219,6 @@ function App() {
               <>
                 <NavBar />
                 <AboutUs />
-                <FooterWrapper />
               </>
             }
           />
@@ -223,7 +228,6 @@ function App() {
               <>
                 <NavBar />
                 <VerifyPage />
-                <FooterWrapper />
               </>
             }
           />
@@ -233,7 +237,6 @@ function App() {
               <>
                 <NavBar />
                 <Blog />
-                <FooterWrapper />
               </>
             }
           />
@@ -243,7 +246,6 @@ function App() {
               <>
                 <NavBar />
                 <BlogPost />
-                <FooterWrapper />
               </>
             }
           />
@@ -253,7 +255,6 @@ function App() {
               <>
                 <NavBar />
                 <PrivacyPolicy />
-                <FooterWrapper />
               </>
             }
           />
@@ -263,7 +264,6 @@ function App() {
               <>
                 <NavBar />
                 <PrivacyPolicy />
-                <FooterWrapper />
               </>
             }
           />
@@ -273,7 +273,6 @@ function App() {
               <>
                 <NavBar />
                 <Terms />
-                <FooterWrapper />
               </>
             }
           />
@@ -283,7 +282,6 @@ function App() {
               <>
                 <NavBar />
                 <Login />
-                <FooterWrapper />
               </>
             }
           />
@@ -293,7 +291,6 @@ function App() {
               <>
                 <NavBar />
                 <ForgotPassword />
-                <FooterWrapper />
               </>
             }
           />
@@ -304,17 +301,18 @@ function App() {
               <>
                 <NavBar />
                 <ResetPassword />
-                <FooterWrapper />
               </>
             }
           />
-
-          {/* Catch-all redirect */}
+          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
 
-      {/* Reusable toast */}
+      {/* Footer rendered only on public/non-protected pages */}
+      <FooterWrapper />
+
+      {/* Toast Notifications */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
