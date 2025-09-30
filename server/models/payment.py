@@ -54,13 +54,15 @@ class CashTransaction(db.Model):
 class MpesaTransaction(db.Model):
     __tablename__ = "mpesa_transactions"
     id = db.Column(db.Integer, primary_key=True)
+
+    # Original fields
     amount = db.Column(db.Integer, nullable=False)
     payment_date = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    transaction_code = db.Column(db.String(15), unique=True, nullable=False)
+    transaction_code = db.Column(db.String(15), unique=True, nullable=True)  # Changed to nullable=True
     paid_by = db.Column(db.String(15), nullable=False)
     created_at = db.Column(
         db.DateTime(timezone=True),
@@ -68,6 +70,30 @@ class MpesaTransaction(db.Model):
         nullable=False,
     )
     currency = db.Column(db.String(10), nullable=False, default="KES")
+
+    # NEW FIELDS for STK Push response
+    merchant_request_id = db.Column(db.String(100), nullable=True)
+    checkout_request_id = db.Column(db.String(100), unique=True, nullable=True)
+    response_code = db.Column(db.String(10), nullable=True)
+    response_description = db.Column(db.Text, nullable=True)
+    customer_message = db.Column(db.Text, nullable=True)
+
+    # NEW FIELDS for callback data
+    result_code = db.Column(db.String(10), nullable=True)
+    result_desc = db.Column(db.Text, nullable=True)
+    mpesa_receipt_number = db.Column(db.String(50), nullable=True)
+    transaction_date = db.Column(db.String(50), nullable=True)
+
+    # Status tracking
+    status = db.Column(db.String(50), default='pending')  # pending, completed, failed, cancelled
+    callback_received = db.Column(db.Boolean, default=False)
+    callback_received_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    # Store raw callback data for debugging
+    raw_callback_data = db.Column(db.JSON, nullable=True)
+
+    # Invoice reference
+    invoice_id = db.Column(db.Integer, db.ForeignKey('invoices.id'), nullable=True)
 
     @validates("amount")
     def validate_amount(self, key, amount_to_check):
@@ -79,6 +105,8 @@ class MpesaTransaction(db.Model):
     @validates("transaction_code")
     def validate_transaction_code(self, key, code_to_check):
         """Validate M-Pesa transaction code format."""
+        if code_to_check is None:
+            return None  # Allow null for pending transactions
         # Assuming 10-character uppercase alphanumeric M-Pesa code
         if not (code_to_check and code_to_check.isalnum() and len(code_to_check) == 10):
             raise ValueError("Transaction code must be 10 alphanumeric characters.")
@@ -104,6 +132,20 @@ class MpesaTransaction(db.Model):
             "transaction_code": self.transaction_code,
             "paid_by": self.paid_by,
             "currency": self.currency,
+            # New fields
+            "merchant_request_id": self.merchant_request_id,
+            "checkout_request_id": self.checkout_request_id,
+            "response_code": self.response_code,
+            "response_description": self.response_description,
+            "customer_message": self.customer_message,
+            "result_code": self.result_code,
+            "result_desc": self.result_desc,
+            "mpesa_receipt_number": self.mpesa_receipt_number,
+            "transaction_date": self.transaction_date,
+            "status": self.status,
+            "callback_received": self.callback_received,
+            "callback_received_at": self.callback_received_at.isoformat() if self.callback_received_at else None,
+            "invoice_id": self.invoice_id
         }
 
 

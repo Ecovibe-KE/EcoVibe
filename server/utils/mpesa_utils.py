@@ -1,342 +1,278 @@
-import os
-
 import requests
 import base64
-import time
-import threading
+import os
+from datetime import datetime, timezone
 import json
-import re
-# from datetime import datetime, timezone
-from datetime import datetime, timezone, timedelta
-
-from dotenv import load_dotenv
 from flask import current_app
-from models.payment import MpesaTransaction, Payment, PaymentMethod
-from models.invoice import Invoice  # Assuming you have Invoice model
-from .mail_templates import send_mpesa_receipt_email, send_mpesa_stk_push_initiated_email
-from .phone_validation import validate_phone_number, is_valid_phone
 from models import db
-load_dotenv()
+from models.payment import MpesaTransaction
 
-class MPESATokenManager:
+
+class MpesaTokenManager:
     def __init__(self):
         self.token = None
         self.expiry_time = None
-        self.lock = threading.Lock()
-        self.consumer_key = os.getenv("FLASK_MPESA_CONSUMER_KEY")
-        self.consumer_secret = os.getenv("FLASK_MPESA_CONSUMER_SECRET")
-        self.auth_url = os.getenv("FLASK_MPESA_AUTH_URL")
-        self.mpesa_timeout = int(os.getenv("FLASK_MPESA_TIMEOUT"))
 
-    def generate_access_token(self):
-        """Generate MPESA API access token"""
+    def get_token(self):
+        """Get valid access token from Daraja API"""
+        if self.token and self.is_token_valid():
+            return self.token
+
+        consumer_key = os.getenv("FLASK_MPESA_CONSUMER_KEY")
+        consumer_secret = os.getenv("FLASK_MPESA_CONSUMER_SECRET")
+        auth_url = os.getenv("FLASK_MPESA_AUTH_URL")
+        mpesa_timeout = int(os.getenv("FLASK_MPESA_TIMEOUT", "30"))
+
+        if not all([consumer_key, consumer_secret, auth_url]):
+            raise Exception("MPESA environment variables not properly configured")
+
         try:
-            consumer_key = self.consumer_key
-            consumer_secret = self.consumer_secret
-            auth_url = self.auth_url
-
-            if not all([consumer_key, consumer_secret, auth_url]):
-                raise ValueError("MPESA configuration missing")
-
+            # Encode credentials
             credentials = f"{consumer_key}:{consumer_secret}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
             headers = {
-                'Authorization': f'Basic {encoded_credentials}',
-                'Content-Type': 'application/json'
+                'Authorization': f'Basic {encoded_credentials}'
             }
-            # print(f"authUrl: {auth_url} headers: {headers}")
-
-            response = requests.get(auth_url, headers=headers, timeout=self.mpesa_timeout)
+            response = requests.get(auth_url, headers=headers, timeout=mpesa_timeout)
             response.raise_for_status()
 
-            result = response.json()
-            return result.get('access_token')
+            token_data = response.json()
+            self.token = token_data.get('access_token')
 
-        except Exception as e:
-            current_app.logger.error(f"Error generating access token: {e}")
-            return None
+            # FIX: Convert expires_in to integer safely
+            expires_in = token_data.get('expires_in', 3600)
+            try:
+                expires_in = int(expires_in)
+            except (ValueError, TypeError):
+                expires_in = 3600
+
+            # Set expiry time with safety margin
+            self.expiry_time = datetime.now(timezone.utc).timestamp() + expires_in - 60
+            return self.token
+
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Failed to get MPESA token: {str(e)}")
 
     def is_token_valid(self):
         """Check if token is still valid"""
         if not self.token or not self.expiry_time:
             return False
-        return datetime.now(timezone.utc) < (self.expiry_time - timedelta(minutes=5))
-
-    def get_token(self):
-        """Get valid token, generate new one if expired"""
-        with self.lock:
-            if self.is_token_valid():
-                return self.token
-            return self.refresh_token()
-
-    def refresh_token(self):
-        """Generate new token"""
-        new_token = self.generate_access_token()
-        if new_token:
-            self.token = new_token
-            self.expiry_time = datetime.now(timezone.utc) + timedelta(hours=1)
-            current_app.logger.info(f"MPESA token refreshed. Expires at: {self.expiry_time}")
-        return new_token
+        return datetime.now(timezone.utc).timestamp() < self.expiry_time
 
 
-class MPESAUtility:
+class MpesaUtility:
     def __init__(self):
-        self.token_manager = MPESATokenManager()
-        self.consumer_key = os.getenv("FLASK_MPESA_CONSUMER_KEY")
-        self.consumer_secret = os.getenv("FLASK_MPESA_CONSUMER_SECRET")
-        self.auth_url = os.getenv("FLASK_MPESA_AUTH_URL")
-        self.mpesa_timeout = os.getenv("FLASK_MPESA_TIMEOUT")
-        self.mpesa_passkey = os.getenv("FLASK_MPESA_PASSKEY")
-        self.business_shortcode = os.getenv("FLASK_MPESA_BUSINESS_SHORTCODE")
-        self.mpesa_callback_url = os.getenv("FLASK_MPESA_CALLBACK_URL")
-        self.mpesa_stk_push_url = os.getenv("FLASK_MPESA_STK_PUSH_URL")
+        self.token_manager = MpesaTokenManager()
 
-    def validate_mpesa_phone_number(self, phone_number, default_region="KE"):
-        """
-        Converts to MPESA format (254XXXXXXXXX)
-        """
-        try:
-            # Use your existing validation function
-            formatted_number = validate_phone_number(phone_number, default_region)
+    def get_mpesa_credentials(self):
+        """Get MPESA API credentials from environment variables"""
+        business_shortcode = os.getenv("FLASK_MPESA_BUSINESS_SHORTCODE")
 
-            # Convert to MPESA format (remove + and ensure 254 format)
-            if formatted_number.startswith('+'):
-                formatted_number = formatted_number[1:]
+        if business_shortcode:
+            business_shortcode = str(business_shortcode)
 
-            # Ensure it's in 254 format for your model validation
-            if formatted_number.startswith('0'):
-                formatted_number = '254' + formatted_number[1:]
-            elif formatted_number.startswith('7') and len(formatted_number) == 9:
-                formatted_number = '254' + formatted_number
+        return {
+            'business_shortcode': business_shortcode,
+            'passkey': os.getenv("FLASK_MPESA_PASSKEY"),
+            'callback_url': os.getenv("FLASK_MPESA_CALLBACK_URL"),
+            'stk_push_url': os.getenv("FLASK_MPESA_STK_PUSH_URL"),
+            'query_url': os.getenv("FLASK_MPESA_QUERY_URL"),
+            'timeout': int(os.getenv("FLASK_MPESA_TIMEOUT", "30"))
+        }
 
-            # Validate against your model's regex pattern
-            if not re.match(r"^254\d{9}$", formatted_number):
-                raise ValueError("Phone number must be in format 254XXXXXXXXX")
+    def generate_password(self, business_shortcode, passkey):
+        """Generate Lipa Na M-PESA Online Password"""
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
-            return formatted_number
-
-        except ValueError as e:
-            raise ValueError(f"Invalid MPESA phone number: {str(e)}")
-
-    def validate_amount(self, amount):
-        """Validate amount against your model constraints"""
-        try:
-            amount_int = int(amount)
-
-            if amount_int <= 0:
-                raise ValueError("Amount must be a positive integer")
-            if amount_int > 150000:  # MPESA limit
-                raise ValueError("Amount cannot exceed 150,000 KES")
-
-            return amount_int
-
-        except (ValueError, TypeError) as e:
-            raise ValueError(f"Invalid amount: {str(e)}")
-
-    def generate_password(self, timestamp):
-        """Generate MPESA API password"""
-        business_shortcode = self.business_shortcode
-        passkey = self.mpesa_passkey
-
-        data_to_encode = f"{business_shortcode}{passkey}{timestamp}"
-        return base64.b64encode(data_to_encode.encode()).decode()
-
-    def create_mpesa_transaction_record(self, amount, phone_number, invoice_id=None, description=""):
-        try:
-            # Create temporary transaction code (will be updated after callback)
-            temp_transaction_code = f"TEMP{datetime.now().strftime('%H%M%S')}"
-
-            transaction = MpesaTransaction(
-                amount=amount,
-                paid_by=phone_number,
-                transaction_code=temp_transaction_code,
-                payment_date=datetime.now(timezone.utc),
-                currency="KES"
-            )
-
-            db.session.add(transaction)
-            db.session.flush()  # Get the ID without committing
-
-            # If invoice_id is provided, create a Payment record
-            if invoice_id:
-                payment = Payment(
-                    invoice_id=invoice_id,
-                    payment_method=PaymentMethod.MPESA,
-                    payment_method_id=transaction.id
-                )
-                db.session.add(payment)
-
-            db.session.commit()
-            return transaction
-
-        except Exception as e:
-            db.session.rollback()
-            current_app.logger.error(f"Failed to create transaction record: {str(e)}")
-            raise Exception(f"Failed to create transaction record: {str(e)}")
-
-    def update_mpesa_transaction(self, checkout_request_id, result_code, result_desc,
-                                 transaction_code=None, callback_data=None):
-        """Update MPESA transaction after callback"""
-        try:
-            # For now, we'll find by temporary code pattern
-            transaction = MpesaTransaction.query.filter(
-                MpesaTransaction.transaction_code.like('TEMP%')
-            ).order_by(MpesaTransaction.created_at.desc()).first()
-
-            if not transaction:
-                current_app.logger.error(f"Transaction not found for checkout: {checkout_request_id}")
-                return None
-
-            # Update transaction details
-            if transaction_code:
-                transaction.transaction_code = transaction_code
-
-            # Update status based on result code
-            if result_code == 0:
-                transaction.status = 'completed'
-            else:
-                transaction.status = 'failed'
-
-            transaction.result_code = result_code
-            transaction.result_desc = result_desc
-
-            db.session.commit()
-
-            # Send email notification
-            self.send_transaction_notification(transaction)
-
-            return transaction
-
-        except Exception as e:
-            db.session.rollback()
-            current_app.logger.error(f"Failed to update transaction: {str(e)}")
-            return None
-
-    def send_transaction_notification(self, transaction):
-        """Send email notification for transaction status"""
-        try:
-            if transaction.result_code == 0:
-                threading.Thread(
-                    target=send_mpesa_stk_push_initiated_email,
-                    # args=(user.email, user.full_name, verify_link),
-                    args=("levaksmaita@gmail.com", "user.full_name", "verify_link"),
-                    daemon=True,
-                ).start()
-            else:
-                # Failed payment
-                threading.Thread(
-                    target=send_mpesa_receipt_email,
-                    # args=(user.email, user.full_name, verify_link),
-                    args=("levaksmaita@gmail.com", "user.full_name", "verify_link"),
-                    daemon=True,
-                ).start()
-
-        except Exception as e:
-            current_app.logger.error(f"Failed to send notification: {str(e)}")
+        business_shortcode_str = str(business_shortcode)
+        passkey_str = str(passkey)
+        data_to_encode = business_shortcode_str + passkey_str + timestamp
+        encoded_string = base64.b64encode(data_to_encode.encode()).decode()
+        return encoded_string, timestamp
 
     def initiate_stk_push(self, amount, phone_number, invoice_id=None, description="Payment"):
         """
-        Initiate STK push
+        Initiate STK push to customer phone
         """
         try:
-            # Validate inputs using your model constraints
-            formatted_phone = self.validate_mpesa_phone_number(phone_number)
-            validated_amount = self.validate_amount(amount)
-
-            # Create transaction record
-            transaction = self.create_mpesa_transaction_record(
-                amount=validated_amount,
-                phone_number=formatted_phone,
-                invoice_id=invoice_id,
-                description=description
-            )
-
             # Get access token
             access_token = self.token_manager.get_token()
-            if not access_token:
-                raise Exception("Failed to obtain MPESA access token")
 
-            # Prepare STK push request
-            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            password = self.generate_password(timestamp)
+            # Get MPESA credentials from environment
+            credentials = self.get_mpesa_credentials()
+            business_shortcode = credentials['business_shortcode']
+            passkey = credentials['passkey']
+            callback_url = credentials['callback_url']
+            stk_push_url = credentials['stk_push_url']
+            timeout = credentials['timeout']
 
-            print(f"description {description}")
+            if not all([business_shortcode, passkey, callback_url, stk_push_url]):
+                missing = []
+                if not business_shortcode: missing.append("FLASK_MPESA_BUSINESS_SHORTCODE")
+                if not passkey: missing.append("FLASK_MPESA_PASSKEY")
+                if not callback_url: missing.append("FLASK_MPESA_CALLBACK_URL")
+                if not stk_push_url: missing.append("FLASK_MPESA_STK_PUSH_URL")
+                raise Exception(f"Missing MPESA environment variables: {', '.join(missing)}")
+
+            # Generate password and timestamp
+            password, timestamp = self.generate_password(business_shortcode, passkey)
+
+            # print(f"callback_url{callback_url}")
+            # Prepare request payload
+            payload = {
+                "BusinessShortCode": business_shortcode,
+                "Password": password,
+                "Timestamp": timestamp,
+                "TransactionType": "CustomerPayBillOnline",
+                "Amount": int(amount),
+                "PartyA": str(phone_number),
+                "PartyB": business_shortcode,
+                "PhoneNumber": str(phone_number),
+                "CallBackURL": callback_url,
+                "AccountReference": f"Invoice{invoice_id}" if invoice_id else "Ecovibe payment",
+                "TransactionDesc": description[:20]
+            }
 
             headers = {
                 'Authorization': f'Bearer {access_token}',
                 'Content-Type': 'application/json'
             }
 
-            payload = {
-                "BusinessShortCode":self.business_shortcode,
-                "Password": password,
-                "Timestamp": timestamp,
-                "TransactionType": "CustomerPayBillOnline",
-                "Amount": validated_amount,
-                "PartyA": formatted_phone,
-                "PartyB": self.business_shortcode,
-                "PhoneNumber": formatted_phone,
-                "CallBackURL": self.mpesa_callback_url,
-                "AccountReference": "ECOVIBE",
-                "TransactionDesc": description
-            }
+            # print(f"Payload {payload}")
+            # print(f"headers {headers}")
 
-            stk_push_url = self.mpesa_stk_push_url
-            response = requests.request("POST", stk_push_url,
-                                        headers=headers, json=payload)
-
+            # Make API request
+            response = requests.post(stk_push_url, json=payload, headers=headers, timeout=timeout)
             response.raise_for_status()
 
             response_data = response.json()
-            print(f"response {response_data}")
 
-            # Store MPESA request IDs for callback matching
-            # transaction.merchant_request_id = response_data.get('MerchantRequestID')
-            # transaction.checkout_request_id = response_data.get('CheckoutRequestID')
-            db.session.commit()
+            # Check if request was successful
+            if response_data.get('ResponseCode') == '0':
+                return {
+                    'success': True,
+                    'MerchantRequestID': response_data.get('MerchantRequestID'),
+                    'CheckoutRequestID': response_data.get('CheckoutRequestID'),
+                    'ResponseCode': response_data.get('ResponseCode'),
+                    'ResponseDescription': response_data.get('ResponseDescription'),
+                    'CustomerMessage': response_data.get('CustomerMessage')
+                }
+            else:
+                error_message = response_data.get('ResponseDescription', 'STK push failed')
+                return {
+                    'success': False,
+                    'error': error_message,
+                    'response_code': response_data.get('ResponseCode')
+                }
 
-            self.send_transaction_notification(response_data)
-
-            return {
-                'success': True,
-                'transaction_id': 1,
-                'checkout_request_id': response_data.get('CheckoutRequestID'),
-                'merchant_request_id': response_data.get('MerchantRequestID'),
-                'customer_message': response_data.get('CustomerMessage'),
-                'transaction': 1
-            }
-
-        except ValueError as e:
-            # Validation errors
-            return {
-                'success': False,
-                'error': str(e),
-                'message': 'Validation failed'
-            }
         except requests.exceptions.RequestException as e:
-            error_message = f"MPESA API error: {e}"
-            if hasattr(e, 'response') and e.response:
+            # Extract error message from response if available
+            error_msg = str(e)
+            if hasattr(e, 'response') and e.response is not None:
                 try:
-                    error_detail = e.response.json()
-                    error_message += f" - {error_detail}"
+                    error_data = e.response.json()
+                    error_msg = error_data.get('errorMessage', error_data.get('errorMessage', str(e)))
                 except:
-                    error_message += f" - Response: {e.response.text}"
+                    error_msg = e.response.text or str(e)
 
-            current_app.logger.error(error_message)
             return {
                 'success': False,
-                'error': error_message,
-                'message': 'Failed to initiate STK push'
+                'error': f"STK push failed: {error_msg}"
             }
         except Exception as e:
-            current_app.logger.error(f"Unexpected error: {str(e)}")
             return {
                 'success': False,
-                'error': f"Unexpected error: {str(e)}",
-                'message': 'Internal server error'
+                'error': f"Error initiating STK push: {str(e)}"
+            }
+
+    def update_mpesa_transaction(self, checkout_request_id, result_code, result_desc,
+                                 transaction_code=None, callback_data=None):
+        """
+        Update MpesaTransaction with callback data
+        """
+        try:
+            transaction = MpesaTransaction.query.filter_by(
+                checkout_request_id=checkout_request_id
+            ).first()
+
+            if not transaction:
+                return None
+
+            # Update transaction details
+            transaction.result_code = result_code
+            transaction.result_desc = result_desc
+            transaction.mpesa_receipt_number = transaction_code
+            transaction.raw_callback_data = callback_data
+            transaction.callback_received = True
+            transaction.callback_received_at = datetime.now(timezone.utc)
+
+            # Update status based on result code
+            if result_code == 0:
+                transaction.status = 'completed'
+                if transaction_code:
+                    transaction.transaction_code = transaction_code
+            else:
+                transaction.status = 'failed'
+
+            db.session.commit()
+
+            return transaction
+
+        except Exception as e:
+            db.session.rollback()
+            raise
+
+    def check_transaction_status(self, checkout_request_id):
+        """
+        Check status of a transaction using Daraja API
+        """
+        try:
+            access_token = self.token_manager.get_token()
+            credentials = self.get_mpesa_credentials()
+            business_shortcode = credentials['business_shortcode']
+            passkey = credentials['passkey']
+            query_url = credentials['query_url']
+            timeout = credentials['timeout']
+
+            if not all([business_shortcode, passkey, query_url]):
+                raise Exception("MPESA query environment variables not configured")
+
+            password, timestamp = self.generate_password(business_shortcode, passkey)
+
+            payload = {
+                "BusinessShortCode": business_shortcode,
+                "Password": password,
+                "Timestamp": timestamp,
+                "CheckoutRequestID": checkout_request_id
+            }
+
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            }
+
+            response = requests.post(query_url, json=payload, headers=headers, timeout=timeout)
+            response_data = response.json()
+
+            if response_data.get('ResponseCode') == '0':
+                return {
+                    'success': True,
+                    'result_code': response_data.get('ResultCode'),
+                    'result_desc': response_data.get('ResultDesc')
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': response_data.get('ResponseDescription')
+                }
+
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
             }
 
 
 # Global instance
-mpesa_utility = MPESAUtility()
+mpesa_utility = MpesaUtility()

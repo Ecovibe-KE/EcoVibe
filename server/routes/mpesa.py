@@ -1,15 +1,17 @@
 from flask import Blueprint, request, jsonify, current_app
-
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db
 from models.payment import MpesaTransaction, Payment, PaymentMethod
 from models.invoice import Invoice
+from models.user import User
+from datetime import datetime, timezone
 from utils.mpesa_utils import mpesa_utility
-
 
 mpesa_bp = Blueprint("mpesa", __name__)
 
 
 @mpesa_bp.route('/stk-push', methods=['POST'])
+@jwt_required()
 def initiate_stk_push():
     """
     Initiate MPESA STK push payment
@@ -17,11 +19,20 @@ def initiate_stk_push():
     {
         "amount": 100,
         "phone_number": "254712345678",
-        "invoice_id": 1,  # optional
+        "invoice_id": 1,
         "description": "Payment for invoice #1"
     }
     """
     try:
+        current_user_id = get_jwt_identity()
+        current_user = User.query.get(current_user_id)
+
+        if not current_user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+
         data = request.get_json()
 
         if not data:
@@ -43,6 +54,26 @@ def initiate_stk_push():
                 'message': 'Missing required parameters: amount, phone_number'
             }), 400
 
+        # Convert amount to integer and validate
+        try:
+            amount = float(amount)
+            if amount <= 0:
+                raise ValueError("Amount must be positive")
+            amount = int(amount)  # M-Pesa expects integer amounts
+        except (ValueError, TypeError):
+            return jsonify({
+                'success': False,
+                'message': 'Amount must be a valid positive number'
+            }), 400
+
+        # Validate phone number format
+        phone_number = str(phone_number).strip()
+        if not phone_number.startswith('254') or len(phone_number) != 12 or not phone_number[3:].isdigit():
+            return jsonify({
+                'success': False,
+                'message': 'Phone number must be in format 254XXXXXXXXX (12 digits)'
+            }), 400
+
         # Validate invoice exists if provided
         if invoice_id:
             invoice = Invoice.query.get(invoice_id)
@@ -52,11 +83,21 @@ def initiate_stk_push():
                     'message': 'Invoice not found'
                 }), 404
 
-        current_app.logger.info(
-            f"Initiating MPESA payment: Amount={amount}, Phone={phone_number}, Invoice={invoice_id}")
 
+        # Create pending MpesaTransaction record
+        mpesa_transaction = MpesaTransaction(
+            amount=amount,
+            paid_by=phone_number,
+            invoice_id=invoice_id,
+            status='pending',
+            created_at=datetime.now(timezone.utc),
+            payment_date=datetime.now(timezone.utc)
+        )
 
-        # Initiate STK push
+        db.session.add(mpesa_transaction)
+        db.session.flush()  # Get the ID without committing
+
+        # Initiate STK push using your mpesa_utility
         result = mpesa_utility.initiate_stk_push(
             amount=amount,
             phone_number=phone_number,
@@ -65,28 +106,51 @@ def initiate_stk_push():
         )
 
         if result['success']:
-            current_app.logger.info(f"STK push initiated: Transaction ID {result.get('transaction_id')}")
-            return jsonify(result)
+            # Update transaction with STK push response data
+            mpesa_transaction.merchant_request_id = result.get('MerchantRequestID')
+            mpesa_transaction.checkout_request_id = result.get('CheckoutRequestID')
+            mpesa_transaction.response_code = result.get('ResponseCode')
+            mpesa_transaction.response_description = result.get('ResponseDescription')
+            mpesa_transaction.customer_message = result.get('CustomerMessage')
+
+            db.session.commit()
+
+            return jsonify({
+                'success': True,
+                'transaction_id': mpesa_transaction.id,
+                'checkout_request_id': mpesa_transaction.checkout_request_id,
+                'customer_message': mpesa_transaction.customer_message,
+                'message': 'STK push initiated successfully'
+            })
         else:
-            current_app.logger.error(f"STK push failed: {result.get('error')}")
-            return jsonify(result), 400
+            # STK push failed, update transaction status
+            mpesa_transaction.status = 'failed'
+            mpesa_transaction.response_description = result.get('error')
+            db.session.commit()
+
+            return jsonify({
+                'success': False,
+                'message': result.get('error', 'STK push failed')
+            }), 400
 
     except Exception as e:
-        current_app.logger.error(f"Error initiating STK push: {str(e)}")
+        db.session.rollback()
         return jsonify({
             'success': False,
             'message': f'Internal server error: {str(e)}'
         }), 500
 
-
 @mpesa_bp.route('/callback', methods=['POST'])
 def mpesa_callback():
     """
-    Handle MPESA payment callback
+    MPESA payment callback - No JWT required for callbacks
     """
     try:
         callback_data = request.get_json()
-        current_app.logger.info(f"Received MPESA callback: {callback_data}")
+
+        if not callback_data:
+            return jsonify({'ResultCode': 1, 'ResultDesc': 'Empty callback data'}), 400
+
 
         # Parse MPESA callback structure
         if 'Body' in callback_data and 'stkCallback' in callback_data['Body']:
@@ -95,54 +159,87 @@ def mpesa_callback():
             result_code = stk_callback.get('ResultCode')
             result_desc = stk_callback.get('ResultDesc')
 
+            if not checkout_request_id:
+                return jsonify({'ResultCode': 1, 'ResultDesc': 'Missing CheckoutRequestID'}), 400
+
+            # Find transaction by checkout_request_id
+            transaction = MpesaTransaction.query.filter_by(
+                checkout_request_id=checkout_request_id
+            ).first()
+
+            if not transaction:
+                return jsonify({'ResultCode': 1, 'ResultDesc': 'Transaction not found'}), 404
+
             # Extract transaction details from callback metadata
             transaction_code = None
             amount = None
             phone_number = None
+            transaction_date = None
 
             if 'CallbackMetadata' in stk_callback:
                 for item in stk_callback['CallbackMetadata']['Item']:
-                    if item.get('Name') == 'MpesaReceiptNumber':
-                        transaction_code = item.get('Value')
-                    elif item.get('Name') == 'Amount':
-                        amount = item.get('Value')
-                    elif item.get('Name') == 'PhoneNumber':
-                        phone_number = item.get('Value')
+                    name = item.get('Name')
+                    value = item.get('Value')
 
-            # Update transaction status
-            transaction = mpesa_utility.update_mpesa_transaction(
-                checkout_request_id=checkout_request_id,
-                result_code=result_code,
-                result_desc=result_desc,
-                transaction_code=transaction_code,
-                callback_data=callback_data
-            )
+                    if name == 'MpesaReceiptNumber':
+                        transaction_code = value
+                    elif name == 'Amount':
+                        amount = value
+                    elif name == 'PhoneNumber':
+                        phone_number = value
+                    elif name == 'TransactionDate':
+                        transaction_date = value
 
-            if transaction:
-                current_app.logger.info(f"Transaction updated: {transaction.transaction_code} - Result: {result_code}")
+            # Update transaction with callback data
+            transaction.result_code = result_code
+            transaction.result_desc = result_desc
+            transaction.mpesa_receipt_number = transaction_code
+            transaction.transaction_date = transaction_date
+            transaction.raw_callback_data = callback_data
+            transaction.callback_received = True
+            transaction.callback_received_at = datetime.now(timezone.utc)
 
-                # Additional business logic for successful payments
-                if result_code == 0 and transaction_code:
-                    # Update invoice status if applicable
-                    payment = Payment.query.filter_by(payment_method_id=transaction.id).first()
-                    if payment and payment.invoice:
-                        # Mark invoice as paid or update status
-                        payment.invoice.status = 'paid'  # Adjust based on your Invoice model
-                        db.session.commit()
+            # Update status based on result code
+            if result_code == 0:
+                transaction.status = 'completed'
+                if transaction_code:
+                    transaction.transaction_code = transaction_code
 
+                # Create Payment record
+                payment = Payment(
+                    invoice_id=transaction.invoice_id,
+                    payment_method=PaymentMethod.MPESA,
+                    payment_method_id=transaction.id,
+                    created_at=datetime.now(timezone.utc)
+                )
+                db.session.add(payment)
+
+                # Update invoice status if applicable
+                if transaction.invoice_id:
+                    invoice = Invoice.query.get(transaction.invoice_id)
+                    if invoice:
+                        invoice.status = 'paid'
+
+            else:
+                transaction.status = 'failed'
+
+            db.session.commit()
             return jsonify({'ResultCode': 0, 'ResultDesc': 'Success'})
 
         return jsonify({'ResultCode': 1, 'ResultDesc': 'Invalid callback format'}), 400
 
     except Exception as e:
-        current_app.logger.error(f"Error processing MPESA callback: {str(e)}")
+        db.session.rollback()
         return jsonify({'ResultCode': 1, 'ResultDesc': 'Error processing callback'}), 500
 
 
 @mpesa_bp.route('/transactions', methods=['GET'])
+@jwt_required()
 def get_mpesa_transactions():
-    """Get MPESA transactions with filtering"""
+    """Get MPESA transactions with filtering - JWT protected"""
     try:
+        current_user_id = get_jwt_identity()
+
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)
         status = request.args.get('status')
@@ -150,8 +247,7 @@ def get_mpesa_transactions():
         query = MpesaTransaction.query
 
         if status:
-            if hasattr(MpesaTransaction, 'status'):
-                query = query.filter(MpesaTransaction.status == status)
+            query = query.filter(MpesaTransaction.status == status)
 
         transactions = query.order_by(MpesaTransaction.created_at.desc()).paginate(
             page=page, per_page=per_page, error_out=False
@@ -166,7 +262,6 @@ def get_mpesa_transactions():
         })
 
     except Exception as e:
-        current_app.logger.error(f"Error fetching transactions: {str(e)}")
         return jsonify({
             'success': False,
             'message': f'Error fetching transactions: {str(e)}'
@@ -174,28 +269,90 @@ def get_mpesa_transactions():
 
 
 @mpesa_bp.route('/transactions/<int:transaction_id>', methods=['GET'])
+@jwt_required()
 def get_mpesa_transaction(transaction_id):
-    """Get specific MPESA transaction"""
+    """Get specific MPESA transaction - JWT protected"""
     try:
+        current_user_id = get_jwt_identity()
         transaction = MpesaTransaction.query.get_or_404(transaction_id)
+
         return jsonify({
             'success': True,
             'transaction': transaction.to_dict()
         })
 
     except Exception as e:
-        current_app.logger.error(f"Error fetching transaction {transaction_id}: {str(e)}")
         return jsonify({
             'success': False,
             'message': f'Transaction not found: {str(e)}'
         }), 404
 
 
-@mpesa_bp.route('/token/status', methods=['GET'])
-def get_token_status():
-    """Check MPESA token status"""
+@mpesa_bp.route('/transaction/status/<string:checkout_request_id>', methods=['GET'])
+@jwt_required()
+def get_transaction_status(checkout_request_id):
+    """Check transaction status by checkout_request_id - JWT protected"""
     try:
+        current_user_id = get_jwt_identity()
+
+        # First check in database
+        transaction = MpesaTransaction.query.filter_by(
+            checkout_request_id=checkout_request_id
+        ).first()
+
+        if not transaction:
+            return jsonify({
+                'success': False,
+                'message': 'Transaction not found'
+            }), 404
+
+        # If callback already received, return current status
+        if transaction.callback_received:
+            return jsonify({
+                'success': True,
+                'status': transaction.status,
+                'result_code': transaction.result_code,
+                'result_desc': transaction.result_desc,
+                'mpesa_receipt_number': transaction.mpesa_receipt_number
+            })
+
+        # If no callback yet, query Daraja API
+        result = mpesa_utility.check_transaction_status(checkout_request_id)
+
+        if result['success']:
+            # Update transaction with query result
+            transaction.result_code = result.get('result_code')
+            transaction.result_desc = result.get('result_desc')
+
+            if result.get('result_code') == 0:
+                transaction.status = 'completed'
+            else:
+                transaction.status = 'failed'
+
+            db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'status': transaction.status,
+            'result_code': transaction.result_code,
+            'result_desc': transaction.result_desc
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error checking transaction status: {str(e)}'
+        }), 500
+
+
+@mpesa_bp.route('/token/status', methods=['GET'])
+@jwt_required()
+def get_token_status():
+    """Check MPESA token status - JWT protected"""
+    try:
+        current_user_id = get_jwt_identity()
         token_manager = mpesa_utility.token_manager
+
         return jsonify({
             'success': True,
             'has_token': token_manager.token is not None,
@@ -204,7 +361,6 @@ def get_token_status():
         })
 
     except Exception as e:
-        current_app.logger.error(f"Error checking token status: {str(e)}")
         return jsonify({
             'success': False,
             'message': f'Error checking token status: {str(e)}'
