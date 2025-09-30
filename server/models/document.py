@@ -9,26 +9,30 @@ class Document(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    title = db.Column(db.String(255), nullable=False)              
     description = db.Column(db.String(1000), nullable=False)
-    file_path = db.Column(db.String(200), nullable=False)
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    file_data = db.Column(db.LargeBinary, nullable=False)           
+    filename = db.Column(db.String(255), nullable=False)            
+    mimetype = db.Column(db.String(100), nullable=False)            
 
     admin = db.relationship("User", back_populates="documents")
 
     def __repr__(self):
-        return f"<Document id={self.id} admin_id={
-            self.admin_id} file_path={self.file_path}>"
+        return f"<Document id={self.id} admin_id={self.admin_id} filename={self.filename}>"
 
     def to_dict(self):
         return {
             "id": self.id,
             "admin_id": self.admin_id,
+            "title": self.title,
             "description": self.description,
-            "file_path": self.file_path,
+            "filename": self.filename,
+            "mimetype": self.mimetype,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
