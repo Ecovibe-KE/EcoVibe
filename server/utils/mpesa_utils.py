@@ -81,7 +81,7 @@ class MpesaUtility:
 
     def generate_password(self, business_shortcode, passkey):
         """Generate Lipa Na M-PESA Online Password"""
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
 
         business_shortcode_str = str(business_shortcode)
         passkey_str = str(passkey)
