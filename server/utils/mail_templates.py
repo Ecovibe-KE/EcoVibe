@@ -259,7 +259,7 @@ def send_invitation_email(
     </body>
     </html>
     """
-    return send_email(recipient_email, subject, html_content,is_html=True)
+    return send_email(recipient_email, subject, html_content, is_html=True)
 
 
 def send_reset_email(to_email, user_name, reset_link):

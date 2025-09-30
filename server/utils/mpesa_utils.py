@@ -237,8 +237,11 @@ class MpesaUtility:
 
             return transaction
 
-        except Exception as e:
-            current_app.logger.exception(f"Error updating MPESA transaction {checkout_request_id}")
+        except Exception:
+            current_app.logger.exception(
+                f"Error updating MPESA transaction "
+                f"{checkout_request_id}"
+            )
             db.session.rollback()
             raise
 
