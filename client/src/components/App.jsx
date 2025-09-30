@@ -25,25 +25,6 @@ import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 
-// Footer Wrapper to detect page type
-// function FooterWrapper() {
-//   const location = useLocation();
-
-//   const pageType = useMemo(() => {
-//     const path = location.pathname.toLowerCase();
-//     if (path.startsWith("/about")) return "about";
-//     if (path.startsWith("/blog")) return "blog";
-//     if (path.startsWith("/services")) return "services";
-//     if (path.startsWith("/contact")) return "contact";
-//     return "landing";
-//   }, [location.pathname]);
-
-//   if (import.meta.env?.MODE === "development") {
-//     console.debug("Rendering FooterWrapper with pageType:", pageType);
-//   }
-
-//   return <Footer pageType={pageType} />;
-// }
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -68,6 +49,7 @@ function App() {
   }, [logEvent, location.pathname]);
 
   return (
+
     <>
       <Suspense fallback={<div className="p-4">Loading…</div>}>
         <Routes>
@@ -80,89 +62,90 @@ function App() {
               </>
             }
           >
+
             <Route
-              index
+              path="/"
               element={
-                <div className="p-4">
-                  <h2>Dashboard Main</h2>
-                  <p>Welcome to your dashboard!</p>
-                </div>
+                <>
+                  <NavBar />
+                  <Homepage />
+                </>
               }
             />
             <Route
-              path="main"
+              path="/home"
               element={
-                <div className="p-4">
-                  <h2>Dashboard Main</h2>
-                  <p>Welcome to your dashboard!</p>
-                </div>
+                <>
+                  <NavBar />
+                  <Homepage />
+                </>
               }
             />
             <Route
-              path="bookings"
+              path="/playground"
               element={
-                <div className="p-4">
-                  <h2>Bookings</h2>
-                  <p>Manage your bookings here.</p>
-                </div>
+                <>
+                  <NavBar />
+                  <Playground />
+                </>
               }
             />
             <Route
-              path="resources"
+              path="/contact"
               element={
-                <div className="p-4">
-                  <h2>Resources</h2>
-                  <p>Access your resources.</p>
-                </div>
+                <>
+                  <NavBar />
+                  <Contact />
+                </>
               }
             />
 
             <Route
-              path="profile"
+              path="/about"
               element={
                 <div className="p-4">
                   <h2>Profile</h2>
                   <ProfilePage />
                 </div>
+
               }
             />
 
             <Route
-              path="payments"
+              path="/verify"
               element={
-                <div className="p-4">
-                  <h2>Payments</h2>
-                  <p>View payment history.</p>
-                </div>
+                <>
+                  <NavBar />
+                  <VerifyPage />
+                </>
               }
             />
             <Route path="blog" element={<BlogManagementUi />} />
             <Route
-              path="services"
+              path="/blog/:id"
               element={
-                <div className="p-4">
-                  <h2>Services</h2>
-                  <p>Manage your services.</p>
-                </div>
+                <>
+                  <NavBar />
+                  <BlogPost />
+                </>
               }
             />
             <Route
-              path="about"
+              path="/privacy"
               element={
-                <div className="p-4">
-                  <h2>About Management</h2>
-                  <p>Update about information.</p>
-                </div>
+                <>
+                  <NavBar />
+                  <PrivacyPolicy />
+                </>
               }
             />
-            <Route path="users" element={<UserManagement />} />
             <Route
-              path="tickets"
+              path="/privacy-policy"
               element={
-                <div className="p-4">
-                  <h2>Tickets</h2>
-                  <p>Manage support tickets.</p>
-                </div>
+                <>
+                  <NavBar />
+                  <PrivacyPolicy />
+                </>
               }
             />
           </Route>
@@ -324,7 +307,7 @@ function App() {
         draggable
         pauseOnHover
       />
-    </>
+    </div>
   );
 }
 
