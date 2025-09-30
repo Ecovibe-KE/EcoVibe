@@ -14,7 +14,7 @@ migrate = Migrate()
 jwt = JWTManager()
 
 
-def create_app(config_name="testing"):
+def create_app(config_name="development"):
     """
     Create and configure a Flask application instance.
 
