@@ -325,7 +325,9 @@ def get_mpesa_transaction(transaction_id):
         )
 
 
-@mpesa_bp.route("/mpesa/transaction/status/<string:checkout_request_id>", methods=["GET"])
+@mpesa_bp.route(
+    "/mpesa/transaction/status/<string:checkout_request_id>", methods=["GET"]
+)
 @jwt_required()
 def get_transaction_status(checkout_request_id):
     """Check transaction status by checkout_request_id - JWT protected"""
