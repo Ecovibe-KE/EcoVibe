@@ -1,7 +1,6 @@
 // src/api/services/auth.js
 import api from "../axiosConfig";
 import { ENDPOINTS } from "../endpoints";
-import { toast } from "react-toastify";
 
 // Small helper to normalize errors
 const handleError = (error) => {
@@ -125,8 +124,7 @@ export const verifyAccount = async (token) => {
 export const resendVerification = async (email) => {
   try {
     if (!email || !email.includes("@")) {
-      toast.error("Please enter a valid email address.");
-      return;
+      throw new Error("Please enter a valid email address.");
     }
 
     const response = await api.post(
@@ -135,14 +133,9 @@ export const resendVerification = async (email) => {
       { skipAuth: true },
     );
 
-    toast.success("Verification email sent. Please check your inbox.");
-    return response.data;
+    return response.data; // ✅ only return data, no toast here
   } catch (error) {
-    if (error.response?.data?.message) {
-      toast.error(error.response.data.message);
-    } else {
-      toast.error("Something went wrong. Please try again.");
-    }
+    // Normalize error through handleError
     handleError(error);
   }
 };

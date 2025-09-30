@@ -538,7 +538,9 @@ class ResendVerificationResource(Resource):
             )
 
             frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
-            verify_link = f"{frontend_url}/verify-account?token={verify_token}"
+            verify_link = (
+                f"{frontend_url}/verify?token={verify_token}&email={user.email}"
+            )
 
             threading.Thread(
                 target=send_verification_email,
