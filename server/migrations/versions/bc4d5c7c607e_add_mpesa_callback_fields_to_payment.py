@@ -53,11 +53,12 @@ def upgrade():
         sa.Column("transaction_date", sa.String(length=50), nullable=True),
     )
     op.add_column(
-        "mpesa_transactions", sa.Column("status", sa.String(length=50), nullable=True)
+        "mpesa_transactions",
+        sa.Column("status", sa.String(length=50), nullable=True, server_default='pending')
     )
     op.add_column(
         "mpesa_transactions",
-        sa.Column("callback_received", sa.Boolean(), nullable=True),
+        sa.Column("callback_received", sa.Boolean(), nullable=True, server_default='0'),
     )
     op.add_column(
         "mpesa_transactions",
@@ -79,10 +80,6 @@ def upgrade():
     op.create_foreign_key(
         None, "mpesa_transactions", "invoices", ["invoice_id"], ["id"]
     )
-    op.add_column('mpesa_transactions',
-                  sa.Column('status', sa.String(length=50), nullable=True, server_default='pending'))
-    op.add_column('mpesa_transactions', sa.Column('callback_received', sa.Boolean(), nullable=True, server_default='0'))
-
     # ### end Alembic commands ###
 
 
