@@ -239,8 +239,10 @@ class UserListResource(Resource):
                 additional_claims={"purpose": "account_verification"},
             )
 
-            frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5177")
-            verify_link = f"{frontend_url}/verify?token={verification_token}"
+            frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5177")
+            verify_link = (
+                f"{frontend_url}/verify?token={verification_token}&email={user.email}"
+            )
 
             threading.Thread(
                 target=send_invitation_email,

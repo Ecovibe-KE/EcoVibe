@@ -18,6 +18,7 @@ from models.token import Token
 from utils.token import create_refresh_token_for_user
 from utils.mail_templates import send_reset_email
 from utils.password import _is_valid_password
+from utils.mail_templates import send_verification_email
 
 
 # Blueprint for auth endpoints
@@ -34,6 +35,7 @@ class VerifyResource(Resource):
             user_id = int(get_jwt_identity())
             claims = get_jwt()
         except Exception:
+            print("error Exception")
             return {
                 "status": "error",
                 "message": "Invalid or expired token",
@@ -41,6 +43,8 @@ class VerifyResource(Resource):
             }, 401
 
         if claims.get("purpose") != "account_verification":
+
+            print("error account_verification")
             return {
                 "status": "error",
                 "message": "Invalid token purpose",
@@ -49,6 +53,7 @@ class VerifyResource(Resource):
 
         user = User.query.get(user_id)
         if not user:
+            print("error User not found")
             return {
                 "status": "error",
                 "message": "User not found",
@@ -343,7 +348,7 @@ class ForgotPasswordResource(Resource):
                 additional_claims={"purpose": "password_reset"},
             )
 
-            frontend_url = os.getenv("VITE_FRONTEND_URL", "http://localhost:5173")
+            frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
 
             threading.Thread(
@@ -492,6 +497,67 @@ class ChangePasswordResource(Resource):
 
         except Exception:
             db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
+
+
+class ResendVerificationResource(Resource):
+    """Resend the account verification link if account is not active."""
+
+    def post(self):
+        data = request.get_json(silent=True) or {}
+        email = (data.get("email") or "").strip().lower()
+
+        if not email:
+            return {
+                "status": "error",
+                "message": "Email is required",
+                "data": None,
+            }, 400
+
+        user = User.query.filter_by(email=email).first()
+
+        # Always return success response to avoid leaking user status
+        if not user or user.account_status == AccountStatus.ACTIVE:
+            return {
+                "status": "success",
+                "message": (
+                    "If this account is not verified, an activation link will be sent."
+                ),
+                "data": {},
+            }, 200
+
+        try:
+            verify_token = create_access_token(
+                identity=str(user.id),
+                expires_delta=timedelta(hours=24),
+                additional_claims={"purpose": "account_verification"},
+            )
+
+            frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
+            verify_link = (
+                f"{frontend_url}/verify?token={verify_token}&email={user.email}"
+            )
+
+            threading.Thread(
+                target=send_verification_email,
+                args=(user.email, user.full_name, verify_link),
+                daemon=True,
+            ).start()
+
+            return {
+                "status": "success",
+                "message": (
+                    "If this account is not verified, an activation link will be sent."
+                ),
+                "data": {},
+            }, 200
+
+        except Exception:
+            current_app.logger.exception("Error sending verification email")
             return {
                 "status": "error",
                 "message": "Server error. Please try again later.",
