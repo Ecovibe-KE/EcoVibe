@@ -71,20 +71,13 @@ def initiate_stk_push():
             )
 
         # Validate phone number format
-        phone_number = str(phone_number).strip()
-        if not phone_number.startswith("254") or \
-                len(phone_number) != 12 or \
-                not phone_number[3:].isdigit():
+        is_valid, error_message = validate_phone_number(phone_number)
+        if not is_valid:
             return (
-                jsonify(
-                    {
-                        "success": False,
-                        "message": (
-                            "Phone number must be in format 254XXXXXXXXX "
-                            "(12 digits)"
-                        ),
-                    }
-                ),
+                jsonify({
+                    "success": False,
+                    "message": error_message
+                }),
                 400,
             )
 
@@ -157,6 +150,31 @@ def initiate_stk_push():
             jsonify({"success": False, "message": f"Internal server error: {str(e)}"}),
             500,
         )
+
+
+def validate_phone_number(phone_number):
+    """
+    Validate phone number format.
+
+    Args:
+        phone_number (str): Phone number to validate
+
+    Returns:
+        tuple: (is_valid, error_message)
+    """
+    if not phone_number:
+        return False, "Phone number is required"
+
+    if not phone_number.startswith("254"):
+        return False, "Phone number must start with 254"
+
+    if len(phone_number) != 12:
+        return False, "Phone number must be exactly 12 digits"
+
+    if not phone_number.isdigit():
+        return False, "Phone number must contain only digits"
+
+    return True, None
 
 
 @mpesa_bp.route("/callback", methods=["POST"])

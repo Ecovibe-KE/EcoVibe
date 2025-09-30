@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from .mail_config import send_email
 
 

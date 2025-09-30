@@ -282,7 +282,7 @@ class MpesaUtility:
             if response_data.get("ResponseCode") == "0":
                 return {
                     "success": True,
-                    "result_code": response_data.get("ResultCode"),
+                    "result_code": str(response_data.get("ResultCode", "")),
                     "result_desc": response_data.get("ResultDesc"),
                 }
             else:
