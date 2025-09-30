@@ -74,10 +74,7 @@ def initiate_stk_push():
         is_valid, error_message = validate_phone_number(phone_number)
         if not is_valid:
             return (
-                jsonify({
-                    "success": False,
-                    "message": error_message
-                }),
+                jsonify({"success": False, "message": error_message}),
                 400,
             )
 

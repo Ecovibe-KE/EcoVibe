@@ -54,11 +54,13 @@ def upgrade():
     )
     op.add_column(
         "mpesa_transactions",
-        sa.Column("status", sa.String(length=50), nullable=True, server_default='pending')
+        sa.Column(
+            "status", sa.String(length=50), nullable=True, server_default="pending"
+        ),
     )
     op.add_column(
         "mpesa_transactions",
-        sa.Column("callback_received", sa.Boolean(), nullable=True, server_default='0'),
+        sa.Column("callback_received", sa.Boolean(), nullable=True, server_default="0"),
     )
     op.add_column(
         "mpesa_transactions",

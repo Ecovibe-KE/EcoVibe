@@ -25,15 +25,10 @@ def auth_headers(client, session):
     """Fixture to get JWT auth headers for authenticated requests"""
     user = create_active_user(session)
 
-    login_data = {
-        "email": user.email,
-        "password": "Testpassword123"
-    }
+    login_data = {"email": user.email, "password": "Testpassword123"}
 
     response = client.post(
-        "/api/login",
-        data=json.dumps(login_data),
-        content_type="application/json"
+        "/api/login", data=json.dumps(login_data), content_type="application/json"
     )
 
     if response.status_code == 200:
@@ -62,7 +57,7 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
-            headers=auth_headers
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
@@ -85,7 +80,7 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
-            headers=auth_headers
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
@@ -105,7 +100,7 @@ class TestMpesaRoutes:
             "/api/stk-push",
             data=json.dumps(data),
             content_type="application/json",
-            headers=auth_headers
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
@@ -126,7 +121,7 @@ class TestMpesaRoutes:
             phone_number="254712345678",
             status="completed",
             paid_by="254712345678",
-            invoice_id=None
+            invoice_id=None,
         )
         transaction2 = MpesaTransaction(
             merchant_request_id="req2",
@@ -135,15 +130,12 @@ class TestMpesaRoutes:
             phone_number="254712345679",
             status="pending",
             paid_by="254712345679",
-            invoice_id=None
+            invoice_id=None,
         )
         session.add_all([transaction1, transaction2])
         session.commit()
 
-        response = client.get(
-            "/api/transactions",
-            headers=auth_headers
-        )
+        response = client.get("/api/transactions", headers=auth_headers)
 
         assert response.status_code == 200
         json_data = response.get_json()
@@ -159,11 +151,7 @@ class TestMpesaRoutes:
             # Simple array response
             assert len(json_data) == 2
 
-    def test_get_transaction_status_not_found(
-            self,
-            client,
-            session,
-            auth_headers):
+    def test_get_transaction_status_not_found(self, client, session, auth_headers):
         """Test checking status of non-existent transaction"""
         # Skip test if auth failed
         if not auth_headers.get("Authorization"):
@@ -171,7 +159,7 @@ class TestMpesaRoutes:
 
         response = client.get(
             "/api/transactions/999/status",
-            headers=auth_headers  # FIX: Add auth headers
+            headers=auth_headers,  # FIX: Add auth headers
         )
 
         assert response.status_code == 404
