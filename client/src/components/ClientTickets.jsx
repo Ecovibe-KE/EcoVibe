@@ -118,6 +118,7 @@ function ClientTickets() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    if (!selectedTicket) return;
     if (!newMessage.trim()) return;
 
     setSending(true);
@@ -133,6 +134,7 @@ function ClientTickets() {
         if (updatedTicket.status === "success") {
           setSelectedTicket(updatedTicket.data);
         }
+        fetchTickets();
       }
     } catch (error) {
       toast.error(error.message || "Failed to send message");

@@ -14,6 +14,7 @@ import {
 } from 'react-bootstrap';
 import { getTickets, getTicketStats, getTicketById, updateTicket, deleteTicket, addTicketMessage } from '../../api/services/tickets';
 import { toast } from 'react-toastify';
+import { data } from 'react-router-dom';
 
 const AdminTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -111,6 +112,8 @@ const fetchStats = useCallback(async () => {
             setSelectedTicket(updatedTicket.data);
           }
         }
+       } else {
+        toast.error(response.message || 'Failed to update ticket');
       }
     } catch (error) {
       toast.error(error.message || 'Failed to update ticket');
@@ -392,6 +395,7 @@ const fetchStats = useCallback(async () => {
           onDelete={handleDeleteTicket}
           getStatusBadge={getStatusBadge}
           getPriorityBadge={getPriorityBadge}
+          onRefreshTicket={(data) => setSelectedTicket(data)}
         />
       )}
     </Container>
@@ -399,7 +403,7 @@ const fetchStats = useCallback(async () => {
 };
 
 // Ticket Details Modal Component
-const TicketDetailsModal = ({ ticket, show, onHide, onUpdate, onDelete, getStatusBadge, getPriorityBadge }) => {
+const TicketDetailsModal = ({ ticket, show, onHide, onUpdate, onDelete, getStatusBadge, getPriorityBadge,  onRefreshTicket = () => {} }) => {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [editMode, setEditMode] = useState(false);

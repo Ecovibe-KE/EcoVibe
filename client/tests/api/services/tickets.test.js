@@ -309,7 +309,7 @@ describe("Tickets API", () => {
 
       await ticketsAPI.getTickets(params);
 
-      // Should only include truthy values: page, status, zero, falseValue
+      // Should only include non-null, non-undefined, non-empty-string values: page, status, zero, falseValue
       expect(api.get).toHaveBeenCalledWith("/api/tickets?page=1&status=open&zero=0&falseValue=false");
     });
   });
