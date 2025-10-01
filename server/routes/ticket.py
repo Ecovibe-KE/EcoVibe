@@ -319,7 +319,9 @@ class TicketStatsResource(Resource):
 
             # one grouped query
             counts = dict(
-                db.session.query(Ticket.status, func.count(Ticket.id)).group_by(Ticket.status).select_from(q.subquery())
+                db.session.query(Ticket.status, func.count(Ticket.id))
+                .group_by(Ticket.status)
+                .select_from(q.subquery())
             )
             total = q.count()
             open_count = counts.get(TicketStatus.OPEN, 0)
