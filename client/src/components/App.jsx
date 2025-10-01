@@ -24,8 +24,7 @@ import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
-import ClientTickets from './ClientTickets';
-import AdminTickets from './admin/AdminTickets';
+import Tickets from "./Tickets.jsx";
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -130,8 +129,7 @@ function App() {
               }
             />
             <Route path="users" element={<UserManagement />} />
-            <Route path="client/tickets" element={<ClientTickets />} />
-            <Route path="admin/tickets" element={<AdminTickets />} />
+            <Route path="tickets" element={<Tickets />} />
           </Route>
 
           {/* Public routes - NO NESTED ROUTES */}
