@@ -163,8 +163,9 @@ function ClientTickets() {
       medium: "warning",
       low: "success",
     };
+    const value = (priority && String(priority)) || "medium";
     return (
-      <Badge bg={priorityMap[priority] || "secondary"} className="text-capitalize">
+      <Badge bg={priorityMap[value] || "secondary"} className="text-capitalize">
         {priority}
       </Badge>
     );

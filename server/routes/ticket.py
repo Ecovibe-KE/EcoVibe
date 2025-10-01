@@ -140,7 +140,7 @@ class TicketListResource(Resource):
             )
 
         except Exception:
-            current_app.logger.error("Error fetching tickets")
+            current_app.logger.exception("Error fetching tickets")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )

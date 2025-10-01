@@ -68,6 +68,7 @@ const fetchStats = useCallback(async () => {
 
 
   useEffect(() => {
+    if (searchTerm) return;
     fetchTickets();
     fetchStats();
   },  [currentPage, statusFilter, assignedToFilter, fetchTickets, fetchStats]);
