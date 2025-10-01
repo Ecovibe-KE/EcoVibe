@@ -16,9 +16,11 @@ api = Api(tickets_bp)
 client_host = os.getenv("FLASK_CLIENT_URL", "http://localhost:3000").rstrip("/")
 server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
+
 def is_admin(role):
     """Check if user has admin privileges"""
     return role in [Role.ADMIN, Role.SUPER_ADMIN]
+
 
 class TicketListResource(Resource):
     @jwt_required()
@@ -296,12 +298,11 @@ class TicketListResource(Resource):
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
-    
 
 
 class TicketStatsResource(Resource):
     """Handle GET /tickets/stats"""
-    
+
     @jwt_required()
     def get(self):
         """Get ticket statistics"""
@@ -315,15 +316,25 @@ class TicketStatsResource(Resource):
             # Build stats query based on user role
             if user_role == Role.CLIENT:
                 total = Ticket.query.filter_by(client_id=user.id).count()
-                open_count = Ticket.query.filter_by(client_id=user.id, status=TicketStatus.OPEN).count()
-                in_progress_count = Ticket.query.filter_by(client_id=user.id, status=TicketStatus.IN_PROGRESS).count()
-                closed_count = Ticket.query.filter_by(client_id=user.id, status=TicketStatus.CLOSED).count()
+                open_count = Ticket.query.filter_by(
+                    client_id=user.id, status=TicketStatus.OPEN
+                ).count()
+                in_progress_count = Ticket.query.filter_by(
+                    client_id=user.id, status=TicketStatus.IN_PROGRESS
+                ).count()
+                closed_count = Ticket.query.filter_by(
+                    client_id=user.id, status=TicketStatus.CLOSED
+                ).count()
                 resolved_count = 0  # You might want to add a RESOLVED status
             else:
                 total = Ticket.query.count()
                 open_count = Ticket.query.filter_by(status=TicketStatus.OPEN).count()
-                in_progress_count = Ticket.query.filter_by(status=TicketStatus.IN_PROGRESS).count()
-                closed_count = Ticket.query.filter_by(status=TicketStatus.CLOSED).count()
+                in_progress_count = Ticket.query.filter_by(
+                    status=TicketStatus.IN_PROGRESS
+                ).count()
+                closed_count = Ticket.query.filter_by(
+                    status=TicketStatus.CLOSED
+                ).count()
                 resolved_count = 0  # You might want to add a RESOLVED status
 
             stats = {
@@ -331,14 +342,14 @@ class TicketStatsResource(Resource):
                 "open": open_count,
                 "in_progress": in_progress_count,
                 "resolved": resolved_count,
-                "closed": closed_count
+                "closed": closed_count,
             }
 
             return restful_response(
                 status="success",
                 message="Ticket stats fetched successfully",
                 data=stats,
-                status_code=200
+                status_code=200,
             )
 
         except Exception as e:
@@ -347,11 +358,10 @@ class TicketStatsResource(Resource):
                 status="error", message="Internal server error", status_code=500
             )
 
+
 class TicketResource(Resource):
     """Handle GET /tickets/<int:id>, PUT /tickets/<int:id>, DELETE /tickets/<int:id>"""
 
-    
-    
     @jwt_required()
     def get(self, id):
         """Get a specific ticket by ID"""
@@ -375,14 +385,18 @@ class TicketResource(Resource):
                 )
 
             # Get ticket messages
-            messages = TicketMessage.query.filter_by(ticket_id=id).order_by(TicketMessage.created_at.asc()).all()
-            
+            messages = (
+                TicketMessage.query.filter_by(ticket_id=id)
+                .order_by(TicketMessage.created_at.asc())
+                .all()
+            )
+
             # Get user info for messages
             user_ids = set([msg.sender_id for msg in messages])
             user_ids.add(ticket.client_id)
             if ticket.admin_id:
                 user_ids.add(ticket.admin_id)
-                
+
             users = User.query.filter(User.id.in_(user_ids)).all()
             user_map = {u.id: u for u in users}
 
@@ -390,34 +404,40 @@ class TicketResource(Resource):
             formatted_messages = []
             for msg in messages:
                 sender = user_map.get(msg.sender_id)
-                formatted_messages.append({
-                    "id": msg.id,
-                    "body": msg.body,
-                    "sender_id": msg.sender_id,
-                    "sender_name": sender.full_name if sender else "Unknown",
-                    "sender_role": sender.role.value if sender else "unknown",
-                    "created_at": msg.created_at.isoformat() if msg.created_at else None
-                })
+                formatted_messages.append(
+                    {
+                        "id": msg.id,
+                        "body": msg.body,
+                        "sender_id": msg.sender_id,
+                        "sender_name": sender.full_name if sender else "Unknown",
+                        "sender_role": sender.role.value if sender else "unknown",
+                        "created_at": (
+                            msg.created_at.isoformat() if msg.created_at else None
+                        ),
+                    }
+                )
 
             # Format ticket data
             client = user_map.get(ticket.client_id)
             admin = user_map.get(ticket.admin_id) if ticket.admin_id else None
 
             ticket_data = ticket.to_dict()
-            ticket_data.update({
-                "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
-                "client_name": client.full_name if client else "Unknown",
-                "client_email": client.email if client else "",
-                "admin_name": admin.full_name if admin else "Unassigned",
-                "admin_email": admin.email if admin else "",
-                "messages": formatted_messages
-            })
+            ticket_data.update(
+                {
+                    "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
+                    "client_name": client.full_name if client else "Unknown",
+                    "client_email": client.email if client else "",
+                    "admin_name": admin.full_name if admin else "Unassigned",
+                    "admin_email": admin.email if admin else "",
+                    "messages": formatted_messages,
+                }
+            )
 
             return restful_response(
                 status="success",
                 message="Ticket fetched successfully",
                 data=ticket_data,
-                status_code=200
+                status_code=200,
             )
 
         except Exception as e:
@@ -455,20 +475,22 @@ class TicketResource(Resource):
                 )
 
             # Update fields
-            if 'status' in data:
+            if "status" in data:
                 try:
-                    ticket.status = TicketStatus(data['status'])
+                    ticket.status = TicketStatus(data["status"])
                 except ValueError:
                     return restful_response(
                         status="error", message="Invalid status value", status_code=400
                     )
 
-            if 'admin_id' in data and is_admin(user_role):
+            if "admin_id" in data and is_admin(user_role):
                 try:
-                    admin_id = int(data['admin_id'])
-                    admin = User.query.filter_by(id=admin_id).filter(
-                        User.role.in_([Role.ADMIN, Role.SUPER_ADMIN])
-                    ).first()
+                    admin_id = int(data["admin_id"])
+                    admin = (
+                        User.query.filter_by(id=admin_id)
+                        .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                        .first()
+                    )
                     if not admin:
                         return restful_response(
                             status="error", message="Invalid admin", status_code=400
@@ -485,7 +507,7 @@ class TicketResource(Resource):
                 status="success",
                 message="Ticket updated successfully",
                 data=ticket.to_dict(),
-                status_code=200
+                status_code=200,
             )
 
         except Exception as e:
@@ -521,9 +543,7 @@ class TicketResource(Resource):
             db.session.commit()
 
             return restful_response(
-                status="success",
-                message="Ticket deleted successfully",
-                status_code=200
+                status="success", message="Ticket deleted successfully", status_code=200
             )
 
         except Exception as e:
@@ -533,9 +553,10 @@ class TicketResource(Resource):
                 status="error", message="Internal server error", status_code=500
             )
 
+
 class TicketMessagesResource(Resource):
     """Handle POST /tickets/<int:id>/messages"""
-    
+
     @jwt_required()
     def post(self, id):
         """Add a message to a ticket"""
@@ -564,17 +585,13 @@ class TicketMessagesResource(Resource):
                     status="error", message="No JSON data provided", status_code=400
                 )
 
-            body = data.get('body', '').strip()
+            body = data.get("body", "").strip()
             if not body:
                 return restful_response(
                     status="error", message="Message body is required", status_code=400
                 )
 
-            message = TicketMessage(
-                ticket_id=id,
-                sender_id=user.id,
-                body=body
-            )
+            message = TicketMessage(ticket_id=id, sender_id=user.id, body=body)
 
             db.session.add(message)
             db.session.commit()
@@ -588,14 +605,16 @@ class TicketMessagesResource(Resource):
                 "sender_id": message.sender_id,
                 "sender_name": sender.full_name if sender else "Unknown",
                 "sender_role": sender.role.value if sender else "unknown",
-                "created_at": message.created_at.isoformat() if message.created_at else None
+                "created_at": (
+                    message.created_at.isoformat() if message.created_at else None
+                ),
             }
 
             return restful_response(
                 status="success",
                 message="Message added successfully",
                 data=message_data,
-                status_code=201
+                status_code=201,
             )
 
         except Exception as e:
@@ -604,6 +623,7 @@ class TicketMessagesResource(Resource):
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
+
 
 # Register API resources
 api.add_resource(TicketListResource, "/tickets")
