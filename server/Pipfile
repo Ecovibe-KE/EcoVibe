@@ -17,7 +17,7 @@ flask-restful = "==0.3.10"
 flask-jwt-extended = "==4.7.1"
 flask-cors = "==6.0.1"
 email-validator = "==2.3.0"
-requests = "==2.31.0"
+requests = "==2.32.5"
 
 [dev-packages]
 pytest = "==8.2.2"

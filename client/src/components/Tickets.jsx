@@ -9,11 +9,11 @@ import { Spinner } from "react-bootstrap";
 export default function Tickets() {
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    console.log('Tickets component - User:', user);
-    console.log('Tickets component - User role:', user?.role);
-    console.log('Tickets component - Loading:', loading);
-  }, [user, loading]);
+useEffect(() => {
+  if (import.meta.env.DEV) {
+    console.debug("Tickets: user", user, "role", user?.role, "loading", loading);
+  }
+}, [user, loading]);
 
   // Show loading while checking authentication
   if (loading) {
@@ -33,7 +33,7 @@ export default function Tickets() {
   const role = user?.role?.toLowerCase();
   const isAdmin = role === "admin" || role === "super_admin";
 
-  console.log('User role:', role, 'Is admin:', isAdmin);
+  if (import.meta.env.DEV) console.debug("Tickets: isAdmin", isAdmin);
 
   return isAdmin ? <AdminTickets /> : <ClientTickets />;
 }

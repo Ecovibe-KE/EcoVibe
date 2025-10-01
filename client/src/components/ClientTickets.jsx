@@ -1,4 +1,4 @@
-import React ,{ useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -36,7 +36,7 @@ function ClientTickets() {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
 
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -58,7 +58,7 @@ function ClientTickets() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, searchTerm, statusFilter]);
 
   useEffect(() => {
     fetchTickets();
@@ -74,7 +74,7 @@ function ClientTickets() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm,currentPage, fetchTickets]);
 
   const handleCreateTicket = async (e) => {
     e.preventDefault();

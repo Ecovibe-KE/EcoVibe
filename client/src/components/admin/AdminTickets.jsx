@@ -156,7 +156,8 @@ const fetchStats = useCallback(async () => {
       medium: 'warning',
       low: 'success'
     };
-    return <Badge bg={priorityMap[priority] || 'secondary'} className="text-capitalize">{priority}</Badge>;
+    const value = (priority && String(priority)) || 'medium';
+    return <Badge bg={priorityMap[value] || 'secondary'} className="text-capitalize">{value}</Badge>;
   };
 
     const getInitials = (name) => {
@@ -371,7 +372,7 @@ const fetchStats = useCallback(async () => {
                       variant="outline-secondary"
                       size="sm"
                       disabled={!pagination.has_next}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() => setCurrentPage(currentPage+ 1)}
                     >
                       Next
                     </Button>

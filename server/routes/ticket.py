@@ -313,35 +313,23 @@ class TicketStatsResource(Resource):
                     status="error", message="User not found", status_code=404
                 )
 
-            # Build stats query based on user role
+            q = Ticket.query
             if user_role == Role.CLIENT:
-                total = Ticket.query.filter_by(client_id=user.id).count()
-                open_count = Ticket.query.filter_by(
-                    client_id=user.id, status=TicketStatus.OPEN
-                ).count()
-                in_progress_count = Ticket.query.filter_by(
-                    client_id=user.id, status=TicketStatus.IN_PROGRESS
-                ).count()
-                closed_count = Ticket.query.filter_by(
-                    client_id=user.id, status=TicketStatus.CLOSED
-                ).count()
-                resolved_count = 0  # You might want to add a RESOLVED status
-            else:
-                total = Ticket.query.count()
-                open_count = Ticket.query.filter_by(status=TicketStatus.OPEN).count()
-                in_progress_count = Ticket.query.filter_by(
-                    status=TicketStatus.IN_PROGRESS
-                ).count()
-                closed_count = Ticket.query.filter_by(
-                    status=TicketStatus.CLOSED
-                ).count()
-                resolved_count = 0  # You might want to add a RESOLVED status
+                q = q.filter(Ticket.client_id == user.id)
+
+            # one grouped query
+            counts = dict(
+                db.session.query(Ticket.status, func.count(Ticket.id)).group_by(Ticket.status).select_from(q.subquery())
+            )
+            total = q.count()
+            open_count = counts.get(TicketStatus.OPEN, 0)
+            in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
+            closed_count = counts.get(TicketStatus.CLOSED, 0)
 
             stats = {
                 "total": total,
                 "open": open_count,
                 "in_progress": in_progress_count,
-                "resolved": resolved_count,
                 "closed": closed_count,
             }
 
