@@ -353,7 +353,7 @@ class TicketStatsResource(Resource):
             )
 
         except Exception as e:
-            current_app.logger.error(f"Error fetching ticket stats: {str(e)}")
+            current_app.logger.exception(f"Error fetching ticket stats ")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -441,7 +441,7 @@ class TicketResource(Resource):
             )
 
         except Exception as e:
-            current_app.logger.error(f"Error fetching ticket {id}: {str(e)}")
+            current_app.logger.exception(f"Error fetching ticket {id}")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -512,7 +512,7 @@ class TicketResource(Resource):
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f"Error updating ticket {id}: {str(e)}")
+            current_app.logger.exception(f"Error updating ticket {id}")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -548,7 +548,7 @@ class TicketResource(Resource):
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f"Error deleting ticket {id}: {str(e)}")
+            current_app.logger.exception(f"Error deleting ticket {id}")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -619,7 +619,7 @@ class TicketMessagesResource(Resource):
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f"Error adding message to ticket {id}: {str(e)}")
+            current_app.logger.exception(f"Error adding message to ticket {id}")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
