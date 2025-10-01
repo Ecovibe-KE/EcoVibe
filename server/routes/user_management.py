@@ -239,7 +239,7 @@ class UserListResource(Resource):
                 additional_claims={"purpose": "account_verification"},
             )
 
-            frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5177")
+            frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5173")
             verify_link = (
                 f"{frontend_url}/verify?token={verification_token}&email={user.email}"
             )
