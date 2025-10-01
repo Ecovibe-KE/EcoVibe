@@ -11,8 +11,8 @@ export default function Tickets() {
      return <Navigate to="/login" replace />; // or redirect to login
   }
 
-  const isAdmin =
-    user?.role?.toLowerCase() === "admin" || user?.role.toLowerCase === "super_admin";
+  const role = user?.role?.toLowerCase();
+  const isAdmin = role === "admin" || role === "super_admin";
 
   return isAdmin ? <AdminTickets /> : <ClientTickets />;
 }

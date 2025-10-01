@@ -53,14 +53,19 @@ const AdminTickets = () => {
   },[currentPage, searchTerm, statusFilter, assignedToFilter]);
 
 
- const fetchStats = useCallback(async () => {
-    try {
-      const stats = await getTicketStats();
-      // handle stats (set state if needed)
-    } catch (error) {
-      toast.error(error.message || "Failed to fetch ticket stats");
+const fetchStats = useCallback(async () => {
+  try {
+    const response = await getTicketStats();
+    if (response.status === 'success') {
+      setStats(response.data);
+    } else {
+      toast.error(response.message || 'Failed to fetch ticket stats');
     }
-  }, []);
+  } catch (error) {
+    toast.error(error.message || 'Failed to fetch ticket stats');
+  }
+}, []);
+
 
   useEffect(() => {
     fetchTickets();
@@ -362,7 +367,7 @@ const AdminTickets = () => {
                       variant="outline-secondary"
                       size="sm"
                       disabled={!pagination.has_next}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      onClick={() => setCurrentPage(currentPage + 1)}
                     >
                       Next
                     </Button>
@@ -402,24 +407,36 @@ const TicketDetailsModal = ({ ticket, show, onHide, onUpdate, onDelete, getStatu
     status: ticket.status,
   });
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
+const handleSendMessage = async (e) => {
+  e.preventDefault();
+  if (!newMessage.trim()) return;
 
-    setSending(true);
-    try {
-      const response = await addTicketMessage(ticket.id, { body: newMessage });
-      if (response.status === 'success') {
-        toast.success('Message sent successfully');
-        setNewMessage('');
-         await onUpdate(ticket.id, {});
+  setSending(true);
+  try {
+    const response = await addTicketMessage(ticket.id, { body: newMessage });
+    if (response.status === 'success') {
+      toast.success('Message sent successfully');
+      setNewMessage('');
+
+      try {
+        const refreshed = await getTicketById(ticket.id);
+        if (refreshed.status === 'success') {
+          // Expose a prop like onRefreshTicket to push the new data up
+          onRefreshTicket(refreshed.data);
         }
-    } catch (error) {
-      toast.error(error.message || 'Failed to send message');
-    } finally {
-      setSending(false);
+      } catch (refreshError) {
+        toast.error(refreshError.message || 'Failed to refresh ticket');
+      }
+    } else {
+      toast.error(response.message || 'Failed to send message');
     }
-  };
+  } catch (error) {
+    toast.error(error.message || 'Failed to send message');
+  } finally {
+    setSending(false);
+  }
+};
+
 
   const handleUpdate = async () => {
     try {
