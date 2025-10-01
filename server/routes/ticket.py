@@ -139,8 +139,8 @@ class TicketListResource(Resource):
                 status_code=200,
             )
 
-        except Exception as e:
-            current_app.logger.error(f"Error fetching tickets: {str(e)}")
+        except Exception:
+            current_app.logger.error("Error fetching tickets")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -292,9 +292,9 @@ class TicketListResource(Resource):
         except ValueError as e:
             db.session.rollback()
             return restful_response(status="error", message=str(e), status_code=400)
-        except Exception as e:
+        except Exception:
             db.session.rollback()
-            current_app.logger.error(f"Error creating ticket: {str(e)}")
+            current_app.logger.exception("Error creating ticket")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -352,8 +352,8 @@ class TicketStatsResource(Resource):
                 status_code=200,
             )
 
-        except Exception as e:
-            current_app.logger.exception(f"Error fetching ticket stats ")
+        except Exception:
+            current_app.logger.exception("Error fetching ticket stats ")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -440,7 +440,7 @@ class TicketResource(Resource):
                 status_code=200,
             )
 
-        except Exception as e:
+        except Exception:
             current_app.logger.exception(f"Error fetching ticket {id}")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
@@ -510,7 +510,7 @@ class TicketResource(Resource):
                 status_code=200,
             )
 
-        except Exception as e:
+        except Exception:
             db.session.rollback()
             current_app.logger.exception(f"Error updating ticket {id}")
             return restful_response(
@@ -546,7 +546,7 @@ class TicketResource(Resource):
                 status="success", message="Ticket deleted successfully", status_code=200
             )
 
-        except Exception as e:
+        except Exception:
             db.session.rollback()
             current_app.logger.exception(f"Error deleting ticket {id}")
             return restful_response(
@@ -617,7 +617,7 @@ class TicketMessagesResource(Resource):
                 status_code=201,
             )
 
-        except Exception as e:
+        except Exception:
             db.session.rollback()
             current_app.logger.exception(f"Error adding message to ticket {id}")
             return restful_response(
