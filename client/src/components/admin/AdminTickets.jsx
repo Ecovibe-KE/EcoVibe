@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -27,7 +27,7 @@ const AdminTickets = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({});
 
-  const fetchTickets = ( async () => {
+  const fetchTickets = useCallback( async () => {
     setLoading(true);
     try {
       const params = {
@@ -418,14 +418,10 @@ const handleSendMessage = async (e) => {
       toast.success('Message sent successfully');
       setNewMessage('');
 
-      try {
         const refreshed = await getTicketById(ticket.id);
         if (refreshed.status === 'success') {
           // Expose a prop like onRefreshTicket to push the new data up
           onRefreshTicket(refreshed.data);
-        }
-      } catch (refreshError) {
-        toast.error(refreshError.message || 'Failed to refresh ticket');
       }
     } else {
       toast.error(response.message || 'Failed to send message');

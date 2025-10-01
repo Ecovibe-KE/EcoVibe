@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React ,{ useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -347,7 +347,7 @@ function ClientTickets() {
           <p className="text-muted">
             Submit a new support request and our team will assist you promptly.
           </p>
-          <Form onSubmit={handleCreateTicket}>
+          <Form onSubmit={handleCreateTicket} role="form">
             <Form.Group className="mb-3">
               <Form.Label>
                 Subject <span className="text-danger">*</span>
