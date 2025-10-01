@@ -14,7 +14,6 @@ import {
 } from 'react-bootstrap';
 import { getTickets, getTicketStats, getTicketById, updateTicket, deleteTicket, addTicketMessage } from '../../api/services/tickets';
 import { toast } from 'react-toastify';
-import { data } from 'react-router-dom';
 
 const AdminTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -133,7 +132,9 @@ const fetchStats = useCallback(async () => {
           setShowDetailsModal(false);
           setSelectedTicket(null);
         }
-      }
+      }else {
+        toast.error(response.message || 'Failed to delete ticket');
+       }
     } catch (error) {
       toast.error(error.message || 'Failed to delete ticket');
     }
