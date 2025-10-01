@@ -22,9 +22,10 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
-import Tickets from "./Tickets.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
+import ClientTickets from './ClientTickets';
+import AdminTickets from './admin/AdminTickets';
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -129,7 +130,8 @@ function App() {
               }
             />
             <Route path="users" element={<UserManagement />} />
-            <Route path="tickets" element={<Tickets /> } />
+            <Route path="client/tickets" element={<ClientTickets />} />
+            <Route path="admin/tickets" element={<AdminTickets />} />
           </Route>
 
           {/* Public routes - NO NESTED ROUTES */}
