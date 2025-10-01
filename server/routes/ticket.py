@@ -417,6 +417,8 @@ class TicketResource(Resource):
                     "client_email": client.email if client else "",
                     "admin_name": admin.full_name if admin else "Unassigned",
                     "admin_email": admin.email if admin else "",
+                    "priority": "medium",
+                    "category": "general",
                     "messages": formatted_messages,
                 }
             )
