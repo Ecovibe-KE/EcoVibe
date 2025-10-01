@@ -505,67 +505,65 @@ class ChangePasswordResource(Resource):
             }, 500
 
 
-# class ResendVerificationResource(Resource):
-#     """Resend the account verification link if account is not active."""
+class ResendVerificationResource(Resource):
+    """Resend the account verification link if account is not active."""
 
-#     def post(self):
-#         data = request.get_json(silent=True) or {}
-#         email = (data.get("email") or "").strip().lower()
+    def post(self):
+        data = request.get_json(silent=True) or {}
+        email = (data.get("email") or "").strip().lower()
 
-#         if not email:
-#             return {
-#                 "status": "error",
-#                 "message": "Email is required",
-#                 "data": None,
-#             }, 400
+        if not email:
+            return {
+                "status": "error",
+                "message": "Email is required",
+                "data": None,
+            }, 400
 
-#         user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-#         # Always return success response to avoid leaking user status
-#         if not user or user.account_status == AccountStatus.ACTIVE:
-#             return {
-#                 "status": "success",
-#                 "message": (
-#                     "If this account is not verified,
-#                   an activation link will be sent."
-#                 ),
-#                 "data": {},
-#             }, 200
+        # Always return success response to avoid leaking user status
+        if not user or user.account_status == AccountStatus.ACTIVE:
+            return {
+                "status": "success",
+                "message": (
+                    "If this account is not verified,an activation link will be sent."
+                ),
+                "data": {},
+            }, 200
 
-#         try:
-#             verify_token = create_access_token(
-#                 identity=str(user.id),
-#                 expires_delta=timedelta(hours=24),
-#                 additional_claims={"purpose": "account_verification"},
-#             )
+        try:
+            verify_token = create_access_token(
+                identity=str(user.id),
+                expires_delta=timedelta(hours=24),
+                additional_claims={"purpose": "account_verification"},
+            )
 
-#             frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
-#             verify_link = (
-#                 f"{frontend_url}/verify?token={verify_token}&email={user.email}"
-#             )
+            frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
+            verify_link = (
+                f"{frontend_url}/verify?token={verify_token}&email={user.email}"
+            )
 
-#             threading.Thread(
-#                 target=send_verification_email,
-#                 args=(user.email, user.full_name, verify_link),
-#                 daemon=True,
-#             ).start()
+            threading.Thread(
+                target=send_verification_email,
+                args=(user.email, user.full_name, verify_link),
+                daemon=True,
+            ).start()
 
-#             return {
-#                 "status": "success",
-#                 "message": (
-#                     "If this account is not verified, an
-#                   activation link will be sent."
-#                 ),
-#                 "data": {},
-#             }, 200
+            return {
+                "status": "success",
+                "message": (
+                    "If this account is not verified, an activation link will be sent."
+                ),
+                "data": {},
+            }, 200
 
-#         except Exception:
-#             current_app.logger.exception("Error sending verification email")
-#             return {
-#                 "status": "error",
-#                 "message": "Server error. Please try again later.",
-#                 "data": None,
-#             }, 500
+        except Exception:
+            current_app.logger.exception("Error sending verification email")
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
 
 
 # register routes on blueprint
@@ -577,3 +575,4 @@ api.add_resource(MeResource, "/me")
 api.add_resource(ForgotPasswordResource, "/forgot-password")
 api.add_resource(ResetPasswordResource, "/reset-password")
 api.add_resource(ChangePasswordResource, "/change-password")
+api.add_resource(ResendVerificationResource, "/resend-verification")

@@ -19,14 +19,23 @@ export const AuthProvider = ({ children }) => {
   // On mount → hydrate from localStorage
   // ----------------------------
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    const savedToken = localStorage.getItem("authToken");
-    const savedRefresh = localStorage.getItem("refreshToken");
+    try {
+      const savedUser = localStorage.getItem("user");
+      const savedToken = localStorage.getItem("authToken");
+      const savedRefresh = localStorage.getItem("refreshToken");
 
-    if (savedUser && savedToken && savedRefresh) {
-      setUser(JSON.parse(savedUser));
-      setToken(savedToken);
-      setRefreshToken(savedRefresh);
+      if (savedUser && savedToken && savedRefresh) {
+        setUser(JSON.parse(savedUser));
+        setToken(savedToken);
+        setRefreshToken(savedRefresh);
+      }
+    } catch (err) {
+      console.error("Failed to hydrate auth from localStorage:", err);
+
+      // Clear corrupted data so we don't get stuck
+      localStorage.removeItem("user");
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("refreshToken");
     }
   }, []);
 
@@ -55,8 +64,11 @@ export const AuthProvider = ({ children }) => {
       navigate("/verify"); // needs verification
     } else if (loggedInUser.account_status === "suspended") {
       navigate("/unauthorized"); // blocked
-    } else {
+    } else if (loggedInUser.account_status === "active") {
       navigate("/dashboard"); // active users only
+    } else {
+      console.error("Unknown account_status:", loggedInUser.account_status);
+      navigate("/unauthorized"); // block unknowns
     }
   };
 

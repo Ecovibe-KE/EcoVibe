@@ -50,7 +50,7 @@ describe("AuthContext", () => {
     vi.clearAllMocks();
   });
 
-  it("hydrates from localStorage on mount", () => {
+  it("hydrates from localStorage on mount", async () => {
     const fakeUser = { role: "client", account_status: "active" };
     localStorage.setItem("user", JSON.stringify(fakeUser));
     localStorage.setItem("authToken", "abc");
@@ -62,7 +62,10 @@ describe("AuthContext", () => {
       </AuthProvider>
     );
 
-    expect(screen.getByTestId("user-role").textContent).toBe("client");
+    // wait for useEffect hydration
+    await waitFor(() => {
+      expect(screen.getByTestId("user-role").textContent).toBe("client");
+    });
   });
 
   it("logs in an active user and redirects to dashboard", async () => {
@@ -171,6 +174,26 @@ describe("AuthContext", () => {
       expect(screen.getByTestId("isClient").textContent).toBe("no");
       expect(screen.getByTestId("isAdmin").textContent).toBe("no");
       expect(screen.getByTestId("isSuperAdmin").textContent).toBe("yes");
+    });
+  });
+
+  it("blocks login if account_status is unknown", async () => {
+    loginUser.mockResolvedValueOnce({
+      token: "abc",
+      refreshToken: "xyz",
+      user: { role: "client", account_status: "weird_status" },
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    screen.getByText("Login").click();
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/unauthorized");
     });
   });
 });
