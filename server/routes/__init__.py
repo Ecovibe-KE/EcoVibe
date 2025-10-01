@@ -27,6 +27,6 @@ def register_routes(app):
     app.register_blueprint(blogs_bp, url_prefix=API)
     app.register_blueprint(user_management_bp, url_prefix=API)
     app.register_blueprint(newsletter_bp, url_prefix=API)
-    app.register_blueprint(tickets_bp, url_prefix=API)   
+    app.register_blueprint(tickets_bp, url_prefix=API)
     app.register_blueprint(document_bp, url_prefix=API)
     app.register_blueprint(payment_bp, url_prefix=API)
