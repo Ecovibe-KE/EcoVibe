@@ -33,4 +33,8 @@ export const ENDPOINTS = {
   changePassword: "/change-password",
 
   // Add more endpoints as needed here
+
+  // services
+  services: "/services",
+
 };
