@@ -1,5 +1,5 @@
 // Tickets.jsx
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import ClientTickets from "./ClientTicket";
 import AdminTickets from "./admin/AdminTicket";
 import { Navigate } from "react-router-dom";
