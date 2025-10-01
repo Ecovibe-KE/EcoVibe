@@ -1,17 +1,18 @@
 // Tickets.jsx
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import ClientTickets from "./ClientTicket";
 import AdminTickets from "./admin/AdminTicket";
+import { Navigate } from "react-router-dom";
 
 export default function Tickets() {
   const { user } = useAuth();
 
   if (!user) {
-    return <p>Loading tickets...</p>; // or redirect to login
+     return <Navigate to="/login" replace />; // or redirect to login
   }
 
   const isAdmin =
-    user?.role?.toLowerCase() === "admin" || user?.role === "super_admin";
+    user?.role?.toLowerCase() === "admin" || user?.role.toLowerCase === "super_admin";
 
   return isAdmin ? <AdminTickets /> : <ClientTickets />;
 }

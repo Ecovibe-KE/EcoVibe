@@ -12,7 +12,7 @@ import {
   InputGroup,
   Spinner,
 } from 'react-bootstrap';
-import { getTickets, createTicket, getTicketStats, getTicketById, updateTicket, deleteTicket, addTicketMessage } from '../../api/services/tickets';
+import { getTickets, getTicketStats, getTicketById, updateTicket, deleteTicket, addTicketMessage } from '../../api/services/tickets';
 import { toast } from 'react-toastify';
 
 const AdminTickets = () => {
@@ -27,7 +27,7 @@ const AdminTickets = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({});
 
-  const fetchTickets = async () => {
+  const fetchTickets = ( async () => {
     setLoading(true);
     try {
       const params = {
@@ -50,23 +50,22 @@ const AdminTickets = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[currentPage, searchTerm, statusFilter, assignedToFilter]);
 
-  const fetchStats = async () => {
+
+ const fetchStats = useCallback(async () => {
     try {
-      const response = await getTicketStats();
-      if (response.status === 'success') {
-        setStats(response.data.stats);
-      }
+      const stats = await getTicketStats();
+      // handle stats (set state if needed)
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      toast.error(error.message || "Failed to fetch ticket stats");
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTickets();
     fetchStats();
-  }, [currentPage, statusFilter, assignedToFilter]);
+  },  [currentPage, statusFilter, assignedToFilter, fetchTickets, fetchStats]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -78,7 +77,7 @@ const AdminTickets = () => {
     }, 500);
     
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, fetchTickets, currentPage]);
 
   const handleViewTicket = async (ticketId) => {
     try {
@@ -149,6 +148,16 @@ const AdminTickets = () => {
       low: 'success'
     };
     return <Badge bg={priorityMap[priority] || 'secondary'} className="text-capitalize">{priority}</Badge>;
+  };
+
+    const getInitials = (name) => {
+    if (!name || name === 'Unassigned') return 'A';
+    return name
+      .split(' ')
+      .filter(n => n.length > 0)
+      .map(n => n[0].toUpperCase())
+      .join('')
+      .slice(0, 2) || 'A';
   };
 
   return (
@@ -278,11 +287,11 @@ const AdminTickets = () => {
                     <tr key={ticket.id}>
                       <td>
                         <div className="fw-bold">{ticket.subject}</div>
-                        <small className="text-muted">{ticket.ticket_id}</small>
+                        <small className="text-muted">{ticket.ticket_id || `#${ticket.id}`}</small>
                       </td>
                       <td>
                         <div>{ticket.client_name}</div>
-                        <small className="text-muted">{ticket.client_company}</small>
+                        <small className="text-muted">{ticket.client_company||'N/A'}</small>
                       </td>
                       <td>
                         <Badge bg="light" text="dark" className="text-capitalize">
@@ -299,7 +308,7 @@ const AdminTickets = () => {
                           <div className="d-flex align-items-center">
                             <div className="bg-success bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: '32px', height: '32px' }}>
                               <small className="text-success fw-bold">
-                                {ticket.admin_name?.split(' ').map(n => n[0]).join('') || 'A'}
+                                {getInitials(ticket.admin_name)}
                               </small>
                             </div>
                             <small>{ticket.admin_name}</small>
@@ -334,7 +343,7 @@ const AdminTickets = () => {
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center">
                   <small className="text-muted">
-                    Showing {((currentPage - 1) * pagination.per_page) + 1} to{' '}
+                    Showing {((currentPage - 1) * pagination.per_page)+1} to{' '}
                     {Math.min(currentPage * pagination.per_page, pagination.total)} of {pagination.total} results
                   </small>
                   <div className="d-flex gap-2">
@@ -353,7 +362,7 @@ const AdminTickets = () => {
                       variant="outline-secondary"
                       size="sm"
                       disabled={!pagination.has_next}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() => setCurrentPage(currentPage - 1)}
                     >
                       Next
                     </Button>
@@ -391,7 +400,6 @@ const TicketDetailsModal = ({ ticket, show, onHide, onUpdate, onDelete, getStatu
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({
     status: ticket.status,
-    admin_id: ticket.admin_id
   });
 
   const handleSendMessage = async (e) => {
@@ -404,11 +412,8 @@ const TicketDetailsModal = ({ ticket, show, onHide, onUpdate, onDelete, getStatu
       if (response.status === 'success') {
         toast.success('Message sent successfully');
         setNewMessage('');
-        const updatedTicket = await getTicketById(ticket.id);
-        if (updatedTicket.status === 'success') {
-          ticket.messages = updatedTicket.data.messages;
+         await onUpdate(ticket.id, {});
         }
-      }
     } catch (error) {
       toast.error(error.message || 'Failed to send message');
     } finally {
