@@ -10,7 +10,7 @@ import {
   Badge,
   InputGroup,
 } from "react-bootstrap";
-import { getTickets, createTicket, getTicketById, addTicketMessage } from "../api/services/tickets.js";
+import { getTickets, createTicket, getTicketById, addTicketMessage } from "../api/services/tickets";
 import { toast } from "react-toastify";
 
 function ClientTickets() {

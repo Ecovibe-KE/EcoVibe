@@ -17,33 +17,12 @@ import VerifyPage from "./Verify.jsx";
 import SignUpForm from "./Signup.jsx";
 import Login from "./Login.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
-import Footer from "./Footer.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import Tickets from "./Tickets.jsx";
-
-// Footer Wrapper to detect page type
-function FooterWrapper() {
-  const location = useLocation();
-
-  const pageType = useMemo(() => {
-    const path = location.pathname.toLowerCase();
-    if (path.startsWith("/about")) return "about";
-    if (path.startsWith("/blog")) return "blog";
-    if (path.startsWith("/services")) return "services";
-    if (path.startsWith("/contact")) return "contact";
-    return "landing";
-  }, [location.pathname]);
-
-  if (import.meta.env?.MODE === "development") {
-    console.debug("Rendering FooterWrapper with pageType:", pageType);
-  }
-
-  return <Footer pageType={pageType} />;
-}
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));

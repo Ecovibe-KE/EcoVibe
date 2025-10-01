@@ -36,6 +36,6 @@ export const ENDPOINTS = {
   // Tickets
   tickets: "/tickets",
   ticketById: (id) => `/tickets/${id}`,
-  ticketStats: "/tickets/stats",
   ticketMessages: (id) => `/tickets/${id}/messages`,
+  ticketStats: "/tickets/stats",
 };
