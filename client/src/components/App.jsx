@@ -24,6 +24,7 @@ import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import Tickets from "./Tickets.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
+import ServiceAdmin from "./admin/ServiceAdmin.jsx";
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -117,15 +118,7 @@ function App() {
               }
             />
             <Route path="blog" element={<BlogManagementUi />} />
-            <Route
-              path="services"
-              element={
-                <div className="p-4">
-                  <h2>Services</h2>
-                  <p>Manage your services.</p>
-                </div>
-              }
-            />
+            <Route path="services" element={<ServiceAdmin />} />
             <Route
               path="about"
               element={

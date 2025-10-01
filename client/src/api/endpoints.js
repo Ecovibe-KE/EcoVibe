@@ -32,10 +32,13 @@ export const ENDPOINTS = {
   me: "/me",
   changePassword: "/change-password",
 
-  // Add more endpoints as needed here
-  // Tickets
+  // services
+  services: "/services",
+
+   // Tickets
   tickets: "/tickets",
   ticketById: (id) => `/tickets/${id}`,
   ticketMessages: (id) => `/tickets/${id}/messages`,
   ticketStats: "/tickets/stats",
+
 };
