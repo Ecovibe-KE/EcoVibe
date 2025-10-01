@@ -62,8 +62,8 @@ const ResourceCenter = () => {
   }, []);
   const filteredResources = resources.filter((res) => {
     const matchesSearch =
-      res.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (res.fileType || "").toLowerCase().includes(searchTerm.toLowerCase());
+    (res.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (res.fileType || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesFileType =
       selectedFileType === "" || res.fileType === selectedFileType;
