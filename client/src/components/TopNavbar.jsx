@@ -17,6 +17,7 @@ import { logoutUser } from "../api/services/auth";
 import { toast } from "react-toastify";
 
 import "../css/TopNavBar.css";
+import { useAuth } from "../context/AuthContext";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -63,6 +64,8 @@ const NAV_ITEMS = [
   { to: "/dashboard/tickets", icon: tickets, label: "Tickets", alt: "Tickets" },
 ];
 
+// Client-side UI filtering only—does not enforce security.
+// All protected endpoints must verify roles server-side.
   const CLIENT_ALLOWED_ROUTES = [
   "/dashboard/bookings",
   "/dashboard/resources",
@@ -72,12 +75,8 @@ const NAV_ITEMS = [
 ];
 
 function TopNavbar() {
-  const [userData, setUserData] = useState({
-    name: "Sharon Maina",
-    role: "Admin",
-    avatar:
-      "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
-  });
+  const { user } = useAuth();
+  const [userData, setUserData] = useState(user);
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
