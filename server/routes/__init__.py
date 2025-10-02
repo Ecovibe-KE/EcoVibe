@@ -1,7 +1,6 @@
 import os
 from .contact import contact_bp
 from .mpesa import mpesa_bp
-from .user import user_bp
 from .auth import auth_bp
 from .ping import ping_bp
 from .blog import blogs_bp
@@ -19,7 +18,6 @@ API = FLASK_API
 
 def register_routes(app):
     app.register_blueprint(ping_bp, url_prefix=API)
-    app.register_blueprint(user_bp, url_prefix=API)
     app.register_blueprint(contact_bp, url_prefix=API)
     app.register_blueprint(auth_bp, url_prefix=API)
     app.register_blueprint(mpesa_bp, url_prefix=API)
