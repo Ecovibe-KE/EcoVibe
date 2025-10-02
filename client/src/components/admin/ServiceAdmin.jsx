@@ -40,7 +40,9 @@ function ServiceAdmin() {
     const fetchServices = async () => {
         try {
             const servicesArray = await getServices();
-            setAllServices(servicesArray)
+            setAllServices(servicesArray.data)
+            // REMOVE AFTER TESTING
+            console.log(servicesArray)
         } catch (error) {
             console.error(error)
         }
@@ -177,19 +179,29 @@ function ServiceAdmin() {
             return;
         }
 
-        // Save the File object to state
-        setFormData(prev => ({ ...prev, serviceImage: file }));
+        // REMOVE AFTER TESTING
+        // // Save the File object to state
+        // setFormData(prev => ({ ...prev, serviceImage: file }));
 
-        // Revoke the old preview URL if it exists
-        // Prevents memory leaks if user upload multiple images during a session
-        if (previewUrl) {
-            URL.revokeObjectURL(previewUrl);
-        }
+        // // Revoke the old preview URL if it exists
+        // // Prevents memory leaks if user upload multiple images during a session
+        // if (previewUrl) {
+        //     URL.revokeObjectURL(previewUrl);
+        // }
 
-        // Create a temporary preview URL
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
+        // // Create a temporary preview URL
+        // const url = URL.createObjectURL(file);
+        // setPreviewUrl(url);
 
+        // Convert image to Base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            // REMOVE AFTER TESTING
+            console.log(reader.result)
+            setFormData(prev => ({ ...prev, serviceImage: reader.result })); // reader.result is Base64 string
+            setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
     }
 
     // handle submitting newly added service
