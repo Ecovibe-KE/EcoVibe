@@ -15,7 +15,7 @@ const InvoiceDashboard = () => {
     // Get user data from localStorage or context
     const userData =
         typeof localStorage !== "undefined"
-            ? JSON.parse(localStorage.getItem("userData") || '{"role":"CLIENT"}')
+            ? JSON.parse(localStorage.getItem("user") || '{"role":"CLIENT"}')
             : {role: "CLIENT"};
 
     const currentUserRole = userData.role;
@@ -51,10 +51,13 @@ const InvoiceDashboard = () => {
                 const services = {};
                 const transactions = {};
 
+
                 invoicesData.forEach(invoice => {
                     if (invoice.services && Array.isArray(invoice.services)) {
                         services[invoice.id] = invoice.services;
                     }
+                    // console.log("status" + invoice.status)
+
 
                     if (invoice.transaction) {
                         transactions[invoice.id] = {
@@ -86,11 +89,11 @@ const InvoiceDashboard = () => {
 
     const calculateTotals = () => {
         const totalPaid = invoices
-            .filter((inv) => inv.status === "Paid")
+            .filter((inv) => inv.status === "paid")
             .reduce((sum, inv) => sum + inv.amount, 0);
 
         const outstanding = invoices
-            .filter((inv) => inv.status === "Pending" || inv.status === "Overdue")
+            .filter((inv) => inv.status === "pending" || inv.status === "overdue")
             .reduce((sum, inv) => sum + inv.amount, 0);
 
         return {totalPaid, outstanding};
@@ -262,10 +265,10 @@ const InvoiceDashboard = () => {
 
     const getStatusBadge = (status) => {
         const statusColors = {
-            Paid: "success",
-            Pending: "warning",
-            Overdue: "danger",
-            Draft: "secondary",
+            paid: "success",
+            pending: "warning",
+            overdue: "danger",
+            draft: "secondary",
         };
 
         return (
@@ -590,7 +593,7 @@ const InvoiceDashboard = () => {
                     {renderServices(invoice.id)}
 
                     <div className="mt-3">
-                        {(invoice.status === "Pending" || invoice.status === "Overdue") && (
+                        {(invoice.status.toLowerCase() === "pending" || invoice.status.toLowerCase() === "overdue") && (
                             <Button
                                 variant="success"
                                 onClick={() => handlePayClick(invoice)}
@@ -700,7 +703,7 @@ const InvoiceDashboard = () => {
                                     <td>
                       <span
                           className={
-                              invoice.status === "Overdue"
+                              invoice.status === "overdue"
                                   ? "text-danger fw-bold"
                                   : ""
                           }
@@ -718,8 +721,8 @@ const InvoiceDashboard = () => {
                                                 size="sm"
                                                 outline
                                             />
-                                            {(invoice.status === "Pending" ||
-                                                invoice.status === "Overdue") && (
+                                            {(invoice.status === "pending" ||
+                                                invoice.status === "overdue") && (
                                                 <Button
                                                     action="add"
                                                     label="Pay"
