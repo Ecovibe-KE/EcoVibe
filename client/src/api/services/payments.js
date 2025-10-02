@@ -3,7 +3,7 @@ import api from "../axiosConfig";
 
 export const fetchAllPayments = async () => {
   try {
-    const response = await api.get(ENDPOINTS.invoices);
+    const response = await api.get(ENDPOINTS.allPayments);
     if (response.data && response.data.data && response.data.data.invoices) {
       console.log("Invoices found:", response.data.data.invoices);
       return response.data.data.invoices;
