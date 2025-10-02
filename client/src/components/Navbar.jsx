@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 
 function NavBar() {
   const size = "lg";
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   return (
     <>
       {
