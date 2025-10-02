@@ -117,7 +117,7 @@ function TopNavbar() {
 
   const SidebarContent = ({ onClose, isMobile = false }) => {
         const filteredItems =
-    userData.role?.toLocaleLowerCase === "admin"
+    userData.role?.toLowerCase() === "admin"
       ? NAV_ITEMS
       : NAV_ITEMS.filter((item) =>
           CLIENT_ALLOWED_ROUTES.includes(item.to));
