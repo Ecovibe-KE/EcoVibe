@@ -32,5 +32,15 @@ export const ENDPOINTS = {
   me: "/me",
   changePassword: "/change-password",
 
+  // All payments
+  allPayments: "/payments/all",
+  myPayments: "/payments/my-payments",
+  mpesaStkPush: "/mpesa/stk-push",
+  cancelTransaction: "/mpesa/cancel-transaction",
+  paymentStatus: "/payments/status",
+  transactionHistory: "/payments/transactions",
+  verifyPayment: "/payments/verify",
+  invoicePDF: "/invoices/pdf",
+
   // Add more endpoints as needed here
 };

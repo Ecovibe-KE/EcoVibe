@@ -24,6 +24,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
+import InvoiceDashboard from "./InvoiceDashboard.jsx";
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -107,15 +108,7 @@ function App() {
               }
             />
 
-            <Route
-              path="payments"
-              element={
-                <div className="p-4">
-                  <h2>Payments</h2>
-                  <p>View payment history.</p>
-                </div>
-              }
-            />
+            <Route path="payments" element={<InvoiceDashboard />} />
             <Route path="blog" element={<BlogManagementUi />} />
             <Route
               path="services"
@@ -136,6 +129,7 @@ function App() {
               }
             />
             <Route path="users" element={<UserManagement />} />
+            <Route path="payments" element={<InvoiceDashboard />} />
             <Route
               path="tickets"
               element={
