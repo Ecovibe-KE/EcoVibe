@@ -32,8 +32,6 @@ export const ENDPOINTS = {
   me: "/me",
   changePassword: "/change-password",
 
-  // services
-  services: "/services",
 
    // Tickets
   tickets: "/tickets",
@@ -41,4 +39,23 @@ export const ENDPOINTS = {
   ticketMessages: (id) => `/tickets/${id}/messages`,
   ticketStats: "/tickets/stats",
 
+
+  // Payments & Invoices
+  allPayments: "/invoices",
+  myPayments: "/clientInvoices",
+  mpesaStkPush: "/mpesa/stk-push",
+  cancelTransaction: "/transaction/cancel",
+  paymentStatus: "/payments/status",
+  transactionHistory: "/payments/transactions",
+  verifyPayment: "/payments/verify",
+  invoicePDF: "/invoices/pdf",
+
+  // New endpoints for invoice management
+  payments: "/payments",
+
+  // Services
+  services: "/services",
+
+  // Add more endpoints as needed here
 };
+
