@@ -63,6 +63,14 @@ const NAV_ITEMS = [
   { to: "/dashboard/tickets", icon: tickets, label: "Tickets", alt: "Tickets" },
 ];
 
+  const CLIENT_ALLOWED_ROUTES = [
+  "/dashboard/bookings",
+  "/dashboard/resources",
+  "/dashboard/profile",
+  "/dashboard/payments",
+  "/dashboard/tickets",
+];
+
 function TopNavbar() {
   const [userData, setUserData] = useState({
     name: "Sharon Maina",
@@ -106,17 +114,10 @@ function TopNavbar() {
       isActive ? "active-link" : "inactive-link"
     }`;
 
-  const CLIENT_ALLOWED_ROUTES = [
-  "/dashboard/bookings",
-  "/dashboard/resources",
-  "/dashboard/profile",
-  "/dashboard/payments",
-  "/dashboard/tickets",
-];
 
   const SidebarContent = ({ onClose, isMobile = false }) => {
         const filteredItems =
-    userData.role === "Admin"
+    userData.role?.toLocaleLowerCase === "admin"
       ? NAV_ITEMS
       : NAV_ITEMS.filter((item) =>
           CLIENT_ALLOWED_ROUTES.includes(item.to));
