@@ -131,6 +131,7 @@ class LoginResource(Resource):
             "industry": user.industry,
             "phone_number": user.phone_number,
             "role": user.role.value,
+            "account_status": user.account_status.value,
         }
 
         return {
@@ -525,7 +526,7 @@ class ResendVerificationResource(Resource):
             return {
                 "status": "success",
                 "message": (
-                    "If this account is not verified, an activation link will be sent."
+                    "If this account is not verified,an activation link will be sent."
                 ),
                 "data": {},
             }, 200
@@ -574,3 +575,4 @@ api.add_resource(MeResource, "/me")
 api.add_resource(ForgotPasswordResource, "/forgot-password")
 api.add_resource(ResetPasswordResource, "/reset-password")
 api.add_resource(ChangePasswordResource, "/change-password")
+api.add_resource(ResendVerificationResource, "/resend-verification")
