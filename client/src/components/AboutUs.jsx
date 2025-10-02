@@ -12,12 +12,14 @@ function AboutUs() {
     {
       imageSourceName: "Target.png",
       heading: "Our Mission",
-      paragraphContent: "To drive Agenda 2063 by environmental and social change through expert consultancy services, empowering organizations with sustainable practices and strategies that create lasting positive impact for businesses, communities, and the environment.",
+      paragraphContent:
+        "To drive Agenda 2063 by environmental and social change through expert consultancy services, empowering organizations with sustainable practices and strategies that create lasting positive impact for businesses, communities, and the environment.",
     },
     {
       imageSourceName: "Eye.png",
       heading: "Our Vision",
-      paragraphContent: "To be the premier catalyst for sustainable transformation in Kenya and Africa as a whole. We use global guidelines to accelerate the vision. Currently, Agenda 2030 is fueling our strategic analysis. Aim being to drive business excellence and community prosperity.",
+      paragraphContent:
+        "To be the premier catalyst for sustainable transformation in Kenya and Africa as a whole. We use global guidelines to accelerate the vision. Currently, Agenda 2030 is fueling our strategic analysis. Aim being to drive business excellence and community prosperity.",
     },
   ];
 
@@ -25,24 +27,27 @@ function AboutUs() {
     {
       imageSourceName: "Target.png",
       heading: "Impact & Accountability",
-      paragraphContent: "We measure success by the tangible positive impact our work creates, holding ourselves accountable for delivering measurable results that advance sustainability goals.",
+      paragraphContent:
+        "We measure success by the tangible positive impact our work creates, holding ourselves accountable for delivering measurable results that advance sustainability goals.",
     },
     {
       imageSourceName: "Target.png",
       heading: "Integrity & Transparency ",
-      paragraphContent: "We maintain the highest ethical standards in all our engagements, providing honest assessments and transparent reporting that builds trust and accountability.",
+      paragraphContent:
+        "We maintain the highest ethical standards in all our engagements, providing honest assessments and transparent reporting that builds trust and accountability.",
     },
     {
       imageSourceName: "Target.png",
       heading: "Innovation & Excellence",
-      paragraphContent: "We continuously evolve our methodologies and stay ahead of industry trends, delivering innovative solutions that exceed client expectations and drive meaningful change.",
+      paragraphContent:
+        "We continuously evolve our methodologies and stay ahead of industry trends, delivering innovative solutions that exceed client expectations and drive meaningful change.",
     },
     {
       imageSourceName: "Target.png",
       heading: "Collaboration & Partnership",
-      paragraphContent: "We believe in the power of partnerships, working closely with clients, stakeholders, and communities to co-create sustainable solutions that benefit all parties.",
+      paragraphContent:
+        "We believe in the power of partnerships, working closely with clients, stakeholders, and communities to co-create sustainable solutions that benefit all parties.",
     },
-    
   ];
 
   const meetOurTeamContent = [
