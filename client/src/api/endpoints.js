@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   // Blog
   blogs: "/blogs",
   blogById: (id) => `/blogs/${id}`,
+  adminBlogs: "/admin/blogs",
 
   // Users
   users: "/users",
@@ -34,4 +35,7 @@ export const ENDPOINTS = {
   changePassword: "/change-password",
 
   // Add more endpoints as needed here
+
+  // services
+  services: "/services",
 };

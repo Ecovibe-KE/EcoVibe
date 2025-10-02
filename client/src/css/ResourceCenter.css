@@ -62,3 +62,10 @@
   display: flex;
   flex-direction: column;
 }
+.document-header{
+  color: blue;
+  background-color: rgb(193, 193, 252);
+}
+.star{
+  color: #F5A030;
+}

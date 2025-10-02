@@ -28,17 +28,22 @@ const Footer = ({ pageType }) => {
             className="footer-logo"
           />
 
-          {/* Nav Links */}
-          <div className="footer-nav-links">
-            <a href="/about" className="nav-link">
-              Quick Links
-            </a>
-            <a href="/blog" className="nav-link">
-              Blogs
-            </a>
-            <a href="/login" className="nav-link">
-              Login
-            </a>
+          {/* Nav Links (centered wrapper) */}
+          <div className="footer-nav-wrapper">
+            <div className="footer-nav-links">
+              <a href="/about" className="nav-link">
+                {" "}
+                Quick Links{" "}
+              </a>
+              <a href="/blog" className="nav-link">
+                {" "}
+                Blogs{" "}
+              </a>
+              <a href="/login" className="nav-link">
+                {" "}
+                Login{" "}
+              </a>
+            </div>
           </div>
 
           {/* Social Icons */}
@@ -68,14 +73,17 @@ const Footer = ({ pageType }) => {
         {/* Bottom Row */}
         <div className="footer-bottom-row">
           <small style={{ color: "#37b137" }}>
-            © {currentYear} EcoVibe Kenya. All rights reserved.
+            {" "}
+            © {currentYear} EcoVibe Kenya. All rights reserved.{" "}
           </small>
           <div className="footer-legal-links">
             <a href="/privacy-policy" className="legal-link">
-              Privacy Policy
+              {" "}
+              Privacy Policy{" "}
             </a>
             <a href="/terms" className="legal-link">
-              Terms and Conditions
+              {" "}
+              Terms and Conditions{" "}
             </a>
           </div>
         </div>

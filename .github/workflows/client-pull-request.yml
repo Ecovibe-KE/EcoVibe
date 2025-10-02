@@ -47,3 +47,4 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           working-directory: ./client
+          file-coverage-mode: changes

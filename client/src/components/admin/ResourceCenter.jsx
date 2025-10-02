@@ -18,6 +18,8 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Button from "../../utils/Button";
 import DeleteConfirmModal from "./DeleteConfirmModal";
+import { Feed, Star, AccessTime } from "@mui/icons-material";
+import { getCurrentUser } from "../../api/services/profile";
 
 const ResourceCenter = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -32,52 +34,64 @@ const ResourceCenter = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [role, setRole] = useState("");
   const [resources, setResources] = useState([]);
+  const [userId, setUserId] = useState()
 
   const [form, setForm] = useState({
     title: "",
     description: "",
     file: null,
   });
-
-  const fetchData = async (page = 1) => {
-    setErrors("");
-    try {
-      const response = await getDocuments(page, pageSize);
-      const docs = response.data;
-      setResources(docs);
-      setTotalPages(1);
-      setCurrentPage(page);
-    } catch (err) {
-      console.error("Error fetching documents:", err);
-    }
-  };
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      fetchData(page);
-    }
-  };
   useEffect(() => {
+    const fetchData = async (page = 1) => {
+      setErrors("");
+      try {
+        const response = await getDocuments(page, pageSize);
+        const docs = response.data;
+        setResources(docs);
+        setTotalPages(1);
+        setCurrentPage(page);
+      } catch (err) {
+        console.error("Error fetching documents:", err);
+      }
+    };
+    const handlePageChange = (page) => {
+      if (page > 0 && page <= totalPages) {
+        fetchData(page);
+      }
+    };
+    const fetchrole = async () => {
+      const response = await getCurrentUser()
+      setRole(response.data.role)
+      setUserId(response.data.id)
+      console.log(response.data.id)
+    }
     fetchData();
+    fetchrole();
+    console.log("Current role:", role);
   }, []);
   const filteredResources = resources.filter((res) => {
     const matchesSearch =
-    (res.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (res.fileType || "").toLowerCase().includes(searchTerm.toLowerCase());
+      (res.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (res.fileType || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesFileType =
       selectedFileType === "" || res.fileType === selectedFileType;
 
-      return matchesSearch && matchesFileType
+    return matchesSearch && matchesFileType
   });
 
   const handleChange = (e) => {
-    const { name, type, files, value } = e.target;
+    const { name, type, value, files } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "file" ? files[0] : value, // key fix
     }));
   };
+ 
+  
+
   const handleSave = async () => {
     let newErrors = {};
     if (!form.title) newErrors.title = "Title is required";
@@ -93,9 +107,9 @@ const ResourceCenter = () => {
       formData.append("title", form.title);
       formData.append("description", form.description);
       formData.append("file", form.file);
-   
+      if (userId) formData.append("admin_id", userId);
 
-      const response = await uploadDocument(form.file, currentAdminId);
+      const response = await uploadDocument(formData);
       if (response.status === 201 || response.status === 200) {
         toast.success("Document uploaded successfully!");
         await fetchData();
@@ -132,7 +146,7 @@ const ResourceCenter = () => {
       if (form.file) {
         formData.append("file", form.file);
       }
-
+     
       const response = await updateDocument(selectedResource.id, formData);
 
       if (response.status === 200) {
@@ -173,7 +187,36 @@ const ResourceCenter = () => {
 
   return (
     <>
-      <section className="my-3 mx-2 bg-white rounded-4 py-5 px-3">
+      {role === "client" &&
+        <section className="">
+          <div className="row g-4">
+            {resources.map((res, index) => (
+              <div className="col-12 col-md-6 col-lg-4" key={index}>
+                <div className="card h-100 shadow-sm border-0 p-4 text-start rounded-3">
+                  <div
+                    className="d-flex align-items-center gap-2 mb-2 justify-content-between"
+                    style={{ height: "35px" }}
+                  >
+                    <div className="d-flex gap-2 document-header fw-bold px-3 py-1 rounded-5" >
+                      <Feed /> <p className="m-0">Document</p>
+                    </div>
+                    <Star className="star" />
+                  </div>
+                  <h5 className="fw-bold mb-1">{res.title}</h5>
+                  <p className="text-muted text-justify">{res.description}</p>
+                  <div className="d-flex gap-1 text-muted w-100 justify-content-end m-0">
+                    <AccessTime className="m-0" />
+                    <p className="m-o">{res.uploadedAt}</p>
+                  </div>
+                  <Button label="Download" onClick={() => downloadResource(resource.id, resource.title)}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      }
+      {role === "admin" && <section className="my-3 mx-2 bg-white rounded-4 py-5 px-3">
         <div className="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-2">
           <p className="fw-bold m-0">Manage Resources</p>
           <Button
@@ -237,7 +280,7 @@ const ResourceCenter = () => {
                         <button
                           className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
                           onClick={() => downloadResource(res.id, res.title)}
-                          style={{background: "#37b137",}}
+                          style={{ background: "#37b137", }}
                         >
                           <DownloadIcon />
                         </button>
@@ -317,6 +360,7 @@ const ResourceCenter = () => {
           </nav>
         </div>
       </section>
+      }
       <AddResourceModal
         visible={showAddModal}
         form={form}

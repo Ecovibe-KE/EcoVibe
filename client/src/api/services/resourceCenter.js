@@ -14,14 +14,11 @@ export const getDocumentById = async (id) => {
 };
 
 /** Upload a new document */
-export const uploadDocument = async (file, adminId) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("admin_id", adminId);
-
-  const response = await api.post(ENDPOINTS.documents, formData);
-  return response;
+export const uploadDocument = async (formData) => { 
+  const response = await api.post(ENDPOINTS.documents, formData); 
+  return response; 
 };
+
 
 /** Delete a document by ID */
 export const deleteDocument = async (id) => {
