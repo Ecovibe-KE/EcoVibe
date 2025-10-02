@@ -6,7 +6,6 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",
     file: null,
   });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -15,9 +14,8 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
     if (resource) {
       setForm({
         title: resource.title || "",
-        category: resource.category || "",
-        file: null,
         description: resource.description || "",
+        file: null,
       });
     }
   }, [resource]);
@@ -29,11 +27,11 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
       [name]: type === "file" ? files[0] : value,
     }));
   };
+
   const handleSubmit = () => {
     let errors = {};
     if (!form.title) errors.title = "Title is required";
     if (!form.description) errors.description = "Description is required";
-    if (!form.category) errors.category = "Category is required";
 
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
@@ -55,7 +53,7 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
           <h6 className="mb-0">Edit Resource</h6>
           <button type="button" className="btn-close" onClick={onCancel} />
         </div>
-        <div className="p-3 ">
+        <div className="p-3">
           <Input
             type="text"
             label="Resource Title"
@@ -65,7 +63,9 @@ const EditResourceModal = ({ visible, resource, onCancel, onSave }) => {
             error={fieldErrors.title}
           />
           <div className="mb-3">
-            <label className="form-label" htmlFor="description">Description</label>
+            <label className="form-label" htmlFor="description">
+              Description
+            </label>
             <textarea
               name="description"
               id="description"

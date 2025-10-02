@@ -1,46 +1,70 @@
-import { ENDPOINTS } from "../endpoints";
+// src/api/services/resourceCenter.js
 import api from "../axiosConfig";
+import { ENDPOINTS } from "../endpoints";
 
-/** Get all documents (optionally paginated) */
-export const getDocuments = async (page = 1, limit = 10) => {
-  const response = await api.get(ENDPOINTS.documents, { params: { page, limit } });
-  return response; // return full axios response
-};
-
-/** Get a document by ID */
-export const getDocumentById = async (id) => {
-  const response = await api.get(`${ENDPOINTS.documents}/${id}`);
-  return response;
-};
-
-/** Upload a new document */
-export const uploadDocument = async (formData) => { 
-  const response = await api.post(ENDPOINTS.documents, formData); 
-  return response; 
-};
-
-
-/** Delete a document by ID */
-export const deleteDocument = async (id) => {
-  const response = await api.delete(`${ENDPOINTS.documents}/${id}`);
-  return response;
-};
-
-/** Download a document (frontend utility) */
-export const downloadDocument = async (fileUrl, filename) => {
+// ----------------------------
+// Get all documents
+// ----------------------------
+export const getDocuments = async (page = 1, pageSize = 10) => {
   try {
-    const response = await api.get(fileUrl, { responseType: 'blob' });
-    const blob = new Blob([response.data]);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", filename || "document");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    const res = await api.get(ENDPOINTS.documents, {
+      params: { page, page_size: pageSize },
+    });
+    return res.data.data; // unwrap {status, message, data}
   } catch (error) {
-    console.error('Failed to download document:', error);
-    throw error;
+    throw error.response?.data || { message: error.message };
+  }
+};
+
+// ----------------------------
+// Upload new document
+// ----------------------------
+export const uploadDocument = async (formData) => {
+  try {
+    const res = await api.post(ENDPOINTS.documents, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data.data;
+  } catch (error) {
+    throw error.response?.data || { message: error.message };
+  }
+};
+
+// ----------------------------
+// Update existing document
+// ----------------------------
+export const updateDocument = async (id, formData) => {
+  try {
+    const res = await api.put(`${ENDPOINTS.documents}/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" }, // 👈 critical fix
+    });
+    return res.data.data;
+  } catch (error) {
+    throw error.response?.data || { message: error.message };
+  }
+};
+
+// ----------------------------
+// Delete document
+// ----------------------------
+export const deleteDocument = async (id) => {
+  try {
+    const res = await api.delete(`${ENDPOINTS.documents}/${id}`);
+    return res.data; // returns {status, message, data: null}
+  } catch (error) {
+    throw error.response?.data || { message: error.message };
+  }
+};
+
+// ----------------------------
+// Download document (blob)
+// ----------------------------
+export const downloadDocument = async (id) => {
+  try {
+    return await api.get(`${ENDPOINTS.documents}/${id}/download`, {
+      responseType: "blob",
+    });
+  } catch (error) {
+    throw error.response?.data || { message: error.message };
   }
 };
