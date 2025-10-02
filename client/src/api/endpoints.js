@@ -37,4 +37,7 @@ export const ENDPOINTS = {
   bookingById: (id) => `/bookings/${id}`,
 
   // Add more endpoints as needed here
+
+  // services
+  services: "/services",
 };

@@ -1,11 +1,19 @@
+import { useAuth } from "../context/AuthContext";
+import RequireRole from "../wrappers/RequireRole";
+import Unauthorized from "../wrappers/Unauthorized";
+import { Outlet } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAnalytics } from "../hooks/useAnalytics";
+
+// Core layout and components
 import NavBar from "./Navbar.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import FooterWrapper from "./FooterWrapper.jsx";
+
+// Public pages
 import Homepage from "./Homepage.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
@@ -16,19 +24,21 @@ import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
 import SignUpForm from "./Signup.jsx";
 import Login from "./Login.jsx";
-import UserManagement from "./admin/UserManagement.jsx";
-import Footer from "./Footer.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
+import Footer from "./Footer.jsx";
+
+// Admin pages
+import UserManagement from "./admin/UserManagement.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 import Booking from "./Booking.jsx";
+import ServiceAdmin from "./admin/ServiceAdmin.jsx";
 
+// Lazy loaded page
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
-// Dashboard Layout (Protected pages, no footer)
+// Dashboard wrapper (for protected pages)
 function DashboardLayout() {
   return (
     <>
@@ -41,6 +51,7 @@ function App() {
   const location = useLocation();
   const { logEvent } = useAnalytics();
 
+  // Track route changes with analytics
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: location.pathname || "/",
@@ -48,19 +59,38 @@ function App() {
     });
   }, [logEvent, location.pathname]);
 
+  // Protects routes based on auth + account status
+  const PrivateRoute = ({ children }) => {
+    const { user, isInactive, isSuspended } = useAuth();
+
+    if (!user) return <Navigate to="/login" replace />;
+    if (isInactive) return <Navigate to="/verify" replace />;
+    if (isSuspended) return <Navigate to="/unauthorized" replace />;
+
+    return (
+      <>
+        {children}
+        <Outlet />
+      </>
+    );
+  };
+
   return (
     <>
       <Suspense fallback={<div className="p-4">Loading…</div>}>
         <Routes>
-          {/* Dashboard routes */}
+          {/* =======================
+              DASHBOARD (Protected)
+          ======================= */}
           <Route
             path="/dashboard/*"
             element={
-              <>
+              <PrivateRoute>
                 <TopNavbar />
-              </>
+              </PrivateRoute>
             }
           >
+            {/* General dashboard pages - any active user */}
             <Route
               index
               element={
@@ -90,7 +120,6 @@ function App() {
                 </div>
               }
             />
-
             <Route
               path="profile"
               element={
@@ -100,7 +129,6 @@ function App() {
                 </div>
               }
             />
-
             <Route
               path="payments"
               element={
@@ -110,16 +138,33 @@ function App() {
                 </div>
               }
             />
-            <Route path="blog" element={<BlogManagementUi />} />
+
+            {/* Role-restricted dashboard pages */}
             <Route
               path="services"
               element={
-                <div className="p-4">
-                  <h2>Services</h2>
-                  <p>Manage your services.</p>
-                </div>
+                <RequireRole allowedRoles={["admin"]}>
+                  <ServiceAdmin />
+                </RequireRole>
               }
             />
+            <Route
+              path="users"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <UserManagement />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="blog"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <BlogManagementUi />
+                </RequireRole>
+              }
+            />
+
             <Route
               path="about"
               element={
@@ -129,7 +174,6 @@ function App() {
                 </div>
               }
             />
-            <Route path="users" element={<UserManagement />} />
             <Route
               path="tickets"
               element={
@@ -141,7 +185,9 @@ function App() {
             />
           </Route>
 
-          {/* Public routes */}
+          {/* =======================
+              PUBLIC ROUTES
+          ======================= */}
           <Route
             path="/"
             element={
@@ -268,7 +314,6 @@ function App() {
               </>
             }
           />
-
           <Route
             path="/reset-password"
             element={
@@ -278,15 +323,18 @@ function App() {
               </>
             }
           />
-          {/* Catch-all */}
+          {/* Unauthorized page */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
+
+          {/* Fallback for unknown routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
 
-      {/* Footer rendered only on public/non-protected pages */}
+      {/* Shared footer for public pages */}
       <FooterWrapper />
 
-      {/* Toast Notifications */}
+      {/* Global toast notifications */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
