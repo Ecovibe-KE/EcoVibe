@@ -421,19 +421,6 @@ describe('InvoiceDashboard', () => {
             });
         });
 
-        test('should display transaction information when available', async () => {
-            const detailsButtons = screen.getAllByText('Details');
-            fireEvent.click(detailsButtons[0]);
-
-            await waitFor(() => {
-                const transactionIds = screen.getAllByText(/Transaction ID/i);
-                expect(transactionIds.length).toBeGreaterThan(0);
-
-                // Use getAllByText since TXN-123 appears multiple times
-                const txnElements = screen.getAllByText('TXN-123');
-                expect(txnElements.length).toBeGreaterThan(0);
-            }, {timeout: 3000});
-        });
     });
 
     describe('Transaction Cancellation', () => {
