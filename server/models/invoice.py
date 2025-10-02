@@ -30,7 +30,10 @@ class Invoice(db.Model):
     client = db.relationship("User", back_populates="invoices")
     service = db.relationship("Service", back_populates="invoices")
     payments = db.relationship(
-        "Payment", back_populates="invoice", cascade="all, delete-orphan"
+        "Payment",
+        back_populates="invoice",
+        cascade="all, delete-orphan",
+        lazy="joined",  # Changed from dynamic to joined or select
     )
 
     # --- Data Validations ---
