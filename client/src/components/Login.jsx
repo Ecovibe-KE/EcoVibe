@@ -1,14 +1,13 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Button from "../utils/Button.jsx";
 import Input from "../utils/Input.jsx";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "../css/Login.module.css";
-import { UserContext } from "../context/UserContext.jsx";
-import { loginUser } from "../api/services/auth.js";
+import { useAuth } from "../context/AuthContext";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { validateEmail } from "../utils/Validations.js";
 
@@ -18,9 +17,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
-
-  const { setUser } = useContext(UserContext);
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
@@ -36,13 +33,11 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" })); // clear error as user types
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  // Check form inputs before sending to backend
   const validateForm = () => {
     const newErrors = {};
-
     const emailError = validateEmail(formData.email);
     if (emailError) newErrors.email = emailError;
 
@@ -75,23 +70,13 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const data = await loginUser({
+      //  use AuthContext's login (handles localStorage + redirect)
+      await login({
         email: formData.email,
         password: formData.password,
-        recaptchaToken: captchaToken,
       });
 
-      if (data?.token && data?.user) {
-        setUser(data.user);
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("userData", JSON.stringify(data.user));
-
-        toast.success("Login successful! Redirecting...");
-        setTimeout(() => navigate("/dashboard"), 1200);
-      } else {
-        toast.error("Invalid login response. Please try again.");
-      }
+      toast.success("Login successful! Redirecting...");
     } catch (err) {
       const backendMessage = err.response?.data?.message || err.message || null;
 
@@ -117,7 +102,6 @@ const Login = () => {
 
   return (
     <div className={styles.wrapper}>
-      {/* Left side with branding */}
       <div className={styles.leftSection}>
         <h1 className={styles.brandTitle}>ECOVIBE</h1>
         <p className={styles.brandSubtitle}>Empowering Sustainable Solutions</p>
@@ -128,7 +112,6 @@ const Login = () => {
         />
       </div>
 
-      {/* Right side with login form */}
       <div className={styles.rightSection}>
         <div className={styles.loginCard}>
           <form onSubmit={handleSubmit} noValidate>
@@ -136,7 +119,6 @@ const Login = () => {
               Log In
             </h2>
 
-            {/* Email field */}
             <div className="mb-3">
               <Input
                 type="email"
@@ -151,7 +133,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Password field with toggle */}
             <div className="mb-3">
               <label className={styles.passwordLabel} htmlFor="password">
                 Password
@@ -175,7 +156,6 @@ const Login = () => {
               />
             </div>
 
-            {/* reCAPTCHA box */}
             <div className="mb-3">
               {siteKey ? (
                 <ReCAPTCHA
@@ -191,7 +171,6 @@ const Login = () => {
               )}
             </div>
 
-            {/* Actions: login button + forgot link */}
             <div className={styles.loginActions}>
               <Button
                 type="submit"

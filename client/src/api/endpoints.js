@@ -43,4 +43,7 @@ export const ENDPOINTS = {
   invoicePDF: "/invoices/pdf",
 
   // Add more endpoints as needed here
+
+  // services
+  services: "/services",
 };
