@@ -106,7 +106,22 @@ function TopNavbar() {
       isActive ? "active-link" : "inactive-link"
     }`;
 
-  const SidebarContent = ({ onClose, isMobile = false }) => (
+  const CLIENT_ALLOWED_ROUTES = [
+  "/dashboard/bookings",
+  "/dashboard/resources",
+  "/dashboard/profile",
+  "/dashboard/payments",
+  "/dashboard/tickets",
+];
+
+  const SidebarContent = ({ onClose, isMobile = false }) => {
+        const filteredItems =
+    userData.role === "Admin"
+      ? NAV_ITEMS
+      : NAV_ITEMS.filter((item) =>
+          CLIENT_ALLOWED_ROUTES.includes(item.to));
+
+  return (
     <div
       className="sidebar-content h-100 d-flex flex-column"
       style={{
@@ -175,7 +190,7 @@ function TopNavbar() {
             MANAGEMENT MODULES
           </h6>
 
-          {NAV_ITEMS.slice(1).map((item) => (
+          {filteredItems.slice(1).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -196,6 +211,9 @@ function TopNavbar() {
       </Container>
     </div>
   );
+};
+
+
 
   return (
     <>
