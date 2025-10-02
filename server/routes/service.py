@@ -7,6 +7,7 @@ import base64
 from models import db
 from models.service import Service, ServiceStatus
 from models.user import User, Role, AccountStatus
+import re
 
 # Create blueprint
 services_bp = Blueprint('services', __name__)
@@ -42,7 +43,6 @@ def get_all_services():
             'status': "success",
             'message': "Services fetched successfully",
             'data': [service.to_dict() for service in services],
-            'count': len(services)
         }), 200
     except SQLAlchemyError as e:
         return jsonify({
@@ -102,7 +102,11 @@ def create_service():
         # Handle image - convert base64 string to binary
         if data['image']:
             try:
-                image_data = base64.b64decode(data['image'])
+                image_str = data['image']
+                # Remove prefix if present
+                image_base64 = re.sub('^data:image/[^;]+;base64,', '', image_str)
+
+                image_data = base64.b64decode(image_base64)
             except Exception as e:
                 raise BadRequest("Invalid image format. Must be valid base64")
         else:
@@ -189,11 +193,14 @@ def update_service(id):
                     service.price = float(data[field])
                 else:
                     setattr(service, field, data[field])
-        
+
         # Handle image update if provided
         if 'image' in data and data['image']:
             try:
-                image_data = base64.b64decode(data['image'])
+                image_str = data['image']
+                # Remove prefix if present
+                image_base64 = re.sub('^data:image/[^;]+;base64,', '', image_str)
+                image_data = base64.b64decode(image_base64)
                 service.image = image_data
             except Exception as e:
                 raise BadRequest("Invalid image format. Must be valid base64")

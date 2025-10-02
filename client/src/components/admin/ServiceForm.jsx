@@ -12,6 +12,7 @@ function ServiceForm({
   resetForm,
   previewUrl,
   isEditing = false,
+  fileInputKey
 }) {
   return (
     <Container>
@@ -97,6 +98,7 @@ function ServiceForm({
             onChange={handleFileChange}
             ref={fileInputRef}
             required={!isEditing}
+            key={fileInputKey}
           />
         </Form.Group>
 

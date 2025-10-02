@@ -11,6 +11,7 @@ function EditServiceModal({
   fileInputRef,
   previewUrl,
   resetForm,
+  fileInputKey
 }) {
   function resetAfterClose() {
     handleCloseEdit();
@@ -29,6 +30,7 @@ function EditServiceModal({
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
           <ServiceForm
+            fileInputKey={fileInputKey}
             formTitle="Edit Service"
             formData={formData}
             handleSubmit={handleSubmit}

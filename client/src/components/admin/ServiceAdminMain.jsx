@@ -120,8 +120,7 @@ function ServiceAdminMain({
             <section className="d-flex justify-content-between align-items-center">
               <p className="primary-color fw-bold m-0">{displayDuration()}</p>
               <p className="primary-color fw-bold m-0">
-                {priceCurrency}
-                {servicePrice}
+                {priceCurrency + " " + servicePrice}
               </p>
               <p
                 className={`status-color fw-bold border rounded-pill p-2 m-0 ${determineVisibility()}`}

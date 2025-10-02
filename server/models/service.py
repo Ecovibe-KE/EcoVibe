@@ -84,7 +84,7 @@ class Service(db.Model):
         image_base64 = None
         if self.image:
             try:
-                image_base64 = base64.b64encode(self.image).decode('utf-8')
+                image_base64 = "data:image/png;base64," + base64.b64encode(self.image).decode('utf-8')
             except Exception as e:
                 
                 print(f"Error encoding image to base64: {e}")
