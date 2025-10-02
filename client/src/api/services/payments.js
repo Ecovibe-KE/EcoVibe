@@ -1,40 +1,26 @@
 import { ENDPOINTS } from "../endpoints";
 import api from "../axiosConfig";
 
-// Fetch all payments (for ADMIN/SUPER_ADMIN)
 export const fetchAllPayments = async () => {
   try {
-    const response = await api.get(ENDPOINTS.allPayments);
-    if (response.data && response.data.data && response.data.data.payments) {
-      console.log("Payments found:", response.data.data.payments);
-      return response.data.data.payments;
+    const response = await api.get(ENDPOINTS.invoices);
+    if (response.data && response.data.data && response.data.data.invoices) {
+      console.log("Invoices found:", response.data.data.invoices);
+      return response.data.data.invoices;
     } else {
-      console.warn("Payments array not found in expected location");
+      console.warn("Invoices array not found in expected location");
       return [];
     }
   } catch (error) {
-    console.error("API Error fetching payments:", error);
+    console.error("API Error fetching invoices:", error);
     return [];
   }
 };
 
-// Fetch user's payments (for CLIENT)
+// Fetch user's invoices (for CLIENT)
 export const fetchMyPayments = async () => {
-  try {
-    const response = await api.get(ENDPOINTS.myPayments);
-    if (response.data && response.data.data && response.data.data.payments) {
-      console.log("User payments found:", response.data.data.payments);
-      return response.data.data.payments;
-    } else {
-      console.warn("User payments array not found in expected location");
-      return [];
-    }
-  } catch (error) {
-    console.error("API Error fetching user payments:", error);
-    return [];
-  }
+  return fetchAllPayments();
 };
-
 // Initiate M-Pesa STK Push payment
 export const initiateMpesaPayment = async (paymentData) => {
   try {
@@ -50,23 +36,6 @@ export const initiateMpesaPayment = async (paymentData) => {
     return response.data;
   } catch (error) {
     console.error("API Error initiating M-Pesa payment:", error);
-    throw error;
-  }
-};
-
-// Cancel transaction
-export const cancelTransaction = async (transactionData) => {
-  try {
-    const payload = {
-      invoice_id: transactionData.invoice_id,
-      transaction_id: transactionData.transaction_id,
-    };
-
-    const response = await api.post(ENDPOINTS.cancelTransaction, payload);
-    console.log("Transaction cancelled:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("API Error cancelling transaction:", error);
     throw error;
   }
 };
@@ -135,6 +104,22 @@ export const downloadInvoicePDF = async (invoiceId) => {
     return response.data;
   } catch (error) {
     console.error("API Error downloading PDF:", error);
+    throw error;
+  }
+};
+// Cancel transaction
+export const cancelTransaction = async (transactionData) => {
+  try {
+    const payload = {
+      invoice_id: transactionData.invoice_id,
+      transaction_id: transactionData.transaction_id,
+    };
+
+    const response = await api.post(ENDPOINTS.cancelTransaction, payload);
+    console.log("Transaction cancelled:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("API Error cancelling transaction:", error);
     throw error;
   }
 };

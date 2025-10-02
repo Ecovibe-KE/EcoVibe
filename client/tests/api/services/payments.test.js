@@ -16,6 +16,15 @@ import api from '../../../src/api/axiosConfig';
 
 const BASE_URL = String(api.defaults.baseURL || "").replace(/\/$/, "");
 
+// Add global MSW error handling to prevent unhandled request errors
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' });
+});
+
+afterAll(() => {
+  server.close();
+});
+
 describe('Payment Services', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -30,7 +39,7 @@ describe('Payment Services', () => {
         http.get(`${BASE_URL}${ENDPOINTS.allPayments}`, () => {
           return HttpResponse.json({
             data: {
-              payments: mockPayments
+              invoices: mockPayments // Changed from 'payments' to 'invoices'
             }
           });
         })
@@ -44,9 +53,7 @@ describe('Payment Services', () => {
       server.use(
         http.get(`${BASE_URL}${ENDPOINTS.allPayments}`, () => {
           return HttpResponse.json({
-            data: {
-              data: {} // Different structure to trigger the warning
-            }
+            data: {} // Different structure to trigger the warning
           });
         })
       );
@@ -75,7 +82,7 @@ describe('Payment Services', () => {
         http.get(`${BASE_URL}${ENDPOINTS.myPayments}`, () => {
           return HttpResponse.json({
             data: {
-              payments: mockUserPayments
+              invoices: mockUserPayments // Changed from 'payments' to 'invoices'
             }
           });
         })
@@ -89,9 +96,7 @@ describe('Payment Services', () => {
       server.use(
         http.get(`${BASE_URL}${ENDPOINTS.myPayments}`, () => {
           return HttpResponse.json({
-            data: {
-              data: {} // Different structure to trigger the warning
-            }
+            data: {} // Different structure to trigger the warning
           });
         })
       );
@@ -151,6 +156,7 @@ describe('Payment Services', () => {
     });
   });
 
+  // ... rest of your test cases remain the same
   describe('cancelTransaction', () => {
     it('should cancel transaction successfully', async () => {
       const transactionData = {
@@ -261,9 +267,7 @@ describe('Payment Services', () => {
       server.use(
         http.get(`${BASE_URL}${ENDPOINTS.transactionHistory}`, () => {
           return HttpResponse.json({
-            data: {
-              data: {} // Different structure to trigger the warning
-            }
+            data: {} // Different structure to trigger the warning
           });
         })
       );

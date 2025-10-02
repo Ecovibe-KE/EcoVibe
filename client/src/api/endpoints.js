@@ -32,18 +32,24 @@ export const ENDPOINTS = {
   me: "/me",
   changePassword: "/change-password",
 
-  // All payments
-  allPayments: "/payments/all",
-  myPayments: "/payments/my-payments",
-  mpesaStkPush: "/mpesa/stk-push",
-  cancelTransaction: "/mpesa/cancel-transaction",
+  // Payments & Invoices
+  allPayments: "/api/invoices",
+  myPayments: "/api/invoices",
+  mpesaStkPush: "/api/mpesa/stk-push",
+  cancelTransaction: "/api/transaction/cancel",
   paymentStatus: "/payments/status",
   transactionHistory: "/payments/transactions",
   verifyPayment: "/payments/verify",
   invoicePDF: "/invoices/pdf",
 
-  // Add more endpoints as needed here
+  // New endpoints for invoice management
+  invoices: "/api/invoices",
+  invoiceById: (id) => `/api/invoices/${id}`,
+  payments: "/api/payments",
+  paymentById: (id) => `/api/payments/${id}`,
 
-  // services
+  // Services
   services: "/services",
+
+  // Add more endpoints as needed here
 };
