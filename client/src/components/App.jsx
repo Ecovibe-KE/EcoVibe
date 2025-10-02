@@ -24,6 +24,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
+import Booking from "./Booking.jsx";
 
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -51,7 +52,7 @@ function App() {
     <>
       <Suspense fallback={<div className="p-4">Loading…</div>}>
         <Routes>
-          {/* Dashboard routes - TopNavbar handles the layout and nested routing */}
+          {/* Dashboard routes */}
           <Route
             path="/dashboard/*"
             element={
@@ -78,15 +79,8 @@ function App() {
                 </div>
               }
             />
-            <Route
-              path="bookings"
-              element={
-                <div className="p-4">
-                  <h2>Bookings</h2>
-                  <p>Manage your bookings here.</p>
-                </div>
-              }
-            />
+            <Route path="bookings" element={<Booking />} />
+
             <Route
               path="resources"
               element={
@@ -147,7 +141,7 @@ function App() {
             />
           </Route>
 
-          {/* Public routes - NO NESTED ROUTES */}
+          {/* Public routes */}
           <Route
             path="/"
             element={

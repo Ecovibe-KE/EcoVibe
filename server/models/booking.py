@@ -75,7 +75,9 @@ class Booking(db.Model):
             "end_time": (self.end_time.isoformat() if self.end_time else None),
             "status": self.status.value if self.status else None,
             "client_id": self.client_id,
+            "client_name": self.client.full_name if self.client else None,
             "service_id": self.service_id,
+            "service_name": self.service.name if self.service else None,
             "created_at": (self.created_at.isoformat() if self.created_at else None),
             "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
         }
