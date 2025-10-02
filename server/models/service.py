@@ -4,9 +4,11 @@ import base64
 from sqlalchemy.orm import validates
 from . import db
 
+
 class ServiceStatus(enum.Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
+
 
 class Service(db.Model):
     __tablename__ = "services"
@@ -22,10 +24,7 @@ class Service(db.Model):
     )
     duration = db.Column(db.String(50), nullable=False)
     image = db.Column(db.LargeBinary, nullable=False)  # Storing image as binary
-    status = db.Column(
-        db.Enum(ServiceStatus),
-        nullable=False
-    )
+    status = db.Column(db.Enum(ServiceStatus), nullable=False)
     created_at = db.Column(
         db.DateTime(timezone=True),
         server_default=db.func.now(),
@@ -40,7 +39,7 @@ class Service(db.Model):
         db.ForeignKey("users.id"),
         nullable=False,
     )
-    
+
     # --- Relationships ---
     invoices = db.relationship("Invoice", back_populates="service")
     bookings = db.relationship("Booking", back_populates="service")
@@ -51,10 +50,12 @@ class Service(db.Model):
     )
 
     def __repr__(self):
-        return f'<Service {self.title}>'
+        return f"<Service {self.title}>"
 
     # --- Data Validations ---
-    @validates("title", "description", "duration","currency","image","status","admin_id")
+    @validates(
+        "title", "description", "duration", "currency", "image", "status", "admin_id"
+    )
     def validate_not_empty(self, key, value):
         """Ensures that key text fields are not empty."""
         if not value or (isinstance(value, str) and not value.strip()):
@@ -84,11 +85,13 @@ class Service(db.Model):
         image_base64 = None
         if self.image:
             try:
-                image_base64 = "data:image/png;base64," + base64.b64encode(self.image).decode('utf-8')
+                image_base64 = "data:image/png;base64," + base64.b64encode(
+                    self.image
+                ).decode("utf-8")
             except Exception as e:
-                
+
                 print(f"Error encoding image to base64: {e}")
-        
+
         return {
             "id": self.id,
             "title": self.title,
