@@ -34,7 +34,7 @@ export const ENDPOINTS = {
 
   // Payments & Invoices
   allPayments: "/invoices",
-  myPayments: "/invoices",
+  myPayments: "/clientInvoices",
   mpesaStkPush: "/mpesa/stk-push",
   cancelTransaction: "/transaction/cancel",
   paymentStatus: "/payments/status",

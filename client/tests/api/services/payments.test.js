@@ -1,4 +1,4 @@
-import {describe, it, expect, afterEach, vi, beforeEach} from 'vitest';
+import {describe, it, expect, afterEach, vi, beforeEach, beforeAll, afterAll} from 'vitest';
 import {http, HttpResponse} from 'msw';
 import {server} from '../server';
 import {
@@ -109,7 +109,7 @@ describe('Payment Services', () => {
 
         it('should return empty array on API error', async () => {
             server.use(
-                http.get(`${BASE_URL}${ENDPOINTS.myPayments}`, () => { // Changed from myPayments to invoices
+                http.get(`${BASE_URL}${ENDPOINTS.myPayments}`, () => {
                     console.error("API Error fetching invoices:", new Error('Request failed with status code 500'));
                     return new HttpResponse(null, {status: 500});
                 })

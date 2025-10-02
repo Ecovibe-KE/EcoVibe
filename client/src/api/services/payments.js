@@ -19,7 +19,19 @@ export const fetchAllPayments = async () => {
 
 // Fetch user's invoices (for CLIENT)
 export const fetchMyPayments = async () => {
-  return fetchAllPayments();
+  try {
+    const response = await api.get(ENDPOINTS.myPayments);
+    if (response.data && response.data.data && response.data.data.invoices) {
+      console.log("Invoices found:", response.data.data.invoices);
+      return response.data.data.invoices;
+    } else {
+      console.warn("Invoices array not found in expected location");
+      return [];
+    }
+  } catch (error) {
+    console.error("API Error fetching invoices:", error);
+    return [];
+  }
 };
 // Initiate M-Pesa STK Push payment
 export const initiateMpesaPayment = async (paymentData) => {

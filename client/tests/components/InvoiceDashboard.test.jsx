@@ -125,7 +125,12 @@ const mockInvoices = [
         description: 'Consulting Services',
         amount: 5000,
         status: 'Pending',
-        client: 'John Doe'
+        client: 'John Doe',
+        services: ['Service 1', 'Service 2', 'Service 3'],
+        transaction: {
+            id: 'TXN-123',
+            status: 'pending',
+        },
     },
     {
         id: 'INV-002',
@@ -134,7 +139,8 @@ const mockInvoices = [
         description: 'Development Work',
         amount: 15000,
         status: 'Paid',
-        client: 'Jane Smith'
+        client: 'Jane Smith',
+        services: ['Development', 'Testing'],
     },
     {
         id: 'INV-003',
@@ -143,7 +149,8 @@ const mockInvoices = [
         description: 'Overdue Project',
         amount: 8000,
         status: 'Overdue',
-        client: 'Bob Wilson'
+        client: 'Bob Wilson',
+        services: ['Consultation', 'Implementation'],
     }
 ];
 
