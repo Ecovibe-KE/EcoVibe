@@ -34,9 +34,8 @@ import Footer from "./Footer.jsx";
 import UserManagement from "./admin/UserManagement.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
-import AdminTickets from "./admin/AdminTickets.jsx"
+import AdminTickets from "./admin/AdminTickets.jsx";
 import InvoiceDashboard from "./InvoiceDashboard.jsx";
-
 
 // Lazy loaded page
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
@@ -151,18 +150,18 @@ function App() {
                 <div className="p-4">
                   <h2>Payments</h2>
                   <InvoiceDashboard />
-                                </div>
-                            }
-                        />
-                         <Route
-                            path="tickets"
-                              element={ 
-                                 <div className="p-4">
-                                    <h2>Ticktes</h2>
-                                    <ClientTickets /> 
-                 </div>
-                }         
-              />
+                </div>
+              }
+            />
+            <Route
+              path="tickets"
+              element={
+                <div className="p-4">
+                  <h2>Ticktes</h2>
+                  <ClientTickets />
+                </div>
+              }
+            />
 
             {/* Role-restricted dashboard pages */}
             <Route
@@ -190,33 +189,33 @@ function App() {
               }
             />
 
-                        <Route
-                            path="about"
-                            element={
-                                <div className="p-4">
-                                    <h2>About Management</h2>
-                                    <p>Update about information.</p>
-                                </div>
-                            }
-                        />
-                        <Route
-                            path="tickets"
-                            element={
-                                <div className="p-4">
-                                    <h2>Tickets</h2>
-                                    <p>Manage support tickets.</p>
-                                </div>
-                            }
-                        />
-                        <Route 
-                            path="tickets/admin" 
-                            element={
-                              <RequireRole allowedRoles={["admin", "super_admin"]}>
-                                <AdminTickets />
-                              </RequireRole>
-                               } 
-                       />
-                    </Route>
+            <Route
+              path="about"
+              element={
+                <div className="p-4">
+                  <h2>About Management</h2>
+                  <p>Update about information.</p>
+                </div>
+              }
+            />
+            <Route
+              path="tickets"
+              element={
+                <div className="p-4">
+                  <h2>Tickets</h2>
+                  <p>Manage support tickets.</p>
+                </div>
+              }
+            />
+            <Route
+              path="tickets/admin"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <AdminTickets />
+                </RequireRole>
+              }
+            />
+          </Route>
 
           {/* =======================
               PUBLIC ROUTES
