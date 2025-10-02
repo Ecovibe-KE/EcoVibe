@@ -23,8 +23,6 @@ def is_admin(role):
 
 
 class TicketListResource(Resource):
-    """Handle GET /tickets and POST /tickets"""
-
     @jwt_required()
     def get(self):
         """Get tickets - clients see their tickets, admins see all"""
@@ -141,8 +139,8 @@ class TicketListResource(Resource):
                 status_code=200,
             )
 
-        except Exception as e:
-            current_app.logger.error(f"Error fetching tickets: {str(e)}")
+        except Exception:
+            current_app.logger.exception("Error fetching tickets")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -294,9 +292,326 @@ class TicketListResource(Resource):
         except ValueError as e:
             db.session.rollback()
             return restful_response(status="error", message=str(e), status_code=400)
-        except Exception as e:
+        except Exception:
             db.session.rollback()
-            current_app.logger.error(f"Error creating ticket: {str(e)}")
+            current_app.logger.exception("Error creating ticket")
+            return restful_response(
+                status="error", message="Internal server error", status_code=500
+            )
+
+
+class TicketStatsResource(Resource):
+    """Handle GET /tickets/stats"""
+
+    @jwt_required()
+    def get(self):
+        """Get ticket statistics"""
+        try:
+            user, user_role = get_current_user_and_role()
+            if not user:
+                return restful_response(
+                    status="error", message="User not found", status_code=404
+                )
+
+            q = Ticket.query
+            if user_role == Role.CLIENT:
+                q = q.filter(Ticket.client_id == user.id)
+
+            # one grouped query
+            counts = dict(
+                db.session.query(Ticket.status, func.count(Ticket.id))
+                .group_by(Ticket.status)
+                .select_from(q.subquery())
+            )
+            total = q.count()
+            open_count = counts.get(TicketStatus.OPEN, 0)
+            in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
+            closed_count = counts.get(TicketStatus.CLOSED, 0)
+
+            stats = {
+                "total": total,
+                "open": open_count,
+                "in_progress": in_progress_count,
+                "closed": closed_count,
+            }
+
+            return restful_response(
+                status="success",
+                message="Ticket stats fetched successfully",
+                data=stats,
+                status_code=200,
+            )
+
+        except Exception:
+            current_app.logger.exception("Error fetching ticket stats ")
+            return restful_response(
+                status="error", message="Internal server error", status_code=500
+            )
+
+
+class TicketResource(Resource):
+    """Handle GET /tickets/<int:id>, PUT /tickets/<int:id>, DELETE /tickets/<int:id>"""
+
+    @jwt_required()
+    def get(self, id):
+        """Get a specific ticket by ID"""
+        try:
+            user, user_role = get_current_user_and_role()
+            if not user:
+                return restful_response(
+                    status="error", message="User not found", status_code=404
+                )
+
+            ticket = Ticket.query.get(id)
+            if not ticket:
+                return restful_response(
+                    status="error", message="Ticket not found", status_code=404
+                )
+
+            # Check permissions
+            if user_role == Role.CLIENT and ticket.client_id != user.id:
+                return restful_response(
+                    status="error", message="Access denied", status_code=403
+                )
+
+            # Get ticket messages
+            messages = (
+                TicketMessage.query.filter_by(ticket_id=id)
+                .order_by(TicketMessage.created_at.asc())
+                .all()
+            )
+
+            # Get user info for messages
+            user_ids = set([msg.sender_id for msg in messages])
+            user_ids.add(ticket.client_id)
+            if ticket.admin_id:
+                user_ids.add(ticket.admin_id)
+
+            users = User.query.filter(User.id.in_(user_ids)).all()
+            user_map = {u.id: u for u in users}
+
+            # Format messages
+            formatted_messages = []
+            for msg in messages:
+                sender = user_map.get(msg.sender_id)
+                formatted_messages.append(
+                    {
+                        "id": msg.id,
+                        "body": msg.body,
+                        "sender_id": msg.sender_id,
+                        "sender_name": sender.full_name if sender else "Unknown",
+                        "sender_role": sender.role.value if sender else "unknown",
+                        "created_at": (
+                            msg.created_at.isoformat() if msg.created_at else None
+                        ),
+                    }
+                )
+
+            # Format ticket data
+            client = user_map.get(ticket.client_id)
+            admin = user_map.get(ticket.admin_id) if ticket.admin_id else None
+
+            ticket_data = ticket.to_dict()
+            ticket_data.update(
+                {
+                    "ticket_id": f"TK-{str(ticket.id).zfill(3)}",
+                    "client_name": client.full_name if client else "Unknown",
+                    "client_email": client.email if client else "",
+                    "admin_name": admin.full_name if admin else "Unassigned",
+                    "admin_email": admin.email if admin else "",
+                    "priority": "medium",
+                    "category": "general",
+                    "messages": formatted_messages,
+                }
+            )
+
+            return restful_response(
+                status="success",
+                message="Ticket fetched successfully",
+                data=ticket_data,
+                status_code=200,
+            )
+
+        except Exception:
+            current_app.logger.exception(f"Error fetching ticket {id}")
+            return restful_response(
+                status="error", message="Internal server error", status_code=500
+            )
+
+    @jwt_required()
+    def put(self, id):
+        """Update a ticket"""
+        try:
+            user, user_role = get_current_user_and_role()
+            if not user:
+                return restful_response(
+                    status="error", message="User not found", status_code=404
+                )
+
+            ticket = Ticket.query.get(id)
+            if not ticket:
+                return restful_response(
+                    status="error", message="Ticket not found", status_code=404
+                )
+
+            # Check permissions - only admins or the assigned admin can update
+            if user_role == Role.CLIENT:
+                return restful_response(
+                    status="error", message="Access denied", status_code=403
+                )
+
+            data = request.get_json()
+            if not data:
+                return restful_response(
+                    status="error", message="No JSON data provided", status_code=400
+                )
+
+            # Update fields
+            if "status" in data:
+                try:
+                    ticket.status = TicketStatus(data["status"])
+                except ValueError:
+                    return restful_response(
+                        status="error", message="Invalid status value", status_code=400
+                    )
+
+            if "admin_id" in data and is_admin(user_role):
+                try:
+                    admin_id = int(data["admin_id"])
+                    admin = (
+                        User.query.filter_by(id=admin_id)
+                        .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                        .first()
+                    )
+                    if not admin:
+                        return restful_response(
+                            status="error", message="Invalid admin", status_code=400
+                        )
+                    ticket.admin_id = admin_id
+                except (TypeError, ValueError):
+                    return restful_response(
+                        status="error", message="Invalid admin_id", status_code=400
+                    )
+
+            db.session.commit()
+
+            return restful_response(
+                status="success",
+                message="Ticket updated successfully",
+                data=ticket.to_dict(),
+                status_code=200,
+            )
+
+        except Exception:
+            db.session.rollback()
+            current_app.logger.exception(f"Error updating ticket {id}")
+            return restful_response(
+                status="error", message="Internal server error", status_code=500
+            )
+
+    @jwt_required()
+    def delete(self, id):
+        """Delete a ticket"""
+        try:
+            user, user_role = get_current_user_and_role()
+            if not user:
+                return restful_response(
+                    status="error", message="User not found", status_code=404
+                )
+
+            ticket = Ticket.query.get(id)
+            if not ticket:
+                return restful_response(
+                    status="error", message="Ticket not found", status_code=404
+                )
+
+            # Check permissions - only admins can delete
+            if not is_admin(user_role):
+                return restful_response(
+                    status="error", message="Access denied", status_code=403
+                )
+
+            db.session.delete(ticket)
+            db.session.commit()
+
+            return restful_response(
+                status="success", message="Ticket deleted successfully", status_code=200
+            )
+
+        except Exception:
+            db.session.rollback()
+            current_app.logger.exception(f"Error deleting ticket {id}")
+            return restful_response(
+                status="error", message="Internal server error", status_code=500
+            )
+
+
+class TicketMessagesResource(Resource):
+    """Handle POST /tickets/<int:id>/messages"""
+
+    @jwt_required()
+    def post(self, id):
+        """Add a message to a ticket"""
+        try:
+            user, user_role = get_current_user_and_role()
+            if not user:
+                return restful_response(
+                    status="error", message="User not found", status_code=404
+                )
+
+            ticket = Ticket.query.get(id)
+            if not ticket:
+                return restful_response(
+                    status="error", message="Ticket not found", status_code=404
+                )
+
+            # Check permissions
+            if user_role == Role.CLIENT and ticket.client_id != user.id:
+                return restful_response(
+                    status="error", message="Access denied", status_code=403
+                )
+
+            data = request.get_json()
+            if not data:
+                return restful_response(
+                    status="error", message="No JSON data provided", status_code=400
+                )
+
+            body = data.get("body", "").strip()
+            if not body:
+                return restful_response(
+                    status="error", message="Message body is required", status_code=400
+                )
+
+            message = TicketMessage(ticket_id=id, sender_id=user.id, body=body)
+
+            db.session.add(message)
+            db.session.commit()
+
+            # Get sender info for response
+            sender = User.query.get(user.id)
+
+            message_data = {
+                "id": message.id,
+                "body": message.body,
+                "sender_id": message.sender_id,
+                "sender_name": sender.full_name if sender else "Unknown",
+                "sender_role": sender.role.value if sender else "unknown",
+                "created_at": (
+                    message.created_at.isoformat() if message.created_at else None
+                ),
+            }
+
+            return restful_response(
+                status="success",
+                message="Message added successfully",
+                data=message_data,
+                status_code=201,
+            )
+
+        except Exception:
+            db.session.rollback()
+            current_app.logger.exception(f"Error adding message to ticket {id}")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -304,3 +619,6 @@ class TicketListResource(Resource):
 
 # Register API resources
 api.add_resource(TicketListResource, "/tickets")
+api.add_resource(TicketStatsResource, "/tickets/stats")
+api.add_resource(TicketResource, "/tickets/<int:id>")
+api.add_resource(TicketMessagesResource, "/tickets/<int:id>/messages")
