@@ -69,7 +69,12 @@ function App() {
     if (isInactive) return <Navigate to="/verify" replace />;
     if (isSuspended) return <Navigate to="/unauthorized" replace />;
 
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        <Outlet />
+      </>
+    );
   };
 
   return (
