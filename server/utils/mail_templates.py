@@ -211,11 +211,7 @@ def send_verification_email(to_email, user_name, verify_link):
 
 
 def send_invitation_email(
-        recipient_email,
-        recipient_name,
-        invitation_link,
-        invited_by,
-        password
+    recipient_email, recipient_name, invitation_link, invited_by, password
 ):
     """Send user invitation email"""
     subject = "You've been invited to join our platform"
@@ -353,15 +349,15 @@ def send_reset_email(to_email, user_name, reset_link):
 
 
 def send_newsletter_email(
-        to_email,
-        subject,
-        content,
-        call_to_action_link,
-        unsubscribe_link,
-        view_online_link,
-        preheader_text,
-        current_year,
-        blog_thumbnail_url,
+    to_email,
+    subject,
+    content,
+    call_to_action_link,
+    unsubscribe_link,
+    view_online_link,
+    preheader_text,
+    current_year,
+    blog_thumbnail_url,
 ):
     """Send newsletter email to subscribers"""
     body = f"""
