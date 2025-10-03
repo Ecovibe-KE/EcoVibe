@@ -210,7 +210,13 @@ def send_verification_email(to_email, user_name, verify_link):
     return send_email(to_email, subject, body, is_html=True)
 
 
-def send_invitation_email(recipient_email, recipient_name, invitation_link, invited_by):
+def send_invitation_email(
+        recipient_email,
+        recipient_name,
+        invitation_link,
+        invited_by,
+        password
+):
     """Send user invitation email"""
     subject = "You've been invited to join our platform"
 
@@ -222,12 +228,24 @@ def send_invitation_email(recipient_email, recipient_name, invitation_link, invi
             body {{ font-family: Arial, sans-serif; line-height: 1.6; }}
             .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
             .button {{
-                background-color: #007bff;
+                background-color: #37B137;
                 color: white;
                 padding: 12px 24px;
                 text-decoration: none;
                 border-radius: 4px;
                 display: inline-block;
+                font-weight: bold;
+            }}
+            .password-box {{
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                padding: 10px;
+                margin: 15px 0;
+                font-family: monospace;
+                font-size: 16px;
+                text-align: center;
+                font-weight: bold;
             }}
         </style>
     </head>
@@ -236,8 +254,12 @@ def send_invitation_email(recipient_email, recipient_name, invitation_link, invi
             <h2>Welcome to Our Platform!</h2>
             <p>Hello {recipient_name},</p>
             <p>You have been invited by {invited_by} to join our platform.</p>
-            <p>Please click the button below to set your
-                        password and activate your account:</p>
+
+            <p>Your temporary password is:</p>
+            <div class="password-box">{password}</div>
+
+            "<p>Please click the button below to set your password and "
+            "activate your account:</p>"
             <p>
                 <a href="{invitation_link}" class="button">Set Your Password</a>
             </p>
@@ -331,15 +353,15 @@ def send_reset_email(to_email, user_name, reset_link):
 
 
 def send_newsletter_email(
-    to_email,
-    subject,
-    content,
-    call_to_action_link,
-    unsubscribe_link,
-    view_online_link,
-    preheader_text,
-    current_year,
-    blog_thumbnail_url,
+        to_email,
+        subject,
+        content,
+        call_to_action_link,
+        unsubscribe_link,
+        view_online_link,
+        preheader_text,
+        current_year,
+        blog_thumbnail_url,
 ):
     """Send newsletter email to subscribers"""
     body = f"""
