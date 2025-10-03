@@ -17,7 +17,6 @@ class TestPaymentRoutes:
         response = client.post("/payments/payments", json={})
         assert response.status_code == 401
 
-
     def test_create_payment_admin_required(self, client, app):
         with app.app_context():
             print("=== TEST PAYMENT ADMIN REQUIRED ===")
