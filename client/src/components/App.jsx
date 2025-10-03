@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import RequireRole from "../wrappers/RequireRole";
 import Unauthorized from "../wrappers/Unauthorized";
+import { Outlet } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -60,7 +61,7 @@ function App() {
     });
   }, [logEvent, location.pathname]);
 
-  // Protects routes based on auth + account status
+    // Protects routes based on auth + account status
   const PrivateRoute = ({ children }) => {
     const { user, isInactive, isSuspended, isHydrating } = useAuth();
 
@@ -151,7 +152,7 @@ function App() {
               path="tickets"
               element={
                 <div className="p-4">
-                  <h2>Tickets</h2>
+                  <h2>Ticktes</h2>
                   <ClientTickets />
                 </div>
               }
