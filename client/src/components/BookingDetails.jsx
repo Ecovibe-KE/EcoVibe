@@ -1,4 +1,3 @@
-// src/components/BookingDetails.jsx
 import BookingModal from "./BookingModal";
 import Button from "../utils/Button";
 

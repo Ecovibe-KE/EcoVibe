@@ -1,4 +1,3 @@
-// src/components/BookingModal.jsx
 const BookingModal = ({ title, children, onClose }) => {
   return (
     <div
@@ -9,7 +8,11 @@ const BookingModal = ({ title, children, onClose }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">{title}</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">{children}</div>
         </div>

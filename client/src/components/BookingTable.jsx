@@ -1,7 +1,6 @@
-// src/components/BookingTable.jsx
 import Button from "../utils/Button";
 
-const BookingTable = ({ bookings, onView, onUpdate, onDelete }) => {
+const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
   if (bookings.length === 0) {
     return <p className="text-muted">No bookings available.</p>;
   }
@@ -11,7 +10,7 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete }) => {
       <table className="table table-hover align-middle">
         <thead>
           <tr>
-            <th>User</th>
+            {isAdmin && <th>User</th>}
             <th>Service</th>
             <th>Date</th>
             <th>Status</th>
@@ -21,7 +20,7 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete }) => {
         <tbody>
           {bookings.map((booking) => (
             <tr key={booking.id}>
-              <td>{booking.client_name || "—"}</td>
+              {isAdmin && <td>{booking.client_name || "—"}</td>}
               <td>{booking.service_name || "—"}</td>
               <td>
                 {new Date(booking.booking_date).toLocaleDateString()}{" "}
@@ -35,10 +34,10 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete }) => {
                     booking.status === "confirmed"
                       ? "bg-success"
                       : booking.status === "pending"
-                      ? "bg-warning"
-                      : booking.status === "cancelled"
-                      ? "bg-danger"
-                      : "bg-secondary"
+                        ? "bg-warning"
+                        : booking.status === "cancelled"
+                          ? "bg-danger"
+                          : "bg-secondary"
                   }`}
                 >
                   {booking.status}

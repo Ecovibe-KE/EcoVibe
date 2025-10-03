@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required
 from models import db
 from models.booking import Booking
-from models.user import User, Role  # Import Role enum
+from models.user import User, Role
 from models.service import Service
 from utils.responses import restful_response
 from utils.auth_helpers import get_current_user_and_role
@@ -19,7 +19,9 @@ def parse_booking_fields(data):
     """Parse booking fields from JSON to correct Python types."""
     parsed = {}
     if "booking_date" in data:
-        parsed["booking_date"] = datetime.strptime(data["booking_date"], "%Y-%m-%d").date()
+        parsed["booking_date"] = datetime.strptime(
+            data["booking_date"], "%Y-%m-%d"
+        ).date()
     if "start_time" in data:
         parsed["start_time"] = datetime.fromisoformat(data["start_time"])
     if "end_time" in data:
@@ -33,9 +35,21 @@ def parse_booking_fields(data):
 class BookingListResource(Resource):
     @jwt_required()
     def get(self):
-        """List all bookings with client and service names (requires authentication)."""
+        """List bookings (admins see all, clients only see theirs)."""
         try:
-            bookings = Booking.query.all()
+            current_user, role = get_current_user_and_role()
+            if not current_user:
+                return restful_response(
+                    status="error",
+                    message="Authentication required",
+                    status_code=401,
+                )
+
+            if role == Role.ADMIN.value:
+                bookings = Booking.query.all()
+            else:
+                bookings = Booking.query.filter_by(client_id=current_user.id).all()
+
             return restful_response(
                 status="success",
                 data=[booking.to_dict() for booking in bookings],
@@ -88,9 +102,7 @@ class BookingListResource(Resource):
             # --- Parse and Create Booking ---
             parsed_fields = parse_booking_fields(data)
             booking = Booking(
-                client_id=client_id,
-                service_id=service_id,
-                **parsed_fields
+                client_id=client_id, service_id=service_id, **parsed_fields
             )
 
             db.session.add(booking)

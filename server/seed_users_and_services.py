@@ -34,8 +34,12 @@ with app.app_context():
 
     # 🛠️ Seed Services
     service1 = Service(name="Haircut", description="Basic haircut service", price=20.0)
-    service2 = Service(name="Massage", description="Relaxing 60 min massage", price=50.0)
-    service3 = Service(name="Manicure", description="Full manicure treatment", price=30.0)
+    service2 = Service(
+        name="Massage", description="Relaxing 60 min massage", price=50.0
+    )
+    service3 = Service(
+        name="Manicure", description="Full manicure treatment", price=30.0
+    )
 
     db.session.add_all([service1, service2, service3])
     db.session.commit()
