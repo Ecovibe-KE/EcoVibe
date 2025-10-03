@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
 import re
+from datetime import timedelta
+
 
 load_dotenv()
 
@@ -40,6 +42,8 @@ def create_app(config_name="development"):
 
     # Load  Jwt secret key
     app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
 
     # Init extensions
     db.init_app(app)

@@ -63,18 +63,19 @@ function App() {
 
   // Protects routes based on auth + account status
   const PrivateRoute = ({ children }) => {
-    const { user, isInactive, isSuspended } = useAuth();
+    const { user, isInactive, isSuspended, isHydrating } = useAuth();
+
+    // ⏳ Wait until AuthContext finishes hydration
+    if (isHydrating) {
+      return <div className="p-4">Loading…</div>;
+      // or return null, or your spinner component
+    }
 
     if (!user) return <Navigate to="/login" replace />;
     if (isInactive) return <Navigate to="/verify" replace />;
     if (isSuspended) return <Navigate to="/unauthorized" replace />;
 
-    return (
-      <>
-        {children}
-        <Outlet />
-      </>
-    );
+    return <>{children}</>;
   };
 
   return (
