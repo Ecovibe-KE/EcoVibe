@@ -1,5 +1,3 @@
-
-// tests/components/Login.test.jsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -38,6 +36,14 @@ const renderLogin = () =>
     </MemoryRouter>
   );
 
+// ✅ Fix: set a fake site key so component doesn't throw toast.error on mount
+beforeAll(() => {
+  import.meta.env = {
+    ...import.meta.env,
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY: "test-site-key",
+  };
+});
+
 describe("Login Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -68,7 +74,9 @@ describe("Login Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() =>
-      expect(toast.success).toHaveBeenCalledWith("Login successful! Redirecting...")
+      expect(toast.success).toHaveBeenCalledWith(
+        "Login successful! Redirecting..."
+      )
     );
   });
 

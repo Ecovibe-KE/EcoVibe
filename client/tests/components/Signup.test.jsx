@@ -53,11 +53,15 @@ const fillBaseFields = () => {
 describe("SignUpForm", () => {
   it("renders inputs and button", () => {
     renderSignup();
-    expect(screen.getByLabelText("Name", { selector: "input" })).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Name", { selector: "input" })
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/Email address/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Phone number/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^Password$/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign up/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign up/i })
+    ).toBeInTheDocument();
   });
 
   it("toggles password visibility", () => {
@@ -81,7 +85,9 @@ describe("SignUpForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
     await waitFor(() =>
-      expect(screen.getByText(/Passwords do not match/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Passwords do not match/i)
+      ).toBeInTheDocument()
     );
   });
 
@@ -99,12 +105,17 @@ describe("SignUpForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
     await waitFor(() =>
-      expect(screen.getByText(/You must agree to the terms/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/You must agree to the terms/i)
+      ).toBeInTheDocument()
     );
   });
 
   it("submits successfully and shows success message", async () => {
-    createUser.mockResolvedValueOnce({ status: "success", message: "Account created!" });
+    createUser.mockResolvedValueOnce({
+      status: "success",
+      message: "Account created!",
+    });
 
     renderSignup();
     fillBaseFields();
@@ -119,8 +130,9 @@ describe("SignUpForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
+    // ✅ Look for inline alert message, not toast
     await waitFor(() =>
-      expect(screen.getByText(/Account created!/i)).toBeInTheDocument()
+      expect(screen.getByRole("alert")).toHaveTextContent("Account created!")
     );
   });
 
