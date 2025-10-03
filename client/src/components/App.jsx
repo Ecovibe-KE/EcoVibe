@@ -151,7 +151,7 @@ function App() {
               path="tickets"
               element={
                 <div className="p-4">
-                  <h2>Ticktes</h2>
+                  <h2>Tickets</h2>
                   <ClientTickets />
                 </div>
               }
