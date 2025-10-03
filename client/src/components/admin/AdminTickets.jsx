@@ -494,6 +494,7 @@ const TicketDetailsModal = ({
     try {
       await onUpdate(ticket.id, editData);
       setEditMode(false);
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       // Error handled in parent
     }

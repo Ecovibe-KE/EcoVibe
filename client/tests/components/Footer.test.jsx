@@ -22,7 +22,7 @@ describe("Footer component", () => {
     expect(logo).toBeInTheDocument();
 
     // Nav links
-    expect(screen.getByText(/Quick Links/i)).toBeInTheDocument();
+    expect(screen.getByText(/About/i)).toBeInTheDocument();
     expect(screen.getByText(/Blogs/i)).toBeInTheDocument();
     expect(screen.getByText(/Login/i)).toBeInTheDocument();
 
@@ -96,10 +96,10 @@ describe("Footer component", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole("link", { name: /Quick Links/i })).toHaveAttribute(
-      "href",
-      "/about"
-    );
+ expect(screen.getByRole("link", { name: /About/i })).toHaveAttribute(
+   "href",
+   "/about"
+ );
     expect(screen.getByRole("link", { name: /Blogs/i })).toHaveAttribute(
       "href",
       "/blog"

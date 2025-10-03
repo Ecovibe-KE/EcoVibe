@@ -67,6 +67,7 @@ function ClientTickets() {
 
   useEffect(() => {
     fetchTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, statusFilter]);
 
   useEffect(() => {

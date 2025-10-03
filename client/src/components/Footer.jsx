@@ -33,7 +33,7 @@ const Footer = ({ pageType }) => {
             <div className="footer-nav-links">
               <a href="/about" className="nav-link">
                 {" "}
-                Quick Links{" "}
+                About{" "}
               </a>
               <a href="/blog" className="nav-link">
                 {" "}
