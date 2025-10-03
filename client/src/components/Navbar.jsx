@@ -70,15 +70,15 @@ function NavBar() {
                   >
                     Contact
                   </Nav.Link>
-                {user && (
-                 <Nav.Link
-                    as={NavLink}
-                    to="/dashboard"
-                    className="mx-3 fw-bold nav-link"
-                 >
-                   Dashboard
-                  </Nav.Link>
-                )}
+                  {user && (
+                    <Nav.Link
+                      as={NavLink}
+                      to="/dashboard"
+                      className="mx-3 fw-bold nav-link"
+                    >
+                      Dashboard
+                    </Nav.Link>
+                  )}
                 </Nav>
                 <Button
                   as={NavLink}
