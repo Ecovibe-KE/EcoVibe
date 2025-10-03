@@ -61,7 +61,7 @@ function App() {
     });
   }, [logEvent, location.pathname]);
 
-    // Protects routes based on auth + account status
+  // Protects routes based on auth + account status
   const PrivateRoute = ({ children }) => {
     const { user, isInactive, isSuspended, isHydrating } = useAuth();
 
