@@ -76,9 +76,7 @@ const AdminTickets = () => {
     if (searchTerm) return;
     fetchTickets();
     fetchStats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, statusFilter, assignedToFilter, fetchTickets, fetchStats]);
-  // code that depends on searchTerm
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {

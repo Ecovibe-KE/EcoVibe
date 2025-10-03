@@ -5,9 +5,11 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { NavLink } from "react-router-dom";
 import "../css/navbar.css";
+import { useAuth } from "../context/AuthContext";
 
 function NavBar() {
   const size = "lg";
+  const { user } = useAuth();
   return (
     <>
       {
@@ -68,6 +70,15 @@ function NavBar() {
                   >
                     Contact
                   </Nav.Link>
+                {user && (
+                 <Nav.Link
+                    as={NavLink}
+                    to="/dashboard"
+                    className="mx-3 fw-bold nav-link"
+                 >
+                   Dashboard
+                  </Nav.Link>
+                )}
                 </Nav>
                 <Button
                   as={NavLink}
