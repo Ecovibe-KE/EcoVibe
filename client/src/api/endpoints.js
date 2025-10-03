@@ -37,7 +37,27 @@ export const ENDPOINTS = {
   bookingById: (id) => `/bookings/${id}`,
 
   // Add more endpoints as needed here
+  // Tickets
+  tickets: "/tickets",
+  ticketById: (id) => `/tickets/${id}`,
+  ticketMessages: (id) => `/tickets/${id}/messages`,
+  ticketStats: "/tickets/stats",
 
-  // services
+  // Payments & Invoices
+  allPayments: "/invoices",
+  myPayments: "/clientInvoices",
+  mpesaStkPush: "/mpesa/stk-push",
+  cancelTransaction: "/transaction/cancel",
+  paymentStatus: "/payments/status",
+  transactionHistory: "/payments/transactions",
+  verifyPayment: "/payments/verify",
+  invoicePDF: "/invoices/pdf",
+
+  // New endpoints for invoice management
+  payments: "/payments",
+
+  // Services
   services: "/services",
+
+  // Add more endpoints as needed here
 };
