@@ -88,7 +88,7 @@ const localStorageMock = (() => {
     let store = {};
     return {
         getItem: vi.fn((key) => {
-            if (key === 'userData') {
+            if (key === 'user') {
                 return store[key] || JSON.stringify({
                     role: 'CLIENT',
                     phone_number: '+254712345678'
@@ -124,7 +124,7 @@ const mockInvoices = [
         dueDate: '2024-02-15',
         description: 'Consulting Services',
         amount: 5000,
-        status: 'Pending',
+        status: 'pending',
         client: 'John Doe',
         services: ['Service 1', 'Service 2', 'Service 3'],
         transaction: {
@@ -138,7 +138,7 @@ const mockInvoices = [
         dueDate: '2024-02-20',
         description: 'Development Work',
         amount: 15000,
-        status: 'Paid',
+        status: 'paid',
         client: 'Jane Smith',
         services: ['Development', 'Testing'],
     },
@@ -148,7 +148,7 @@ const mockInvoices = [
         dueDate: '2024-01-30',
         description: 'Overdue Project',
         amount: 8000,
-        status: 'Overdue',
+        status: 'overdue',
         client: 'Bob Wilson',
         services: ['Consultation', 'Implementation'],
     }
@@ -360,9 +360,9 @@ describe('InvoiceDashboard', () => {
             render(<InvoiceDashboard/>);
 
             await waitFor(() => {
-                expect(screen.getByText('Pending')).toBeInTheDocument();
-                expect(screen.getByText('Paid')).toBeInTheDocument();
-                expect(screen.getByText('Overdue')).toBeInTheDocument();
+                expect(screen.getByText('pending')).toBeInTheDocument();
+                expect(screen.getByText('paid')).toBeInTheDocument();
+                expect(screen.getByText('overdue')).toBeInTheDocument();
             });
         });
     });

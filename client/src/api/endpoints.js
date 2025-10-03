@@ -32,13 +32,11 @@ export const ENDPOINTS = {
   me: "/me",
   changePassword: "/change-password",
 
-
-   // Tickets
+  // Tickets
   tickets: "/tickets",
   ticketById: (id) => `/tickets/${id}`,
   ticketMessages: (id) => `/tickets/${id}/messages`,
   ticketStats: "/tickets/stats",
-
 
   // Payments & Invoices
   allPayments: "/invoices",
@@ -58,4 +56,3 @@ export const ENDPOINTS = {
 
   // Add more endpoints as needed here
 };
-
