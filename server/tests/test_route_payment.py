@@ -17,24 +17,31 @@ class TestPaymentRoutes:
         response = client.post("/payments/payments", json={})
         assert response.status_code == 401
 
-    def test_get_invoices_success_with_mock(self, client, app):
-        """Test invoices endpoint with proper JWT setup"""
+    def test_get_invoices_success_with_mock(client, app):
+        """Test invoices endpoint with proper JWT setup and mocked database"""
         with app.app_context():
             print("=== TEST INVOICES SUCCESS ===")
             access_token = create_access_token(identity="1")
             headers = {"Authorization": f"Bearer {access_token}"}
 
-            # Mock the entire route function to avoid SQLAlchemy issues
-            with patch("routes.payment.InvoiceListResource.get") as mock_get:
-                # Mock the response from the route
-                mock_get.return_value = (
-                    {
-                        "status": "success",
-                        "message": "Invoices retrieved successfully",
-                        "data": {"invoices": []},
-                    },
-                    200,
-                )
+            # Mock the database query instead of the entire route
+            with patch("routes.payment.db.session") as mock_session:
+                # Create a mock query object
+                mock_query = MagicMock()
+                mock_session.query.return_value = mock_query
+                mock_query.filter.return_value.all.return_value = [
+                    MagicMock(
+                        id=1,
+                        client_id=1,
+                        amount=100.00,
+                        status="pending",
+                        date="2025-10-03",
+                        due_date="2025-10-10",
+                        description="Test Service",
+                        services=["Test Service"],
+                        transaction={},
+                    )
+                ]
 
                 response = client.get("/payments/invoices", headers=headers)
 
@@ -44,10 +51,14 @@ class TestPaymentRoutes:
                 assert response.status_code == 200
                 data = response.get_json()
                 assert data["status"] == "success"
+                assert data["message"] == "Invoices retrieved successfully"
                 assert "invoices" in data["data"]
+                assert len(data["data"]["invoices"]) == 1
+                assert data["data"]["invoices"][0]["id"] == 1
+                assert data["data"]["invoices"][0]["status"] == "pending"
+                assert data["data"]["invoices"][0]["description"] == "Test Service"
 
     def test_create_payment_admin_required(self, client, app):
-        """Test that payment creation requires admin role"""
         with app.app_context():
             print("=== TEST PAYMENT ADMIN REQUIRED ===")
             access_token = create_access_token(identity="1")

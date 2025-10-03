@@ -246,8 +246,8 @@ class ClientInvoiceListResource(Resource):
 
         # Add service description and details
         if invoice.service:
-            invoice_data["description"] = invoice.service.name
-            invoice_data["services"] = [invoice.service.name]
+            invoice_data["description"] = invoice.service.title
+            invoice_data["services"] = [invoice.service.title]
             invoice_data["service_details"] = invoice.service.to_dict()
         else:
             invoice_data["description"] = "Service Invoice"
@@ -497,6 +497,17 @@ class CancelTransactionResource(Resource):
                 invoice = Invoice.query.filter_by(id=invoice_id).first()
                 if not invoice:
                     return error("Invoice not found", 404)
+            elif transaction_id:
+                transaction = MpesaTransaction.query.filter_by(
+                    id=transaction_id
+                ).first()
+                if not transaction:
+                    return error("Transaction not found", 404)
+                if not transaction.invoice_id:
+                    return error("Transaction not linked to an invoice", 400)
+                invoice = Invoice.query.filter_by(id=transaction.invoice_id).first()
+                if not invoice:
+                    return error("Invoice not found for the given transaction", 404)
 
             # Check permissions - user must be admin or the client who owns the invoice
             if not require_admin() and invoice.client_id != current_user.id:
@@ -505,13 +516,12 @@ class CancelTransactionResource(Resource):
             # Check if invoice can be cancelled (only pending invoices can be cancelled)
             if invoice.status != InvoiceStatus.pending:
                 return error(
-                    f"Cannot cancel invoice with status: " f"{invoice.status.value}",
+                    f"Cannot cancel invoice with status: {invoice.status.value}",
                     400,
                 )
 
             # Update invoice status to cancelled
             invoice.status = InvoiceStatus.cancelled
-
             db.session.commit()
 
             return success(
