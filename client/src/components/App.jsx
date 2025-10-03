@@ -1,7 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import RequireRole from "../wrappers/RequireRole";
 import Unauthorized from "../wrappers/Unauthorized";
-import { Outlet } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
