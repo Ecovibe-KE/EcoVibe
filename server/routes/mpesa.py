@@ -248,6 +248,7 @@ def mpesa_callback():
             transaction.callback_received_at = datetime.now(timezone.utc)
 
             # Update status based on result code
+            # In mpesa_callback function, update the Payment creation
             if result_code == 0:
                 transaction.status = "completed"
                 if transaction_code:
@@ -257,16 +258,10 @@ def mpesa_callback():
                 payment = Payment(
                     invoice_id=transaction.invoice_id,
                     payment_method=PaymentMethod.MPESA,
-                    payment_method_id=transaction.id,
+                    mpesa_transaction_id=transaction.id,
                     created_at=datetime.now(timezone.utc),
                 )
                 db.session.add(payment)
-
-                # Update invoice status if applicable
-                if transaction.invoice_id:
-                    invoice = Invoice.query.get(transaction.invoice_id)
-                    if invoice:
-                        invoice.status = "paid"
 
             else:
                 transaction.status = "failed"
