@@ -30,12 +30,15 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
+import ClientTickets from "./ClientTickets.jsx";
 import Footer from "./Footer.jsx";
 
 // Admin pages
 import UserManagement from "./admin/UserManagement.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
+import AdminTickets from "./admin/AdminTickets.jsx";
+import InvoiceDashboard from "./InvoiceDashboard.jsx";
 
 // Lazy loaded page
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
@@ -142,7 +145,16 @@ function App() {
               element={
                 <div className="p-4">
                   <h2>Payments</h2>
-                  <p>View payment history.</p>
+                  <InvoiceDashboard />
+                </div>
+              }
+            />
+            <Route
+              path="tickets"
+              element={
+                <div className="p-4">
+                  <h2>Ticktes</h2>
+                  <ClientTickets />
                 </div>
               }
             />
@@ -189,6 +201,14 @@ function App() {
                   <h2>Tickets</h2>
                   <p>Manage support tickets.</p>
                 </div>
+              }
+            />
+            <Route
+              path="tickets/admin"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <AdminTickets />
+                </RequireRole>
               }
             />
           </Route>
