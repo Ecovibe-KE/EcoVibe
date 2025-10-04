@@ -48,8 +48,7 @@ class BookingListResource(Resource):
 
             # Use eager loading to prevent N+1 queries
             base_query = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             )
 
             if role == Role.ADMIN.value:
@@ -117,8 +116,7 @@ class BookingListResource(Resource):
 
             # Reload the booking with relationships for the response
             booking_with_relations = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking.id)
 
             return restful_response(
@@ -157,10 +155,9 @@ class BookingResource(Resource):
         try:
             # Use eager loading to prevent N+1 queries
             booking = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking_id)
-            
+
             if not booking:
                 return restful_response(
                     status="error",
@@ -186,10 +183,9 @@ class BookingResource(Resource):
         try:
             # Use eager loading to prevent N+1 queries
             booking = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking_id)
-            
+
             if not booking:
                 return restful_response(
                     status="error",
@@ -216,7 +212,7 @@ class BookingResource(Resource):
             # --- Parse and Apply Updates ---
             data = request.get_json()
             parsed_fields = parse_booking_fields(data)
-            
+
             # Apply parsed fields (booking_date, start_time, end_time, status)
             for key, value in parsed_fields.items():
                 setattr(booking, key, value)
@@ -252,7 +248,7 @@ class BookingResource(Resource):
                             message="Only administrators can change booking client",
                             status_code=403,
                         )
-                    
+
                     # Validate client exists
                     client = User.query.get(client_id)
                     if not client:
