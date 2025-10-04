@@ -25,6 +25,9 @@ import VerifyPage from "./Verify.jsx";
 import SignUpForm from "./Signup.jsx";
 import Login from "./Login.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import ClientTickets from "./ClientTickets.jsx";
@@ -125,8 +128,7 @@ function App() {
               path="resources"
               element={
                 <div className="p-4">
-                  <h2>Resources</h2>
-                  <p>Access your resources.</p>
+                  <ResourceCenter />
                 </div>
               }
             />

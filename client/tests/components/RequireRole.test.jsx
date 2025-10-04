@@ -6,7 +6,7 @@ import RequireRole from "../../src/wrappers/RequireRole.jsx";
 vi.mock("../../src/context/AuthContext", () => ({
   useAuth: vi.fn(),
 }));
-import { useAuth } from "../../src/context/AuthContext";
+import { useAuth } from "../../src/context/AuthContext.jsx";
 
 describe("RequireRole", () => {
   it("renders null while hydrating", () => {
