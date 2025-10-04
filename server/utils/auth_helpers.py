@@ -20,7 +20,7 @@ def get_current_user_and_role():
         if not user:
             return None, None
 
-        return user, user.role
+        return user, user.role.value
     except Exception as e:
         current_app.logger.error(f"Error getting current user: {str(e)}")
         return None, None
