@@ -20,9 +20,18 @@ import "../css/TopNavBar.css";
 import { useAuth } from "../context/AuthContext";
 
 const SIDEBAR_WIDTH = 280;
+const isAdmin = (role) => {
+  if (!role) return false;
+  const lowerRole = role.toLowerCase();
+  return lowerRole === "admin" || lowerRole === "super_admin";
+};
+
 
 const NAV_ITEMS = [
-  { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
+  { to: "/dashboard/main", 
+    icon: home, 
+    label: "Dashboard", 
+    alt: "Home" },
   {
     to: "/dashboard/bookings",
     icon: bookings,
@@ -113,11 +122,10 @@ function TopNavbar() {
       isActive ? "active-link" : "inactive-link"
     }`;
 
-  const SidebarContent = ({ onClose, isMobile = false }) => {
-    const filteredItems =
-      userData.role?.toLowerCase() === "admin"
-        ? NAV_ITEMS
-        : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
+ const SidebarContent = ({ onClose, isMobile = false }) => {
+  const filteredItems = isAdmin(userData.role)
+    ? NAV_ITEMS
+    : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
 
     return (
       <div
