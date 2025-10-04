@@ -1,146 +1,133 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import BookingForm from '../../src/components/BookingForm';
+import { useAuth } from '../../src/context/AuthContext';
 
-// Create a simple test version of BookingForm that avoids useEffect issues
-const SimpleBookingForm = ({ onSubmit, onClose, services = [], clients = [], isAdmin = false, initialData = {} }) => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(initialData);
-  };
+// Mock dependencies
+vi.mock('../../src/context/AuthContext');
 
-  return (
-    <div data-testid="booking-form">
-      <h3>{initialData.id ? "Edit Booking" : "New Booking"}</h3>
-      <form onSubmit={handleSubmit}>
-        {isAdmin && clients.length > 0 && (
-          <select data-testid="select-client_id">
-            <option value="">Select client</option>
-            {clients.map(client => (
-              <option key={client.id} value={client.id}>{client.name}</option>
-            ))}
-          </select>
-        )}
-        
-        <select 
-          data-testid="select-service_id" 
-          disabled={services.length === 0}
-        >
-          <option value="">
-            {services.length === 0 ? "Loading services..." : "Select service"}
-          </option>
-          {services.map(service => (
-            <option key={service.id} value={service.id}>{service.name}</option>
-          ))}
-        </select>
-
-        <button type="submit" data-testid="button-add">Save</button>
-        <button type="button" onClick={onClose} data-testid="button-cancel">Cancel</button>
-      </form>
-    </div>
-  );
-};
-
-// Mock the actual component with our simple version
-vi.mock("../../src/components/BookingForm", () => ({
-  default: SimpleBookingForm,
-}));
-
-// Still need to mock the child components that might be used
-vi.mock("../../src/components/BookingModal", () => ({
-  default: ({ children }) => <div>{children}</div>,
-}));
-
-describe("BookingForm Component", () => {
+describe('BookingForm', () => {
   const mockOnSubmit = vi.fn();
   const mockOnClose = vi.fn();
-
-  const mockServices = [
-    { id: 1, name: "Consultation" },
-    { id: 2, name: "Training" }
-  ];
-
   const mockClients = [
-    { id: 1, name: "Client One" },
-    { id: 2, name: "Client Two" }
+    { id: 1, full_name: 'John Doe', email: 'john@example.com' },
+    { id: 2, full_name: 'Jane Smith', email: 'jane@example.com' },
+  ];
+  const mockServices = [
+    { id: 1, title: 'Service 1', price: 100, currency: 'KES', duration: '1 hour' },
+    { id: 2, title: 'Service 2', price: 200, currency: 'KES', duration: '2 hours' },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: false });
   });
 
-  it("renders new booking form correctly", () => {
+  it('renders the form with initial data for editing', () => {
+    const initialData = {
+      id: 1,
+      booking_date: '2023-10-10',
+      start_time: '2023-10-10T10:00',
+      end_time: '2023-10-10T11:00',
+      status: 'confirmed',
+      service_id: 1,
+      client_id: 1,
+    };
+
     render(
-      <SimpleBookingForm
+      <BookingForm
+        initialData={initialData}
         onSubmit={mockOnSubmit}
         onClose={mockOnClose}
-        services={mockServices}
         clients={mockClients}
+        services={mockServices}
+      />
+    );
+
+    expect(screen.getByLabelText(/booking date/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/start time/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/end time/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/status/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/service/i)).toBeInTheDocument();
+  });
+
+  it('renders the form without initial data for creating', () => {
+    render(
+      <BookingForm
+        onSubmit={mockOnSubmit}
+        onClose={mockOnClose}
+        clients={mockClients}
+        services={mockServices}
+      />
+    );
+
+    expect(screen.getByLabelText(/booking date/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/start time/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/end time/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/status/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/service/i)).toBeInTheDocument();
+  });
+
+  it('shows client dropdown for admin', () => {
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: true });
+
+    render(
+      <BookingForm
+        onSubmit={mockOnSubmit}
+        onClose={mockOnClose}
+        clients={mockClients}
+        services={mockServices}
         isAdmin={true}
       />
     );
 
-    expect(screen.getByText("New Booking")).toBeInTheDocument();
-    expect(screen.getByTestId("select-client_id")).toBeInTheDocument();
-    expect(screen.getByTestId("select-service_id")).toBeInTheDocument();
-    expect(screen.getByTestId("button-add")).toBeInTheDocument();
-    expect(screen.getByTestId("button-cancel")).toBeInTheDocument();
+    expect(screen.getByLabelText(/client/i)).toBeInTheDocument();
   });
 
-  it("calls onSubmit when form is submitted", () => {
+  it('does not show client dropdown for non-admin', () => {
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: false });
+
     render(
-      <SimpleBookingForm
+      <BookingForm
         onSubmit={mockOnSubmit}
         onClose={mockOnClose}
-        services={mockServices}
         clients={mockClients}
-        isAdmin={true}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("button-add"));
-    expect(mockOnSubmit).toHaveBeenCalled();
-  });
-
-  it("calls onClose when cancel button is clicked", () => {
-    render(
-      <SimpleBookingForm
-        onSubmit={mockOnSubmit}
-        onClose={mockOnClose}
         services={mockServices}
-        clients={mockClients}
-        isAdmin={true}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("button-cancel"));
-    expect(mockOnClose).toHaveBeenCalled();
-  });
-
-  it("does not show client dropdown for non-admin users", () => {
-    render(
-      <SimpleBookingForm
-        onSubmit={mockOnSubmit}
-        onClose={mockOnClose}
-        services={mockServices}
-        clients={mockClients}
         isAdmin={false}
       />
     );
 
-    expect(screen.queryByTestId("select-client_id")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/client/i)).not.toBeInTheDocument();
   });
 
-  it("shows loading message when services are empty", () => {
+  it('renders all status options', () => {
     render(
-      <SimpleBookingForm
+      <BookingForm
         onSubmit={mockOnSubmit}
         onClose={mockOnClose}
-        services={[]}
         clients={mockClients}
-        isAdmin={true}
+        services={mockServices}
       />
     );
 
-    expect(screen.getByText("Loading services...")).toBeInTheDocument();
+    expect(screen.getByText('Pending')).toBeInTheDocument();
+    expect(screen.getByText('Confirmed')).toBeInTheDocument();
+    expect(screen.getByText('Completed')).toBeInTheDocument();
+    expect(screen.getByText('Cancelled')).toBeInTheDocument();
+  });
+
+  it('renders service dropdown', () => {
+    render(
+      <BookingForm
+        onSubmit={mockOnSubmit}
+        onClose={mockOnClose}
+        clients={mockClients}
+        services={mockServices}
+      />
+    );
+
+    const serviceSelect = screen.getByLabelText(/service/i);
+    expect(serviceSelect).toBeInTheDocument();
+    // Just test that the dropdown exists, don't test specific values
   });
 });

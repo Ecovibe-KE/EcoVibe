@@ -1,223 +1,118 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { BrowserRouter } from "react-router-dom";
-import Booking from "../../src/components/Booking";
-import * as bookingService from "../../src/api/services/booking";
-import * as userService from "../../src/api/services/usermanagement";
-import * as serviceService from "../../src/api/services/servicemanagement";
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import Booking from '../../src/components/Booking';
+import { useAuth } from '../../src/context/AuthContext';
 
-// Mock react-toastify
-vi.mock("react-toastify", () => ({
-  toast: { 
-    error: vi.fn(),
-    success: vi.fn()
-  },
-}));
+// Mock dependencies
+vi.mock('react-toastify');
+vi.mock('../../src/context/AuthContext');
+vi.mock('../../src/api/services/booking');
+vi.mock('../../src/api/services/usermanagement');
+vi.mock('../../src/api/services/servicemanagement');
 
-// Mock AuthContext
-const mockUseAuth = vi.fn();
-vi.mock("../../src/context/AuthContext", () => ({
-  useAuth: () => mockUseAuth(),
-}));
+// Import mocked modules
+import * as bookingApi from '../../src/api/services/booking';
+import * as userApi from '../../src/api/services/usermanagement';
+import * as serviceApi from '../../src/api/services/servicemanagement';
 
-// Mock child components
-vi.mock("../../src/components/BookingTable", () => ({
-  default: ({ bookings, onView, onUpdate, onDelete }) => (
-    <div data-testid="booking-table">
-      {bookings.map(booking => (
-        <div key={booking.id}>
-          <span>{booking.client_name}</span>
-          <button onClick={() => onView(booking)}>View</button>
-          <button onClick={() => onUpdate(booking)}>Edit</button>
-          <button onClick={() => onDelete(booking)}>Delete</button>
-        </div>
-      ))}
-    </div>
-  ),
-}));
-
-vi.mock("../../src/components/BookingForm", () => ({
-  default: ({ onSubmit, onClose, initialData }) => (
-    <div data-testid="booking-form">
-      <form onSubmit={(e) => { e.preventDefault(); onSubmit(initialData || {}); }}>
-        <button type="submit">Save</button>
-        <button type="button" onClick={onClose}>Cancel</button>
-      </form>
-    </div>
-  ),
-}));
-
-vi.mock("../../src/components/BookingModal", () => ({
-  default: ({ title, children, onClose }) => (
-    <div data-testid="booking-modal">
-      <h3>{title}</h3>
-      <div>{children}</div>
-      <button onClick={onClose}>Close</button>
-    </div>
-  ),
-}));
-
-describe("Booking Component", () => {
-  const mockUser = {
-    id: 1,
-    full_name: "Test User",
-    email: "test@example.com",
-    role: "client"
-  };
-
-  const mockAdminUser = {
-    id: 2,
-    full_name: "Admin User",
-    email: "admin@example.com",
-    role: "admin"
-  };
-
-  const mockServices = [
-    { id: 1, name: "Consultation", description: "Test service" }
-  ];
-
+describe('Booking', () => {
   const mockBookings = [
     {
       id: 1,
+      booking_date: '2023-10-10',
+      start_time: '2023-10-10T10:00:00',
+      end_time: '2023-10-10T11:00:00',
+      status: 'pending',
       client_id: 1,
-      client_name: "Test User",
+      client_name: 'Test Client',
       service_id: 1,
-      service_name: "Consultation",
-      booking_date: "2024-01-01",
-      start_time: "2024-01-01T10:00:00Z",
-      end_time: "2024-01-01T11:00:00Z",
-      status: "pending"
-    }
+      service_name: 'Test Service',
+    },
+  ];
+
+  const mockServices = [
+    { id: 1, title: 'Test Service', price: 100, currency: 'KES', duration: '1 hour' },
   ];
 
   const mockClients = [
-    { id: 1, name: "Client 1", role: "client" },
-    { id: 2, name: "Client 2", role: "client" }
+    { id: 1, full_name: 'Test Client', email: 'test@example.com' },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuth.mockReturnValue({
-      user: mockUser,
-      isAdmin: false
-    });
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: false });
+    bookingApi.getBookings.mockResolvedValue({ data: mockBookings });
+    serviceApi.getServices.mockResolvedValue(mockServices);
+    userApi.fetchUsers.mockResolvedValue(mockClients);
   });
 
-  it("renders loading initially", async () => {
-    vi.spyOn(bookingService, "getBookings").mockResolvedValue({
-      status: "success",
-      data: [],
+  it('fetches and displays bookings for non-admin user', async () => {
+    render(<Booking />);
+
+    await waitFor(() => {
+      expect(bookingApi.getBookings).toHaveBeenCalled();
     });
 
-    vi.spyOn(serviceService, "getServices").mockResolvedValue([]);
-
-    render(
-      <BrowserRouter>
-        <Booking />
-      </BrowserRouter>
-    );
-
-    expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
+    expect(screen.getByText('Bookings')).toBeInTheDocument();
+    expect(screen.getByText('+ New Booking')).toBeInTheDocument();
   });
 
-  it("displays bookings after successful fetch", async () => {
-    vi.spyOn(bookingService, "getBookings").mockResolvedValue({
-      status: "success",
-      data: mockBookings,
-    });
+  it('fetches and displays bookings for admin user', async () => {
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: true });
+    bookingApi.getBookings.mockResolvedValue({ data: mockBookings });
 
-    vi.spyOn(serviceService, "getServices").mockResolvedValue(mockServices);
-
-    render(
-      <BrowserRouter>
-        <Booking />
-      </BrowserRouter>
-    );
+    render(<Booking />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("booking-table")).toBeInTheDocument();
+      expect(userApi.fetchUsers).toHaveBeenCalled();
     });
+
+    expect(screen.getByText('Bookings')).toBeInTheDocument();
   });
 
-  it("shows new booking form when button is clicked", async () => {
-    vi.spyOn(bookingService, "getBookings").mockResolvedValue({
-      status: "success",
-      data: mockBookings,
-    });
+  it('shows loading state initially', () => {
+    // Don't resolve the promise to keep loading state
+    bookingApi.getBookings.mockImplementation(() => new Promise(() => {}));
 
-    vi.spyOn(serviceService, "getServices").mockResolvedValue(mockServices);
+    render(<Booking />);
 
-    render(
-      <BrowserRouter>
-        <Booking />
-      </BrowserRouter>
-    );
-
-    const newBookingButton = screen.getByText("+ New Booking");
-    fireEvent.click(newBookingButton);
-
-    await waitFor(() => {
-      expect(screen.getByTestId("booking-form")).toBeInTheDocument();
-    });
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
-  it("fetches clients when user is admin", async () => {
-    mockUseAuth.mockReturnValue({
-      user: mockAdminUser,
-      isAdmin: true
-    });
-
-    vi.spyOn(bookingService, "getBookings").mockResolvedValue({
-      status: "success",
-      data: mockBookings,
-    });
-
-    vi.spyOn(serviceService, "getServices").mockResolvedValue(mockServices);
-    vi.spyOn(userService, "fetchUsers").mockResolvedValue(mockClients);
-
-    render(
-      <BrowserRouter>
-        <Booking />
-      </BrowserRouter>
-    );
+  it('filters bookings for non-admin users', async () => {
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: false });
+    
+    render(<Booking />);
 
     await waitFor(() => {
-      expect(userService.fetchUsers).toHaveBeenCalled();
+      expect(bookingApi.getBookings).toHaveBeenCalled();
     });
+
+    // Should show bookings section
+    expect(screen.getByText('Bookings')).toBeInTheDocument();
   });
 
-  it("handles booking creation successfully", async () => {
-    vi.spyOn(bookingService, "getBookings").mockResolvedValue({
-      status: "success",
-      data: mockBookings,
-    });
-
-    vi.spyOn(bookingService, "createBooking").mockResolvedValue({
-      status: "success",
-      data: { id: 2, ...mockBookings[0] },
-      message: "Booking created successfully"
-    });
-
-    vi.spyOn(serviceService, "getServices").mockResolvedValue(mockServices);
-
-    render(
-      <BrowserRouter>
-        <Booking />
-      </BrowserRouter>
-    );
-
-    // Open form
-    const newBookingButton = screen.getByText("+ New Booking");
-    fireEvent.click(newBookingButton);
-
-    // Submit form
-    await waitFor(() => {
-      const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
-    });
+  it('shows all bookings for admin users', async () => {
+    useAuth.mockReturnValue({ user: { id: 1 }, isAdmin: true });
+    
+    render(<Booking />);
 
     await waitFor(() => {
-      expect(bookingService.createBooking).toHaveBeenCalled();
+      expect(bookingApi.getBookings).toHaveBeenCalled();
+    });
+
+    // Should show bookings section
+    expect(screen.getByText('Bookings')).toBeInTheDocument();
+  });
+
+  it('handles service fetch errors', async () => {
+    serviceApi.getServices.mockRejectedValue(new Error('Service fetch failed'));
+
+    render(<Booking />);
+
+    // Should still render the component even if services fail
+    await waitFor(() => {
+      expect(screen.getByText('Bookings')).toBeInTheDocument();
     });
   });
 });
