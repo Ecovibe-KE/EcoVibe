@@ -206,7 +206,8 @@ class BookingResource(Resource):
                 )
 
             # --- Permissions ---
-            if role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] and booking.client_id != current_user.id:
+            if (role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] 
+                and booking.client_id != current_user.id):
                 return restful_response(
                     status="error",
                     message="Not authorized to edit this booking",
@@ -313,7 +314,8 @@ class BookingResource(Resource):
                     status_code=401,
                 )
 
-            if role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] and booking.client_id != current_user.id:
+            if (role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] 
+                and booking.client_id != current_user.id):
                 return restful_response(
                     status="error",
                     message="Not authorized to delete this booking",
