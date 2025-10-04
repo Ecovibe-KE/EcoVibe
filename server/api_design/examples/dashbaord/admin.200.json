@@ -1,0 +1,33 @@
+{
+  "status": "success",
+  "message": null,
+  "data": {
+    "totalBookings": 12,
+    "paidInvoices": 8,
+    "ticketsRaised": 3,
+    "documentsDownloaded": 15,
+    "upcomingAppointments": [
+      {
+        "id": 1,
+        "service": "General Checkup",
+        "date": "2025-10-05",
+        "status": "confirmed"
+      },
+      {
+        "id": 2,
+        "service": "Consultation",
+        "date": "2025-10-10",
+        "status": "pending"
+      }
+    ],
+    "documents": [
+      {
+        "id": 1,
+        "title": "Insurance Policy Guide",
+        "description": "Full guide for insurance terms",
+        "uploadedAt": "2025-09-20T10:30:00Z",
+        "downloadUrl": "/documents/1/download"
+      }
+    ]
+  }
+}

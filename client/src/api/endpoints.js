@@ -1,7 +1,8 @@
 export const ENDPOINTS = {
   // Ping
   ping: "/ping",
-
+ // dashboard
+ dashboard: "/dashboard",
   // Auth
   register: "/register",
   login: "/login",
