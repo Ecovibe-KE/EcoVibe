@@ -14,12 +14,15 @@ import EditResourceModal from "./Editresource";
 import ViewResourceModal from "./ViewResourceModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Button from "../../utils/Button";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import { Feed, Star, AccessTime } from "@mui/icons-material";
 import { getCurrentUser } from "../../api/services/profile";
+
+// ---- EcoVibe brand colors ----
+const ECOVIBE_GREEN = "#37B137";
+const ECOVIBE_ORANGE = "#FF7A00";
 
 const ResourceCenter = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -45,15 +48,16 @@ const ResourceCenter = () => {
   });
 
   // ---- Data fetching ----
-  const fetchData = async (page = 1) => {
+  const fetchData = async (page = 1, search = "", type = "") => {
     setErrors("");
     try {
-      const docs = await getDocuments(page, pageSize);
-      setResources(docs);
-      setTotalPages(1); // if you want pagination, return from backend
-      setCurrentPage(page);
+      const res = await getDocuments(page, pageSize, search, type);
+      setResources(res.data);
+      setTotalPages(res.pagination.pages);
+      setCurrentPage(res.pagination.page);
     } catch (err) {
       console.error("Error fetching documents:", err);
+      toast.error(err.message || "Failed to fetch documents");
     }
   };
 
@@ -67,17 +71,10 @@ const ResourceCenter = () => {
     fetchRole();
   }, []);
 
-  // ---- Filtering ----
-  const filteredResources = resources.filter((res) => {
-    const matchesSearch =
-      (res.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (res.mimetype || "").toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesFileType =
-      selectedFileType === "" || res.mimetype === selectedFileType;
-
-    return matchesSearch && matchesFileType;
-  });
+  // ---- Filtering triggers ----
+  useEffect(() => {
+    fetchData(1, searchTerm, selectedFileType);
+  }, [searchTerm, selectedFileType]);
 
   // ---- Form handling ----
   const handleChange = (e) => {
@@ -113,7 +110,7 @@ const ResourceCenter = () => {
       setForm({ title: "", description: "", file: null });
     } catch (err) {
       console.error("Error saving resource:", err);
-      toast.error("Failed to save resource");
+      toast.error(err.message || "Failed to save resource");
     }
   };
 
@@ -130,7 +127,7 @@ const ResourceCenter = () => {
       setShowEditModal(false);
     } catch (err) {
       console.error("Error updating resource:", err);
-      toast.error("Failed to update resource");
+      toast.error(err.message || "Failed to update resource");
     }
   };
 
@@ -141,7 +138,7 @@ const ResourceCenter = () => {
       await fetchData();
     } catch (err) {
       console.error("Error deleting document:", err);
-      toast.error("Failed to delete document");
+      toast.error(err.message || "Failed to delete document");
     } finally {
       setShowDeleteModal(false);
       setDeleteTarget(null);
@@ -171,39 +168,85 @@ const ResourceCenter = () => {
   // ---- Render ----
   return (
     <>
+      {/* CLIENT VIEW */}
       {role === "client" && (
         <section>
           <div className="row g-4">
             {resources.map((res, index) => (
               <div className="col-12 col-md-6 col-lg-4" key={index}>
                 <div className="card h-100 shadow-sm border-0 p-4 text-start rounded-3">
-                  <div className="d-flex align-items-center gap-2 mb-2 justify-content-between" style={{ height: "35px" }}>
-                    <div className="d-flex gap-2 document-header fw-bold px-3 py-1 rounded-5">
-                      <Feed /> <p className="m-0">Document</p>
+                  {/* Header */}
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <div className="d-flex align-items-center gap-2 text-muted small">
+                      <Feed fontSize="small" />
+                      <span>Document</span>
                     </div>
-                    <Star className="star" />
+                    <Star style={{ color: ECOVIBE_ORANGE }} fontSize="small" />
                   </div>
+
+                  {/* Title & Description */}
                   <h5 className="fw-bold mb-1">{res.title}</h5>
-                  <p className="text-muted text-justify">{res.description}</p>
-                  <div className="d-flex gap-1 text-muted w-100 justify-content-end m-0">
-                    <AccessTime className="m-0" />
-                    <p className="m-0">
-                      {new Date(res.created_at).toLocaleDateString()}
-                    </p>
+                  <p className="text-muted mb-3">{res.description}</p>
+
+                  {/* Date */}
+                  <div className="d-flex align-items-center text-muted mb-3">
+                    <AccessTime fontSize="small" className="me-1" />
+                    <small>{new Date(res.created_at).toLocaleDateString()}</small>
                   </div>
-                  <Button label="Download" onClick={() => handleDownload(res)} />
+
+                  {/* Download button */}
+                  <button
+                    onClick={() => handleDownload(res)}
+                    className="btn w-100 d-flex align-items-center justify-content-center gap-2"
+                    style={{ backgroundColor: ECOVIBE_GREEN, color: "#fff" }}
+                  >
+                    <DownloadIcon fontSize="small" /> Download
+                  </button>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Pagination controls */}
+          <div className="d-flex justify-content-center mt-4 gap-2">
+            <button
+              className="btn btn-sm"
+              style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
+              disabled={currentPage <= 1}
+              onClick={() => fetchData(currentPage - 1, searchTerm, selectedFileType)}
+            >
+              Prev
+            </button>
+            <span className="align-self-center">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="btn btn-sm"
+              style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
+              disabled={currentPage >= totalPages}
+              onClick={() => fetchData(currentPage + 1, searchTerm, selectedFileType)}
+            >
+              Next
+            </button>
+          </div>
         </section>
       )}
 
+      {/* ADMIN VIEW */}
       {role === "admin" && (
         <section className="my-3 mx-2 bg-white rounded-4 py-5 px-3">
           <div className="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-2">
             <p className="fw-bold m-0">Manage Resources</p>
-            <Button action="add" label="Add Resource" color="#FFFFFF" onClick={() => setShowAddModal(true)} />
+            <Button
+              color="#37B137"
+              hoverColor="#FF7A00"
+              onClick={() => setShowAddModal(true)}
+            >
+              Add Resource
+            </Button>
+
+            
+
           </div>
 
           {/* search + filter */}
@@ -221,9 +264,15 @@ const ResourceCenter = () => {
               >
                 <option value="">All File Types</option>
                 <option value="application/pdf">PDF</option>
-                <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">DOCX</option>
-                <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">XLSX</option>
-                <option value="application/vnd.openxmlformats-officedocument.presentationml.presentation">PPTX</option>
+                <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                  DOCX
+                </option>
+                <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                  XLSX
+                </option>
+                <option value="application/vnd.openxmlformats-officedocument.presentationml.presentation">
+                  PPTX
+                </option>
               </select>
             </div>
             <div className="col-12 col-md-3">
@@ -234,6 +283,7 @@ const ResourceCenter = () => {
                   type="search"
                   className="form-control ps-5"
                   placeholder="Search resources..."
+                  value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
@@ -251,37 +301,39 @@ const ResourceCenter = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredResources.length > 0 ? (
-                  filteredResources.map((res) => (
+                {resources.length > 0 ? (
+                  resources.map((res) => (
                     <tr key={res.id}>
                       <td>{res.title}</td>
-                      <td>{new Date(res.created_at).toLocaleDateString()}</td>
+                      <td>
+                        {new Date(res.created_at).toLocaleDateString()}
+                      </td>
                       <td>
                         <div className="d-flex gap-1 align-items-center h-100">
                           <button
-                            className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
+                            className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1"
+                            style={{ backgroundColor: ECOVIBE_GREEN }}
                             onClick={() => handleDownload(res)}
-                            style={{ background: "#37b137" }}
                           >
                             <DownloadIcon />
                           </button>
                           <button
-                            className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
-                            style={{ background: "#3ba6ff" }}
-                            onClick={() => setShowViewModal(true) || setSelectedResource(res)}
-                          >
-                            <RemoveRedEyeIcon />
-                          </button>
-                          <button
-                            className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
-                            style={{ background: "#eb7d00" }}
-                            onClick={() => setShowEditModal(true) || setSelectedResource(res)}
+                            className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1"
+                            style={{ backgroundColor: ECOVIBE_ORANGE }}
+                            onClick={() => {
+                              setShowEditModal(true);
+                              setSelectedResource(res);
+                            }}
                           >
                             <EditIcon />
                           </button>
                           <button
-                            className="btn btn-sm bg-danger text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
-                            onClick={() => setShowDeleteModal(true) || setDeleteTarget(res)}
+                            className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1"
+                            style={{ backgroundColor: "red" }}
+                            onClick={() => {
+                              setShowDeleteModal(true);
+                              setDeleteTarget(res);
+                            }}
                           >
                             <DeleteForeverIcon />
                           </button>
@@ -298,6 +350,29 @@ const ResourceCenter = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination controls */}
+          <div className="d-flex justify-content-center mt-3 gap-2">
+            <button
+              className="btn btn-sm"
+              style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
+              disabled={currentPage <= 1}
+              onClick={() => fetchData(currentPage - 1, searchTerm, selectedFileType)}
+            >
+              Prev
+            </button>
+            <span className="align-self-center">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="btn btn-sm"
+              style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
+              disabled={currentPage >= totalPages}
+              onClick={() => fetchData(currentPage + 1, searchTerm, selectedFileType)}
+            >
+              Next
+            </button>
           </div>
         </section>
       )}

@@ -69,16 +69,20 @@ function NavBar() {
                     className="mx-3 fw-bold nav-link"
                   >
                     Contact
-                  </Nav.Link>
+
+                </Nav.Link>
                   {user && (
-                    <Nav.Link
-                      as={NavLink}
+                    <NavLink
                       to="/dashboard"
                       className="mx-3 fw-bold nav-link"
+                      style={{ color: "#F58634", textDecoration: "none" }}
                     >
-                      Dashboard
-                    </Nav.Link>
+                      Portal
+                    </NavLink>
                   )}
+
+                 
+                 
                 </Nav>
                 <Button
                   as={NavLink}

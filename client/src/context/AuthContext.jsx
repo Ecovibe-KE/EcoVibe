@@ -61,6 +61,29 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // ----------------------------
+  // 🟢 NEW: Sync token with localStorage (refresh-safe)
+  // ----------------------------
+  useEffect(() => {
+    const syncToken = () => {
+      const updatedToken = localStorage.getItem("authToken");
+      if (updatedToken && updatedToken !== token) {
+        setToken(updatedToken); // update state if interceptor refreshed it
+      }
+    };
+
+    // listen for changes from other tabs
+    window.addEventListener("storage", syncToken);
+
+    // optional: also check every 2s in case interceptor updated silently
+    const interval = setInterval(syncToken, 2000);
+
+    return () => {
+      window.removeEventListener("storage", syncToken);
+      clearInterval(interval);
+    };
+  }, [token]);
+
+  // ----------------------------
   // Login
   // ----------------------------
   const login = async (credentials) => {

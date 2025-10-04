@@ -1,70 +1,76 @@
-// src/api/services/resourceCenter.js
 import api from "../axiosConfig";
 import { ENDPOINTS } from "../endpoints";
 
 // ----------------------------
-// Get all documents
+// Get documents (with pagination + filtering)
 // ----------------------------
-export const getDocuments = async (page = 1, pageSize = 10) => {
+export const getDocuments = async (page = 1, per_page = 10, search = "", type = "") => {
   try {
-    const res = await api.get(ENDPOINTS.documents, {
-      params: { page, page_size: pageSize },
+    const response = await api.get(ENDPOINTS.documents, {
+      params: {
+        page,
+        per_page,
+        search,
+        type,
+      },
     });
-    return res.data.data; // unwrap {status, message, data}
+    return response.data; 
+    // { status, message, data: [...], pagination: {...} }
   } catch (error) {
-    throw error.response?.data || { message: error.message };
+    throw error.response?.data || { message: "Failed to fetch documents" };
   }
 };
 
 // ----------------------------
-// Upload new document
+// Upload a new document
 // ----------------------------
 export const uploadDocument = async (formData) => {
   try {
-    const res = await api.post(ENDPOINTS.documents, formData, {
+    const response = await api.post(ENDPOINTS.documents, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return res.data.data;
+    return response.data;
   } catch (error) {
-    throw error.response?.data || { message: error.message };
+    throw error.response?.data || { message: "Failed to upload document" };
   }
 };
 
 // ----------------------------
-// Update existing document
+// Update an existing document
 // ----------------------------
 export const updateDocument = async (id, formData) => {
   try {
-    const res = await api.put(`${ENDPOINTS.documents}/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" }, // 👈 critical fix
+    const response = await api.put(`${ENDPOINTS.documents}/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    return res.data.data;
+    return response.data;
   } catch (error) {
-    throw error.response?.data || { message: error.message };
+    throw error.response?.data || { message: "Failed to update document" };
   }
 };
 
 // ----------------------------
-// Delete document
+// Delete a document
 // ----------------------------
 export const deleteDocument = async (id) => {
   try {
-    const res = await api.delete(`${ENDPOINTS.documents}/${id}`);
-    return res.data; // returns {status, message, data: null}
+    const response = await api.delete(`${ENDPOINTS.documents}/${id}`);
+    return response.data;
   } catch (error) {
-    throw error.response?.data || { message: error.message };
+    throw error.response?.data || { message: "Failed to delete document" };
   }
 };
 
 // ----------------------------
-// Download document (blob)
+// Download a document
 // ----------------------------
 export const downloadDocument = async (id) => {
   try {
-    return await api.get(`${ENDPOINTS.documents}/${id}/download`, {
-      responseType: "blob",
+    const response = await api.get(`${ENDPOINTS.documents}/${id}/download`, {
+      responseType: "blob", // ✅ prevents corrupted files
     });
+    return response;
   } catch (error) {
-    throw error.response?.data || { message: error.message };
+    throw error.response?.data || { message: "Failed to download document" };
   }
 };
