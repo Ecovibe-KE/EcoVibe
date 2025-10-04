@@ -150,7 +150,7 @@ const ResourceCenter = () => {
     try {
       const fileRes = await downloadDocument(res.id);
       const url = URL.createObjectURL(
-        new Blob([fileRes.data], { type: res.mimetype })
+        new Blob([fileRes.data], { type: res.mimetype }),
       );
       const link = document.createElement("a");
       link.href = url;
@@ -191,7 +191,9 @@ const ResourceCenter = () => {
                   {/* Date */}
                   <div className="d-flex align-items-center text-muted mb-3">
                     <AccessTime fontSize="small" className="me-1" />
-                    <small>{new Date(res.created_at).toLocaleDateString()}</small>
+                    <small>
+                      {new Date(res.created_at).toLocaleDateString()}
+                    </small>
                   </div>
 
                   {/* Download button */}
@@ -213,7 +215,9 @@ const ResourceCenter = () => {
               className="btn btn-sm"
               style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
               disabled={currentPage <= 1}
-              onClick={() => fetchData(currentPage - 1, searchTerm, selectedFileType)}
+              onClick={() =>
+                fetchData(currentPage - 1, searchTerm, selectedFileType)
+              }
             >
               Prev
             </button>
@@ -224,7 +228,9 @@ const ResourceCenter = () => {
               className="btn btn-sm"
               style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
               disabled={currentPage >= totalPages}
-              onClick={() => fetchData(currentPage + 1, searchTerm, selectedFileType)}
+              onClick={() =>
+                fetchData(currentPage + 1, searchTerm, selectedFileType)
+              }
             >
               Next
             </button>
@@ -244,9 +250,6 @@ const ResourceCenter = () => {
             >
               Add Resource
             </Button>
-
-            
-
           </div>
 
           {/* search + filter */}
@@ -305,9 +308,7 @@ const ResourceCenter = () => {
                   resources.map((res) => (
                     <tr key={res.id}>
                       <td>{res.title}</td>
-                      <td>
-                        {new Date(res.created_at).toLocaleDateString()}
-                      </td>
+                      <td>{new Date(res.created_at).toLocaleDateString()}</td>
                       <td>
                         <div className="d-flex gap-1 align-items-center h-100">
                           <button
@@ -358,7 +359,9 @@ const ResourceCenter = () => {
               className="btn btn-sm"
               style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
               disabled={currentPage <= 1}
-              onClick={() => fetchData(currentPage - 1, searchTerm, selectedFileType)}
+              onClick={() =>
+                fetchData(currentPage - 1, searchTerm, selectedFileType)
+              }
             >
               Prev
             </button>
@@ -369,7 +372,9 @@ const ResourceCenter = () => {
               className="btn btn-sm"
               style={{ borderColor: ECOVIBE_GREEN, color: ECOVIBE_GREEN }}
               disabled={currentPage >= totalPages}
-              onClick={() => fetchData(currentPage + 1, searchTerm, selectedFileType)}
+              onClick={() =>
+                fetchData(currentPage + 1, searchTerm, selectedFileType)
+              }
             >
               Next
             </button>

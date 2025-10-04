@@ -39,7 +39,9 @@ const AddResourceModal = ({
             error={errors.title}
           />
           <div className="mb-3">
-            <label className="form-label" htmlFor="description">Description</label>
+            <label className="form-label" htmlFor="description">
+              Description
+            </label>
             <textarea
               name="description"
               id="description"
@@ -52,8 +54,10 @@ const AddResourceModal = ({
               <div className="text-danger">{errors.description}</div>
             )}
           </div>
-           <div className="mb-3">
-            <label className="form-label" htmlFor="file">File Upload</label>
+          <div className="mb-3">
+            <label className="form-label" htmlFor="file">
+              File Upload
+            </label>
             <input
               type="file"
               name="file"

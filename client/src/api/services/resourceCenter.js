@@ -4,7 +4,12 @@ import { ENDPOINTS } from "../endpoints";
 // ----------------------------
 // Get documents (with pagination + filtering)
 // ----------------------------
-export const getDocuments = async (page = 1, per_page = 10, search = "", type = "") => {
+export const getDocuments = async (
+  page = 1,
+  per_page = 10,
+  search = "",
+  type = "",
+) => {
   try {
     const response = await api.get(ENDPOINTS.documents, {
       params: {
@@ -14,7 +19,7 @@ export const getDocuments = async (page = 1, per_page = 10, search = "", type = 
         type,
       },
     });
-    return response.data; 
+    return response.data;
     // { status, message, data: [...], pagination: {...} }
   } catch (error) {
     throw error.response?.data || { message: "Failed to fetch documents" };

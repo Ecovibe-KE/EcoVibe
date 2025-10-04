@@ -49,7 +49,7 @@ api.interceptors.response.use(
         const res = await api.post(
           "/refresh",
           { refresh_token: refreshToken },
-          { skipAuth: true }
+          { skipAuth: true },
         );
 
         const newAccessToken = res.data?.data?.access_token;

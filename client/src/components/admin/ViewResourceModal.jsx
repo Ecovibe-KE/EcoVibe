@@ -37,7 +37,9 @@ const ViewResourceModal = ({ visible, resource, onCancel, onDownload }) => {
             <p>
               Preview not supported for <strong>{resource.fileType}</strong>.
               <br />
-              <Button onClick={() => onDownload(resource.fileUrl, resource.title)}>
+              <Button
+                onClick={() => onDownload(resource.fileUrl, resource.title)}
+              >
                 Download instead
               </Button>
             </p>

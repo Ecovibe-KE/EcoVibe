@@ -17,7 +17,9 @@ const DeleteConfirmModal = ({ visible, resource, onCancel, onConfirm }) => {
         style={{ width: 400, maxWidth: "90%" }}
       >
         <div className="p-3 border-bottom">
-          <h6 className="mb-0" id="delete-modal-title">Confirm Delete</h6>
+          <h6 className="mb-0" id="delete-modal-title">
+            Confirm Delete
+          </h6>
         </div>
         <div className="p-3">
           <p>
@@ -26,9 +28,7 @@ const DeleteConfirmModal = ({ visible, resource, onCancel, onConfirm }) => {
           </p>
         </div>
         <div className="p-3 border-top d-flex justify-content-end">
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
+          <Button onClick={onCancel}>Cancel</Button>
           <Button label="Delete" onClick={onConfirm}>
             Delete
           </Button>
