@@ -52,7 +52,7 @@ class BookingListResource(Resource):
                 joinedload(Booking.service)
             )
 
-            if role == Role.ADMIN.value:
+            if role == Role.ADMIN.value or role == Role.SUPER_ADMIN.value:
                 bookings = base_query.all()
             else:
                 bookings = base_query.filter_by(client_id=current_user.id).all()
@@ -85,7 +85,7 @@ class BookingListResource(Resource):
                 )
 
             # --- Determine Client ---
-            if role == Role.ADMIN.value:
+            if role == Role.ADMIN.value or role == Role.SUPER_ADMIN.value:
                 client_id = data.get("client_id")
             else:
                 client_id = current_user.id
@@ -206,7 +206,7 @@ class BookingResource(Resource):
                 )
 
             # --- Permissions ---
-            if role != Role.ADMIN.value and booking.client_id != current_user.id:
+            if role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] and booking.client_id != current_user.id:
                 return restful_response(
                     status="error",
                     message="Not authorized to edit this booking",
@@ -246,7 +246,7 @@ class BookingResource(Resource):
                 client_id = data.get("client_id")
                 if client_id:
                     # Only admins can change client_id
-                    if role != Role.ADMIN.value:
+                    if role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value]:
                         return restful_response(
                             status="error",
                             message="Only administrators can change booking client",
@@ -313,7 +313,7 @@ class BookingResource(Resource):
                     status_code=401,
                 )
 
-            if role != Role.ADMIN.value and booking.client_id != current_user.id:
+            if role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] and booking.client_id != current_user.id:
                 return restful_response(
                     status="error",
                     message="Not authorized to delete this booking",
