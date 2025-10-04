@@ -24,7 +24,7 @@ def test_client_dashboard(client):
     token = create_access_token(identity=user.id)
     headers = {"Authorization": f"Bearer {token}"}
 
-    res = client.get("/dashboard", headers=headers)
+    res = client.get("/api/dashboard", headers=headers)
     assert res.status_code == 200
     data = res.get_json()
     assert data["status"] == "success"
