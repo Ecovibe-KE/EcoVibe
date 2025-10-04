@@ -28,6 +28,8 @@ export const ENDPOINTS = {
   // Newsletter
   newsletter_subscribers: "/newsletter-subscribers",
 
+  // resource centre
+  documents: "/documents",
   // Profile
   me: "/me",
   changePassword: "/change-password",
