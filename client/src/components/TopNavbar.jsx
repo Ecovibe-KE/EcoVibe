@@ -188,23 +188,25 @@ function TopNavbar() {
               MANAGEMENT MODULES
             </h6>
 
-            {filteredItems.slice(1).map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={getLinkClass}
-                onClick={isMobile ? onClose : undefined}
-                end
-              >
-                <img
-                  src={item.icon}
-                  alt={item.alt}
-                  className="me-3"
-                  style={{ width: 20, height: 20 }}
-                />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
+            {filteredItems
+              .filter(item => item.to !== "/dashboard/main")
+              .map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={getLinkClass}
+                  onClick={isMobile ? onClose : undefined}
+                  end
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.alt}
+                    className="me-3"
+                    style={{ width: 20, height: 20 }}
+                  />
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
           </div>
         </Container>
       </div>

@@ -32,7 +32,7 @@ const Booking = () => {
 
       try {
         const allUsers = await fetchUsers();
-        const activeClients = allUsers.filter((u) => u.role === "client");
+        const activeClients = allUsers.filter((u) => u.role === "CLIENT");
         setClients(activeClients);
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -62,17 +62,18 @@ const Booking = () => {
     const fetchData = async () => {
       try {
         const response = await getBookings();
+        console.log("Bookings API response:", response);
 
-        let filtered = response.data;
+        let filtered = response.data || response;
 
         if (!isAdmin) {
-          filtered = response.data.filter((b) => b.client_id === user.id);
+          filtered = filtered.filter((b) => b.client_id === user.id);
         }
 
         setBookings(filtered);
-      } catch {
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
         toast.error("Failed to fetch bookings");
-        console.error("Error fetching bookings");
       } finally {
         setLoading(false);
       }
@@ -83,12 +84,12 @@ const Booking = () => {
   // CREATE booking
   const handleAdd = async (formData) => {
     try {
+      console.log("Creating booking with data:", formData);
       const res = await createBooking(formData);
-      console.log("Booking response:", res);
+      console.log("Booking creation response:", res);
 
       if (res.status === "success" && res.data) {
         setBookings((prev) => [...prev, res.data]);
-
         setShowForm(false);
         toast.success(res.message || "Booking created successfully");
       } else {
@@ -97,20 +98,22 @@ const Booking = () => {
       }
     } catch (err) {
       console.error("Create booking error:", err);
-      toast.error(err?.message || "Unexpected error while creating booking");
+      console.error("Error details:", err.response?.data);
+      toast.error(err?.response?.data?.message || err?.message || "Unexpected error while creating booking");
     }
   };
 
   // UPDATE booking
   const handleUpdate = async (id, formData) => {
     try {
+      console.log("Updating booking:", id, formData);
       const response = await updateBooking(id, formData);
       setBookings((prev) => prev.map((b) => (b.id === id ? response.data : b)));
       setEditingBooking(null);
       toast.success("Booking updated successfully");
-    } catch {
-      toast.error("Failed to update booking");
-      console.error("Error updating booking");
+    } catch (error) {
+      console.error("Update booking error:", error);
+      toast.error(error?.response?.data?.message || "Failed to update booking");
     }
   };
 
@@ -119,9 +122,11 @@ const Booking = () => {
     try {
       await deleteBooking(id);
       setBookings((prev) => prev.filter((b) => b.id !== id));
+      setBookingToDelete(null);
       toast.success("Booking deleted successfully");
-    } catch {
-      toast.error("Failed to delete booking");
+    } catch (error) {
+      console.error("Delete booking error:", error);
+      toast.error(error?.response?.data?.message || "Failed to delete booking");
     }
   };
 
@@ -190,7 +195,6 @@ const Booking = () => {
               ? new Date(selectedBooking.booking_date).toLocaleDateString()
               : "Unknown Date"}
           </p>
-
           <p>
             <strong>Start:</strong> {selectedBooking.start_time}
           </p>
@@ -202,7 +206,7 @@ const Booking = () => {
           </p>
           <p>
             <strong>Service:</strong>{" "}
-            {services.find((s) => s.id === selectedBooking.service_id)?.name ||
+            {services.find((s) => s.id === selectedBooking.service_id)?.title ||
               "Unknown Service"}
           </p>
         </BookingModal>
@@ -235,7 +239,6 @@ const Booking = () => {
               className="btn btn-danger"
               onClick={() => {
                 handleDelete(bookingToDelete.id);
-                setBookingToDelete(null);
               }}
             >
               Delete
