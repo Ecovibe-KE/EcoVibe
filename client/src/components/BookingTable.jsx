@@ -1,4 +1,5 @@
 import Button from "../utils/Button";
+import styles from "../css/Booking.module.css";
 
 const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
   if (bookings.length === 0) {
@@ -7,7 +8,7 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
 
   return (
     <div className="table-responsive">
-      <table className="table table-hover align-middle">
+      <table className={styles.bookingTable}>
         <thead>
           <tr>
             {isAdmin && <th>User</th>}
@@ -51,7 +52,7 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
                   onClick={() => onView(booking)}
                 />
                 <Button
-                  action="edit"
+                  action="update"
                   label="Edit"
                   size="sm"
                   onClick={() => onUpdate(booking)}

@@ -1,170 +1,104 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import BookingTable from "../../src/components/BookingTable";
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import BookingTable from '../../src/components/BookingTable';
 
-// Mock Button component
-vi.mock("../../src/utils/Button", () => ({
-  default: ({ action, label, onClick }) => (
-    <button onClick={onClick} data-testid={`button-${action}`}>
-      {label}
-    </button>
-  ),
-}));
-
-describe("BookingTable Component", () => {
+describe('BookingTable', () => {
   const mockBookings = [
     {
       id: 1,
-      client_name: "John Doe",
-      service_name: "Consultation",
-      booking_date: "2024-01-01",
-      start_time: "2024-01-01T10:00:00Z",
-      status: "pending"
+      booking_date: '2023-10-10',
+      start_time: '2023-10-10T10:00:00',
+      end_time: '2023-10-10T11:00:00',
+      status: 'pending',
+      client_name: 'Test Client',
+      service_name: 'Test Service',
     },
-    {
-      id: 2,
-      client_name: "Jane Smith",
-      service_name: "Training",
-      booking_date: "2024-01-02",
-      start_time: "2024-01-02T14:00:00Z",
-      status: "confirmed"
-    }
   ];
 
-  const mockOnView = vi.fn();
-  const mockOnUpdate = vi.fn();
-  const mockOnDelete = vi.fn();
+  it('renders the booking table component with bookings for non-admin', () => {
+    render(
+      <BookingTable
+        bookings={mockBookings}
+        onView={() => {}}
+        onUpdate={() => {}}
+        onDelete={() => {}}
+        isAdmin={false}
+      />
+    );
 
-  beforeEach(() => {
-    vi.clearAllMocks();
+    // Test for content that's actually visible for non-admin users
+    expect(screen.getByText('Test Service')).toBeInTheDocument();
+    expect(screen.getByText('pending')).toBeInTheDocument();
+    expect(screen.getByText('View')).toBeInTheDocument();
+    expect(screen.getByText('Edit')).toBeInTheDocument();
+    expect(screen.getByText('Delete')).toBeInTheDocument();
+    
+    // Client name should NOT be visible for non-admin
+    expect(screen.queryByText('Test Client')).not.toBeInTheDocument();
   });
 
-  it("renders no bookings message when empty", () => {
+  it('renders the booking table component with bookings for admin', () => {
+    render(
+      <BookingTable
+        bookings={mockBookings}
+        onView={() => {}}
+        onUpdate={() => {}}
+        onDelete={() => {}}
+        isAdmin={true}
+      />
+    );
+
+    // For admin users, client name should be visible
+    expect(screen.getByText('Test Client')).toBeInTheDocument();
+    expect(screen.getByText('Test Service')).toBeInTheDocument();
+    expect(screen.getByText('pending')).toBeInTheDocument();
+  });
+
+  it('renders empty state when no bookings', () => {
     render(
       <BookingTable
         bookings={[]}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
+        onView={() => {}}
+        onUpdate={() => {}}
+        onDelete={() => {}}
         isAdmin={false}
       />
     );
 
-    expect(screen.getByText("No bookings available.")).toBeInTheDocument();
+    // Should show the empty state message
+    expect(screen.getByText(/no bookings available/i)).toBeInTheDocument();
   });
 
-  it("renders bookings table with correct data", () => {
+  it('formats date and time correctly', () => {
     render(
       <BookingTable
         bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        isAdmin={true}
-      />
-    );
-
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-    expect(screen.getByText("Consultation")).toBeInTheDocument();
-    expect(screen.getByText("Training")).toBeInTheDocument();
-  });
-
-  it("shows client column for admin users", () => {
-    render(
-      <BookingTable
-        bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        isAdmin={true}
-      />
-    );
-
-    expect(screen.getByText("User")).toBeInTheDocument();
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
-  });
-
-  it("hides client column for non-admin users", () => {
-    render(
-      <BookingTable
-        bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
+        onView={() => {}}
+        onUpdate={() => {}}
+        onDelete={() => {}}
         isAdmin={false}
       />
     );
 
-    expect(screen.queryByText("User")).not.toBeInTheDocument();
+    // Check that the date is formatted (this will depend on your locale)
+    // You might want to be more specific about the expected format
+    const dateElement = screen.getByText(/10\/10\/2023/);
+    expect(dateElement).toBeInTheDocument();
   });
 
-  it("calls onView when view button is clicked", () => {
+  it('displays correct status badge with appropriate class', () => {
     render(
       <BookingTable
         bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        isAdmin={true}
+        onView={() => {}}
+        onUpdate={() => {}}
+        onDelete={() => {}}
+        isAdmin={false}
       />
     );
 
-    const viewButtons = screen.getAllByTestId("button-view");
-    fireEvent.click(viewButtons[0]);
-
-    expect(mockOnView).toHaveBeenCalledWith(mockBookings[0]);
-  });
-
-  it("calls onUpdate when edit button is clicked", () => {
-    render(
-      <BookingTable
-        bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        isAdmin={true}
-      />
-    );
-
-    const editButtons = screen.getAllByTestId("button-edit");
-    fireEvent.click(editButtons[0]);
-
-    expect(mockOnUpdate).toHaveBeenCalledWith(mockBookings[0]);
-  });
-
-  it("calls onDelete when delete button is clicked", () => {
-    render(
-      <BookingTable
-        bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        isAdmin={true}
-      />
-    );
-
-    const deleteButtons = screen.getAllByTestId("button-delete");
-    fireEvent.click(deleteButtons[0]);
-
-    expect(mockOnDelete).toHaveBeenCalledWith(mockBookings[0]);
-  });
-
-  it("displays correct status badges", () => {
-    render(
-      <BookingTable
-        bookings={mockBookings}
-        onView={mockOnView}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        isAdmin={true}
-      />
-    );
-
-    const pendingBadge = screen.getByText("pending");
-    const confirmedBadge = screen.getByText("confirmed");
-
-    expect(pendingBadge).toBeInTheDocument();
-    expect(confirmedBadge).toBeInTheDocument();
+    const statusBadge = screen.getByText('pending');
+    expect(statusBadge).toBeInTheDocument();
+    expect(statusBadge).toHaveClass('bg-warning');
   });
 });

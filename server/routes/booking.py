@@ -1,6 +1,7 @@
 from flask import request, Blueprint
 from flask_restful import Resource, Api
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 from flask_jwt_extended import jwt_required
 from models import db
 from models.booking import Booking
@@ -45,10 +46,16 @@ class BookingListResource(Resource):
                     status_code=401,
                 )
 
+            # Use eager loading to prevent N+1 queries
+            base_query = Booking.query.options(
+                joinedload(Booking.client),
+                joinedload(Booking.service)
+            )
+
             if role == Role.ADMIN.value:
-                bookings = Booking.query.all()
+                bookings = base_query.all()
             else:
-                bookings = Booking.query.filter_by(client_id=current_user.id).all()
+                bookings = base_query.filter_by(client_id=current_user.id).all()
 
             return restful_response(
                 status="success",
@@ -108,9 +115,15 @@ class BookingListResource(Resource):
             db.session.add(booking)
             db.session.commit()
 
+            # Reload the booking with relationships for the response
+            booking_with_relations = Booking.query.options(
+                joinedload(Booking.client),
+                joinedload(Booking.service)
+            ).get(booking.id)
+
             return restful_response(
                 status="success",
-                data=booking.to_dict(),
+                data=booking_with_relations.to_dict(),
                 message="Booking created successfully",
                 status_code=201,
             )
@@ -142,7 +155,12 @@ class BookingResource(Resource):
     def get(self, booking_id):
         """Retrieve a single booking by ID (requires authentication)."""
         try:
-            booking = Booking.query.get(booking_id)
+            # Use eager loading to prevent N+1 queries
+            booking = Booking.query.options(
+                joinedload(Booking.client),
+                joinedload(Booking.service)
+            ).get(booking_id)
+            
             if not booking:
                 return restful_response(
                     status="error",
@@ -166,7 +184,12 @@ class BookingResource(Resource):
     def patch(self, booking_id):
         """Partially update a booking (only editable fields provided in request)."""
         try:
-            booking = Booking.query.get(booking_id)
+            # Use eager loading to prevent N+1 queries
+            booking = Booking.query.options(
+                joinedload(Booking.client),
+                joinedload(Booking.service)
+            ).get(booking_id)
+            
             if not booking:
                 return restful_response(
                     status="error",
@@ -193,8 +216,58 @@ class BookingResource(Resource):
             # --- Parse and Apply Updates ---
             data = request.get_json()
             parsed_fields = parse_booking_fields(data)
+            
+            # Apply parsed fields (booking_date, start_time, end_time, status)
             for key, value in parsed_fields.items():
                 setattr(booking, key, value)
+
+            # --- Handle service_id update ---
+            if "service_id" in data:
+                service_id = data.get("service_id")
+                if service_id:
+                    # Validate service exists
+                    service = Service.query.get(service_id)
+                    if not service:
+                        return restful_response(
+                            status="error",
+                            message="Service not found",
+                            status_code=404,
+                        )
+                    booking.service_id = service_id
+                else:
+                    return restful_response(
+                        status="error",
+                        message="Service ID cannot be empty",
+                        status_code=400,
+                    )
+
+            # --- Handle client_id update ---
+            if "client_id" in data:
+                client_id = data.get("client_id")
+                if client_id:
+                    # Only admins can change client_id
+                    if role != Role.ADMIN.value:
+                        return restful_response(
+                            status="error",
+                            message="Only administrators can change booking client",
+                            status_code=403,
+                        )
+                    
+                    # Validate client exists
+                    client = User.query.get(client_id)
+                    if not client:
+                        return restful_response(
+                            status="error",
+                            message="Client not found",
+                            status_code=404,
+                        )
+                    booking.client_id = client_id
+                else:
+                    return restful_response(
+                        status="error",
+                        message="Client ID cannot be empty",
+                        status_code=400,
+                    )
 
             db.session.commit()
 
