@@ -46,8 +46,8 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
         if (!refreshToken) throw new Error("No refresh token available");
 
-        const res = await axios.post(
-          `${api.defaults.baseURL}/refresh`,
+        const res = await api.post(
+          "/refresh",
           { refresh_token: refreshToken },
           { skipAuth: true },
         );
@@ -57,6 +57,7 @@ api.interceptors.response.use(
 
         // Save token and retry request
         localStorage.setItem(AUTH_TOKEN_KEY, newAccessToken);
+        api.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return api(originalRequest);
