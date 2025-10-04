@@ -29,6 +29,7 @@ def test_client_dashboard(client):
     db.session.add(user)
     db.session.commit()
 
+
 # ---- You can uncomment later once client works ----
 # def test_admin_dashboard(client):
 #     ...
