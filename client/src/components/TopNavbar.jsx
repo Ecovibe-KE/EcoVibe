@@ -13,12 +13,10 @@ import services from "../assets/services.png";
 import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
-import { logoutUser } from "../api/services/auth";
 import { toast } from "react-toastify";
 
 import "../css/TopNavBar.css";
 import { useAuth } from "../context/AuthContext";
-import { setUserId } from "firebase/analytics";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -320,8 +318,7 @@ function TopNavbar() {
                     localStorage.removeItem("user");
                     localStorage.removeItem("authToken");
                     localStorage.removeItem("refreshToken");
-                    navigate("/login");
-                    window.location.reload(); // ensure all state is cleared
+                    window.location.href = "/login"; // redirect to login
                   }
                 }}
                 style={{
