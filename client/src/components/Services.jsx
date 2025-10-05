@@ -28,19 +28,18 @@ const Services = () => {
             try {
                 const response = await getServices();
                 if (response.status === "success") {
-
                     // Get only active services
                     const activeServices = response.data.filter(service => service.status.toLowerCase() === "active")
                     activeServices.length === 0
                     setServices(activeServices)
-
                 } else {
                     toast.error(`Failed to fetch services: ${response.message}. Please try again later`)
                 }
             } catch (error) {
                 toast.error(
-                    `Failed to fetch service: ${error.response?.data?.message || error.message}`,
+                    `Server unavailable. Failed to fetch services, please try again later`
                 );
+                setServices([])
             }
         }
         fetchServices()

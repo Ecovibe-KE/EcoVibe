@@ -31,6 +31,41 @@ def require_admin():
     
     return user
 
+def validate_price(price):
+    """Validate that price is a positive number greater than 0"""
+    try:
+        price_float = float(price)
+        if price_float <= 0:
+            return False, "Price must be greater than 0"
+        return True, price_float
+    except (ValueError, TypeError):
+        return False, "Price must be a valid number"
+
+def validate_duration(duration_str):
+    """Validate duration format and ensure it's greater than 0"""
+    if not duration_str or not isinstance(duration_str, str):
+        return False, "Duration is required and must be a string"
+    
+    # Parse duration string like "2 hr 30 min"
+    try:
+        parts = duration_str.split()
+        if len(parts) != 4 or parts[1] != 'hr' or parts[3] != 'min':
+            return False, "Duration must be in format 'X hr Y min'"
+        
+        hours = int(parts[0])
+        minutes = int(parts[2])
+        
+        if hours < 0 or minutes < 0:
+            return False, "Hours and minutes cannot be negative"
+        if hours == 0 and minutes == 0:
+            return False, "Duration must be greater than 0 (set hours or minutes)"
+        if minutes >= 60:
+            return False, "Minutes cannot exceed 59"
+            
+        return True, duration_str
+    except (ValueError, IndexError):
+        return False, "Invalid duration format. Use 'X hr Y min'"
+
 @services_bp.route('/services', methods=['GET'])
 def get_all_services():
     """
@@ -96,7 +131,49 @@ def create_service():
         required_fields = ['title', 'description', 'price', 'duration', 'image', 'status']
         for field in required_fields:
             if field not in data or not data[field]:
-                raise BadRequest(f"Missing required field: {field}")
+                return jsonify({
+                    "status": "error",
+                    "message": f"{field.capitalize()} is required"
+                }), 400
+            
+         # === ADD PRICE VALIDATION ===
+        price_valid, price_result = validate_price(data['price'])
+        if not price_valid:
+            return jsonify({
+                "status": "error",
+                "message": price_result
+            }), 400
+        
+        # === ADD DURATION VALIDATION ===
+        duration_valid, duration_result = validate_duration(data['duration'])
+        if not duration_valid:
+            return jsonify({
+                "status": "error",
+                "message": duration_result
+            }), 400
+            
+        # Validate image size (5MB limit)
+        if 'image' in data and data['image']:
+            # Remove data URL prefix if present
+            image_data = data['image']
+            if 'base64,' in image_data:
+                image_data = image_data.split('base64,')[1]
+            
+            # Calculate image size in bytes
+            # Base64 string length * 3/4 (approx.) gives bytes
+            image_size = len(image_data) * 3 // 4
+            
+            # Account for padding
+            padding_count = image_data.count('=')
+            image_size -= padding_count
+            
+            max_size = 5 * 1024 * 1024  # 5MB in bytes
+            
+            if image_size > max_size:
+                return jsonify({
+                    "status": "error",
+                    "message": f"Image size exceeds 5MB limit. Current size: {image_size // (1024 * 1024)}MB"
+                }), 400
         
         # Validate status
         if data['status'] not in [status.value for status in ServiceStatus]:
@@ -180,10 +257,24 @@ def update_service(id):
         admin_user = require_admin()
         
         data = request.get_json()
+
+         # === ADD PRICE VALIDATION (if price is being updated) ===
+        if 'price' in data and data['price'] is not None:
+            price_valid, price_result = validate_price(data['price'])
+            if not price_valid:
+                return jsonify({
+                    "status": "error",
+                    "message": price_result
+                }), 400
         
-        # Optional: Verify the admin owns this service or is super_admin
-        # if admin_user.role != Role.SUPER_ADMIN and service.admin_id != admin_user.id:
-        #     raise Forbidden("You can only update services you created")
+        # === ADD DURATION VALIDATION (if duration is being updated) ===
+        if 'duration' in data and data['duration'] is not None:
+            duration_valid, duration_result = validate_duration(data['duration'])
+            if not duration_valid:
+                return jsonify({
+                    "status": "error",
+                    "message": duration_result
+                }), 400
         
         # Update fields if provided
         updatable_fields = ['title', 'description', 'currency', 'price', 'duration', 'status']
@@ -196,6 +287,26 @@ def update_service(id):
                     service.price = float(data[field])
                 else:
                     setattr(service, field, data[field])
+
+        # Validate image size if image is being updated
+        if 'image' in data and data['image']:
+            # Remove data URL prefix if present
+            image_data = data['image']
+            if 'base64,' in image_data:
+                image_data = image_data.split('base64,')[1]
+            
+            # Calculate image size
+            image_size = len(image_data) * 3 // 4
+            padding_count = image_data.count('=')
+            image_size -= padding_count
+            
+            max_size = 5 * 1024 * 1024  # 5MB in bytes
+            
+            if image_size > max_size:
+                return jsonify({
+                    "status": "error",
+                    "message": f"Image size exceeds 5MB limit. Current size: {image_size // (1024 * 1024)}MB"
+                }), 400
 
         # Handle image update if provided
         if 'image' in data and data['image']:

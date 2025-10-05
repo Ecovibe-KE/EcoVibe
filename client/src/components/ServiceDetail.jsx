@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Card, Spinner } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getServiceById } from "../api/services/servicemanagement";
 import '../css/ServiceDetail.css';
+import { displayDuration } from './admin/ServiceAdminMain';
 
 const ServiceDetail = () => {
     const { id } = useParams();
@@ -16,15 +17,15 @@ const ServiceDetail = () => {
             try {
                 const response = await getServiceById(id);
                 if (response.status === "success") {
-                    console.log(response.data)
                     setService(response.data)
                 } else {
                     toast.error(`Failed to fetch services: ${response.message}. Please try again later`)
                 }
             } catch (error) {
                 toast.error(
-                    `Failed to fetch service: ${error.response?.data?.message || error.message}`,
+                    `Server unavailable. Failed to fetch service, please try again later`
                 );
+                setService([])
             }
         }
         fetchServices()
@@ -44,6 +45,28 @@ const ServiceDetail = () => {
                 <Spinner animation="border" role="status" variant="success">
                     <span className="visually-hidden">Loading service...</span>
                 </Spinner>
+            </Container>
+        );
+    } else if (Array.isArray(service) && service.length === 0) {
+        return (
+            <Container className="py-5">
+                <div className="text-center">
+                    <div className="no-services-card p-5 bg-light rounded-3 shadow-sm">
+                        <i className="bi bi-inbox display-1 text-muted mb-3"></i>
+                        <h3 className="text-muted mb-3">Service Unavailable</h3>
+                        <p className="text-muted mb-4">
+                            Please check back later or contact us for more information.
+                        </p>
+                        <Button
+                            size="lg"
+                            className="px-4"
+                            onClick={handleContact}
+                            style={{ backgroundColor: '#37b137', borderColor: '#37b137' }}
+                        >
+                            Contact Our Team
+                        </Button>
+                    </div>
+                </div>
             </Container>
         );
     }
@@ -129,7 +152,7 @@ const ServiceDetail = () => {
 
                                     <div className="price-section-fixed">
                                         <div className="price-amount">Price: {service.currency} {service.price}</div>
-                                        <div className="price-duration">Duration: {service.duration}</div>
+                                        <div className="price-duration">Duration: {displayDuration(service.duration)}</div>
                                     </div>
 
                                     <div className="booking-features-fixed">

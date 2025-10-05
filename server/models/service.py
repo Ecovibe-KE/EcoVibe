@@ -54,13 +54,24 @@ class Service(db.Model):
 
     # --- Data Validations ---
     @validates(
-        "title", "description", "duration", "currency", "image", "status", "admin_id"
+        "title", "description", "duration", "currency", "status", "admin_id"
     )
     def validate_not_empty(self, key, value):
         """Ensures that key text fields are not empty."""
         if not value or (isinstance(value, str) and not value.strip()):
             raise ValueError(f"{key.capitalize()} cannot be empty.")
         return value.strip() if isinstance(value, str) else value
+    
+    @validates("image")
+    def validate_image_size(self, key, value):
+        """Validate image data and size."""
+        if not value:
+            raise ValueError("Image cannot be empty.")
+
+        """Validate image size doesn't exceed 5MB"""
+        if value and len(value) > 5 * 1024 * 1024:  # 5MB in bytes
+            raise ValueError("Image size must be less than 5MB")
+        return value
 
     @validates("price")
     def validate_price(self, key, value):

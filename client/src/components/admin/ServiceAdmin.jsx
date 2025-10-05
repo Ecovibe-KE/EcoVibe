@@ -193,6 +193,15 @@ function ServiceAdmin() {
       return;
     }
 
+    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast.error(`Image size (${fileSizeInMB}MB) exceeds the 5MB limit. Please choose a smaller file.`);
+      e.target.value = ""; // reset input
+      return;
+    }
+
     // Convert image to Base64
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -206,7 +215,17 @@ function ServiceAdmin() {
   const addNewService = async (e) => {
     e.preventDefault();
 
+    if (formData.servicePrice <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
+
     const { hours, minutes } = formData.serviceDuration;
+    if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
+      toast.error("Duration must be greater than 0. Please set hours or minutes.");
+      return;
+    }
+
     const combinedDuration = `${hours} hr ${minutes} min`;
 
     try {
@@ -240,7 +259,17 @@ function ServiceAdmin() {
   const editExistingService = async (e) => {
     e.preventDefault();
 
+    // === ADD VALIDATION CHECKS ===
+    if (formData.servicePrice <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
+
     const { hours, minutes } = formData.serviceDuration;
+    if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
+      toast.error("Duration must be greater than 0. Please set hours or minutes.");
+      return;
+    }
     const combinedDuration = `${hours} hr ${minutes} min`;
 
     const serviceData = {
@@ -328,10 +357,6 @@ function ServiceAdmin() {
 
   return (
     <>
-      <button onClick={() => {
-        toast.success("Button Test Toast")
-        console.log("CLICKED")
-      }}>Show Toast</button>
       <main className="p-3 bg-light">
         {/* edit service */}
         <EditServiceModal
