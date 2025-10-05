@@ -20,11 +20,6 @@ import "../css/TopNavBar.css";
 import { useAuth } from "../context/AuthContext";
 
 const SIDEBAR_WIDTH = 280;
-const isAdmin = (role) => {
-  if (!role) return false;
-  const lowerRole = role.toLowerCase();
-  return lowerRole === "admin" || lowerRole === "super_admin";
-};
 
 
 const NAV_ITEMS = [
@@ -84,7 +79,7 @@ const CLIENT_ALLOWED_ROUTES = [
 ];
 
 function TopNavbar() {
-  const { user } = useAuth();
+  const { user, isAtLeastAdmin } = useAuth();
   const [userData, setUserData] = useState(user);
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -93,7 +88,7 @@ function TopNavbar() {
 
   // Load user data from localStorage if available
   useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
+    const storedUserData = localStorage.getItem("user");
     if (storedUserData) {
       try {
         const parsedData = JSON.parse(storedUserData);
@@ -122,8 +117,9 @@ function TopNavbar() {
       isActive ? "active-link" : "inactive-link"
     }`;
 
+
  const SidebarContent = ({ onClose, isMobile = false }) => {
-  const filteredItems = isAdmin(userData.role)
+  const filteredItems = isAtLeastAdmin
     ? NAV_ITEMS
     : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
 
