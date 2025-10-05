@@ -329,7 +329,7 @@ function TopNavbar() {
                     // Clear tokens and user data
                     localStorage.removeItem("authToken");
                     localStorage.removeItem("refreshToken");
-                    localStorage.removeItem("userData");
+                    localStorage.removeItem("user");
 
                     toast.success("Logged out successfully");
                     navigate("/login");
