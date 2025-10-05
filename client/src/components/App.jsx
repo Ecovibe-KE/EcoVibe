@@ -97,7 +97,8 @@ function App() {
             }
           >
             {/* General dashboard pages - any active user */}
-
+            <Route index element={<Navigate to="main" replace />} />
+            
             <Route
               path="main"
               element={
