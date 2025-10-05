@@ -26,13 +26,13 @@ const BookingForm = ({
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
       console.log("Initial data received:", initialData);
-      
+
       const formatDateForInput = (dateString) => {
         if (!dateString) return "";
         try {
           const date = new Date(dateString);
           if (isNaN(date.getTime())) return "";
-          return date.toISOString().split('T')[0];
+          return date.toISOString().split("T")[0];
         } catch (error) {
           console.error("Error formatting date:", error);
           return "";
@@ -60,29 +60,31 @@ const BookingForm = ({
         end_time: formatDateTimeForInput(initialData.end_time),
         status: initialData.status || "pending",
         service_id: initialData.service_id?.toString() || "",
-        client_id: initialData.client_id?.toString() || (isAdmin ? "" : initialData.client_id?.toString()),
+        client_id:
+          initialData.client_id?.toString() ||
+          (isAdmin ? "" : initialData.client_id?.toString()),
       });
     }
   }, [initialData, isAdmin]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!form.booking_date) newErrors.booking_date = "Booking date is required";
     if (!form.start_time) newErrors.start_time = "Start time is required";
     if (!form.end_time) newErrors.end_time = "End time is required";
     if (!form.service_id) newErrors.service_id = "Service is required";
     if (isAdmin && !form.client_id) newErrors.client_id = "Client is required";
-    
+
     if (form.start_time && form.end_time) {
       const start = new Date(form.start_time);
       const end = new Date(form.end_time);
@@ -120,7 +122,7 @@ const BookingForm = ({
     };
 
     // Remove empty fields
-    Object.keys(formattedData).forEach(key => {
+    Object.keys(formattedData).forEach((key) => {
       if (formattedData[key] === "" || formattedData[key] === undefined) {
         delete formattedData[key];
       }

@@ -189,7 +189,7 @@ function TopNavbar() {
             </h6>
 
             {filteredItems
-              .filter(item => item.to !== "/dashboard/main")
+              .filter((item) => item.to !== "/dashboard/main")
               .map((item) => (
                 <NavLink
                   key={item.to}

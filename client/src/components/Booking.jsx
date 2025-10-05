@@ -99,7 +99,11 @@ const Booking = () => {
     } catch (err) {
       console.error("Create booking error:", err);
       console.error("Error details:", err.response?.data);
-      toast.error(err?.response?.data?.message || err?.message || "Unexpected error while creating booking");
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Unexpected error while creating booking",
+      );
     }
   };
 

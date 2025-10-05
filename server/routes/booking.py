@@ -48,8 +48,7 @@ class BookingListResource(Resource):
 
             # Use eager loading to prevent N+1 queries
             base_query = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             )
 
             if role == Role.ADMIN.value or role == Role.SUPER_ADMIN.value:
@@ -117,8 +116,7 @@ class BookingListResource(Resource):
 
             # Reload the booking with relationships for the response
             booking_with_relations = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking.id)
 
             return restful_response(
@@ -157,10 +155,9 @@ class BookingResource(Resource):
         try:
             # Use eager loading to prevent N+1 queries
             booking = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking_id)
-            
+
             if not booking:
                 return restful_response(
                     status="error",
@@ -186,10 +183,9 @@ class BookingResource(Resource):
         try:
             # Use eager loading to prevent N+1 queries
             booking = Booking.query.options(
-                joinedload(Booking.client),
-                joinedload(Booking.service)
+                joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking_id)
-            
+
             if not booking:
                 return restful_response(
                     status="error",
@@ -206,8 +202,9 @@ class BookingResource(Resource):
                 )
 
             # --- Permissions ---
-            if (role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] 
-                and booking.client_id != current_user.id):
+            is_not_admin = role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value]
+            is_not_owner = booking.client_id != current_user.id
+            if is_not_admin and is_not_owner:
                 return restful_response(
                     status="error",
                     message="Not authorized to edit this booking",
@@ -217,7 +214,7 @@ class BookingResource(Resource):
             # --- Parse and Apply Updates ---
             data = request.get_json()
             parsed_fields = parse_booking_fields(data)
-            
+
             # Apply parsed fields (booking_date, start_time, end_time, status)
             for key, value in parsed_fields.items():
                 setattr(booking, key, value)
@@ -253,7 +250,7 @@ class BookingResource(Resource):
                             message="Only administrators can change booking client",
                             status_code=403,
                         )
-                    
+
                     # Validate client exists
                     client = User.query.get(client_id)
                     if not client:
@@ -314,8 +311,9 @@ class BookingResource(Resource):
                     status_code=401,
                 )
 
-            if (role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value] 
-                and booking.client_id != current_user.id):
+            is_not_admin = role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value]
+            is_not_owner = booking.client_id != current_user.id
+            if is_not_admin and is_not_owner:
                 return restful_response(
                     status="error",
                     message="Not authorized to delete this booking",
