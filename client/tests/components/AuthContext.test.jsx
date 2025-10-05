@@ -68,7 +68,7 @@ describe("AuthContext", () => {
     });
   });
 
-  it("logs in an active user and redirects to dashboard", async () => {
+  it("logs in an active user and redirects to dashboard main", async () => {
     loginUser.mockResolvedValueOnce({
       token: "abc",
       refreshToken: "xyz",
@@ -87,7 +87,7 @@ describe("AuthContext", () => {
       expect(screen.getByTestId("user-role").textContent).toBe("client");
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
+    expect(mockNavigate).toHaveBeenCalledWith("/dashboard/main");
   });
 
   it("logs in an inactive user and redirects to verify", async () => {

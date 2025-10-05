@@ -13,7 +13,6 @@ import services from "../assets/services.png";
 import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
-import { logoutUser } from "../api/services/auth";
 import { toast } from "react-toastify";
 
 import "../css/TopNavBar.css";
@@ -21,8 +20,12 @@ import { useAuth } from "../context/AuthContext";
 
 const SIDEBAR_WIDTH = 280;
 
+
 const NAV_ITEMS = [
-  { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
+  { to: "/dashboard/main", 
+    icon: home, 
+    label: "Dashboard", 
+    alt: "Home" },
   {
     to: "/dashboard/bookings",
     icon: bookings,
@@ -75,25 +78,12 @@ const CLIENT_ALLOWED_ROUTES = [
 ];
 
 function TopNavbar() {
-  const { user } = useAuth();
-  const [userData, setUserData] = useState(user);
+  const { user, isAtLeastAdmin, logoutUser } = useAuth();
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
   const navigate = useNavigate();
 
-  // Load user data from localStorage if available
-  useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
-      try {
-        const parsedData = JSON.parse(storedUserData);
-        setUserData((prev) => ({ ...prev, ...parsedData }));
-      } catch (err) {
-        console.error("Error parsing user data:", err);
-      }
-    }
-  }, []);
 
   // Close mobile sidebar on desktop
   useEffect(() => {
@@ -113,11 +103,11 @@ function TopNavbar() {
       isActive ? "active-link" : "inactive-link"
     }`;
 
-  const SidebarContent = ({ onClose, isMobile = false }) => {
-    const filteredItems =
-      userData.role?.toLowerCase() === "admin"
-        ? NAV_ITEMS
-        : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
+
+ const SidebarContent = ({ onClose, isMobile = false }) => {
+  const filteredItems = isAtLeastAdmin
+    ? NAV_ITEMS
+    : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
 
     return (
       <div
@@ -287,7 +277,7 @@ function TopNavbar() {
               style={{ border: "none", background: "transparent" }}
             >
               <img
-                src={userData.avatar}
+                src={user?.avatar}
                 className="user-avatar rounded-circle"
                 alt="User Avatar"
                 style={{
@@ -305,13 +295,13 @@ function TopNavbar() {
                     color: "#5a5c69",
                   }}
                 >
-                  {userData.name}
+                  {user?.name}
                 </div>
                 <div
                   className="user-role"
                   style={{ fontSize: "0.8rem", color: "#858796" }}
                 >
-                  {userData.role}
+                  {user?.role}
                 </div>
               </div>
             </Dropdown.Toggle>
@@ -319,21 +309,18 @@ function TopNavbar() {
               <Dropdown.Item
                 onClick={async () => {
                   try {
-                    const refreshToken = localStorage.getItem("refreshToken");
-                    if (refreshToken) {
-                      await logoutUser(refreshToken); // call backend to invalidate
-                    }
-
-                    // Clear tokens and user data
+                      const refreshToken = localStorage.getItem("refreshToken");
+                      if (refreshToken) {
+                        await logoutUser(refreshToken); // call backend to invalidate
+                      }
+                  } catch (err) {
+                    console.error("Logout API failed:", err);
+                    toast.error("Logout failed, please try again");
+                  } finally {
+                    localStorage.removeItem("user");
                     localStorage.removeItem("authToken");
                     localStorage.removeItem("refreshToken");
-                    localStorage.removeItem("userData");
-
-                    toast.success("Logged out successfully");
-                    navigate("/login");
-                  } catch (err) {
-                    console.error("Logout failed:", err);
-                    toast.error("Logout failed, please try again");
+                    window.location.href = "/login"; // redirect to login
                   }
                 }}
                 style={{
