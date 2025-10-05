@@ -137,7 +137,6 @@ export default function Dashboard() {
     }
   };
 
-
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -179,14 +178,15 @@ export default function Dashboard() {
                     </div>
                     <div className="d-flex align-items-start justify-content-end w-100">
                       <span
-                        className={` py-1 px-2 rounded-5 ${appt.status === "Confirmed"
+                        className={` py-1 px-2 rounded-5 ${
+                          appt.status === "Confirmed"
                             ? "bg-success"
                             : appt.status === "Pending"
                               ? "bg-warning text-dark"
                               : appt.status === "Canceled"
                                 ? "bg-danger"
                                 : "bg-secondary"
-                          } `}
+                        } `}
                       >
                         {appt.status}
                       </span>
@@ -228,21 +228,19 @@ export default function Dashboard() {
                     <td>{b.service_title}</td>
                     <td>{b.booking_date}</td>
                     <td>
-
                       <span
-                        className={` py-1 px-2 rounded-5 ${b.status === "confirmed"
+                        className={` py-1 px-2 rounded-5 ${
+                          b.status === "confirmed"
                             ? "status-confirmed fw-bold"
                             : b.status === "pending"
                               ? "status-pending fw-bold"
                               : b.status === "cancelled"
                                 ? "status-cancelled fw-bold"
                                 : "bg-secondary fw-bold"
-                          } `}
+                        } `}
                       >
-
                         {b.status}
                       </span>
-
                     </td>
                   </tr>
                 ))}
