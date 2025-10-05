@@ -1,12 +1,12 @@
-import {useAuth} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import RequireRole from "../wrappers/RequireRole";
 import Unauthorized from "../wrappers/Unauthorized";
-import {Outlet} from "react-router-dom";
-import {useEffect, Suspense, lazy} from "react";
-import {Routes, Route, Navigate, useLocation} from "react-router-dom";
-import {ToastContainer} from "react-toastify";
+import { Outlet } from "react-router-dom";
+import { useEffect, Suspense, lazy } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {useAnalytics} from "../hooks/useAnalytics";
+import { useAnalytics } from "../hooks/useAnalytics";
 
 // Core layout and components
 import NavBar from "./Navbar.jsx";
@@ -28,6 +28,8 @@ import ForgotPassword from "./ForgotPassword.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import ClientTickets from "./ClientTickets.jsx";
+import Services from "./Services.jsx";
+import ServiceDetail from "./ServiceDetail.jsx";
 import Footer from "./Footer.jsx";
 
 // Admin pages
@@ -36,6 +38,7 @@ import BlogManagementUi from "./admin/BlogManagment.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
 import AdminTickets from "./admin/AdminTickets.jsx"
 import InvoiceDashboard from "./InvoiceDashboard.jsx";
+import ServicesSection from "./Services.jsx";
 
 
 // Lazy loaded page
@@ -45,14 +48,14 @@ const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 function DashboardLayout() {
     return (
         <>
-            <TopNavbar/>
+            <TopNavbar />
         </>
     );
 }
 
 function App() {
     const location = useLocation();
-    const {logEvent} = useAnalytics();
+    const { logEvent } = useAnalytics();
 
     // Track route changes with analytics
     useEffect(() => {
@@ -63,17 +66,17 @@ function App() {
     }, [logEvent, location.pathname]);
 
     // Protects routes based on auth + account status
-    const PrivateRoute = ({children}) => {
-        const {user, isInactive, isSuspended} = useAuth();
+    const PrivateRoute = ({ children }) => {
+        const { user, isInactive, isSuspended } = useAuth();
 
-        if (!user) return <Navigate to="/login" replace/>;
-        if (isInactive) return <Navigate to="/verify" replace/>;
-        if (isSuspended) return <Navigate to="/unauthorized" replace/>;
+        if (!user) return <Navigate to="/login" replace />;
+        if (isInactive) return <Navigate to="/verify" replace />;
+        if (isSuspended) return <Navigate to="/unauthorized" replace />;
 
         return (
             <>
                 {children}
-                <Outlet/>
+                <Outlet />
             </>
         );
     };
@@ -89,7 +92,7 @@ function App() {
                         path="/dashboard/*"
                         element={
                             <PrivateRoute>
-                                <TopNavbar/>
+                                <TopNavbar />
                             </PrivateRoute>
                         }
                     >
@@ -135,7 +138,7 @@ function App() {
                             element={
                                 <div className="p-4">
                                     <h2>Profile</h2>
-                                    <ProfilePage/>
+                                    <ProfilePage />
                                 </div>
                             }
                         />
@@ -144,26 +147,26 @@ function App() {
                             element={
                                 <div className="p-4">
                                     <h2>Payments</h2>
-                                    <InvoiceDashboard/>
+                                    <InvoiceDashboard />
                                 </div>
                             }
                         />
-                         <Route
+                        <Route
                             path="tickets"
-                              element={ 
-                                 <div className="p-4">
+                            element={
+                                <div className="p-4">
                                     <h2>Ticktes</h2>
-                                    <ClientTickets /> 
-                                 </div>
-                              }         
-                          />
+                                    <ClientTickets />
+                                </div>
+                            }
+                        />
 
                         {/* Role-restricted dashboard pages */}
                         <Route
                             path="services"
                             element={
                                 <RequireRole allowedRoles={["admin"]}>
-                                    <ServiceAdmin/>
+                                    <ServiceAdmin />
                                 </RequireRole>
                             }
                         />
@@ -171,7 +174,7 @@ function App() {
                             path="users"
                             element={
                                 <RequireRole allowedRoles={["admin", "super_admin"]}>
-                                    <UserManagement/>
+                                    <UserManagement />
                                 </RequireRole>
                             }
                         />
@@ -179,7 +182,7 @@ function App() {
                             path="blog"
                             element={
                                 <RequireRole allowedRoles={["admin", "super_admin"]}>
-                                    <BlogManagementUi/>
+                                    <BlogManagementUi />
                                 </RequireRole>
                             }
                         />
@@ -202,14 +205,14 @@ function App() {
                                 </div>
                             }
                         />
-                        <Route 
-                            path="tickets/admin" 
+                        <Route
+                            path="tickets/admin"
                             element={
-                              <RequireRole allowedRoles={["admin", "super_admin"]}>
-                                <AdminTickets />
-                              </RequireRole>
-                               } 
-                       />
+                                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                                    <AdminTickets />
+                                </RequireRole>
+                            }
+                        />
                     </Route>
 
                     {/* =======================
@@ -219,8 +222,8 @@ function App() {
                         path="/"
                         element={
                             <>
-                                <NavBar/>
-                                <Homepage/>
+                                <NavBar />
+                                <Homepage />
                             </>
                         }
                     />
@@ -228,8 +231,8 @@ function App() {
                         path="/home"
                         element={
                             <>
-                                <NavBar/>
-                                <Homepage/>
+                                <NavBar />
+                                <Homepage />
                             </>
                         }
                     />
@@ -237,8 +240,8 @@ function App() {
                         path="/signup"
                         element={
                             <>
-                                <NavBar/>
-                                <SignUpForm/>
+                                <NavBar />
+                                <SignUpForm />
                             </>
                         }
                     />
@@ -246,8 +249,8 @@ function App() {
                         path="/playground"
                         element={
                             <>
-                                <NavBar/>
-                                <Playground/>
+                                <NavBar />
+                                <Playground />
                             </>
                         }
                     />
@@ -255,8 +258,8 @@ function App() {
                         path="/contact"
                         element={
                             <>
-                                <NavBar/>
-                                <Contact/>
+                                <NavBar />
+                                <Contact />
                             </>
                         }
                     />
@@ -264,8 +267,26 @@ function App() {
                         path="/about"
                         element={
                             <>
-                                <NavBar/>
-                                <AboutUs/>
+                                <NavBar />
+                                <AboutUs />
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/services"
+                        element={
+                            <>
+                                <NavBar />
+                                <Services />
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/services/:id"
+                        element={
+                            <>
+                                <NavBar />
+                                <ServiceDetail />
                             </>
                         }
                     />
@@ -273,8 +294,8 @@ function App() {
                         path="/verify"
                         element={
                             <>
-                                <NavBar/>
-                                <VerifyPage/>
+                                <NavBar />
+                                <VerifyPage />
                             </>
                         }
                     />
@@ -282,8 +303,8 @@ function App() {
                         path="/blog"
                         element={
                             <>
-                                <NavBar/>
-                                <Blog/>
+                                <NavBar />
+                                <Blog />
                             </>
                         }
                     />
@@ -291,8 +312,8 @@ function App() {
                         path="/blog/:id"
                         element={
                             <>
-                                <NavBar/>
-                                <BlogPost/>
+                                <NavBar />
+                                <BlogPost />
                             </>
                         }
                     />
@@ -300,8 +321,8 @@ function App() {
                         path="/privacy"
                         element={
                             <>
-                                <NavBar/>
-                                <PrivacyPolicy/>
+                                <NavBar />
+                                <PrivacyPolicy />
                             </>
                         }
                     />
@@ -309,8 +330,8 @@ function App() {
                         path="/privacy-policy"
                         element={
                             <>
-                                <NavBar/>
-                                <PrivacyPolicy/>
+                                <NavBar />
+                                <PrivacyPolicy />
                             </>
                         }
                     />
@@ -318,8 +339,8 @@ function App() {
                         path="/terms"
                         element={
                             <>
-                                <NavBar/>
-                                <Terms/>
+                                <NavBar />
+                                <Terms />
                             </>
                         }
                     />
@@ -327,8 +348,8 @@ function App() {
                         path="/login"
                         element={
                             <>
-                                <NavBar/>
-                                <Login/>
+                                <NavBar />
+                                <Login />
                             </>
                         }
                     />
@@ -336,8 +357,8 @@ function App() {
                         path="/forgot-password"
                         element={
                             <>
-                                <NavBar/>
-                                <ForgotPassword/>
+                                <NavBar />
+                                <ForgotPassword />
                             </>
                         }
                     />
@@ -345,21 +366,21 @@ function App() {
                         path="/reset-password"
                         element={
                             <>
-                                <NavBar/>
-                                <ResetPassword/>
+                                <NavBar />
+                                <ResetPassword />
                             </>
                         }
                     />
                     {/* Unauthorized page */}
-                    <Route path="/unauthorized" element={<Unauthorized/>}/>
+                    <Route path="/unauthorized" element={<Unauthorized />} />
 
                     {/* Fallback for unknown routes */}
-                    <Route path="*" element={<Navigate to="/" replace/>}/>
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </Suspense>
 
             {/* Shared footer for public pages */}
-            <FooterWrapper/>
+            <FooterWrapper />
 
             {/* Global toast notifications */}
             <ToastContainer

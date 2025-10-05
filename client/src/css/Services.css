@@ -1,0 +1,107 @@
+/* Services.css */
+.services-section {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.service-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.service-card .card-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.service-image-container {
+    height: 200px;
+    overflow: hidden;
+}
+
+.service-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-img {
+    transform: scale(1.05);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* Custom button hover effects */
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.learn-more-btn {
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.learn-more-btn:hover {
+    background-color: #2a8a2a !important;
+    border-color: #2a8a2a !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(55, 177, 55, 0.3);
+}
+
+.service-underline {
+    background-image: linear-gradient(to right, #37b137 0 0);
+    background-position: bottom center;
+    background-size: 30% 2px;
+    background-repeat: no-repeat;
+    padding-bottom: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 2rem;
+    }
+
+    .step-number {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .approach-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .service-image-container {
+        height: 180px;
+    }
+}
+
+@media (max-width: 576px) {
+    .service-image-container {
+        height: 160px;
+    }
+
+    .service-card .card-body {
+        padding: 1.5rem;
+    }
+}

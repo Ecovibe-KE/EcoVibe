@@ -85,6 +85,9 @@ def create_service():
     """
     try:
         data = request.get_json()
+
+        if not data:
+            raise BadRequest("Request must be JSON. None received.")
         
         # Verify user from JWT token has admin privileges
         admin_user = require_admin()

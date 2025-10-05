@@ -1,4 +1,5 @@
 import { Tab, Tabs, Row, Container, Col } from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
 import { useState, useRef, useEffect } from "react";
 import gearImg from "../../assets/gears.png";
 import tickImg from "../../assets/tick.png";
@@ -14,7 +15,6 @@ import {
   updateService,
   deleteService,
 } from "../../api/services/servicemanagement";
-import { toast } from "react-toastify";
 
 function ServiceAdmin() {
   // for edit modal component
@@ -37,15 +37,16 @@ function ServiceAdmin() {
 
   const fetchServices = async () => {
     try {
-      const servicesArray = await getServices();
-      if (servicesArray.status === "success") {
-        setAllServices(servicesArray.data)
+      const response = await getServices();
+      if (response.status === "success") {
+        setAllServices(response.data)
       } else {
-        toast.error("Failed to fetch services. Please try again later")
+        toast.error(`Failed to fetch services: ${response.message}. Please try again later`)
       }
     } catch (error) {
-      toast.error("Failed to fetch services. Please try again later")
-      console.error(error)
+      toast.error(
+        `Failed to fetch service: ${error.response?.data?.message || error.message}`,
+      );
     }
   }
 
@@ -219,15 +220,14 @@ function ServiceAdmin() {
         status: formData.serviceStatus.toLowerCase(),
       };
 
-      // REMOVE ONCE DONE
-      toast.success("HELLO WORLD")
-
       const response = await addService(serviceData);
       if (response.status === "success") {
         toast.success(response.message);
         // keep allServices up to date after adding new service
         await fetchServices();
         resetForm();
+      } else {
+        toast.error(`Failed to add service: ${response.message}. Please try again`);
       }
     } catch (error) {
       toast.error(
@@ -272,12 +272,18 @@ function ServiceAdmin() {
     }
 
     try {
-      await updateService(idService, serviceData);
-      toast.success("Service updated successfully");
-      // keep allServices up to date after adding new service
-      await fetchServices();
-      handleCloseEdit();
-      resetForm();
+      const response = await updateService(idService, serviceData);
+
+      if (response.status === "success") {
+        toast.success(response.message);
+        // keep allServices up to date after adding new service
+        await fetchServices();
+        handleCloseEdit();
+        resetForm();
+      } else {
+        toast.error(`Failed to edit service: ${response.message} Please try again`);
+      }
+
     } catch (error) {
       toast.error(
         `Failed to update service: ${error.response?.data?.message || error.message}`,
@@ -288,12 +294,14 @@ function ServiceAdmin() {
   // handle deleting service
   const deleteExistingService = async () => {
     try {
-      await deleteService(idService);
-      await fetchServices();
-      handleCloseDelete();
-      toast.success("Service deleted Successfully!");
+      const response = await deleteService(idService);
+
+      if (response.status === "success") {
+        await fetchServices();
+        handleCloseDelete();
+        toast.success(response.message);
+      }
     } catch (error) {
-      console.error("Failed to delete service:", error);
       toast.error(
         `Failed to delete service: ${error.response?.data?.message || error.message}`,
       );
@@ -321,7 +329,7 @@ function ServiceAdmin() {
   return (
     <>
       <button onClick={() => {
-        toast.success("Test Toast")
+        toast.success("Button Test Toast")
         console.log("CLICKED")
       }}>Show Toast</button>
       <main className="p-3 bg-light">
@@ -398,6 +406,7 @@ function ServiceAdmin() {
           </Row>
         </Container>
       </main>
+      <ToastContainer />
     </>
   );
 }

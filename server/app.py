@@ -35,8 +35,12 @@ def create_app(config_name="development"):
             "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
         )
         app.config["TESTING"] = True
+
     else:
         app.config.from_prefixed_env()
+
+    # TESTING
+    print(f"Connected to DB: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
     # Load  Jwt secret key
     app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
