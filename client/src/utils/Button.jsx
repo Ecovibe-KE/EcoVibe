@@ -159,14 +159,12 @@ const Button = ({
           if (!disabled) {
             const el = e.currentTarget;
             el.style.backgroundColor = outline ? btnColor : btnHoverColor;
-            el.style.borderColor = outline ? btnHoverColor : btnHoverColor;
           }
         }}
         onMouseOut={(e) => {
           if (!disabled) {
             const el = e.currentTarget;
             el.style.backgroundColor = outline ? "transparent" : "";
-            el.style.borderColor = "";
           }
         }}
         {...props}
@@ -199,7 +197,6 @@ const Button = ({
         if (!disabled) {
           const el = e.currentTarget;
           el.style.backgroundColor = outline ? "transparent" : btnColor;
-          el.style.borderColor = btnColor;
         }
       }}
       {...props}
