@@ -8,3 +8,4 @@ exclude =
     server/migrations,
 ignore = 
     F401
+    W503

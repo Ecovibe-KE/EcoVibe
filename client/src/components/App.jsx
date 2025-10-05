@@ -32,6 +32,7 @@ import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import ClientTickets from "./ClientTickets.jsx";
 import Footer from "./Footer.jsx";
+import Dashboard from "./admin/Dashboard.jsx";
 
 // Admin pages
 import UserManagement from "./admin/UserManagement.jsx";
@@ -97,21 +98,12 @@ function App() {
             }
           >
             {/* General dashboard pages - any active user */}
-            <Route
-              index
-              element={
-                <div className="p-4">
-                  <h2>Dashboard Main</h2>
-                  <p>Welcome to your dashboard!</p>
-                </div>
-              }
-            />
+
             <Route
               path="main"
               element={
                 <div className="p-4">
-                  <h2>Dashboard Main</h2>
-                  <p>Welcome to your dashboard!</p>
+                  <Dashboard />
                 </div>
               }
             />

@@ -1,0 +1,54 @@
+{
+  "status": "success",
+  "message": null,
+  "data": {
+    "totalBookings": 52,
+    "registeredUsers": 134,
+    "blogPosts": 15,
+    "paymentRecords": 67,
+    "recentBookings": [
+      {
+        "id": 1,
+        "client": "John Doe",
+        "service": "Consultation",
+        "date": "2025-10-01",
+        "status": "confirmed"
+      },
+      {
+        "id": 2,
+        "client": "Jane Smith",
+        "service": "Checkup",
+        "date": "2025-09-30",
+        "status": "cancelled"
+      }
+    ],
+    "documents": [
+      {
+        "id": 1,
+        "title": "Quarterly Report Q3",
+        "description": "Performance report for Q3",
+        "uploadedAt": "2025-09-29T09:00:00Z",
+        "viewUrl": "/documents/1/view",
+        "downloadUrl": "/documents/1/download"
+      }
+    ],
+    "recentPayments": [
+      {
+        "id": 1,
+        "client": "Mary W.",
+        "service": "Premium Subscription",
+        "amount": 100,
+        "date": "2025-09-28T12:00:00Z",
+        "currency": "USD"
+      },
+      {
+        "id": 2,
+        "client": "Peter K.",
+        "service": "Consultation",
+        "amount": 50,
+        "date": "2025-09-25T16:30:00Z",
+        "currency": "USD"
+      }
+    ]
+  }
+}
