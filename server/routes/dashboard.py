@@ -85,11 +85,7 @@ class DashboardResource(Resource):
                 or 0
             )
 
-            blog_post = (
-                db.session.query(func.count(Blog.id))
-                .scalar()
-                or 0
-            )
+            blog_post = db.session.query(func.count(Blog.id)).scalar() or 0
             return restful_response(
                 status="success",
                 message="Client dashboard data fetched successfully",
