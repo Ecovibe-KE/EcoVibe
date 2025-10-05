@@ -68,7 +68,7 @@ export default function Dashboard() {
       ),
     },
     {
-      title: "Documents Downloaded",
+      title: "Documents",
       value: data.stats?.documentsDownloaded,
       icon: <DescriptionIcon fontSize="large" className="eck-dashboard-icon" />,
     },
@@ -117,6 +117,7 @@ export default function Dashboard() {
         </div>
       </div>
     ));
+
   const handleDownload = async (doc) => {
     try {
       const fileRes = await downloadDocument(doc.id);
@@ -136,6 +137,7 @@ export default function Dashboard() {
     }
   };
 
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -148,7 +150,9 @@ export default function Dashboard() {
         <div className="bg-white p-3">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h4>Upcoming Appointments</h4>
-            <Button> Book now</Button>
+            <Link to={"/dashboard/bookings"}>
+              <Button> Book now</Button>
+            </Link>
           </div>
           <div className="row shadow-sm">
             {data.upcomingAppointments?.map((appt) => (
@@ -175,15 +179,14 @@ export default function Dashboard() {
                     </div>
                     <div className="d-flex align-items-start justify-content-end w-100">
                       <span
-                        className={` py-1 px-2 rounded-5 ${
-                          appt.status === "Confirmed"
+                        className={` py-1 px-2 rounded-5 ${appt.status === "Confirmed"
                             ? "bg-success"
                             : appt.status === "Pending"
                               ? "bg-warning text-dark"
                               : appt.status === "Canceled"
                                 ? "bg-danger"
                                 : "bg-secondary"
-                        } `}
+                          } `}
                       >
                         {appt.status}
                       </span>
@@ -216,7 +219,6 @@ export default function Dashboard() {
                   <th>Service</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -225,22 +227,22 @@ export default function Dashboard() {
                     <td>{b.client_name}</td>
                     <td>{b.service_title}</td>
                     <td>{b.booking_date}</td>
-                    <td>{b.status}</td>
                     <td>
-                      <div className="d-flex gap-1 align-items-center h-100">
-                        <button className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button bg-dark">
-                          <RemoveRedEyeIcon />
-                        </button>
-                        <button
-                          className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button"
-                          style={{ background: "#eb7d00" }}
-                        >
-                          <EditIcon />
-                        </button>
-                        <button className="btn btn-sm bg-danger text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button">
-                          <DeleteForeverIcon />
-                        </button>
-                      </div>
+
+                      <span
+                        className={` py-1 px-2 rounded-5 ${b.status === "confirmed"
+                            ? "status-confirmed fw-bold"
+                            : b.status === "pending"
+                              ? "status-pending fw-bold"
+                              : b.status === "cancelled"
+                                ? "status-cancelled fw-bold"
+                                : "bg-secondary fw-bold"
+                          } `}
+                      >
+
+                        {b.status}
+                      </span>
+
                     </td>
                   </tr>
                 ))}
@@ -253,7 +255,9 @@ export default function Dashboard() {
         <div className="mt-5  bg-white shadow-lg p-4 rounded-3">
           <div className="d-flex align-items-center justify-content-between">
             <h4>Documents</h4>
-            <Button>View all</Button>
+            <Link to={"/dashboard/resources"}>
+              <Button>View all</Button>
+            </Link>
           </div>
 
           <div className="row g-4">
@@ -325,7 +329,7 @@ export default function Dashboard() {
           <div className=" bg-white shadow-lg p-4 rounded-3">
             <div className="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary-subtle pb-2 ">
               <h4 className="fw-bold m-0">Recent Payments</h4>
-              <Link to={"resources"}>
+              <Link to={"/dashboard/payments"}>
                 <Button>View all</Button>
               </Link>
             </div>
@@ -337,7 +341,6 @@ export default function Dashboard() {
                     <th>Service</th>
                     <th>Amount (ksh)</th>
                     <th>Date</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -347,16 +350,6 @@ export default function Dashboard() {
                       <td>{p.service_title}</td>
                       <td>{p.amount}</td>
                       <td>{p.payment_date}</td>
-                      <td>
-                        <div className="d-flex gap-1 align-items-center h-100">
-                          <button className="btn btn-sm text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button bg-dark">
-                            <RemoveRedEyeIcon />
-                          </button>
-                          <button className="btn btn-sm bg-danger text-white d-flex align-items-center justify-content-center rounded-1 rc-action-button">
-                            <DeleteForeverIcon />
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -37,6 +37,7 @@ import Dashboard from "./admin/Dashboard.jsx";
 // Admin pages
 import UserManagement from "./admin/UserManagement.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
+import Booking from "./Booking.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
 import AdminTickets from "./admin/AdminTickets.jsx";
 import InvoiceDashboard from "./InvoiceDashboard.jsx";
@@ -72,7 +73,6 @@ function App() {
     // ⏳ Wait until AuthContext finishes hydration
     if (isHydrating) {
       return <div className="p-4">Loading…</div>;
-      // or return null, or your spinner component
     }
 
     if (!user) return <Navigate to="/login" replace />;
@@ -107,15 +107,8 @@ function App() {
                 </div>
               }
             />
-            <Route
-              path="bookings"
-              element={
-                <div className="p-4">
-                  <h2>Bookings</h2>
-                  <p>Manage your bookings here.</p>
-                </div>
-              }
-            />
+            <Route path="bookings" element={<Booking />} />
+
             <Route
               path="resources"
               element={
@@ -146,13 +139,13 @@ function App() {
               path="tickets"
               element={
                 <div className="p-4">
-                  <h2>Ticktes</h2>
+                  <h2>Tickets</h2>
                   <ClientTickets />
                 </div>
               }
             />
 
-            {/* Role-restricted dashboard pages */}
+            {/* Role-restricted dashboard pages - Admin only */}
             <Route
               path="services"
               element={
@@ -187,15 +180,7 @@ function App() {
                 </div>
               }
             />
-            <Route
-              path="tickets"
-              element={
-                <div className="p-4">
-                  <h2>Tickets</h2>
-                  <p>Manage support tickets.</p>
-                </div>
-              }
-            />
+
             <Route
               path="tickets/admin"
               element={

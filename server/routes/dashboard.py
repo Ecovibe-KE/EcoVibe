@@ -5,13 +5,13 @@ from utils.responses import restful_response
 from models.user import User, Role
 from models.booking import Booking
 from models.document import Document
-from models.payment import Payment
-from models.service import Service
 from models.ticket import Ticket
 from models import db
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from models.invoice import Invoice
+from models.blog import Blog
+from models.payment import Payment
 
 # Create Blueprint and Api
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -81,6 +81,12 @@ class DashboardResource(Resource):
             ticket_raised = (
                 db.session.query(func.count(Ticket.id))
                 .filter(Ticket.client_id == user.id)
+                .scalar()
+                or 0
+            )
+
+            blog_post = (
+                db.session.query(func.count(Blog.id))
                 .scalar()
                 or 0
             )
@@ -165,7 +171,7 @@ class DashboardResource(Resource):
                     "stats": {
                         "totalBookings": total_bookings,
                         "registeredUsers": total_clients,
-                        "blogPosts": 0,
+                        "blogPosts": blog_post,
                         "paymentRecords": total_payments,
                     },
                     "recentBookings": recent_bookings_data,

@@ -35,6 +35,11 @@ export const ENDPOINTS = {
   me: "/me",
   changePassword: "/change-password",
 
+  // Bookings
+  bookings: "/bookings",
+  bookingById: (id) => `/bookings/${id}`,
+
+  // Add more endpoints as needed here
   // Tickets
   tickets: "/tickets",
   ticketById: (id) => `/tickets/${id}`,
