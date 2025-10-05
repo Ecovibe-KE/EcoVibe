@@ -68,7 +68,7 @@ export default function Dashboard() {
       ),
     },
     {
-      title: "Documents",
+      title: "Available Documents",
       value: data.stats?.documentsDownloaded,
       icon: <DescriptionIcon fontSize="large" className="eck-dashboard-icon" />,
     },

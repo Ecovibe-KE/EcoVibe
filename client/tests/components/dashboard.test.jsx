@@ -125,7 +125,7 @@ describe("Dashboard Component", () => {
     
 
     await waitFor(() => {
-      expect(screen.getByText(/documents downloaded/i)).toBeInTheDocument();
+      expect(screen.getByText(/Available Documents/i)).toBeInTheDocument();
       expect(screen.getByText("6")).toBeInTheDocument();
     });
   });
