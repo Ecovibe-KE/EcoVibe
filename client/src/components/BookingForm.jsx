@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 import Button from "../utils/Button";
 import Input, { Select, Option } from "../utils/Input";
 import BookingModal from "./BookingModal";
@@ -10,8 +11,9 @@ const BookingForm = ({
   onClose,
   clients = [],
   services = [],
-  isAdmin = false,
+  disableService = false,
 }) => {
+  const { user, isAdmin } = useAuth();
   const [form, setForm] = useState({
     booking_date: "",
     start_time: "",
@@ -54,6 +56,9 @@ const BookingForm = ({
         }
       };
 
+      // Auto-set client_id for non-admin users
+      const autoClientId = !isAdmin && user ? user.id.toString() : "";
+
       setForm({
         booking_date: formatDateForInput(initialData.booking_date),
         start_time: formatDateTimeForInput(initialData.start_time),
@@ -62,10 +67,19 @@ const BookingForm = ({
         service_id: initialData.service_id?.toString() || "",
         client_id:
           initialData.client_id?.toString() ||
+          autoClientId ||
           (isAdmin ? "" : initialData.client_id?.toString()),
       });
+    } else {
+      // Auto-set client_id for new bookings by non-admin users
+      if (!isAdmin && user) {
+        setForm(prev => ({
+          ...prev,
+          client_id: user.id.toString()
+        }));
+      }
     }
-  }, [initialData, isAdmin]);
+  }, [initialData, isAdmin, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +97,11 @@ const BookingForm = ({
     if (!form.start_time) newErrors.start_time = "Start time is required";
     if (!form.end_time) newErrors.end_time = "End time is required";
     if (!form.service_id) newErrors.service_id = "Service is required";
-    if (isAdmin && !form.client_id) newErrors.client_id = "Client is required";
+
+    // Only validate client_id for admin users (non-admin users have it auto-set)
+    if (isAdmin && !form.client_id) {
+      newErrors.client_id = "Client is required";
+    }
 
     if (form.start_time && form.end_time) {
       const start = new Date(form.start_time);
@@ -133,8 +151,18 @@ const BookingForm = ({
   };
 
   console.log("Current form state:", form);
+  console.log("Current user:", user);
+  console.log("Is admin:", isAdmin);
   console.log("Clients available:", clients);
   console.log("Services available:", services);
+
+  // Get current client name for display
+  const getCurrentClientName = () => {
+    if (!isAdmin && user) {
+      return user.name || user.email || "Current User";
+    }
+    return "";
+  };
 
   return (
     <BookingModal
@@ -142,7 +170,8 @@ const BookingForm = ({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit}>
-        {isAdmin && clients.length > 0 && (
+        {/* Client Selection - Only show for admins */}
+        {isAdmin ? (
           <Select
             label="Client"
             name="client_id"
@@ -154,10 +183,27 @@ const BookingForm = ({
             <Option value="">Select client</Option>
             {clients.map((client) => (
               <Option key={client.id} value={client.id}>
-                {client.full_name} ({client.email})
+                {client.name} ({client.email})
               </Option>
             ))}
           </Select>
+        ) : (
+          /* Display current user info for non-admin clients */
+          <div className="mb-3">
+            <label className="form-label fw-bold">Client</label>
+            <div className="p-2 border rounded bg-light">
+              <i className="bi bi-person-fill me-2 text-primary"></i>
+              {getCurrentClientName()}
+              <small className="text-muted d-block">
+                Booking as current user
+              </small>
+            </div>
+            <input
+              type="hidden"
+              name="client_id"
+              value={form.client_id}
+            />
+          </div>
         )}
 
         <Input
@@ -209,6 +255,7 @@ const BookingForm = ({
           onChange={handleChange}
           error={errors.service_id}
           required
+          disabled={disableService}
         >
           <Option value="">
             {services.length === 0 ? "Loading services..." : "Select service"}

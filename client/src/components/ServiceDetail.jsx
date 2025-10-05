@@ -4,11 +4,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getServiceById } from "../api/services/servicemanagement";
 import '../css/ServiceDetail.css';
 import { displayDuration } from './admin/ServiceAdminMain';
+import { useAuth } from "../context/AuthContext"; // Add this import
+import BookingForm from "./BookingForm"; // Add this import
+import { createBooking } from "../api/services/booking";
+import { toast } from "react-toastify";
 
 const ServiceDetail = () => {
     const { id } = useParams();
     const [service, setService] = useState(null);
+    const [showBookingModal, setShowBookingModal] = useState(false); // Add this state
+    const [services, setServices] = useState([]); // Add this state
     const navigate = useNavigate();
+    const { user } = useAuth(); // Get the current user
 
     // Scroll to top when component mounts
     useEffect(() => {
@@ -17,7 +24,9 @@ const ServiceDetail = () => {
             try {
                 const response = await getServiceById(id);
                 if (response.status === "success") {
-                    setService(response.data)
+                    setService(response.data);
+                    // Set services array with the single service for the booking form
+                    setServices([response.data]);
                 } else {
                     toast.error(`Failed to fetch services: ${response.message}. Please try again later`)
                 }
@@ -25,18 +34,50 @@ const ServiceDetail = () => {
                 toast.error(
                     `Server unavailable. Failed to fetch service, please try again later`
                 );
-                setService([])
+                setService([]);
             }
         }
-        fetchServices()
+        fetchServices();
     }, [id]);
 
     const handleBookService = () => {
-        alert(`Booking ${service.title} - Coming Soon!`);
+        setShowBookingModal(true);
     };
 
     const handleBackToServices = () => {
         navigate('/services');
+    };
+
+    const handleContact = () => {
+        // Add your contact logic here
+        console.log("Contact team clicked");
+    };
+
+    // Handle booking submission from the modal
+    const handleBookingSubmit = async (formData) => {
+        try {
+            // Since the service is pre-filled and disabled, we can use the createBooking function
+            const response = await createBooking(formData);
+            if (response.status === "success") {
+                toast.success("Booking created successfully!");
+                setShowBookingModal(false);
+            }
+        } catch (error) {
+            console.error("Booking creation error:", error);
+            toast.error("Failed to create booking");
+        }
+    };
+
+    // Prepare initial data for the booking form
+    const getInitialBookingData = () => {
+        if (!service) return {};
+
+        return {
+            service_id: service.id.toString(),
+            // You can pre-fill other fields if needed
+            booking_date: new Date().toISOString().split('T')[0], // Today's date
+            status: 'pending'
+        };
     };
 
     if (!service) {
@@ -179,6 +220,18 @@ const ServiceDetail = () => {
                         </div>
                     </Col>
                 </Row>
+
+                {/* Booking Modal */}
+                {showBookingModal && service && (
+                    <BookingForm
+                        initialData={{ service_id: service.id }}
+                        onSubmit={handleBookingSubmit}
+                        onClose={() => setShowBookingModal(false)}
+                        // clients={[]} // Empty for non-admin users
+                        services={[service]}
+                        disableService={true} // Add this prop to disable service selection
+                    />
+                )}
             </Container>
         </div>
     );

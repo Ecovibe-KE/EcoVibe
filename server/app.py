@@ -31,7 +31,7 @@ def create_app(config_name="development"):
 
     # Load JWT secret key
     app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=360)
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
 
     # Init extensions
