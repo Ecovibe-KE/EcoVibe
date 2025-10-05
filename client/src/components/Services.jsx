@@ -29,15 +29,19 @@ const Services = () => {
                 const response = await getServices();
                 if (response.status === "success") {
                     // Get only active services
-                    const activeServices = response.data.filter(service => service.status.toLowerCase() === "active")
+                    const activeServices = response.data.filter(
+                        service => service.status.toLowerCase() === "active"
+                    )
                     activeServices.length === 0
                     setServices(activeServices)
                 } else {
-                    toast.error(`Failed to fetch services: ${response.message}. Please try again later`)
+                    toast.error(
+                        `Failed to fetch services: ${response.message}.`
+                    )
                 }
             } catch (error) {
                 toast.error(
-                    `Server unavailable. Failed to fetch services, please try again later`
+                    `Server unavailable. Please try again later`
                 );
                 setServices([])
             }
@@ -75,7 +79,9 @@ const Services = () => {
         return (
             <Container className="text-center py-5">
                 <Spinner animation="border" role="status" variant="success">
-                    <span className="visually-hidden">Loading service...</span>
+                    <span className="visually-hidden">
+                        Loading service...
+                    </span>
                 </Spinner>
             </Container>
         );
@@ -83,7 +89,9 @@ const Services = () => {
         return (
             <Container className="py-5">
                 <div className="text-center">
-                    <div className="no-services-card p-5 bg-light rounded-3 shadow-sm">
+                    <div
+                        className="no-services-card p-5 bg-light rounded-3 shadow-sm"
+                    >
                         <i className="bi bi-inbox display-1 text-muted mb-3"></i>
                         <h3 className="text-muted mb-3">No Services Available</h3>
                         <p className="text-muted mb-4">
@@ -129,7 +137,9 @@ const Services = () => {
                     <Container>
                         <Row className="g-4">
                             {services
-                                .filter(service => service.status.toLowerCase() === "active")
+                                .filter(
+                                    service => service.status.toLowerCase() === "active"
+                                )
                                 .map((service) => (
                                     <Col key={service.id} lg={4} md={6} className="mb-4">
                                         <Card className="h-100 shadow-sm border-0 service-card">
@@ -175,7 +185,9 @@ const Services = () => {
                     <Container>
                         <Row className="justify-content-center mb-5">
                             <Col lg={8} className="text-center">
-                                <h2 className="fw-semibold display-6 service-underline">Our Approach</h2>
+                                <h2
+                                    className="fw-semibold display-6 service-underline"
+                                >Our Approach</h2>
                             </Col>
                         </Row>
 
@@ -183,7 +195,11 @@ const Services = () => {
                             <Col lg={10}>
                                 <Row className="align-items-center">
                                     <Col lg={6} className="mb-4 mb-lg-0">
-                                        <h4 className="text-dark mb-4">Tailored Sustainable Solutions</h4>
+                                        <h4
+                                            className="text-dark mb-4"
+                                        >
+                                            Tailored Sustainable Solutions
+                                        </h4>
                                         <p className="text-muted mb-4">
                                             At Ecovibe Kenya, we understand that each organization has unique sustainability
                                             challenges and opportunities. Our approach is customized to your specific context,

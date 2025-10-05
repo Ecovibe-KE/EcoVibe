@@ -27,7 +27,7 @@ def require_admin():
         raise Forbidden("User account is not active")
     
     if user.role not in [Role.ADMIN, Role.SUPER_ADMIN]:
-        raise Forbidden("Only admin and super_admin users can perform this action")
+        raise Forbidden("Only admin & super_admin can perform this action")
     
     return user
 
@@ -172,12 +172,14 @@ def create_service():
             if image_size > max_size:
                 return jsonify({
                     "status": "error",
-                    "message": f"Image size exceeds 5MB limit. Current size: {image_size // (1024 * 1024)}MB"
+                    "message": f"Image size exceeds 5MB limit."
                 }), 400
         
         # Validate status
         if data['status'] not in [status.value for status in ServiceStatus]:
-            raise BadRequest(f"Invalid status. Must be one of: {[status.value for status in ServiceStatus]}")
+            raise BadRequest(
+                f"Invalid status"
+                )
         
         # Handle image - convert base64 string to binary
         if data['image']:
@@ -200,7 +202,7 @@ def create_service():
             duration=data['duration'],
             image=image_data,
             status=ServiceStatus(data['status']),
-            admin_id=admin_user.id,  # Use the verified admin user ID from JWT
+            admin_id=admin_user.id,
             currency=data.get('currency', 'KES')
         )
         
@@ -277,7 +279,14 @@ def update_service(id):
                 }), 400
         
         # Update fields if provided
-        updatable_fields = ['title', 'description', 'currency', 'price', 'duration', 'status']
+        updatable_fields = [
+            'title', 
+            'description', 
+            'currency', 
+            'price', 
+            'duration', 
+            'status'
+            ]
         
         for field in updatable_fields:
             if field in data and data[field] is not None:
@@ -305,7 +314,7 @@ def update_service(id):
             if image_size > max_size:
                 return jsonify({
                     "status": "error",
-                    "message": f"Image size exceeds 5MB limit. Current size: {image_size // (1024 * 1024)}MB"
+                    "message": f"Image size exceeds 5MB limit."
                 }), 400
 
         # Handle image update if provided
@@ -325,7 +334,7 @@ def update_service(id):
         return jsonify({
             'status': "success",
             'message': 'Service updated successfully',
-            'data': service.to_dict()  # Image will be converted to base64 here
+            'data': service.to_dict()
         }), 200
         
     except Forbidden as e:
@@ -424,7 +433,7 @@ def get_my_services():
         return jsonify({
             'status': "success",
             'message': "Services fetched successfully",
-            'data': [service.to_dict() for service in services],  # Images converted to base64
+            'data': [service.to_dict() for service in services], 
             'count': len(services)
         }), 200
         
@@ -455,7 +464,7 @@ def get_services_by_status(status):
         if status not in [s.value for s in ServiceStatus]:
             return jsonify({
                 'status': "failed",
-                'message': f"Invalid status. Must be one of: {[s.value for s in ServiceStatus]}"
+                'message': f"Invalid status."
             }), 400
         
         services = Service.query.filter_by(status=ServiceStatus(status)).all()
@@ -463,7 +472,7 @@ def get_services_by_status(status):
         return jsonify({
             'status': "success",
             'message': f"Services with status '{status}' fetched successfully",
-            'data': [service.to_dict() for service in services],  # Images converted to base64
+            'data': [service.to_dict() for service in services],
             'count': len(services)
         }), 200
         
