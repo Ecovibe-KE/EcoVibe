@@ -3,14 +3,17 @@ from app import create_app, db as _db
 import sys
 import os
 
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
+
 
 @pytest.fixture
 def client():
     app = create_app("testing")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("FLASK_TEST_SQLALCHEMY_DATABASE_URI")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
+    )
 
     with app.app_context():
         db.create_all()  # ✅ Create all tables for testing
@@ -21,6 +24,7 @@ def client():
     # Optional cleanup
     with app.app_context():
         db.drop_all()
+
 
 @pytest.fixture(autouse=True)
 def patch_email(monkeypatch):

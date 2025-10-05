@@ -75,10 +75,10 @@
 #     def test_get_all_services_success(self, client, sample_service):
 #         """Test getting all services successfully"""
 #         response = client.get('/api/services')  # Added /api prefix
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Services fetched successfully'
 #         assert isinstance(data['data'], list)
@@ -91,12 +91,12 @@
 #         # Clear any existing services
 #         Service.query.delete()
 #         db.session.commit()
-        
+
 #         response = client.get('/api/services')  # Added /api prefix
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Services fetched successfully'
 #         assert data['data'] == []
@@ -104,10 +104,10 @@
 #     def test_get_service_by_id_success(self, client, sample_service):
 #         """Test getting a specific service by ID"""
 #         response = client.get(f'/api/services/{sample_service.id}')  # Added /api prefix
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Service fetched successfully'
 #         assert data['data']['id'] == sample_service.id
@@ -119,10 +119,10 @@
 #     def test_get_service_by_id_not_found(self, client):
 #         """Test getting a service with non-existent ID"""
 #         response = client.get('/api/services/999')  # Added /api prefix
-        
+
 #         assert response.status_code == 404
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'failed'
 #         assert 'not found' in data['message'].lower()
 
@@ -134,20 +134,20 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         # Create service with image
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 201
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Service created successfully'
 #         assert data['data']['title'] == 'Test Service'
@@ -160,9 +160,9 @@
 #         """Test creating a service without authentication"""
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
-        
+
 #         response = client.post('/api/services', json=service_data)  # Added /api prefix
-        
+
 #         assert response.status_code == 401  # Unauthorized
 
 #     def test_create_service_insufficient_permissions(self, client, regular_user, mock_service_data, mock_image_data):
@@ -173,19 +173,19 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 403
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'failed'
 #         assert 'admin' in data['message'].lower()
 
@@ -196,7 +196,7 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         # Missing title and description
 #         incomplete_data = {
 #             'price': 100.0,
@@ -204,16 +204,16 @@
 #             'status': 'active',
 #             'image': mock_image_data
 #         }
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=incomplete_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 400
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'error'
 #         assert 'required' in data['message'].lower()
 
@@ -224,20 +224,20 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
 #         service_data['price'] = -50.0  # Invalid negative price
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 400
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'error'
 #         assert 'price' in data['message'].lower()
 #         assert 'greater than 0' in data['message'].lower()
@@ -249,20 +249,20 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
 #         service_data['duration'] = 'invalid duration format'
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 400
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'error'
 #         assert 'duration' in data['message'].lower()
 
@@ -273,20 +273,20 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
 #         service_data['status'] = 'invalid_status'
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 400
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'failed'
 
 #     def test_create_service_large_image(self, client, admin_user, mock_service_data):
@@ -296,21 +296,21 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         service_data = mock_service_data.copy()
 #         # Create a base64 string that would be larger than 5MB when decoded
 #         large_base64 = 'A' * (7 * 1024 * 1024)  # 7MB base64 string
 #         service_data['image'] = f"data:image/png;base64,{large_base64}"
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 400
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'error'
 #         assert 'image size' in data['message'].lower()
 
@@ -321,22 +321,22 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         update_data = {
 #             'title': 'Updated Service Title',
 #             'description': 'Updated service description',
 #             'price': 200.0
 #         }
-        
+
 #         response = client.put(
 #             f'/api/services/{sample_service.id}',  # Added /api prefix
 #             json=update_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Service updated successfully'
 #         assert data['data']['title'] == 'Updated Service Title'
@@ -350,18 +350,18 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         update_data = {'title': 'Updated Title'}
-        
+
 #         response = client.put(
 #             '/api/services/999',  # Added /api prefix
 #             json=update_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 404
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'failed'
 
 #     def test_update_service_status(self, client, admin_user, sample_service):
@@ -371,20 +371,20 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         update_data = {
 #             'status': 'inactive'
 #         }
-        
+
 #         response = client.put(
 #             f'/api/services/{sample_service.id}',  # Added /api prefix
 #             json=update_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['data']['status'] == 'inactive'
 
@@ -395,15 +395,15 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         response = client.delete(
 #             f'/api/services/{sample_service.id}',  # Added /api prefix
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Service deleted successfully'
 
@@ -418,15 +418,15 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         response = client.delete(
 #             '/api/services/999',  # Added /api prefix
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 404
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'failed'
 
 #     def test_get_my_services_success(self, client, admin_user, sample_service):
@@ -436,15 +436,15 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         response = client.get(
 #             '/api/services/my-services',  # Added /api prefix
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert data['message'] == 'Services fetched successfully'
 #         assert isinstance(data['data'], list)
@@ -460,15 +460,15 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         response = client.get(
 #             '/api/services/status/active',  # Added /api prefix
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert 'active' in data['message'].lower()
 #         assert isinstance(data['data'], list)
@@ -483,15 +483,15 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         response = client.get(
 #             '/api/services/status/invalid_status',  # Added /api prefix
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 400
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'failed'
 #         assert 'invalid' in data['message'].lower()
 
@@ -502,29 +502,29 @@
 #             'password': 'Password123'  # Fixed password
 #         })
 #         token = json.loads(login_response.data)['access_token']
-        
+
 #         service_data = mock_service_data.copy()
 #         service_data['image'] = mock_image_data
 #         del service_data['currency']  # Remove currency to test default
-        
+
 #         response = client.post(
 #             '/api/services',  # Added /api prefix
 #             json=service_data,
 #             headers={'Authorization': f'Bearer {token}'}
 #         )
-        
+
 #         assert response.status_code == 201
 #         data = json.loads(response.data)
-        
+
 #         assert data['data']['currency'] == 'KES'  # Should default to KES
 
 #     def test_service_image_base64_conversion(self, client, sample_service):
 #         """Test that service image is properly converted to base64 in response"""
 #         response = client.get(f'/api/services/{sample_service.id}')  # Added /api prefix
-        
+
 #         assert response.status_code == 200
 #         data = json.loads(response.data)
-        
+
 #         assert data['status'] == 'success'
 #         assert 'image' in data['data']
 #         # Image should be a base64 string starting with data:image
