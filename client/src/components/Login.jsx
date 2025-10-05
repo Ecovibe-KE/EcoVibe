@@ -5,7 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "../css/Login.module.css";
 import { useAuth } from "../context/AuthContext";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -13,6 +13,7 @@ import { validateEmail } from "../utils/Validations.js";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
   const [loading, setLoading] = useState(false);
