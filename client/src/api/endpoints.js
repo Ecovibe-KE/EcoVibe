@@ -28,17 +28,22 @@ export const ENDPOINTS = {
   // Newsletter
   newsletter_subscribers: "/newsletter-subscribers",
 
+  // resource centre
+  documents: "/documents",
   // Profile
   me: "/me",
   changePassword: "/change-password",
 
+  // Bookings
+  bookings: "/bookings",
+  bookingById: (id) => `/bookings/${id}`,
 
-   // Tickets
+  // Add more endpoints as needed here
+  // Tickets
   tickets: "/tickets",
   ticketById: (id) => `/tickets/${id}`,
   ticketMessages: (id) => `/tickets/${id}/messages`,
   ticketStats: "/tickets/stats",
-
 
   // Payments & Invoices
   allPayments: "/invoices",
@@ -58,4 +63,3 @@ export const ENDPOINTS = {
 
   // Add more endpoints as needed here
 };
-

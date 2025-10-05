@@ -17,6 +17,7 @@ import { logoutUser } from "../api/services/auth";
 import { toast } from "react-toastify";
 
 import "../css/TopNavBar.css";
+import { useAuth } from "../context/AuthContext";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -63,13 +64,19 @@ const NAV_ITEMS = [
   { to: "/dashboard/tickets", icon: tickets, label: "Tickets", alt: "Tickets" },
 ];
 
+// Client-side UI filtering only—does not enforce security.
+// All protected endpoints must verify roles server-side.
+const CLIENT_ALLOWED_ROUTES = [
+  "/dashboard/bookings",
+  "/dashboard/resources",
+  "/dashboard/profile",
+  "/dashboard/payments",
+  "/dashboard/tickets",
+];
+
 function TopNavbar() {
-  const [userData, setUserData] = useState({
-    name: "Sharon Maina",
-    role: "Admin",
-    avatar:
-      "https://ui-avatars.com/api/?name=Sharon+Maina&background=4e73df&color=fff",
-  });
+  const { user } = useAuth();
+  const [userData, setUserData] = useState(user);
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
@@ -106,96 +113,105 @@ function TopNavbar() {
       isActive ? "active-link" : "inactive-link"
     }`;
 
-  const SidebarContent = ({ onClose, isMobile = false }) => (
-    <div
-      className="sidebar-content h-100 d-flex flex-column"
-      style={{
-        width: `${SIDEBAR_WIDTH}px`,
-        background: "linear-gradient(180deg, #F5E6D3 0%, #E8F5E8 100%)",
-      }}
-    >
-      <Container fluid className="p-3 border-bottom flex-shrink-0">
-        <div className="d-flex align-items-center justify-content-between">
-          <Link
-            to="/home"
-            onClick={isMobile ? onClose : undefined}
-            className="logo-link"
-          >
-            <img
-              src="/EcovibeLogo.png"
-              alt="EcoVibe Logo"
-              className="img-fluid"
-              style={{ maxHeight: "60px" }}
-            />
-          </Link>
-          {isMobile && (
-            <button
-              onClick={onClose}
-              className="btn btn-light btn-sm"
-              aria-label="Close sidebar"
+  const SidebarContent = ({ onClose, isMobile = false }) => {
+    const filteredItems =
+      userData.role?.toLowerCase() === "admin"
+        ? NAV_ITEMS
+        : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
+
+    return (
+      <div
+        className="sidebar-content h-100 d-flex flex-column"
+        style={{
+          width: `${SIDEBAR_WIDTH}px`,
+          background: "linear-gradient(180deg, #F5E6D3 0%, #E8F5E8 100%)",
+        }}
+      >
+        <Container fluid className="p-3 border-bottom flex-shrink-0">
+          <div className="d-flex align-items-center justify-content-between">
+            <Link
+              to="/home"
+              onClick={isMobile ? onClose : undefined}
+              className="logo-link"
             >
-              <FiX size={18} />
-            </button>
-          )}
-        </div>
-      </Container>
+              <img
+                src="/EcovibeLogo.png"
+                alt="EcoVibe Logo"
+                className="img-fluid"
+                style={{ maxHeight: "60px" }}
+              />
+            </Link>
+            {isMobile && (
+              <button
+                onClick={onClose}
+                className="btn btn-light btn-sm"
+                aria-label="Close sidebar"
+              >
+                <FiX size={18} />
+              </button>
+            )}
+          </div>
+        </Container>
 
-      <Container fluid className="p-3 flex-grow-1 overflow-auto">
-        {/* Main Section */}
-        <div className="mb-3">
-          <h6
-            className="text-muted fw-bold text-uppercase mb-2"
-            style={{ fontSize: "14px", letterSpacing: "0.5px" }}
-          >
-            MAIN
-          </h6>
-          <NavLink
-            to="/dashboard/main"
-            className={getLinkClass}
-            style={{ fontSize: "15px" }}
-            onClick={isMobile ? onClose : undefined}
-            end
-          >
-            <img
-              src={home}
-              alt="Home"
-              className="me-2"
-              style={{ width: "18px", height: "18px" }}
-            />
-            <span>Dashboard</span>
-          </NavLink>
-        </div>
-
-        {/* Management Modules */}
-        <div>
-          <h6
-            className="text-muted fw-bold text-uppercase mb-2"
-            style={{ fontSize: "15px", letterSpacing: "0.5px" }}
-          >
-            MANAGEMENT MODULES
-          </h6>
-
-          {NAV_ITEMS.slice(1).map((item) => (
+        <Container fluid className="p-3 flex-grow-1 overflow-auto">
+          {/* Main Section */}
+          <div className="mb-3">
+            <h6
+              className="text-muted fw-bold text-uppercase mb-2"
+              style={{ fontSize: "14px", letterSpacing: "0.5px" }}
+            >
+              MAIN
+            </h6>
             <NavLink
-              key={item.to}
-              to={item.to}
+              to="/dashboard/main"
               className={getLinkClass}
+              style={{ fontSize: "15px" }}
               onClick={isMobile ? onClose : undefined}
               end
             >
               <img
-                src={item.icon}
-                alt={item.alt}
-                className="me-3"
-                style={{ width: 20, height: 20 }}
+                src={home}
+                alt="Home"
+                className="me-2"
+                style={{ width: "18px", height: "18px" }}
               />
-              <span>{item.label}</span>
+              <span>Dashboard</span>
             </NavLink>
-          ))}
-        </div>
-      </Container>
-    </div>
-  );
+          </div>
+
+          {/* Management Modules */}
+          <div>
+            <h6
+              className="text-muted fw-bold text-uppercase mb-2"
+              style={{ fontSize: "15px", letterSpacing: "0.5px" }}
+            >
+              MANAGEMENT MODULES
+            </h6>
+
+            {filteredItems
+              .filter((item) => item.to !== "/dashboard/main")
+              .map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={getLinkClass}
+                  onClick={isMobile ? onClose : undefined}
+                  end
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.alt}
+                    className="me-3"
+                    style={{ width: 20, height: 20 }}
+                  />
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+          </div>
+        </Container>
+      </div>
+    );
+  };
 
   return (
     <>

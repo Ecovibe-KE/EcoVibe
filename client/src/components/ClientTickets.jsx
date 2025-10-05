@@ -10,7 +10,12 @@ import {
   Badge,
   InputGroup,
 } from "react-bootstrap";
-import { getTickets, createTicket, getTicketById, addTicketMessage } from "../api/services/tickets";
+import {
+  getTickets,
+  createTicket,
+  getTicketById,
+  addTicketMessage,
+} from "../api/services/tickets";
 import { toast } from "react-toastify";
 
 function ClientTickets() {
@@ -62,6 +67,7 @@ function ClientTickets() {
 
   useEffect(() => {
     fetchTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, statusFilter]);
 
   useEffect(() => {
@@ -74,7 +80,7 @@ function ClientTickets() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm,currentPage, fetchTickets]);
+  }, [searchTerm, currentPage, fetchTickets]);
 
   const handleCreateTicket = async (e) => {
     e.preventDefault();
@@ -276,7 +282,8 @@ function ClientTickets() {
                           )}
                         </div>
                         <div className="text-muted small mt-2">
-                          Created: {new Date(ticket.created_at).toLocaleDateString()}
+                          Created:{" "}
+                          {new Date(ticket.created_at).toLocaleDateString()}
                         </div>
                       </Col>
                       <Col
@@ -303,9 +310,12 @@ function ClientTickets() {
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-center">
                     <small className="text-muted">
-                      Showing {((currentPage - 1) * pagination.per_page) + 1} to{" "}
-                      {Math.min(currentPage * pagination.per_page, pagination.total)} of{" "}
-                      {pagination.total} results
+                      Showing {(currentPage - 1) * pagination.per_page + 1} to{" "}
+                      {Math.min(
+                        currentPage * pagination.per_page,
+                        pagination.total,
+                      )}{" "}
+                      of {pagination.total} results
                     </small>
                     <div className="d-flex gap-2">
                       <Button
@@ -468,7 +478,8 @@ function ClientTickets() {
               <div className="mb-3 text-muted small">
                 <div>Assigned to: {selectedTicket.admin_name}</div>
                 <div>
-                  Created: {new Date(selectedTicket.created_at).toLocaleString()}
+                  Created:{" "}
+                  {new Date(selectedTicket.created_at).toLocaleString()}
                 </div>
               </div>
 
@@ -489,7 +500,9 @@ function ClientTickets() {
                     >
                       <Card.Body className="py-2 px-3">
                         <div className="d-flex justify-content-between mb-1">
-                          <strong className="small">{message.sender_name}</strong>
+                          <strong className="small">
+                            {message.sender_name}
+                          </strong>
                           <small
                             className={
                               message.sender_role === "client"
