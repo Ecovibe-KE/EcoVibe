@@ -10,10 +10,10 @@ import styles from "../css/Login.module.css";
 import { useAuth } from "../context/AuthContext";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { validateEmail } from "../utils/Validations.js";
-import { useNavigate } from "react-router-dom";
+
 
 const Login = () => {
-  const navigate = useNavigate();
+
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -79,7 +79,7 @@ const Login = () => {
       });
 
       toast.success("Login successful! Redirecting...");
-      navigate("/dashboard/main", { replace: true });
+
     } catch (err) {
       const backendMessage = err.response?.data?.message || err.message || null;
 
