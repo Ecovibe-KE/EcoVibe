@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
     } else if (loggedInUser.account_status === "suspended") {
       navigate("/unauthorized");
     } else if (loggedInUser.account_status === "active") {
-      navigate("/dashboard");
+      navigate("/dashboard/main");
     } else {
       console.error("Unknown account_status:", loggedInUser.account_status);
       navigate("/unauthorized");

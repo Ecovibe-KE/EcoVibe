@@ -8,6 +8,7 @@ from .newsletter import newsletter_bp
 from .ticket import tickets_bp
 from .document import document_bp
 from .payment import payment_bp
+from .dashboard import dashboard_bp
 from .booking import booking_bp
 from .service import services_bp
 
@@ -29,5 +30,6 @@ def register_routes(app):
     app.register_blueprint(tickets_bp, url_prefix=API)
     app.register_blueprint(document_bp, url_prefix=API)
     app.register_blueprint(payment_bp, url_prefix=API)
+    app.register_blueprint(dashboard_bp, url_prefix=API)
     app.register_blueprint(booking_bp, url_prefix=API)
     app.register_blueprint(services_bp, url_prefix=API)

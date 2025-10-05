@@ -1,0 +1,22 @@
+.eck-dashboard-icon {
+  color: #f5a030;
+}
+.eck-dashboard-text {
+  font-size: 15px;
+}
+.eck-dashboard-text-heading {
+  font-size: 20px;
+  font-weight: bold;
+}
+.status-confirmed {
+  color: #37b137;
+  background-color: #9cf09c;
+}
+.status-pending {
+  color: #ffae00;
+  background-color: #fde97a;
+}
+.status-cancelled {
+  color: red;
+  background-color: rgb(255, 95, 95);
+}
