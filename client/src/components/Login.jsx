@@ -78,7 +78,7 @@ const Login = () => {
       });
 
       toast.success("Login successful! Redirecting...");
-      Navigate("/dashboard/main", { replace: true });
+      navigate("/dashboard/main", { replace: true });
     } catch (err) {
       const backendMessage = err.response?.data?.message || err.message || null;
 
