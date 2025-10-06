@@ -9,7 +9,8 @@ from models.user import User, Role
 from models.service import Service
 from utils.responses import restful_response
 from utils.auth_helpers import get_current_user_and_role
-from datetime import datetime
+from datetime import datetime, date, timedelta
+from models.invoice import Invoice, InvoiceStatus
 
 booking_bp = Blueprint("booking", __name__)
 api = Api(booking_bp)
@@ -111,7 +112,29 @@ class BookingListResource(Resource):
                 client_id=client_id, service_id=service_id, **parsed_fields
             )
 
+            # --- Fetch Service for Price ---
+            service = Service.query.get(service_id)
+            if not service:
+                return restful_response(
+                    status="error",
+                    message="Invalid service ID",
+                    status_code=400,
+                )
+
+            amount = int(service.price)
+            # --- Create Invoice ---
+            invoice = Invoice(
+                amount=amount,
+                client_id=client_id,
+                service_id=service_id,
+                created_at=date.today(),
+                due_date=date.today() + timedelta(days=30),
+                status=InvoiceStatus.pending
+            )
+
+            # --- Save Booking and Invoice ---
             db.session.add(booking)
+            db.session.add(invoice)
             db.session.commit()
 
             # Reload the booking with relationships for the response
