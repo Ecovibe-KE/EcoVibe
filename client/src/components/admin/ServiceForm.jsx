@@ -12,6 +12,7 @@ function ServiceForm({
   resetForm,
   previewUrl,
   isEditing = false,
+  fileInputKey,
 }) {
   return (
     <Container>
@@ -97,7 +98,12 @@ function ServiceForm({
             onChange={handleFileChange}
             ref={fileInputRef}
             required={!isEditing}
+            key={fileInputKey}
+            data-max-size="5MB"
           />
+          <small className="form-text text-muted">
+            Accepted: JPEG, PNG, GIF. Maximum file size: 5MB
+          </small>
         </Form.Group>
 
         {previewUrl && (

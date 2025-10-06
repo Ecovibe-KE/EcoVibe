@@ -25,12 +25,13 @@ def create_app(config_name="development"):
             "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
         )
         app.config["TESTING"] = True
+
     else:
         app.config.from_prefixed_env()
 
     # Load JWT secret key
     app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=360)
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
 
     # Init extensions

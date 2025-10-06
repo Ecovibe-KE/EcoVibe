@@ -7,9 +7,15 @@ export const addService = async (serviceData) => {
   return response.data;
 };
 
-// Read/Fetch a service
+// Read/Fetch services
 export const getServices = async () => {
   const response = await api.get(ENDPOINTS.services);
+  return response.data;
+};
+
+// Fetch a service by ID
+export const getServiceById = async (serviceId) => {
+  const response = await api.get(`${ENDPOINTS.services}/${serviceId}`);
   return response.data;
 };
 

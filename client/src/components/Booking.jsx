@@ -32,7 +32,9 @@ const Booking = () => {
 
       try {
         const allUsers = await fetchUsers();
-        const activeClients = allUsers.filter((u) => u.role === "CLIENT");
+        const activeClients = allUsers.filter(
+          (u) => u.role.toUpperCase() === "CLIENT",
+        );
         setClients(activeClients);
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -48,7 +50,8 @@ const Booking = () => {
     const loadServices = async () => {
       try {
         const data = await getServices();
-        setServices(data || []);
+        console.log(data.data);
+        setServices(data.data || []);
       } catch (err) {
         console.error("Failed to fetch services:", err);
         toast.error("Failed to fetch services");
@@ -168,7 +171,7 @@ const Booking = () => {
           onClose={() => setShowForm(false)}
           clients={clients}
           services={services}
-          isAdmin={isAdmin}
+          disableService={false}
         />
       )}
 
@@ -180,7 +183,6 @@ const Booking = () => {
           onClose={() => setEditingBooking(null)}
           clients={clients}
           services={services}
-          isAdmin={isAdmin}
         />
       )}
 

@@ -1,4 +1,5 @@
 import { Tab, Tabs, Row, Container, Col } from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
 import { useState, useRef, useEffect } from "react";
 import gearImg from "../../assets/gears.png";
 import tickImg from "../../assets/tick.png";
@@ -14,7 +15,6 @@ import {
   updateService,
   deleteService,
 } from "../../api/services/servicemanagement";
-import { toast } from "react-toastify";
 
 function ServiceAdmin() {
   // for edit modal component
@@ -27,6 +27,8 @@ function ServiceAdmin() {
   const [idService, setIdService] = useState(null);
   // for original data when in edit modal component
   const [originalServiceData, setOriginalServiceData] = useState(null);
+  // reset image file input name
+  const [fileInputKey, setFileInputKey] = useState(Date.now());
 
   const handleCloseEdit = () => setShowEditServiceModal(false);
   const handleShowEdit = () => setShowEditServiceModal(true);
@@ -35,10 +37,18 @@ function ServiceAdmin() {
 
   const fetchServices = async () => {
     try {
-      const servicesArray = await getServices();
-      setAllServices(servicesArray);
+      const response = await getServices();
+      if (response.status === "success") {
+        setAllServices(response.data);
+      } else {
+        toast.error(
+          `Failed to fetch services: ${response.message}. Please try again later`,
+        );
+      }
     } catch (error) {
-      console.error(error);
+      toast.error(
+        `Failed to fetch service: ${error.response?.data?.message || error.message}`,
+      );
     }
   };
 
@@ -185,25 +195,43 @@ function ServiceAdmin() {
       return;
     }
 
-    // Save the File object to state
-    setFormData((prev) => ({ ...prev, serviceImage: file }));
-
-    // Revoke the old preview URL if it exists
-    // Prevents memory leaks if user upload multiple images during a session
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
+    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast.error(
+        `Image size (${fileSizeInMB}MB) exceeds the 5MB limit. Please choose a smaller file.`,
+      );
+      e.target.value = ""; // reset input
+      return;
     }
 
-    // Create a temporary preview URL
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
+    // Convert image to Base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({ ...prev, serviceImage: reader.result })); // reader.result is Base64 string
+      setPreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
   }
 
   // handle submitting newly added service
   const addNewService = async (e) => {
     e.preventDefault();
 
+    if (formData.servicePrice <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
+
     const { hours, minutes } = formData.serviceDuration;
+    if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
+      toast.error(
+        "Duration must be greater than 0. Please set hours or minutes.",
+      );
+      return;
+    }
+
     const combinedDuration = `${hours} hr ${minutes} min`;
 
     try {
@@ -217,11 +245,17 @@ function ServiceAdmin() {
         status: formData.serviceStatus.toLowerCase(),
       };
 
-      await addService(serviceData);
-      toast.success("Service added successfully");
-      // keep allServices up to date after adding new service
-      await fetchServices();
-      resetForm();
+      const response = await addService(serviceData);
+      if (response.status === "success") {
+        toast.success(response.message);
+        // keep allServices up to date after adding new service
+        await fetchServices();
+        resetForm();
+      } else {
+        toast.error(
+          `Failed to add service: ${response.message}. Please try again`,
+        );
+      }
     } catch (error) {
       toast.error(
         `Failed to add service: ${error.response?.data?.message || error.message}`,
@@ -233,7 +267,19 @@ function ServiceAdmin() {
   const editExistingService = async (e) => {
     e.preventDefault();
 
+    // === ADD VALIDATION CHECKS ===
+    if (formData.servicePrice <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
+
     const { hours, minutes } = formData.serviceDuration;
+    if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
+      toast.error(
+        "Duration must be greater than 0. Please set hours or minutes.",
+      );
+      return;
+    }
     const combinedDuration = `${hours} hr ${minutes} min`;
 
     const serviceData = {
@@ -265,12 +311,19 @@ function ServiceAdmin() {
     }
 
     try {
-      await updateService(idService, serviceData);
-      toast.success("Service updated successfully");
-      // keep allServices up to date after adding new service
-      await fetchServices();
-      handleCloseEdit();
-      resetForm();
+      const response = await updateService(idService, serviceData);
+
+      if (response.status === "success") {
+        toast.success(response.message);
+        // keep allServices up to date after adding new service
+        await fetchServices();
+        handleCloseEdit();
+        resetForm();
+      } else {
+        toast.error(
+          `Failed to edit service: ${response.message} Please try again`,
+        );
+      }
     } catch (error) {
       toast.error(
         `Failed to update service: ${error.response?.data?.message || error.message}`,
@@ -281,12 +334,14 @@ function ServiceAdmin() {
   // handle deleting service
   const deleteExistingService = async () => {
     try {
-      await deleteService(idService);
-      await fetchServices();
-      handleCloseDelete();
-      toast.success("Service deleted Successfully!");
+      const response = await deleteService(idService);
+
+      if (response.status === "success") {
+        await fetchServices();
+        handleCloseDelete();
+        toast.success(response.message);
+      }
     } catch (error) {
-      console.error("Failed to delete service:", error);
       toast.error(
         `Failed to delete service: ${error.response?.data?.message || error.message}`,
       );
@@ -305,6 +360,7 @@ function ServiceAdmin() {
     });
     setPreviewUrl("");
     // Clear the file input's displayed filename
+    setFileInputKey(Date.now());
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -315,6 +371,7 @@ function ServiceAdmin() {
       <main className="p-3 bg-light">
         {/* edit service */}
         <EditServiceModal
+          fileInputKey={fileInputKey}
           showEditServiceModal={showEditServiceModal}
           handleCloseEdit={handleCloseEdit}
           formData={formData}
@@ -369,6 +426,7 @@ function ServiceAdmin() {
 
                 <Tab eventKey="add" title="Add New Services">
                   <ServiceForm
+                    fileInputKey={fileInputKey}
                     formTitle="Add New Service"
                     formData={formData}
                     handleSubmit={addNewService}
@@ -384,6 +442,7 @@ function ServiceAdmin() {
           </Row>
         </Container>
       </main>
+      <ToastContainer />
     </>
   );
 }

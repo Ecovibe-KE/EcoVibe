@@ -1,5 +1,29 @@
 import { Col } from "react-bootstrap";
 
+// Separates duration into hours and minutes
+const separateDuration = (str) => {
+  // 1. hrs? – matches "hr" or "hrs"
+  // 2. (?: … )? – makes the entire minutes group optional
+  const pattern = /(?:(?<h>\d+)\s*hrs?)?\s*(?:(?<m>\d+)\s*min)?/i;
+  const groups = str.match(pattern)?.groups || {};
+
+  const hours = parseInt(groups.h || "0", 10);
+  const minutes = parseInt(groups.m || "0", 10);
+
+  return { hours, minutes };
+};
+
+export function displayDuration(duration) {
+  const { hours, minutes } = separateDuration(duration);
+  if (minutes < 1) {
+    return `${hours} hr`;
+  } else if (hours < 1) {
+    return `${minutes} min`;
+  } else {
+    return `${hours} hr ${minutes} min`;
+  }
+}
+
 function ServiceAdminMain({
   serviceId,
   serviceImage,
@@ -21,30 +45,6 @@ function ServiceAdminMain({
       return "";
     } else {
       return "invisible";
-    }
-  }
-
-  // Separates duration into hours and minutes
-  const separateDuration = (str) => {
-    // 1. hrs? – matches "hr" or "hrs"
-    // 2. (?: … )? – makes the entire minutes group optional
-    const pattern = /(?:(?<h>\d+)\s*hrs?)?\s*(?:(?<m>\d+)\s*min)?/i;
-    const groups = str.match(pattern)?.groups || {};
-
-    const hours = parseInt(groups.h || "0", 10);
-    const minutes = parseInt(groups.m || "0", 10);
-
-    return { hours, minutes };
-  };
-
-  function displayDuration() {
-    const { hours, minutes } = separateDuration(serviceDuration);
-    if (minutes < 1) {
-      return `${hours} hr`;
-    } else if (hours < 1) {
-      return `${minutes} min`;
-    } else {
-      return `${hours} hr ${minutes} min`;
     }
   }
 
@@ -118,10 +118,11 @@ function ServiceAdminMain({
             <p className="mt-2">{serviceDescription}</p>
             <hr />
             <section className="d-flex justify-content-between align-items-center">
-              <p className="primary-color fw-bold m-0">{displayDuration()}</p>
               <p className="primary-color fw-bold m-0">
-                {priceCurrency}
-                {servicePrice}
+                {displayDuration(serviceDuration)}
+              </p>
+              <p className="primary-color fw-bold m-0">
+                {priceCurrency + " " + servicePrice}
               </p>
               <p
                 className={`status-color fw-bold border rounded-pill p-2 m-0 ${determineVisibility()}`}

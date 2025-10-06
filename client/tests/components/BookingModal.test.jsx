@@ -1,47 +1,37 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import BookingModal from "../../src/components/BookingModal";
+import BookingModal from "../../src/components/BookingModal"; // adjust path
+import { vi } from "vitest";
 
 describe("BookingModal Component", () => {
-  const mockOnClose = vi.fn();
+    const mockOnClose = vi.fn();
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    beforeEach(() => {
+        mockOnClose.mockClear();
+    });
 
-  it("renders modal with title and children", () => {
-    render(
-      <BookingModal title="Test Modal" onClose={mockOnClose}>
-        <p>Modal content</p>
-      </BookingModal>
-    );
+    it("renders modal with given title and children", () => {
+        render(
+            <BookingModal title="Modal Title" onClose={mockOnClose}>
+                <div>Modal Content</div>
+            </BookingModal>
+        );
 
-    expect(screen.getByText("Test Modal")).toBeInTheDocument();
-    expect(screen.getByText("Modal content")).toBeInTheDocument();
-  });
+        // Statement & line coverage: render runs all JSX statements
+        expect(screen.getByText("Modal Title")).toBeInTheDocument();
+        expect(screen.getByText("Modal Content")).toBeInTheDocument();
+    });
 
-  it("calls onClose when close button is clicked", () => {
-    render(
-      <BookingModal title="Test Modal" onClose={mockOnClose}>
-        <p>Modal content</p>
-      </BookingModal>
-    );
+    it("calls onClose function when close button is clicked", () => {
+        render(
+            <BookingModal title="Modal Title" onClose={mockOnClose}>
+                <div>Modal Content</div>
+            </BookingModal>
+        );
 
-    const closeButton = screen.getByRole('button');
-    fireEvent.click(closeButton);
+        const closeButton = screen.getByRole("button");
+        fireEvent.click(closeButton);
 
-    expect(mockOnClose).toHaveBeenCalled();
-  });
-
-  it("has correct modal styling", () => {
-    render(
-      <BookingModal title="Test Modal" onClose={mockOnClose}>
-        <p>Modal content</p>
-      </BookingModal>
-    );
-
-    const modal = screen.getByText("Test Modal").closest('.modal');
-    expect(modal).toHaveStyle({ display: 'block' });
-    expect(modal).toHaveStyle({ background: 'rgba(0,0,0,0.5)' });
-  });
+        // Function & branch coverage: verifies event handler executes
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
 });

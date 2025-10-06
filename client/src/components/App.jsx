@@ -30,6 +30,8 @@ import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import ClientTickets from "./ClientTickets.jsx";
+import Services from "./Services.jsx";
+import ServiceDetail from "./ServiceDetail.jsx";
 import Footer from "./Footer.jsx";
 import Dashboard from "./admin/Dashboard.jsx";
 
@@ -40,6 +42,7 @@ import Booking from "./Booking.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
 import AdminTickets from "./admin/AdminTickets.jsx";
 import InvoiceDashboard from "./InvoiceDashboard.jsx";
+import ServicesSection from "./Services.jsx";
 
 // Lazy loaded page
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
@@ -98,7 +101,7 @@ function App() {
           >
             {/* General dashboard pages - any active user */}
             <Route index element={<Navigate to="main" replace />} />
-            
+
             <Route
               path="main"
               element={
@@ -245,6 +248,24 @@ function App() {
               <>
                 <NavBar />
                 <AboutUs />
+              </>
+            }
+          />
+          <Route
+            path="/services"
+            element={
+              <>
+                <NavBar />
+                <Services />
+              </>
+            }
+          />
+          <Route
+            path="/services/:id"
+            element={
+              <>
+                <NavBar />
+                <ServiceDetail />
               </>
             }
           />

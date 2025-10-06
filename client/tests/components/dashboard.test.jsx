@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import Dashboard from "../../src/components/admin/Dashboard.jsx"; 
+import Dashboard from "../../src/components/admin/Dashboard.jsx";
 import * as DashboardService from "../../src/api/services/dashboard";
 import * as AuthContext from "../../src/context/AuthContext.jsx";
 import { MemoryRouter } from "react-router-dom";
@@ -50,7 +50,7 @@ describe("Dashboard Component", () => {
         <Dashboard />
       </MemoryRouter>
     );
-    
+
 
     await waitFor(() => {
       expect(screen.getByText(/Welcome, Test Client/i)).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe("Dashboard Component", () => {
         <Dashboard />
       </MemoryRouter>
     );
-    
+
 
     await waitFor(() => {
       expect(screen.getByText(/Welcome, Admin User/i)).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("Dashboard Component", () => {
         <Dashboard />
       </MemoryRouter>
     );
-    
+
 
     await waitFor(() => {
       expect(screen.getByText(/Available Documents/i)).toBeInTheDocument();
@@ -159,10 +159,9 @@ describe("Dashboard Component", () => {
         <Dashboard />
       </MemoryRouter>
     );
-    
+
 
 
   });
 
 });
-
