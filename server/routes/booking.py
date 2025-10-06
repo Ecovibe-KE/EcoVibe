@@ -129,7 +129,7 @@ class BookingListResource(Resource):
                 service_id=service_id,
                 created_at=date.today(),
                 due_date=date.today() + timedelta(days=30),
-                status=InvoiceStatus.pending
+                status=InvoiceStatus.pending,
             )
 
             # --- Save Booking and Invoice ---
