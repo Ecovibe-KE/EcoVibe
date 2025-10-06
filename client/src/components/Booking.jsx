@@ -32,7 +32,9 @@ const Booking = () => {
 
       try {
         const allUsers = await fetchUsers();
-        const activeClients = allUsers.filter((u) => u.role.toUpperCase() === "CLIENT");
+        const activeClients = allUsers.filter(
+          (u) => u.role.toUpperCase() === "CLIENT",
+        );
         setClients(activeClients);
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -48,7 +50,7 @@ const Booking = () => {
     const loadServices = async () => {
       try {
         const data = await getServices();
-        console.log(data.data)
+        console.log(data.data);
         setServices(data.data || []);
       } catch (err) {
         console.error("Failed to fetch services:", err);
@@ -102,8 +104,8 @@ const Booking = () => {
       console.error("Error details:", err.response?.data);
       toast.error(
         err?.response?.data?.message ||
-        err?.message ||
-        "Unexpected error while creating booking",
+          err?.message ||
+          "Unexpected error while creating booking",
       );
     }
   };

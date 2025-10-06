@@ -118,7 +118,9 @@ function ServiceAdminMain({
             <p className="mt-2">{serviceDescription}</p>
             <hr />
             <section className="d-flex justify-content-between align-items-center">
-              <p className="primary-color fw-bold m-0">{displayDuration(serviceDuration)}</p>
+              <p className="primary-color fw-bold m-0">
+                {displayDuration(serviceDuration)}
+              </p>
               <p className="primary-color fw-bold m-0">
                 {priceCurrency + " " + servicePrice}
               </p>

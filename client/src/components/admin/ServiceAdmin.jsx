@@ -39,16 +39,18 @@ function ServiceAdmin() {
     try {
       const response = await getServices();
       if (response.status === "success") {
-        setAllServices(response.data)
+        setAllServices(response.data);
       } else {
-        toast.error(`Failed to fetch services: ${response.message}. Please try again later`)
+        toast.error(
+          `Failed to fetch services: ${response.message}. Please try again later`,
+        );
       }
     } catch (error) {
       toast.error(
         `Failed to fetch service: ${error.response?.data?.message || error.message}`,
       );
     }
-  }
+  };
 
   // Get all services
   useEffect(() => {
@@ -197,7 +199,9 @@ function ServiceAdmin() {
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-      toast.error(`Image size (${fileSizeInMB}MB) exceeds the 5MB limit. Please choose a smaller file.`);
+      toast.error(
+        `Image size (${fileSizeInMB}MB) exceeds the 5MB limit. Please choose a smaller file.`,
+      );
       e.target.value = ""; // reset input
       return;
     }
@@ -205,7 +209,7 @@ function ServiceAdmin() {
     // Convert image to Base64
     const reader = new FileReader();
     reader.onloadend = () => {
-      setFormData(prev => ({ ...prev, serviceImage: reader.result })); // reader.result is Base64 string
+      setFormData((prev) => ({ ...prev, serviceImage: reader.result })); // reader.result is Base64 string
       setPreviewUrl(reader.result);
     };
     reader.readAsDataURL(file);
@@ -222,7 +226,9 @@ function ServiceAdmin() {
 
     const { hours, minutes } = formData.serviceDuration;
     if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
-      toast.error("Duration must be greater than 0. Please set hours or minutes.");
+      toast.error(
+        "Duration must be greater than 0. Please set hours or minutes.",
+      );
       return;
     }
 
@@ -246,7 +252,9 @@ function ServiceAdmin() {
         await fetchServices();
         resetForm();
       } else {
-        toast.error(`Failed to add service: ${response.message}. Please try again`);
+        toast.error(
+          `Failed to add service: ${response.message}. Please try again`,
+        );
       }
     } catch (error) {
       toast.error(
@@ -267,7 +275,9 @@ function ServiceAdmin() {
 
     const { hours, minutes } = formData.serviceDuration;
     if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
-      toast.error("Duration must be greater than 0. Please set hours or minutes.");
+      toast.error(
+        "Duration must be greater than 0. Please set hours or minutes.",
+      );
       return;
     }
     const combinedDuration = `${hours} hr ${minutes} min`;
@@ -310,9 +320,10 @@ function ServiceAdmin() {
         handleCloseEdit();
         resetForm();
       } else {
-        toast.error(`Failed to edit service: ${response.message} Please try again`);
+        toast.error(
+          `Failed to edit service: ${response.message} Please try again`,
+        );
       }
-
     } catch (error) {
       toast.error(
         `Failed to update service: ${error.response?.data?.message || error.message}`,

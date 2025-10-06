@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Offcanvas, Container, Dropdown } from "react-bootstrap";
-import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Link, Outlet } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import useBreakpoint from "../hooks/useBreakpoint";
 import home from "../assets/home.png";
@@ -20,12 +20,8 @@ import { useAuth } from "../context/AuthContext";
 
 const SIDEBAR_WIDTH = 280;
 
-
 const NAV_ITEMS = [
-  { to: "/dashboard/main", 
-    icon: home, 
-    label: "Dashboard", 
-    alt: "Home" },
+  { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
   {
     to: "/dashboard/bookings",
     icon: bookings,
@@ -82,8 +78,6 @@ function TopNavbar() {
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
-  const navigate = useNavigate();
-
 
   // Close mobile sidebar on desktop
   useEffect(() => {
@@ -99,15 +93,13 @@ function TopNavbar() {
   const closeMobileSidebar = useCallback(() => setShowMobileSidebar(false), []);
 
   const getLinkClass = ({ isActive }) =>
-    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${
-      isActive ? "active-link" : "inactive-link"
+    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${isActive ? "active-link" : "inactive-link"
     }`;
 
-
- const SidebarContent = ({ onClose, isMobile = false }) => {
-  const filteredItems = isAtLeastAdmin
-    ? NAV_ITEMS
-    : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
+  const SidebarContent = ({ onClose, isMobile = false }) => {
+    const filteredItems = isAtLeastAdmin
+      ? NAV_ITEMS
+      : NAV_ITEMS.filter((item) => CLIENT_ALLOWED_ROUTES.includes(item.to));
 
     return (
       <div
@@ -309,10 +301,10 @@ function TopNavbar() {
               <Dropdown.Item
                 onClick={async () => {
                   try {
-                      const refreshToken = localStorage.getItem("refreshToken");
-                      if (refreshToken) {
-                        await logoutUser(refreshToken); // call backend to invalidate
-                      }
+                    const refreshToken = localStorage.getItem("refreshToken");
+                    if (refreshToken) {
+                      await logoutUser(refreshToken); // call backend to invalidate
+                    }
                   } catch (err) {
                     console.error("Logout API failed:", err);
                     toast.error("Logout failed, please try again");

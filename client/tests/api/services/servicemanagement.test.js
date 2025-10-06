@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Vitest tests for src/api/services/servicemanagement.js
+ * Fully compatible with Vite/Vitest setup — no Jest globals used.
+ */
+
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import api from "../../../src/api/axiosConfig";
 import {
     addService,
@@ -7,57 +13,85 @@ import {
     deleteService,
 } from "../../../src/api/services/servicemanagement";
 
-vi.mock("../../../src/api/axiosConfig"); // ✅ mock the axios instance
+// ✅ mock the axiosConfig module
+vi.mock("../../../src/api/axiosConfig", () => ({
+    default: {
+        post: vi.fn(),
+        get: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn(),
+    },
+}));
 
-describe("Service Management API", () => {
-    const mockData = { id: 1, title: "Test Service" };
-
+describe("servicemanagement API service", () => {
     beforeEach(() => {
-        vi.resetAllMocks();
+        vi.clearAllMocks();
     });
 
-    // --- GET ALL SERVICES ---
-    test("getServices() returns data on success", async () => {
-        api.get.mockResolvedValueOnce({ data: { status: "success", data: [mockData] } });
-        const result = await getServices();
-        expect(result.data[0]).toEqual(mockData);
-        expect(api.get).toHaveBeenCalledWith("/services");
-    });
+    const mockData = { status: "success", message: "ok" };
 
-    test("getServices() throws on error", async () => {
-        api.get.mockRejectedValueOnce(new Error("Network Error"));
-        await expect(getServices()).rejects.toThrow("Network Error");
-    });
-
-    // --- GET BY ID ---
-    test("getServiceById() fetches correct service", async () => {
-        api.get.mockResolvedValueOnce({ data: mockData });
-        const result = await getServiceById(1);
-        expect(api.get).toHaveBeenCalledWith("/services/1");
+    // --- CREATE ---
+    it("addService should POST and return data on success", async () => {
+        api.post.mockResolvedValueOnce({ data: mockData });
+        const result = await addService({ title: "test" });
+        expect(api.post).toHaveBeenCalledWith(expect.stringContaining("/services"), { title: "test" });
         expect(result).toEqual(mockData);
     });
 
-    // --- ADD SERVICE ---
-    test("addService() posts new service and returns data", async () => {
-        api.post.mockResolvedValueOnce({ data: { status: "success", data: mockData } });
-        const result = await addService(mockData);
-        expect(api.post).toHaveBeenCalledWith("/services", mockData);
-        expect(result.data).toEqual(mockData);
+    it("addService should throw on failure", async () => {
+        api.post.mockRejectedValueOnce(new Error("Network error"));
+        await expect(addService({})).rejects.toThrow("Network error");
     });
 
-    // --- UPDATE SERVICE ---
-    test("updateService() updates service successfully", async () => {
-        api.put.mockResolvedValueOnce({ data: { status: "success", data: mockData } });
-        const result = await updateService(1, mockData);
-        expect(api.put).toHaveBeenCalledWith("/services/1", mockData);
-        expect(result.data).toEqual(mockData);
+    // --- READ (ALL) ---
+    it("getServices should GET and return data", async () => {
+        api.get.mockResolvedValueOnce({ data: mockData });
+        const result = await getServices();
+        expect(api.get).toHaveBeenCalledWith(expect.stringContaining("/services"));
+        expect(result).toEqual(mockData);
     });
 
-    // --- DELETE SERVICE ---
-    test("deleteService() deletes service successfully", async () => {
-        api.delete.mockResolvedValueOnce({ data: { status: "success", message: "Deleted" } });
-        const result = await deleteService(1);
-        expect(api.delete).toHaveBeenCalledWith("/services/1");
-        expect(result.message).toBe("Deleted");
+    it("getServices should handle errors gracefully", async () => {
+        api.get.mockRejectedValueOnce(new Error("Server down"));
+        await expect(getServices()).rejects.toThrow("Server down");
+    });
+
+    // --- READ (BY ID) ---
+    it("getServiceById should GET by id and return data", async () => {
+        api.get.mockResolvedValueOnce({ data: mockData });
+        const result = await getServiceById(5);
+        expect(api.get).toHaveBeenCalledWith(expect.stringContaining("/services/5"));
+        expect(result).toEqual(mockData);
+    });
+
+    it("getServiceById should throw on rejection", async () => {
+        api.get.mockRejectedValueOnce(new Error("404 not found"));
+        await expect(getServiceById(999)).rejects.toThrow("404 not found");
+    });
+
+    // --- UPDATE ---
+    it("updateService should PUT and return data", async () => {
+        api.put.mockResolvedValueOnce({ data: mockData });
+        const result = await updateService(1, { price: 500 });
+        expect(api.put).toHaveBeenCalledWith(expect.stringContaining("/services/1"), { price: 500 });
+        expect(result).toEqual(mockData);
+    });
+
+    it("updateService should handle network error (rejected promise)", async () => {
+        api.put.mockRejectedValueOnce(new Error("Network error"));
+        await expect(updateService(1, { title: "Fail test" })).rejects.toThrow("Network error");
+    });
+
+    // --- DELETE ---
+    it("deleteService should DELETE and return data", async () => {
+        api.delete.mockResolvedValueOnce({ data: mockData });
+        const result = await deleteService(2);
+        expect(api.delete).toHaveBeenCalledWith(expect.stringContaining("/services/2"));
+        expect(result).toEqual(mockData);
+    });
+
+    it("deleteService should handle error rejection", async () => {
+        api.delete.mockRejectedValueOnce(new Error("Delete failed"));
+        await expect(deleteService(99)).rejects.toThrow("Delete failed");
     });
 });

@@ -12,7 +12,7 @@ function ServiceForm({
   resetForm,
   previewUrl,
   isEditing = false,
-  fileInputKey
+  fileInputKey,
 }) {
   return (
     <Container>

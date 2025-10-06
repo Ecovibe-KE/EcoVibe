@@ -44,7 +44,6 @@ import AdminTickets from "./admin/AdminTickets.jsx";
 import InvoiceDashboard from "./InvoiceDashboard.jsx";
 import ServicesSection from "./Services.jsx";
 
-
 // Lazy loaded page
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
@@ -102,7 +101,7 @@ function App() {
           >
             {/* General dashboard pages - any active user */}
             <Route index element={<Navigate to="main" replace />} />
-            
+
             <Route
               path="main"
               element={

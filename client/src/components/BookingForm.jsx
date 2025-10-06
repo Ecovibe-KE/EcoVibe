@@ -73,9 +73,9 @@ const BookingForm = ({
     } else {
       // Auto-set client_id for new bookings by non-admin users
       if (!isAdmin && user) {
-        setForm(prev => ({
+        setForm((prev) => ({
           ...prev,
-          client_id: user.id.toString()
+          client_id: user.id.toString(),
         }));
       }
     }
@@ -198,11 +198,7 @@ const BookingForm = ({
                 Booking as current user
               </small>
             </div>
-            <input
-              type="hidden"
-              name="client_id"
-              value={form.client_id}
-            />
+            <input type="hidden" name="client_id" value={form.client_id} />
           </div>
         )}
 

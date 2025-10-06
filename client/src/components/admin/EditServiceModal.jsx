@@ -11,7 +11,7 @@ function EditServiceModal({
   fileInputRef,
   previewUrl,
   resetForm,
-  fileInputKey
+  fileInputKey,
 }) {
   function resetAfterClose() {
     handleCloseEdit();

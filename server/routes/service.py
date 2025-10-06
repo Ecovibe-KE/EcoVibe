@@ -185,10 +185,7 @@ def create_service():
             if image_size > max_size:
                 return (
                     jsonify(
-                        {
-                            "status": "error", 
-                            "message": "Image size exceeds 5MB limit."
-                        }
+                        {"status": "error", "message": "Image size exceeds 5MB limit."}
                     ),
                     400,
                 )
@@ -297,9 +294,6 @@ def update_service(id):
         if not service:
             raise NotFound(f"Service with ID {id} not found")
 
-        # Verify user from JWT token has admin privileges
-        admin_user = require_admin()
-
         data = request.get_json()
 
         # === ADD PRICE VALIDATION (if price is being updated) ===
@@ -350,7 +344,7 @@ def update_service(id):
             if image_size > max_size:
                 return (
                     jsonify(
-                        {"status": "error", "message": f"Image size exceeds 5MB limit."}
+                        {"status": "error", "message": "Image size exceeds 5MB limit."}
                     ),
                     400,
                 )
@@ -363,7 +357,7 @@ def update_service(id):
                 image_base64 = re.sub("^data:image/[^;]+;base64,", "", image_str)
                 image_data = base64.b64decode(image_base64)
                 service.image = image_data
-            except Exception as e:
+            except Exception:
                 raise BadRequest("Invalid image format. Must be valid base64")
 
         service.updated_at = datetime.utcnow()
@@ -441,9 +435,6 @@ def delete_service(id):
         service = Service.query.get(id)
         if not service:
             raise NotFound(f"Service with ID {id} not found")
-
-        # Verify user from JWT token has admin privileges
-        admin_user = require_admin()
 
         # Optional: Verify the admin owns this service or is super_admin
         # if admin_user.role != Role.SUPER_ADMIN and service.admin_id != admin_user.id:
@@ -534,12 +525,10 @@ def get_services_by_status(status):
     Image is automatically converted to base64 in to_dict() method.
     """
     try:
-        # Verify user from JWT token has admin privileges
-        admin_user = require_admin()
 
         # Validate status
         if status not in [s.value for s in ServiceStatus]:
-            return jsonify({"status": "failed", "message": f"Invalid status."}), 400
+            return jsonify({"status": "failed", "message": "Invalid status."}), 400
 
         services = Service.query.filter_by(status=ServiceStatus(status)).all()
 

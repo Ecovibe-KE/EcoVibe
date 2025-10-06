@@ -14,14 +14,14 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
         service: "25%",
         date: "20%",
         status: "15%",
-        actions: "25%"
+        actions: "25%",
       };
     } else {
       return {
         service: "40%",
         date: "20%",
         status: "15%",
-        actions: "25%"
+        actions: "25%",
       };
     }
   };
@@ -30,40 +30,51 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
 
   return (
     <div className="table-responsive w-100">
-      <table className={`table ${styles.bookingTable} ${isAdmin ? styles.adminTable : styles.clientTable}`}>
+      <table
+        className={`table ${styles.bookingTable} ${isAdmin ? styles.adminTable : styles.clientTable}`}
+      >
         <thead>
           <tr>
             {isAdmin && <th style={{ width: columnWidths.user }}>User</th>}
             <th style={{ width: columnWidths.service }}>Service</th>
             <th style={{ width: columnWidths.date }}>Date</th>
             <th style={{ width: columnWidths.status }}>Status</th>
-            <th style={{ width: columnWidths.actions }} className="text-end">Actions</th>
+            <th style={{ width: columnWidths.actions }} className="text-end">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {bookings.map((booking) => (
             <tr key={booking.id}>
-              {isAdmin && <td style={{ width: columnWidths.user }}>{booking.client_name || "—"}</td>}
-              <td style={{ width: columnWidths.service }}>{booking.service_name || "—"}</td>
+              {isAdmin && (
+                <td style={{ width: columnWidths.user }}>
+                  {booking.client_name || "—"}
+                </td>
+              )}
+              <td style={{ width: columnWidths.service }}>
+                {booking.service_name || "—"}
+              </td>
               <td style={{ width: columnWidths.date }}>
                 {new Date(booking.booking_date).toLocaleDateString()}{" "}
                 {booking.start_time
                   ? new Date(booking.start_time).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                   : ""}
               </td>
               <td style={{ width: columnWidths.status }}>
                 <span
-                  className={`badge ${booking.status === "confirmed"
+                  className={`badge ${
+                    booking.status === "confirmed"
                       ? "bg-success"
                       : booking.status === "pending"
                         ? "bg-warning"
                         : booking.status === "cancelled"
                           ? "bg-danger"
                           : "bg-secondary"
-                    }`}
+                  }`}
                 >
                   {booking.status}
                 </span>
