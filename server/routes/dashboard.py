@@ -163,7 +163,6 @@ class DashboardResource(Resource):
                 message="Admin dashboard data fetched successfully",
                 data={
                     "name": user.full_name,
-                    "role": "admin",
                     "stats": {
                         "totalBookings": total_bookings,
                         "registeredUsers": total_clients,

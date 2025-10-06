@@ -14,9 +14,10 @@ import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
 import { toast } from "react-toastify";
-
+import Avatar from "@mui/material/Avatar";
 import "../css/TopNavBar.css";
 import { useAuth } from "../context/AuthContext";
+import PersonIcon from "@mui/icons-material/Person";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -75,6 +76,7 @@ const CLIENT_ALLOWED_ROUTES = [
 
 function TopNavbar() {
   const { user, isAtLeastAdmin, logoutUser } = useAuth();
+  const [avatarError, setAvatarError] = useState(false);
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
@@ -269,16 +271,22 @@ function TopNavbar() {
               className="d-flex align-items-center gap-2"
               style={{ border: "none", background: "transparent" }}
             >
-              <img
-                src={user?.avatar}
-                className="user-avatar rounded-circle"
-                alt="User Avatar"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  border: "2px solid #e3e6f0",
-                }}
-              />
+              {user?.avatar && !avatarError ? (
+                <img
+                  src={user.avatar}
+                  alt="User Avatar"
+                  style={{ width: 40, height: 40, borderRadius: "50%" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    setAvatarError(true);
+                  }}
+                />
+              ) : (
+                <Avatar sx={{ width: 40, height: 40 }}>
+                  <PersonIcon />
+                </Avatar>
+              )}
+
               <div className="user-details d-none d-sm-block">
                 <div
                   className="user-name"
