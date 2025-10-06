@@ -117,7 +117,7 @@ class BookingListResource(Resource):
             if not service:
                 return restful_response(
                     status="error",
-                    message="Invalid service ID",
+                    message="Invalid client or service ID",
                     status_code=400,
                 )
 
