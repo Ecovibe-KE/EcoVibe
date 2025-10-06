@@ -256,7 +256,8 @@ def send_invitation_email(
             <p>Please click the button below to set your password and
             activate your account:</p>
             <p>
-                <a href="{invitation_link}" class="button-password">Set Your Password</a>
+                <a href="{invitation_link}" class="button-password">
+                Set Your Password</a>
             </p>
             <p><small>This invitation link will expire in 24 hours.</small></p>
         </div>

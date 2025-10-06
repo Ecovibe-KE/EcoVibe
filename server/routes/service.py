@@ -99,7 +99,7 @@ def get_service(id):
     Image is automatically converted to base64 in to_dict() method.
     """
     try:
-        service = Service.query.filter(Service.id == id, Service.is_deleted == False).first()
+        service = Service.query.filter(Service.id == id, Service.is_deleted is False).first()
         if not service:
             raise NotFound(f"Service with ID {id} not found")
 
@@ -491,7 +491,7 @@ def get_my_services():
         # Get services created by this admin
         services = Service.query.filter(
             Service.admin_id == admin_user.id,
-            Service.is_deleted == False
+            Service.is_deleted is False
         ).all()
 
         return (
