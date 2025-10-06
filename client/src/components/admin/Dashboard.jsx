@@ -195,7 +195,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      {(role === "admin" || role==="super_admin") && (
+      {(role === "admin" || role === "super_admin") && (
         <div className=" bg-white shadow-lg p-4 rounded-3">
           <div className="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-subtle pb-3">
             <h4 className="fw-bold">Recent Bookings</h4>
@@ -283,7 +283,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      {(role === "admin" || role==="super_admin") && (
+      {(role === "admin" || role === "super_admin") && (
         <div className="mt-5">
           <div className="my-5 shadow-lg bg-white p-4 ">
             <div className="d-flex align-items-center justify-content-between">
