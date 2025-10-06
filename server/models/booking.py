@@ -9,6 +9,7 @@ class BookingStatus(enum.Enum):
     confirmed = "confirmed"
     completed = "completed"
     cancelled = "cancelled"
+    deleted = "deleted"
 
 
 class Booking(db.Model):
@@ -43,6 +44,7 @@ class Booking(db.Model):
         db.DateTime(timezone=True),
         onupdate=db.func.now(),
     )
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     # --- Relationships ---
     client = db.relationship("User", back_populates="bookings")

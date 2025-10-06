@@ -10,6 +10,7 @@ class InvoiceStatus(enum.Enum):
     paid = "paid"
     overdue = "overdue"
     cancelled = "cancelled"
+    deleted = "deleted"
 
 
 class Invoice(db.Model):

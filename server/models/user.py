@@ -20,6 +20,7 @@ class AccountStatus(PyEnum):
     ACTIVE = "active"
     SUSPENDED = "suspended"
     INACTIVE = "inactive"
+    DELETED = "deleted"
 
 
 class User(db.Model):
@@ -59,6 +60,7 @@ class User(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
     @property
