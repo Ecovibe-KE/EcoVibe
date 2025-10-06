@@ -93,7 +93,8 @@ function TopNavbar() {
   const closeMobileSidebar = useCallback(() => setShowMobileSidebar(false), []);
 
   const getLinkClass = ({ isActive }) =>
-    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${isActive ? "active-link" : "inactive-link"
+    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${
+      isActive ? "active-link" : "inactive-link"
     }`;
 
   const SidebarContent = ({ onClose, isMobile = false }) => {

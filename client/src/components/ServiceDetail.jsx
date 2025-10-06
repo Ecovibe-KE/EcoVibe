@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getServiceById } from "../api/services/servicemanagement";
 import "../css/ServiceDetail.css";
 import { displayDuration } from "./admin/ServiceAdminMain";
-import { useAuth } from "../context/AuthContext"; // Add this import
 import BookingForm from "./BookingForm"; // Add this import
 import { createBooking } from "../api/services/booking";
 import { toast } from "react-toastify";
@@ -32,7 +31,7 @@ const ServiceDetail = () => {
           );
         }
       } catch (error) {
-        console.error(error)
+        console.error(error);
         toast.error(
           `Server unavailable. Failed to fetch service, please try again later`,
         );

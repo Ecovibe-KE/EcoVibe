@@ -13,7 +13,7 @@ const separateDuration = (str) => {
   return { hours, minutes };
 };
 
-export function displayDuration(duration) {
+function displayDuration(duration) {
   const { hours, minutes } = separateDuration(duration);
   if (minutes < 1) {
     return `${hours} hr`;

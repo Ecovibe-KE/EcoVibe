@@ -24,7 +24,7 @@ const Services = () => {
           toast.error(`Failed to fetch services: ${response.message}.`);
         }
       } catch (error) {
-        console.error(error)
+        console.error(error);
         toast.error(`Server unavailable. Please try again later`);
         setServices([]);
       }

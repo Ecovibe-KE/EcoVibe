@@ -213,13 +213,6 @@ const BlogManagementUi = () => {
   return (
     <div className="min-vh-100 bg-light py-4 py-sm-5 font-sans">
       <div className="container-fluid">
-        {/* Post Creation Modal */}
-        <PostCreationModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          post={editingPost}
-        />
-
         <header className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
           <div>
             <h1 className="fs-3 fw-semibold text-dark">Welcome to Blogs,</h1>
@@ -237,28 +230,28 @@ const BlogManagementUi = () => {
 
         {/* Stat Cards Section - Uses Bootstrap Grid (Row/Col) */}
         <div className="row g-4 mb-4">
-          <div className="col-12 col-md-3">
+          <div className="col-12 col-md-4 col-lg-3">
             <StatCard
               icon={<LibraryBooksIcon fontSize="large" color="primary" />}
               value={totalBlogs}
               label="Total Posts"
             />
           </div>
-          <div className="col-12 col-md-3">
+          <div className="col-12 col-md-4 col-lg-3">
             <StatCard
               icon={<CardMembershipIcon fontSize="large" color="success" />}
               value={publishedBlogs}
               label="Published"
             />
           </div>
-          <div className="col-12 col-md-3">
+          <div className="col-12 col-md-4 col-lg-3">
             <StatCard
               icon={<EditNoteIcon fontSize="large" color="warning" />}
               value={draftBlogs}
               label="Drafts"
             />
           </div>
-          <div className="col-12 col-md-3">
+          <div className="col-12 col-md-4 col-lg-3">
             <StatCard
               icon={<NewspaperIcon fontSize="large" color="danger" />}
               value={newsletterBlogs}
@@ -365,45 +358,55 @@ const BlogManagementUi = () => {
         </div>
 
         {/* Blog Post Item Section - Uses Card structure for the list item */}
-        {isLoading && <div className="text-secondary">Loading posts...</div>}
-        {error && <div className="text-danger">{error}</div>}
-        {!isLoading && filteredBlogs.length === 0 && (
-          <div className="text-secondary">No posts found.</div>
-        )}
-        <div className="d-flex flex-column gap-4">
-          {!isLoading &&
-            filteredBlogs.map((post) => (
-              <BlogPostItem
-                key={post.id}
-                post={post}
-                onEdit={openModal}
-                onDelete={async (postId) => {
-                  if (
-                    confirm(
-                      "Are you sure you want to delete this post? This action cannot be undone.",
-                    )
-                  ) {
-                    // Call delete API here
-                    try {
-                      setIsLoading(true);
-                      await deleteBlog(postId);
-                      toast.success("Post deleted successfully.");
-                    } catch (err) {
-                      toast.error(
-                        "Failed to delete post. Please try again later.",
-                      );
-                      if (import.meta.env.MODE !== "production") {
-                        console.error("Error deleting post:", err);
+
+        {/* Post Creation Modal */}
+
+        <div className="d-flex mb-4 row md-col gap-4">
+          <PostCreationModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            post={editingPost}
+          />
+          {isLoading && <div className="text-secondary">Loading posts...</div>}
+          {error && <div className="text-danger">{error}</div>}
+          {!isLoading && filteredBlogs.length === 0 && (
+            <div className="text-secondary">No posts found.</div>
+          )}
+          <div className="d-flex flex-column gap-4">
+            {!isLoading &&
+              filteredBlogs.map((post) => (
+                <BlogPostItem
+                  key={post.id}
+                  post={post}
+                  onEdit={openModal}
+                  onDelete={async (postId) => {
+                    if (
+                      confirm(
+                        "Are you sure you want to delete this post? This action cannot be undone.",
+                      )
+                    ) {
+                      // Call delete API here
+                      try {
+                        setIsLoading(true);
+                        await deleteBlog(postId);
+                        toast.success("Post deleted successfully.");
+                      } catch (err) {
+                        toast.error(
+                          "Failed to delete post. Please try again later.",
+                        );
+                        if (import.meta.env.MODE !== "production") {
+                          console.error("Error deleting post:", err);
+                        }
+                      } finally {
+                        setIsLoading(false);
                       }
-                    } finally {
-                      setIsLoading(false);
+                      // After deletion, refresh the blog list
+                      setLoadBlogsTrigger(loadBlogsTrigger + 1);
                     }
-                    // After deletion, refresh the blog list
-                    setLoadBlogsTrigger(loadBlogsTrigger + 1);
-                  }
-                }}
-              />
-            ))}
+                  }}
+                />
+              ))}
+          </div>
         </div>
       </div>
     </div>

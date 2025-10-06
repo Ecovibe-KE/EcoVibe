@@ -455,7 +455,7 @@ const TicketDetailsModal = ({
   onDelete,
   getStatusBadge,
   getPriorityBadge,
-  onRefreshTicket = () => { },
+  onRefreshTicket = () => {},
 }) => {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
