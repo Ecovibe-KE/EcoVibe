@@ -166,7 +166,7 @@ class UserListResource(Resource):
             if current_user.role == Role.ADMIN:
                 query = query.filter(User.role == Role.CLIENT)
 
-            query = query.filter(User.is_deleted == False)
+            query = query.filter(~User.is_deleted)
             users = query.all()
             users_data = [UserService.serialize_user(user) for user in users]
 
@@ -384,8 +384,6 @@ class UserResource(Resource):
             if not UserService.can_modify_user(current_user, user):
                 return {"status": "error", "message": "Cannot delete this user"}, 403
 
-            # db.session.delete(user)
-            # user.account_status=User.account_status.DELETED
             user.is_deleted=True
             db.session.commit()
 
