@@ -152,7 +152,7 @@ function App() {
             <Route
               path="services"
               element={
-                <RequireRole allowedRoles={["admin"]}>
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
                   <ServiceAdmin />
                 </RequireRole>
               }
