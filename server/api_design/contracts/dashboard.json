@@ -1,0 +1,12 @@
+[
+  {
+    "endpoint": "/api/dashboard",
+    "method": "GET",
+    "description": "Retrieve dashboard data based on user role (client or admin).",
+    "responses": {
+      "200": { "$ref": "../examples/dashboard/dashboard.200.json" },
+      "403": { "$ref": "../examples/errors/403.json" },
+      "500": { "$ref": "../examples/errors/500.json" }
+    }
+  }
+]
