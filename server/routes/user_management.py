@@ -384,7 +384,7 @@ class UserResource(Resource):
             if not UserService.can_modify_user(current_user, user):
                 return {"status": "error", "message": "Cannot delete this user"}, 403
 
-            user.is_deleted=True
+            user.is_deleted = True
             db.session.commit()
 
             return {"status": "success", "message": "User deleted successfully"}, 200
