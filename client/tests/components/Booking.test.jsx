@@ -173,8 +173,10 @@ describe('Booking Component', () => {
                 expect(mockGetBookings).toHaveBeenCalledTimes(1);
             });
 
-            expect(screen.getByTestId('booking-table')).toBeInTheDocument();
-            expect(screen.getByTestId('booking-1')).toBeInTheDocument();
+            const table = await screen.findByTestId('booking-table');
+            expect(table).toBeInTheDocument();
+            const booking1 = await screen.findByTestId('booking-1');
+            expect(booking1).toBeInTheDocument();
         });
 
         it('should fetch and display all bookings for admin user', async () => {
