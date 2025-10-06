@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Col } from "react-bootstrap";
 
 // Separates duration into hours and minutes

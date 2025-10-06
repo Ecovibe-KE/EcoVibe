@@ -122,18 +122,9 @@ const PostCreationModal = ({ isOpen, onClose, post }) => {
   if (!isOpen) return null;
 
   return (
-    <div
-      className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-      style={{ background: "rgba(0,0,0,0.45)", zIndex: 1 }}
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-      <div
-        className="modal-dialog modal-lg modal-dialog-centered bg-white"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-content rounded-4 shadow-lg">
+    <div className="d-flex align-items-center justify-content-center">
+      <div className="container" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-4">
           {/* Modal Header */}
           <div className="modal-header border-bottom-0 p-4">
             <h5
