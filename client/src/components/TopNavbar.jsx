@@ -76,6 +76,7 @@ const CLIENT_ALLOWED_ROUTES = [
 
 function TopNavbar() {
   const { user, isAtLeastAdmin, logoutUser } = useAuth();
+  const [avatarError, setAvatarError] = useState(false);
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const isDesktop = useBreakpoint("lg");
@@ -270,14 +271,14 @@ function TopNavbar() {
               className="d-flex align-items-center gap-2"
               style={{ border: "none", background: "transparent" }}
             >
-              {user?.avatar ? (
+              {user?.avatar && !avatarError ? (
                 <img
                   src={user.avatar}
                   alt="User Avatar"
                   style={{ width: 40, height: 40, borderRadius: "50%" }}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.style.display = "none";
+                    setAvatarError(true);
                   }}
                 />
               ) : (
