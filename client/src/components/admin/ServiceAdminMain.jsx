@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Col } from "react-bootstrap";
 
 // Separates duration into hours and minutes
@@ -13,7 +14,7 @@ const separateDuration = (str) => {
   return { hours, minutes };
 };
 
-function displayDuration(duration) {
+export function displayDuration(duration) {
   const { hours, minutes } = separateDuration(duration);
   if (minutes < 1) {
     return `${hours} hr`;
