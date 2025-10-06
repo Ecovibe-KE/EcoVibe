@@ -14,9 +14,10 @@ import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
 import { toast } from "react-toastify";
-
+import Avatar from "@mui/material/Avatar";
 import "../css/TopNavBar.css";
 import { useAuth } from "../context/AuthContext";
+import PersonIcon from "@mui/icons-material/Person";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -93,7 +94,8 @@ function TopNavbar() {
   const closeMobileSidebar = useCallback(() => setShowMobileSidebar(false), []);
 
   const getLinkClass = ({ isActive }) =>
-    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${isActive ? "active-link" : "inactive-link"
+    `d-flex align-items-center p-2 rounded mb-1 text-decoration-none ${
+      isActive ? "active-link" : "inactive-link"
     }`;
 
   const SidebarContent = ({ onClose, isMobile = false }) => {
@@ -268,16 +270,22 @@ function TopNavbar() {
               className="d-flex align-items-center gap-2"
               style={{ border: "none", background: "transparent" }}
             >
-              <img
-                src={user?.avatar}
-                className="user-avatar rounded-circle"
-                alt="User Avatar"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  border: "2px solid #e3e6f0",
-                }}
-              />
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="User Avatar"
+                  style={{ width: 40, height: 40, borderRadius: "50%" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = "none";
+                  }}
+                />
+              ) : (
+                <Avatar sx={{ width: 40, height: 40 }}>
+                  <PersonIcon />
+                </Avatar>
+              )}
+
               <div className="user-details d-none d-sm-block">
                 <div
                   className="user-name"
