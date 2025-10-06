@@ -223,7 +223,7 @@ def send_invitation_email(
         <style>
             body {{ font-family: Arial, sans-serif; line-height: 1.6; }}
             .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-            .button {{
+            .button-password {{
                 background-color: #37B137;
                 color: white;
                 padding: 12px 24px;
@@ -253,11 +253,9 @@ def send_invitation_email(
 
             <p>Your temporary password is:</p>
             <div class="password-box">{password}</div>
-
-            "<p>Please click the button below to set your password and "
-            "activate your account:</p>"
-            <p>
-                <a href="{invitation_link}" class="button">Set Your Password</a>
+            <p>Please click the button below to set your password and
+            activate your account:</p>
+                <a href="{invitation_link}" class="button-password">Set Your Password</a>
             </p>
             <p><small>This invitation link will expire in 24 hours.</small></p>
         </div>
