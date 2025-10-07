@@ -135,7 +135,7 @@ const ProfilePage = () => {
           <div>
             <h5 className="mb-0">{formData.full_name}</h5>
 
-            {/* ✅ Role display with super_admin support */}
+            {/* ✅ Role display (keeps "Client" text, removes duplicate badge) */}
             <small className="text-muted">
               {["ADMIN", "admin"].includes(formData.role)
                 ? "Admin"
@@ -144,21 +144,14 @@ const ProfilePage = () => {
                 : "Client"}
             </small>
 
-            {/* ✅ Simplified badges - removed yellow duplicate */}
-            <div>
-              {["CLIENT", "client"].includes(formData.role) && (
-                <>
-                  <span className="badge bg-success mt-1">Client</span>{" "}
-                  <span className="badge bg-light text-dark">
-                    {formData.industry}
-                  </span>
-                </>
-              )}
-
-              {["ADMIN", "admin"].includes(formData.role) && (
-                <span className="badge bg-primary mt-1">Admin</span>
-              )}
-            </div>
+            {/* ✅ Only show industry badge below */}
+            {formData.industry && (
+              <div>
+                <span className="badge bg-light text-dark mt-1">
+                  {formData.industry}
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <div className="d-flex gap-2">
