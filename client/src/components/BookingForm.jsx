@@ -13,7 +13,7 @@ const BookingForm = ({
   services = [],
   disableService = false,
 }) => {
-  const { user, isAdmin, isSuperAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin, isAtLeastAdmin } = useAuth();
   const [form, setForm] = useState({
     start_time: "",
     status: "pending",
@@ -32,7 +32,6 @@ const BookingForm = ({
         try {
           const date = new Date(dateString);
           if (isNaN(date.getTime())) return "";
-          // Adjust for timezone offset to display correctly in datetime-local input
           const timezoneOffset = date.getTimezoneOffset() * 60000;
           const adjustedDate = new Date(date.getTime() - timezoneOffset);
           return adjustedDate.toISOString().slice(0, 16);
@@ -42,8 +41,7 @@ const BookingForm = ({
         }
       };
 
-      // Auto-set client_id for non-admin users
-      const autoClientId = !isAdmin && user ? user.id.toString() : "";
+      const autoClientId = !isAtLeastAdmin && user ? user.id.toString() : "";
 
       setForm({
         start_time: formatDateTimeForInput(initialData.start_time),
@@ -52,23 +50,21 @@ const BookingForm = ({
         client_id:
           initialData.client_id?.toString() ||
           autoClientId ||
-          (isAdmin ? "" : initialData.client_id?.toString()),
+          (isAtLeastAdmin ? "" : initialData.client_id?.toString()),
       });
     } else {
-      // Auto-set client_id for new bookings by non-admin users
-      if (!isAdmin && user) {
+      if (!isAtLeastAdmin && user) {
         setForm((prev) => ({
           ...prev,
           client_id: user.id.toString(),
         }));
       }
     }
-  }, [initialData, isAdmin, user]);
+  }, [initialData, isAtLeastAdmin, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -80,8 +76,7 @@ const BookingForm = ({
     if (!form.start_time) newErrors.start_time = "Appointment date and time is required";
     if (!form.service_id) newErrors.service_id = "Service is required";
 
-    // Only validate client_id for admin users (non-admin users have it auto-set)
-    if (isAdmin && !form.client_id) {
+    if (isAtLeastAdmin && !form.client_id) {
       newErrors.client_id = "Client is required";
     }
 
@@ -112,7 +107,6 @@ const BookingForm = ({
       client_id: form.client_id ? parseInt(form.client_id, 10) : undefined,
     };
 
-    // Remove empty fields
     Object.keys(formattedData).forEach((key) => {
       if (formattedData[key] === "" || formattedData[key] === undefined) {
         delete formattedData[key];
@@ -127,12 +121,12 @@ const BookingForm = ({
   console.log("Current user:", user);
   console.log("Is admin:", isAdmin);
   console.log("Is super admin:", isSuperAdmin);
+  console.log("Is at least admin:", isAtLeastAdmin);
   console.log("Clients available:", clients);
   console.log("Services available:", services);
 
-  // Get current client name for display
   const getCurrentClientName = () => {
-    if (!isAdmin && user) {
+    if (!isAtLeastAdmin && user) {
       return user.name || user.email || "Current User";
     }
     return "";
@@ -144,8 +138,8 @@ const BookingForm = ({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit}>
-        {/* Client Selection - Only show for admins */}
-        {isAdmin ? (
+        {/* Client Selection - Show for both Admin and Super Admin */}
+        {isAtLeastAdmin ? (
           <Select
             label="Client"
             name="client_id"
@@ -162,7 +156,6 @@ const BookingForm = ({
             ))}
           </Select>
         ) : (
-          /* Display current user info for non-admin clients */
           <div className="mb-3">
             <label className="form-label fw-bold">Client</label>
             <div className="p-2 border rounded bg-light">
@@ -187,7 +180,7 @@ const BookingForm = ({
         />
 
         {/* Status Selection - Only for Admin and Super Admin */}
-        {(isAdmin || isSuperAdmin) && (
+        {isAtLeastAdmin && (
           <Select
             label="Status"
             name="status"
