@@ -60,6 +60,7 @@ class User(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    # add soft delete
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
