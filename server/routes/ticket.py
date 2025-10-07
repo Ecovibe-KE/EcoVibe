@@ -163,39 +163,29 @@ class TicketListResource(Resource):
 
             subject_raw = data.get("subject", "")
             description_raw = data.get("description", "")
-            if not isinstance(subject_raw, str):
+            if not isinstance(subject_raw, str) or not subject_raw.strip():
                 return restful_response(
                     status="error",
                     message="Subject must be a non-empty string",
                     status_code=400,
                 )
-            if not isinstance(description_raw, str):
+            if not isinstance(description_raw, str) or not description_raw.strip():
                 return restful_response(
                     status="error",
                     message="Description must be a non-empty string",
                     status_code=400,
                 )
+
             subject = subject_raw.strip()
             description = description_raw.strip()
             priority = data.get("priority", "medium")
             category = data.get("category", "general")
 
-            if not subject:
-                return restful_response(
-                    status="error", message="Subject is required", status_code=400
-                )
-
-            if not description:
-                return restful_response(
-                    status="error", message="Description is required", status_code=400
-                )
-
             if user_role == Role.CLIENT.value:
+                # Assign ticket to the first available admin
                 client_id = user.id
                 admin = (
-                    User.query.filter(
-                        User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value])
-                    )
+                    User.query.filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
                     .order_by(User.id.asc())
                     .first()
                 )
@@ -206,9 +196,12 @@ class TicketListResource(Resource):
                         status_code=503,
                     )
                 admin_id = admin.id
-            else:
+
+            else:  # Admin creating a ticket for a client
                 client_id = data.get("client_id")
                 admin_id = data.get("admin_id", user.id)
+
+            # Validate client_id
                 try:
                     client_id = int(client_id)
                 except (TypeError, ValueError):
@@ -230,11 +223,10 @@ class TicketListResource(Resource):
                         status="error", message="Invalid client", status_code=400
                     )
 
+            # Validate admin_id
                 if admin_id is None:
                     return restful_response(
-                        status="error",
-                        message="admin_id is required",
-                        status_code=400,
+                        status="error", message="admin_id is required", status_code=400
                     )
                 try:
                     admin_id = int(admin_id)
@@ -244,6 +236,7 @@ class TicketListResource(Resource):
                         message="admin_id must be an integer",
                         status_code=400,
                     )
+
                 admin = (
                     User.query.filter_by(id=admin_id)
                     .filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
@@ -251,19 +244,20 @@ class TicketListResource(Resource):
                 )
                 if not admin:
                     return restful_response(
-                        status="error", message="Invalid admin", status_code=400
+                    status="error", message="Invalid admin", status_code=400
                     )
 
+        # Create ticket
             ticket = Ticket(
                 client_id=client_id,
                 admin_id=admin_id,
                 subject=subject,
                 status=TicketStatus.OPEN,
             )
-
             db.session.add(ticket)
             db.session.flush()
 
+        # Add initial message
             initial_message = TicketMessage(
                 ticket_id=ticket.id, sender_id=user.id, body=description
             )
