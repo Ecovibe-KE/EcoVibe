@@ -12,7 +12,7 @@ import { fetchUsers } from "../api/services/usermanagement";
 
 const ServiceDetail = () => {
   const { id } = useParams();
-  const { isAdmin } = useAuth();
+  const { isAtLeastAdmin } = useAuth();
   const [service, setService] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [clients, setClients] = useState([]);
@@ -43,7 +43,7 @@ const ServiceDetail = () => {
 
   useEffect(() => {
     const loadClients = async () => {
-      if (!isAdmin) return;
+      if (!isAtLeastAdmin) return;
 
       try {
         const allUsers = await fetchUsers();
@@ -58,7 +58,7 @@ const ServiceDetail = () => {
     };
 
     loadClients();
-  }, [isAdmin]);
+  }, [isAtLeastAdmin]);
 
   const handleBookService = () => {
     setShowBookingModal(true);

@@ -24,11 +24,11 @@ const Booking = () => {
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [clients, setClients] = useState([]);
 
-  const { user, isAdmin } = useAuth();
+  const { user, isAtLeastAdmin } = useAuth();
 
   useEffect(() => {
     const loadClients = async () => {
-      if (!isAdmin) return;
+      if (!isAtLeastAdmin) return;
 
       try {
         const allUsers = await fetchUsers();
@@ -43,7 +43,7 @@ const Booking = () => {
     };
 
     loadClients();
-  }, [isAdmin]);
+  }, [isAtLeastAdmin]);
 
   // Fetch all services for the form
   useEffect(() => {
@@ -69,7 +69,7 @@ const Booking = () => {
 
         let filtered = response.data || response;
 
-        if (!isAdmin) {
+        if (!isAtLeastAdmin) {
           filtered = filtered.filter((b) => b.client_id === user.id);
         }
 
@@ -82,7 +82,7 @@ const Booking = () => {
       }
     };
     fetchData();
-  }, [isAdmin, user.id]);
+  }, [isAtLeastAdmin, user.id]);
 
   // CREATE booking
   const handleAdd = async (formData) => {
@@ -157,10 +157,10 @@ const Booking = () => {
             setBookingToDelete({
               id: b.id,
               client_name: b.client_name || "Unknown Client",
-              booking_date: b.created_at, // Use created_at instead of booking_date
+              booking_date: b.created_at,
             })
           }
-          isAdmin={isAdmin}
+          isAdmin={isAtLeastAdmin}
         />
       )}
 
@@ -186,7 +186,7 @@ const Booking = () => {
         />
       )}
 
-      {/* VIEW MODAL - Using BookingDetails component */}
+      {/* VIEW MODAL */}
       {selectedBooking && (
         <BookingDetails 
           booking={selectedBooking}
