@@ -262,10 +262,7 @@ def mpesa_callback():
                     mpesa_transaction_id=transaction.id,
                     created_at=datetime.now(timezone.utc),
                 )
-                invoice = (Invoice
-                           .query
-                           .filter_by(id=transaction.invoice_id)
-                           .first())
+                invoice = Invoice.query.filter_by(id=transaction.invoice_id).first()
                 if invoice:
                     invoice.status = InvoiceStatus.paid
                 db.session.add(payment)
