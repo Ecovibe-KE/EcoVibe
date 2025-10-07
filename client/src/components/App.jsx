@@ -174,15 +174,7 @@ function App() {
               }
             />
 
-            <Route
-              path="about"
-              element={
-                <div className="p-4">
-                  <h2>About Management</h2>
-                  <p>Update about information.</p>
-                </div>
-              }
-            />
+         
 
             <Route
               path="tickets/admin"

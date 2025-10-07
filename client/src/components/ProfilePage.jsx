@@ -10,7 +10,6 @@ import Input from "../utils/Input";
 import styles from "../css/ProfilePage.module.css";
 
 const ProfilePage = () => {
-  // form state for editable fields
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -20,14 +19,9 @@ const ProfilePage = () => {
     role: "",
   });
 
-  // keep a copy of the server data so we can reset/cancel changes
   const [originalData, setOriginalData] = useState(null);
-
-  // loading + saving states
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  // password change form state
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwords, setPasswords] = useState({
     current_password: "",
@@ -35,7 +29,6 @@ const ProfilePage = () => {
   });
   const [changingPw, setChangingPw] = useState(false);
 
-  // load profile data on first render
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -45,7 +38,7 @@ const ProfilePage = () => {
           setOriginalData(response.data);
         } else {
           toast.error(
-            `Error: ${response?.message || "Failed to load profile"}`,
+            `Error: ${response?.message || "Failed to load profile"}`
           );
         }
       } catch (error) {
@@ -58,12 +51,10 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  // handle text input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // save profile updates to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -79,7 +70,6 @@ const ProfilePage = () => {
       if (response?.status === "success") {
         toast.success("Profile updated successfully 🎉");
 
-        // merge new changes with safe fallback if baseline wasn't set
         const updatedBaseline = response?.data ?? {
           ...(originalData ?? formData),
           ...payload,
@@ -102,14 +92,12 @@ const ProfilePage = () => {
     }
   };
 
-  // restore form values back to the original data
   const handleCancel = () => {
     if (originalData) {
       setFormData(originalData);
     }
   };
 
-  // update password for logged-in user
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setChangingPw(true);
@@ -146,11 +134,19 @@ const ProfilePage = () => {
           </div>
           <div>
             <h5 className="mb-0">{formData.full_name}</h5>
+
+            {/* ✅ Role display with super_admin support */}
             <small className="text-muted">
-              {formData.role === "ADMIN" ? "Admin" : "Client"}
+              {["ADMIN", "admin"].includes(formData.role)
+                ? "Admin"
+                : ["SUPER_ADMIN", "super_admin"].includes(formData.role)
+                ? "Super Admin"
+                : "Client"}
             </small>
+
+            {/* ✅ Simplified badges - removed yellow duplicate */}
             <div>
-              {formData.role === "CLIENT" && (
+              {["CLIENT", "client"].includes(formData.role) && (
                 <>
                   <span className="badge bg-success mt-1">Client</span>{" "}
                   <span className="badge bg-light text-dark">
@@ -158,7 +154,8 @@ const ProfilePage = () => {
                   </span>
                 </>
               )}
-              {formData.role === "ADMIN" && (
+
+              {["ADMIN", "admin"].includes(formData.role) && (
                 <span className="badge bg-primary mt-1">Admin</span>
               )}
             </div>
