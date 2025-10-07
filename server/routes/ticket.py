@@ -185,7 +185,9 @@ class TicketListResource(Resource):
                 # Assign ticket to the first available admin
                 client_id = user.id
                 admin = (
-                    User.query.filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
+                    User.query.filter(
+                        User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value])
+                    )
                     .order_by(User.id.asc())
                     .first()
                 )
@@ -201,7 +203,7 @@ class TicketListResource(Resource):
                 client_id = data.get("client_id")
                 admin_id = data.get("admin_id", user.id)
 
-            # Validate client_id
+                # Validate client_id
                 try:
                     client_id = int(client_id)
                 except (TypeError, ValueError):
@@ -225,7 +227,7 @@ class TicketListResource(Resource):
                         status="error", message="Invalid client", status_code=400
                     )
 
-            # Validate admin_id
+                # Validate admin_id
                 if admin_id is None:
                     return restful_response(
                         status="error", message="admin_id is required", status_code=400
@@ -246,10 +248,10 @@ class TicketListResource(Resource):
                 )
                 if not admin:
                     return restful_response(
-                    status="error", message="Invalid admin", status_code=400
+                        status="error", message="Invalid admin", status_code=400
                     )
 
-        # Create ticket
+            # Create ticket
             ticket = Ticket(
                 client_id=client_id,
                 admin_id=admin_id,
@@ -259,7 +261,7 @@ class TicketListResource(Resource):
             db.session.add(ticket)
             db.session.flush()
 
-        # Add initial message
+            # Add initial message
             initial_message = TicketMessage(
                 ticket_id=ticket.id, sender_id=user.id, body=description
             )
