@@ -217,7 +217,9 @@ class TicketListResource(Resource):
                         status_code=400,
                     )
 
-                client = User.query.filter_by(id=client_id, role=Role.CLIENT.value).first()
+                client = User.query.filter_by(
+                    id=client_id, role=Role.CLIENT.value
+                ).first()
                 if not client:
                     return restful_response(
                         status="error", message="Invalid client", status_code=400
