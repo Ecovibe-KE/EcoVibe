@@ -306,54 +306,54 @@ class TicketStatsResource(Resource):
     """Handle GET /tickets/stats"""
 
 
-@jwt_required()
-def get(self):
-    """Get ticket statistics"""
-    try:
-        user, user_role = get_current_user_and_role()
-        if not user:
-            return restful_response(
-                status="error", message="User not found", status_code=404
+    @jwt_required()
+    def get(self):
+        """Get ticket statistics"""
+        try:
+            user, user_role = get_current_user_and_role()
+            if not user:
+                return restful_response(
+                    status="error", message="User not found", status_code=404
+                )
+
+            q = Ticket.query
+            if user_role == Role.CLIENT.value:
+                q = q.filter(Ticket.client_id == user.id)
+
+            # Build subquery first if needed
+            subq = q.subquery()
+
+            # Grouped query using the subquery
+            counts = dict(
+                db.session.query(subq.c.status, func.count(subq.c.id))
+                .group_by(subq.c.status)
+                .all()
             )
 
-        q = Ticket.query
-        if user_role == Role.CLIENT.value:
-            q = q.filter(Ticket.client_id == user.id)
+            total = q.count()
+            open_count = counts.get(TicketStatus.OPEN, 0)
+            in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
+            closed_count = counts.get(TicketStatus.CLOSED, 0)
 
-        # Build subquery first if needed
-        subq = q.subquery()
+            stats = {
+                "total": total,
+                "open": open_count,
+                "in_progress": in_progress_count,
+                "closed": closed_count,
+            }
 
-        # Grouped query using the subquery
-        counts = dict(
-            db.session.query(subq.c.status, func.count(subq.c.id))
-            .group_by(subq.c.status)
-            .all()
-        )
+            return restful_response(
+                status="success",
+                message="Ticket stats fetched successfully",
+                data=stats,
+                status_code=200,
+            )
 
-        total = q.count()
-        open_count = counts.get(TicketStatus.OPEN, 0)
-        in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
-        closed_count = counts.get(TicketStatus.CLOSED, 0)
-
-        stats = {
-            "total": total,
-            "open": open_count,
-            "in_progress": in_progress_count,
-            "closed": closed_count,
-        }
-
-        return restful_response(
-            status="success",
-            message="Ticket stats fetched successfully",
-            data=stats,
-            status_code=200,
-        )
-
-    except Exception:
-        current_app.logger.exception("Error fetching ticket stats")
-        return restful_response(
-            status="error", message="Internal server error", status_code=500
-        )
+        except Exception:
+            current_app.logger.exception("Error fetching ticket stats")
+            return restful_response(
+                status="error", message="Internal server error", status_code=500
+            )
 
 
 class TicketResource(Resource):
