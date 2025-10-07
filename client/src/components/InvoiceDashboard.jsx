@@ -548,6 +548,9 @@ const InvoiceDashboard = () => {
         if (!invoice) return null;
 
         const transaction = transactionData[invoice.id];
+        const mpesaReceipt = transaction?.mpesa_receipt_number || 'N/A';
+        const phoneNumber = transaction?.phone_number || 'N/A';
+        const status = transaction?.status || 'N/A';
 
         return (
             <div className="card mb-4">
@@ -590,12 +593,20 @@ const InvoiceDashboard = () => {
                                                 <strong>Transaction ID</strong>
                                             </td>
                                             <td>
+                                                <strong>Transaction ID</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Phone Number</strong>
+                                            </td>
+                                            <td>
                                                 <strong>Transaction Status</strong>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>{transaction.transactionId}</td>
-                                            <td>{getTransactionStatusBadge(transaction.status)}</td>
+                                            <td>{mpesaReceipt}</td>
+                                            <td>{phoneNumber}</td>
+                                            <td>{getTransactionStatusBadge(status)}</td>
                                         </tr>
                                     </>
                                 )}
