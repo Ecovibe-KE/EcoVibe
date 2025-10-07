@@ -10,6 +10,7 @@ class InvoiceStatus(enum.Enum):
     paid = "paid"
     overdue = "overdue"
     cancelled = "cancelled"
+    deleted = "deleted"
 
 
 class Invoice(db.Model):
@@ -25,6 +26,7 @@ class Invoice(db.Model):
     status = db.Column(
         db.Enum(InvoiceStatus), nullable=False, default=InvoiceStatus.pending
     )
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     # --- Relationships ---
     client = db.relationship("User", back_populates="invoices")
