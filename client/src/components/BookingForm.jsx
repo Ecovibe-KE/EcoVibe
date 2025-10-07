@@ -13,11 +13,9 @@ const BookingForm = ({
   services = [],
   disableService = false,
 }) => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin } = useAuth();
   const [form, setForm] = useState({
-    booking_date: "",
     start_time: "",
-    end_time: "",
     status: "pending",
     service_id: "",
     client_id: "",
@@ -28,18 +26,6 @@ const BookingForm = ({
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
       console.log("Initial data received:", initialData);
-
-      const formatDateForInput = (dateString) => {
-        if (!dateString) return "";
-        try {
-          const date = new Date(dateString);
-          if (isNaN(date.getTime())) return "";
-          return date.toISOString().split("T")[0];
-        } catch (error) {
-          console.error("Error formatting date:", error);
-          return "";
-        }
-      };
 
       const formatDateTimeForInput = (dateString) => {
         if (!dateString) return "";
@@ -60,9 +46,7 @@ const BookingForm = ({
       const autoClientId = !isAdmin && user ? user.id.toString() : "";
 
       setForm({
-        booking_date: formatDateForInput(initialData.booking_date),
         start_time: formatDateTimeForInput(initialData.start_time),
-        end_time: formatDateTimeForInput(initialData.end_time),
         status: initialData.status || "pending",
         service_id: initialData.service_id?.toString() || "",
         client_id:
@@ -93,9 +77,7 @@ const BookingForm = ({
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.booking_date) newErrors.booking_date = "Booking date is required";
-    if (!form.start_time) newErrors.start_time = "Start time is required";
-    if (!form.end_time) newErrors.end_time = "End time is required";
+    if (!form.start_time) newErrors.start_time = "Appointment date and time is required";
     if (!form.service_id) newErrors.service_id = "Service is required";
 
     // Only validate client_id for admin users (non-admin users have it auto-set)
@@ -103,20 +85,11 @@ const BookingForm = ({
       newErrors.client_id = "Client is required";
     }
 
-    if (form.start_time && form.end_time) {
+    if (form.start_time) {
       const start = new Date(form.start_time);
-      const end = new Date(form.end_time);
-      if (end <= start) {
-        newErrors.end_time = "End time must be after start time";
-      }
-    }
-
-    if (form.booking_date) {
-      const bookingDate = new Date(form.booking_date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (bookingDate < today) {
-        newErrors.booking_date = "Booking date cannot be in the past";
+      if (start < today) {
+        newErrors.start_time = "Appointment date and time cannot be in the past";
       }
     }
 
@@ -153,6 +126,7 @@ const BookingForm = ({
   console.log("Current form state:", form);
   console.log("Current user:", user);
   console.log("Is admin:", isAdmin);
+  console.log("Is super admin:", isSuperAdmin);
   console.log("Clients available:", clients);
   console.log("Services available:", services);
 
@@ -203,17 +177,7 @@ const BookingForm = ({
         )}
 
         <Input
-          label="Booking Date"
-          type="date"
-          name="booking_date"
-          value={form.booking_date}
-          onChange={handleChange}
-          error={errors.booking_date}
-          required
-        />
-
-        <Input
-          label="Start Time"
+          label="Appointment Date and Time"
           type="datetime-local"
           name="start_time"
           value={form.start_time}
@@ -222,27 +186,20 @@ const BookingForm = ({
           required
         />
 
-        <Input
-          label="End Time"
-          type="datetime-local"
-          name="end_time"
-          value={form.end_time}
-          onChange={handleChange}
-          error={errors.end_time}
-          required
-        />
-
-        <Select
-          label="Status"
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-        >
-          <Option value="pending">Pending</Option>
-          <Option value="confirmed">Confirmed</Option>
-          <Option value="completed">Completed</Option>
-          <Option value="cancelled">Cancelled</Option>
-        </Select>
+        {/* Status Selection - Only for Admin and Super Admin */}
+        {(isAdmin || isSuperAdmin) && (
+          <Select
+            label="Status"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+          >
+            <Option value="pending">Pending</Option>
+            <Option value="confirmed">Confirmed</Option>
+            <Option value="completed">Completed</Option>
+            <Option value="cancelled">Cancelled</Option>
+          </Select>
+        )}
 
         <Select
           label="Service"

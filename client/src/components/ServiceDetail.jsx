@@ -4,27 +4,27 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getServiceById } from "../api/services/servicemanagement";
 import "../css/ServiceDetail.css";
 import { displayDuration } from "./admin/ServiceAdminMain";
-import BookingForm from "./BookingForm"; // Add this import
+import BookingForm from "./BookingForm";
 import { createBooking } from "../api/services/booking";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
+import { fetchUsers } from "../api/services/usermanagement";
 
 const ServiceDetail = () => {
   const { id } = useParams();
+  const { isAdmin } = useAuth();
   const [service, setService] = useState(null);
-  const [showBookingModal, setShowBookingModal] = useState(false); // Add this state
-  const [, setServices] = useState([]); // Add this state
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [clients, setClients] = useState([]);
   const navigate = useNavigate();
 
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
-    const fetchServices = async () => {
+    const fetchServiceData = async () => {
       try {
         const response = await getServiceById(id);
         if (response.status === "success") {
           setService(response.data);
-          // Set services array with the single service for the booking form
-          setServices([response.data]);
         } else {
           toast.error(
             `Failed to fetch services: ${response.message}. Please try again later`,
@@ -38,8 +38,27 @@ const ServiceDetail = () => {
         setService([]);
       }
     };
-    fetchServices();
+    fetchServiceData();
   }, [id]);
+
+  useEffect(() => {
+    const loadClients = async () => {
+      if (!isAdmin) return;
+
+      try {
+        const allUsers = await fetchUsers();
+        const activeClients = allUsers.filter(
+          (u) => u.role.toUpperCase() === "CLIENT",
+        );
+        setClients(activeClients);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        toast.error("Failed to load clients");
+      }
+    };
+
+    loadClients();
+  }, [isAdmin]);
 
   const handleBookService = () => {
     setShowBookingModal(true);
@@ -50,14 +69,11 @@ const ServiceDetail = () => {
   };
 
   const handleContact = () => {
-    // Add your contact logic here
     console.log("Contact team clicked");
   };
 
-  // Handle booking submission from the modal
   const handleBookingSubmit = async (formData) => {
     try {
-      // Since the service is pre-filled and disabled, we can use the createBooking function
       const response = await createBooking(formData);
       if (response.status === "success") {
         toast.success("Booking created successfully!");
@@ -104,7 +120,6 @@ const ServiceDetail = () => {
   return (
     <div className="service-detail-fixed">
       <Container>
-        {/* Back Button at the absolute top */}
         <div className="back-button-container">
           <Button
             variant="light"
@@ -117,14 +132,11 @@ const ServiceDetail = () => {
         </div>
 
         <Row className="mt-0">
-          {/* Left Column - Service Details */}
           <Col lg={8}>
-            {/* Service Header - Right after back button */}
             <div className="service-header-fixed">
               <h1 className="service-title-fixed">{service.title}</h1>
             </div>
 
-            {/* Service Image */}
             <div className="service-image-fixed">
               <img
                 src={service.image}
@@ -133,7 +145,6 @@ const ServiceDetail = () => {
               />
             </div>
 
-            {/* Service Description */}
             <Card className="service-card-fixed">
               <Card.Body>
                 <h5>Service Overview</h5>
@@ -143,7 +154,6 @@ const ServiceDetail = () => {
               </Card.Body>
             </Card>
 
-            {/* Service Features */}
             <Card className="features-card-fixed">
               <Card.Body>
                 <h5>What's Included</h5>
@@ -173,7 +183,6 @@ const ServiceDetail = () => {
             </Card>
           </Col>
 
-          {/* Right Column - Booking Card */}
           <Col lg={4}>
             <div className="booking-section-fixed">
               <Card className="booking-card-fixed">
@@ -213,15 +222,14 @@ const ServiceDetail = () => {
           </Col>
         </Row>
 
-        {/* Booking Modal */}
         {showBookingModal && service && (
           <BookingForm
             initialData={{ service_id: service.id }}
             onSubmit={handleBookingSubmit}
             onClose={() => setShowBookingModal(false)}
-            // clients={[]} // Empty for non-admin users
+            clients={clients}
             services={[service]}
-            disableService={true} // Add this prop to disable service selection
+            disableService={true}
           />
         )}
       </Container>

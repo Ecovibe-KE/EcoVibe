@@ -15,29 +15,21 @@ from models.invoice import Invoice, InvoiceStatus
 booking_bp = Blueprint("booking", __name__)
 api = Api(booking_bp)
 
-
-# --- Utility function ---
 def parse_booking_fields(data):
-    """Parse booking fields from JSON to correct Python types."""
     parsed = {}
-    if "booking_date" in data:
-        parsed["booking_date"] = datetime.strptime(
-            data["booking_date"], "%Y-%m-%d"
-        ).date()
     if "start_time" in data:
         parsed["start_time"] = datetime.fromisoformat(data["start_time"])
-    if "end_time" in data:
-        parsed["end_time"] = datetime.fromisoformat(data["end_time"])
     if "status" in data:
         parsed["status"] = data["status"]
+    if "service_id" in data and data["service_id"]:
+        parsed["service_id"] = int(data["service_id"])
+    if "client_id" in data and data["client_id"]:
+        parsed["client_id"] = int(data["client_id"])
     return parsed
 
-
-# --- Booking List Resource ---
 class BookingListResource(Resource):
     @jwt_required()
     def get(self):
-        """List bookings (admins see all, clients only see theirs)."""
         try:
             current_user, role = get_current_user_and_role()
             if not current_user:
@@ -47,7 +39,6 @@ class BookingListResource(Resource):
                     status_code=401,
                 )
 
-            # Use eager loading to prevent N+1 queries
             base_query = Booking.query.options(
                 joinedload(Booking.client), joinedload(Booking.service)
             )
@@ -72,7 +63,6 @@ class BookingListResource(Resource):
 
     @jwt_required()
     def post(self):
-        """Create a new booking (admin can assign client, client can book self)."""
         try:
             data = request.get_json()
             current_user, role = get_current_user_and_role()
@@ -84,7 +74,6 @@ class BookingListResource(Resource):
                     status_code=401,
                 )
 
-            # --- Determine Client ---
             if role == Role.ADMIN.value or role == Role.SUPER_ADMIN.value:
                 client_id = data.get("client_id")
             else:
@@ -97,7 +86,6 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            # --- Validate Service ---
             service_id = data.get("service_id")
             if not service_id:
                 return restful_response(
@@ -106,23 +94,22 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            # --- Parse and Create Booking ---
             parsed_fields = parse_booking_fields(data)
             booking = Booking(
-                client_id=client_id, service_id=service_id, **parsed_fields
+                client_id=client_id, 
+                service_id=service_id, 
+                **parsed_fields
             )
 
-            # --- Fetch Service for Price ---
             service = Service.query.get(service_id)
             if not service:
                 return restful_response(
                     status="error",
-                    message="Invalid client or service ID",
+                    message="Invalid service ID",
                     status_code=400,
                 )
 
             amount = int(service.price)
-            # --- Create Invoice ---
             invoice = Invoice(
                 amount=amount,
                 client_id=client_id,
@@ -132,12 +119,10 @@ class BookingListResource(Resource):
                 status=InvoiceStatus.pending,
             )
 
-            # --- Save Booking and Invoice ---
             db.session.add(booking)
             db.session.add(invoice)
             db.session.commit()
 
-            # Reload the booking with relationships for the response
             booking_with_relations = Booking.query.options(
                 joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking.id)
@@ -169,14 +154,10 @@ class BookingListResource(Resource):
                 status_code=500,
             )
 
-
-# --- Booking Detail Resource ---
 class BookingResource(Resource):
     @jwt_required()
     def get(self, booking_id):
-        """Retrieve a single booking by ID (requires authentication)."""
         try:
-            # Use eager loading to prevent N+1 queries
             booking = Booking.query.options(
                 joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking_id)
@@ -202,9 +183,7 @@ class BookingResource(Resource):
 
     @jwt_required()
     def patch(self, booking_id):
-        """Partially update a booking (only editable fields provided in request)."""
         try:
-            # Use eager loading to prevent N+1 queries
             booking = Booking.query.options(
                 joinedload(Booking.client), joinedload(Booking.service)
             ).get(booking_id)
@@ -224,7 +203,6 @@ class BookingResource(Resource):
                     status_code=401,
                 )
 
-            # --- Permissions ---
             is_not_admin = role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value]
             is_not_owner = booking.client_id != current_user.id
             if is_not_admin and is_not_owner:
@@ -234,19 +212,15 @@ class BookingResource(Resource):
                     status_code=403,
                 )
 
-            # --- Parse and Apply Updates ---
             data = request.get_json()
             parsed_fields = parse_booking_fields(data)
 
-            # Apply parsed fields (booking_date, start_time, end_time, status)
             for key, value in parsed_fields.items():
                 setattr(booking, key, value)
 
-            # --- Handle service_id update ---
             if "service_id" in data:
                 service_id = data.get("service_id")
                 if service_id:
-                    # Validate service exists
                     service = Service.query.get(service_id)
                     if not service:
                         return restful_response(
@@ -262,11 +236,9 @@ class BookingResource(Resource):
                         status_code=400,
                     )
 
-            # --- Handle client_id update ---
             if "client_id" in data:
                 client_id = data.get("client_id")
                 if client_id:
-                    # Only admins can change client_id
                     if role not in [Role.ADMIN.value, Role.SUPER_ADMIN.value]:
                         return restful_response(
                             status="error",
@@ -274,7 +246,6 @@ class BookingResource(Resource):
                             status_code=403,
                         )
 
-                    # Validate client exists
                     client = User.query.get(client_id)
                     if not client:
                         return restful_response(
@@ -316,7 +287,6 @@ class BookingResource(Resource):
 
     @jwt_required()
     def delete(self, booking_id):
-        """Delete a booking (admins or the booking's client)."""
         try:
             booking = Booking.query.get(booking_id)
             if not booking:
@@ -359,7 +329,5 @@ class BookingResource(Resource):
                 status_code=500,
             )
 
-
-# Register resources
 api.add_resource(BookingListResource, "/bookings")
 api.add_resource(BookingResource, "/bookings/<int:booking_id>")

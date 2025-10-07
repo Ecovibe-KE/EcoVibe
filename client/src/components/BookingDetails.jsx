@@ -13,19 +13,15 @@ const BookingDetails = ({ booking, onClose }) => {
         <strong>Service:</strong> {booking.service_name}
       </p>
       <p>
-        <strong>Date:</strong>{" "}
-        {new Date(booking.booking_date).toLocaleDateString()}
-      </p>
-      <p>
-        <strong>Start:</strong>{" "}
-        {booking.start_time
-          ? new Date(booking.start_time).toLocaleTimeString()
+        <strong>Booking Date:</strong>{" "}
+        {booking.created_at
+          ? new Date(booking.created_at).toLocaleDateString()
           : "—"}
       </p>
       <p>
-        <strong>End:</strong>{" "}
-        {booking.end_time
-          ? new Date(booking.end_time).toLocaleTimeString()
+        <strong>Appointment Date and Time:</strong>{" "}
+        {booking.start_time
+          ? new Date(booking.start_time).toLocaleString()
           : "—"}
       </p>
       <p>
