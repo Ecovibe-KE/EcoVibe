@@ -305,7 +305,6 @@ class TicketListResource(Resource):
 class TicketStatsResource(Resource):
     """Handle GET /tickets/stats"""
 
-
     @jwt_required()
     def get(self):
         """Get ticket statistics"""
