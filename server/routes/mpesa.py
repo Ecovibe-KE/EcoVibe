@@ -7,6 +7,8 @@ from models.user import User
 from datetime import datetime, timezone
 from utils.mpesa_utils import mpesa_utility
 
+from models.invoice import InvoiceStatus
+
 mpesa_bp = Blueprint("mpesa", __name__)
 
 
@@ -248,7 +250,6 @@ def mpesa_callback():
             transaction.callback_received_at = datetime.now(timezone.utc)
 
             # Update status based on result code
-            # In mpesa_callback function, update the Payment creation
             if result_code == 0:
                 transaction.status = "completed"
                 if transaction_code:
@@ -261,8 +262,10 @@ def mpesa_callback():
                     mpesa_transaction_id=transaction.id,
                     created_at=datetime.now(timezone.utc),
                 )
+                invoice = Invoice.query.filter_by(id=transaction.invoice_id).first()
+                if invoice:
+                    invoice.status = InvoiceStatus.paid
                 db.session.add(payment)
-
             else:
                 transaction.status = "failed"
 
