@@ -40,6 +40,11 @@
   transform: scale(1.05);
 }
 
+.contact-button:hover {
+  background-color: #f5a030 !important;
+  border-color: #f5a030 !important;
+}
+
 .step-number {
   width: 40px;
   height: 40px;
@@ -63,8 +68,8 @@
 }
 
 .learn-more-btn:hover {
-  background-color: #2a8a2a !important;
-  border-color: #2a8a2a !important;
+  background-color: #f5a030 !important;
+  border-color: #f5a030 !important;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(55, 177, 55, 0.3);
 }
