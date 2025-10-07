@@ -6,16 +6,17 @@ import "../css/ServiceDetail.css";
 import { displayDuration } from "./admin/ServiceAdminMain";
 import BookingForm from "./BookingForm";
 import { createBooking } from "../api/services/booking";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { fetchUsers } from "../api/services/usermanagement";
 
 const ServiceDetail = () => {
   const { id } = useParams();
-  const { isAtLeastAdmin } = useAuth();
+  const { user, isActive, isAtLeastAdmin } = useAuth();
   const [service, setService] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [clients, setClients] = useState([]);
+  const isAuthenticated = !!user && isActive;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,6 +62,14 @@ const ServiceDetail = () => {
   }, [isAtLeastAdmin]);
 
   const handleBookService = () => {
+    if (!isAuthenticated) {
+      toast.error("You must be logged in to book a service. Redirecting to Login page");
+      setTimeout(() => {
+        navigate("/login", { state: { from: `/services/${id}` } });
+      }, 5000);
+      return;
+    }
+
     setShowBookingModal(true);
   };
 
@@ -118,122 +127,131 @@ const ServiceDetail = () => {
   }
 
   return (
-    <div className="service-detail-fixed">
-      <Container>
-        <div className="back-button-container">
-          <Button
-            variant="light"
-            onClick={handleBackToServices}
-            className="back-btn-fixed"
-          >
-            <i className="bi bi-arrow-left"></i>
-            Back to Services
-          </Button>
-        </div>
+    <>
+      <div className="service-detail-fixed">
+        <Container>
+          <div className="back-button-container">
+            <Button
+              variant="light"
+              onClick={handleBackToServices}
+              className="back-btn-fixed"
+            >
+              <i className="bi bi-arrow-left"></i>
+              Back to Services
+            </Button>
+          </div>
 
-        <Row className="mt-0">
-          <Col lg={8}>
-            <div className="service-header-fixed">
-              <h1 className="service-title-fixed">{service.title}</h1>
-            </div>
+          <Row className="mt-0">
+            <Col lg={8}>
+              <div className="service-header-fixed">
+                <h1 className="service-title-fixed">{service.title}</h1>
+              </div>
 
-            <div className="service-image-fixed">
-              <img
-                src={service.image}
-                alt={service.title}
-                className="img-fluid"
-              />
-            </div>
+              <div className="service-image-fixed">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="img-fluid"
+                />
+              </div>
 
-            <Card className="service-card-fixed">
-              <Card.Body>
-                <h5>Service Overview</h5>
-                <p className="service-description-fixed">
-                  {service.description}
-                </p>
-              </Card.Body>
-            </Card>
-
-            <Card className="features-card-fixed">
-              <Card.Body>
-                <h5>What's Included</h5>
-                <Row>
-                  <Col md={6}>
-                    <div className="feature-item-fixed">
-                      <i className="bi bi-check-circle-fill"></i>
-                      <span>Expert Consultation</span>
-                    </div>
-                    <div className="feature-item-fixed">
-                      <i className="bi bi-check-circle-fill"></i>
-                      <span>Customized Solution</span>
-                    </div>
-                  </Col>
-                  <Col md={6}>
-                    <div className="feature-item-fixed">
-                      <i className="bi bi-check-circle-fill"></i>
-                      <span>Ongoing Support</span>
-                    </div>
-                    <div className="feature-item-fixed">
-                      <i className="bi bi-check-circle-fill"></i>
-                      <span>Quality Guarantee</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          <Col lg={4}>
-            <div className="booking-section-fixed">
-              <Card className="booking-card-fixed">
+              <Card className="service-card-fixed">
                 <Card.Body>
-                  <h4>Book This Service</h4>
-
-                  <div className="price-section-fixed">
-                    <div className="price-amount">
-                      Price: {service.currency} {service.price}
-                    </div>
-                    <div className="price-duration">
-                      Duration: {displayDuration(service.duration)}
-                    </div>
-                  </div>
-
-                  <div className="booking-features-fixed">
-                    <div className="feature-point">
-                      <i className="bi bi-check"></i>
-                      <span>Dedicated expert</span>
-                    </div>
-                    <div className="feature-point">
-                      <i className="bi bi-check"></i>
-                      <span>Flexible scheduling</span>
-                    </div>
-                  </div>
-
-                  <Button
-                    size="lg"
-                    className="book-now-btn-fixed"
-                    onClick={handleBookService}
-                  >
-                    Book Now
-                  </Button>
+                  <h5>Service Overview</h5>
+                  <p className="service-description-fixed">
+                    {service.description}
+                  </p>
                 </Card.Body>
               </Card>
-            </div>
-          </Col>
-        </Row>
 
-        {showBookingModal && service && (
-          <BookingForm
-            initialData={{ service_id: service.id }}
-            onSubmit={handleBookingSubmit}
-            onClose={() => setShowBookingModal(false)}
-            clients={clients}
-            services={[service]}
-            disableService={true}
-          />
-        )}
-      </Container>
-    </div>
+              <Card className="features-card-fixed">
+                <Card.Body>
+                  <h5>What's Included</h5>
+                  <Row>
+                    <Col md={6}>
+                      <div className="feature-item-fixed">
+                        <i className="bi bi-check-circle-fill"></i>
+                        <span>Expert Consultation</span>
+                      </div>
+                      <div className="feature-item-fixed">
+                        <i className="bi bi-check-circle-fill"></i>
+                        <span>Customized Solution</span>
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <div className="feature-item-fixed">
+                        <i className="bi bi-check-circle-fill"></i>
+                        <span>Ongoing Support</span>
+                      </div>
+                      <div className="feature-item-fixed">
+                        <i className="bi bi-check-circle-fill"></i>
+                        <span>Quality Guarantee</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+
+            <Col lg={4}>
+              <div className="booking-section-fixed">
+                <Card className="booking-card-fixed">
+                  <Card.Body>
+                    <h4>Book This Service</h4>
+
+                    <div className="price-section-fixed">
+                      <div className="price-amount">
+                        Price: {service.currency} {service.price}
+                      </div>
+                      <div className="price-duration">
+                        Duration: {displayDuration(service.duration)}
+                      </div>
+                    </div>
+
+                    <div className="booking-features-fixed">
+                      <div className="feature-point">
+                        <i className="bi bi-check"></i>
+                        <span>Dedicated expert</span>
+                      </div>
+                      <div className="feature-point">
+                        <i className="bi bi-check"></i>
+                        <span>Flexible scheduling</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      size="lg"
+                      className="book-now-btn-fixed"
+                      onClick={handleBookService}
+                    >
+                      Book Now
+                    </Button>
+
+                    {!isAuthenticated && (
+                      <div className="mt-2 small text-danger">
+                        Please log in to book this service.
+                      </div>
+                    )}
+                  </Card.Body>
+                </Card>
+              </div>
+            </Col>
+          </Row>
+
+          {showBookingModal && service && (
+            <BookingForm
+              initialData={{ service_id: service.id }}
+              onSubmit={handleBookingSubmit}
+              onClose={() => setShowBookingModal(false)}
+              clients={clients}
+              services={[service]}
+              disableService={true}
+            />
+          )}
+        </Container>
+      </div>
+      <ToastContainer />
+    </>
   );
 };
 
