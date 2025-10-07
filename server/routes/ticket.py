@@ -19,7 +19,7 @@ server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
 def is_admin(role):
     """Check if user has admin privileges"""
-    return role in [Role.ADMIN, Role.SUPER_ADMIN]
+    return role in [Role.ADMIN.value, Role.SUPER_ADMIN.value]
 
 
 class TicketListResource(Resource):
@@ -48,7 +48,7 @@ class TicketListResource(Resource):
 
             query = Ticket.query
 
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
                 query = query.filter(Ticket.client_id == user.id)
             elif is_admin(user_role) and assigned_to:
                 try:
@@ -190,10 +190,10 @@ class TicketListResource(Resource):
                     status="error", message="Description is required", status_code=400
                 )
 
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
                 client_id = user.id
                 admin = (
-                    User.query.filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                    User.query.filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
                     .order_by(User.id.asc())
                     .first()
                 )
@@ -244,7 +244,7 @@ class TicketListResource(Resource):
                     )
                 admin = (
                     User.query.filter_by(id=admin_id)
-                    .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                    .filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
                     .first()
                 )
                 if not admin:
@@ -303,50 +303,55 @@ class TicketListResource(Resource):
 class TicketStatsResource(Resource):
     """Handle GET /tickets/stats"""
 
-    @jwt_required()
-    def get(self):
-        """Get ticket statistics"""
-        try:
-            user, user_role = get_current_user_and_role()
-            if not user:
-                return restful_response(
-                    status="error", message="User not found", status_code=404
-                )
-
-            q = Ticket.query
-            if user_role == Role.CLIENT:
-                q = q.filter(Ticket.client_id == user.id)
-
-            # one grouped query
-            counts = dict(
-                db.session.query(Ticket.status, func.count(Ticket.id))
-                .group_by(Ticket.status)
-                .select_from(q.subquery())
-            )
-            total = q.count()
-            open_count = counts.get(TicketStatus.OPEN, 0)
-            in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
-            closed_count = counts.get(TicketStatus.CLOSED, 0)
-
-            stats = {
-                "total": total,
-                "open": open_count,
-                "in_progress": in_progress_count,
-                "closed": closed_count,
-            }
-
+@jwt_required()
+def get(self):
+    """Get ticket statistics"""
+    try:
+        user, user_role = get_current_user_and_role()
+        if not user:
             return restful_response(
-                status="success",
-                message="Ticket stats fetched successfully",
-                data=stats,
-                status_code=200,
+                status="error", message="User not found", status_code=404
             )
 
-        except Exception:
-            current_app.logger.exception("Error fetching ticket stats ")
-            return restful_response(
-                status="error", message="Internal server error", status_code=500
-            )
+        q = Ticket.query
+        if user_role == Role.CLIENT.value:
+            q = q.filter(Ticket.client_id == user.id)
+
+        # Build subquery first if needed
+        subq = q.subquery()
+
+        # Grouped query using the subquery
+        counts = dict(
+            db.session.query(subq.c.status, func.count(subq.c.id))
+            .group_by(subq.c.status)
+            .all()
+        )
+
+        total = q.count()
+        open_count = counts.get(TicketStatus.OPEN, 0)
+        in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
+        closed_count = counts.get(TicketStatus.CLOSED, 0)
+
+        stats = {
+            "total": total,
+            "open": open_count,
+            "in_progress": in_progress_count,
+            "closed": closed_count,
+        }
+
+        return restful_response(
+            status="success",
+            message="Ticket stats fetched successfully",
+            data=stats,
+            status_code=200,
+        )
+
+    except Exception:
+        current_app.logger.exception("Error fetching ticket stats")
+        return restful_response(
+            status="error", message="Internal server error", status_code=500
+        )
+
 
 
 class TicketResource(Resource):
@@ -369,7 +374,7 @@ class TicketResource(Resource):
                 )
 
             # Check permissions
-            if user_role == Role.CLIENT and ticket.client_id != user.id:
+            if user_role == Role.CLIENT.value and ticket.client_id != user.id:
                 return restful_response(
                     status="error", message="Access denied", status_code=403
                 )
@@ -455,7 +460,7 @@ class TicketResource(Resource):
                 )
 
             # Check permissions - only admins or the assigned admin can update
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
                 return restful_response(
                     status="error", message="Access denied", status_code=403
                 )
@@ -480,7 +485,7 @@ class TicketResource(Resource):
                     admin_id = int(data["admin_id"])
                     admin = (
                         User.query.filter_by(id=admin_id)
-                        .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
+                        .filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
                         .first()
                     )
                     if not admin:
@@ -566,7 +571,7 @@ class TicketMessagesResource(Resource):
                 )
 
             # Check permissions
-            if user_role == Role.CLIENT and ticket.client_id != user.id:
+            if user_role == Role.CLIENT.value and ticket.client_id != user.id:
                 return restful_response(
                     status="error", message="Access denied", status_code=403
                 )
