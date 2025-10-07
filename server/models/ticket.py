@@ -10,6 +10,7 @@ class TicketStatus(Enum):
     OPEN = "open"
     CLOSED = "closed"
     IN_PROGRESS = "in_progress"
+    DELETED = "deleted"
 
 
 class Ticket(db.Model):
@@ -58,6 +59,7 @@ class Ticket(db.Model):
         back_populates="ticket",
         cascade="all, delete-orphan",
     )
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     # --- Validation ---
     @validates("subject")

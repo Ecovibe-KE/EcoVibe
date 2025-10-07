@@ -8,6 +8,7 @@ from . import db
 class ServiceStatus(enum.Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
+    DELETED = "deleted"
 
 
 class Service(db.Model):
@@ -39,6 +40,7 @@ class Service(db.Model):
         db.ForeignKey("users.id"),
         nullable=False,
     )
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     # --- Relationships ---
     invoices = db.relationship("Invoice", back_populates="service")
