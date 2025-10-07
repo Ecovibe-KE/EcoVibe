@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import ProtectedRoute from "../../src/tests/wrappers/ProtectedRoute";
+import ProtectedRoute from "../../src/components/ProtectedRoute";
 import { useAuth } from "../../src/context/AuthContext";
 
 // Mock the AuthContext hook
