@@ -193,7 +193,9 @@ class TicketListResource(Resource):
             if user_role == Role.CLIENT.value:
                 client_id = user.id
                 admin = (
-                    User.query.filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
+                    User.query.filter(
+                        User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value])
+                    )
                     .order_by(User.id.asc())
                     .first()
                 )
@@ -303,6 +305,7 @@ class TicketListResource(Resource):
 class TicketStatsResource(Resource):
     """Handle GET /tickets/stats"""
 
+
 @jwt_required()
 def get(self):
     """Get ticket statistics"""
@@ -351,7 +354,6 @@ def get(self):
         return restful_response(
             status="error", message="Internal server error", status_code=500
         )
-
 
 
 class TicketResource(Resource):
@@ -485,7 +487,9 @@ class TicketResource(Resource):
                     admin_id = int(data["admin_id"])
                     admin = (
                         User.query.filter_by(id=admin_id)
-                        .filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
+                        .filter(
+                            User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value])
+                        )
                         .first()
                     )
                     if not admin:
