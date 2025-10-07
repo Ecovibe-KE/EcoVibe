@@ -88,7 +88,7 @@ def create_app(config_name="development"):
 
     # CORs setup
     netlify_pr_regex = r"^https:\/\/deploy-preview-\d+--ecovibe-develop\.netlify\.app$"
-    firebase_pr_regex = r"^https:\/\/pr-\d+-.*\.web\.app$"
+    firebase_pr_regex = r"^https:\/\/.*pr-?\d+.*\.web\.app\/?$"
     dynamic_pr_cors_origins = [
         re.compile(netlify_pr_regex),
         re.compile(firebase_pr_regex),
