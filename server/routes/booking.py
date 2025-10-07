@@ -22,16 +22,7 @@ def parse_booking_fields(data):
         parsed["start_time"] = datetime.fromisoformat(data["start_time"])
     if "status" in data:
         parsed["status"] = data["status"]
-    if "service_id" in data and data["service_id"]:
-        try:
-            parsed["service_id"] = int(data["service_id"])
-        except (ValueError, TypeError):
-            raise ValueError("Invalid service ID format")
-    if "client_id" in data and data["client_id"]:
-        try:
-            parsed["client_id"] = int(data["client_id"])
-        except (ValueError, TypeError):
-            raise ValueError("Invalid client ID format")
+    # Remove service_id and client_id from parsed_fields since we handle them separately
     return parsed
 
 class BookingListResource(Resource):
@@ -107,14 +98,13 @@ class BookingListResource(Resource):
 
             client = User.query.filter_by(
                 id=client_id, 
-                is_deleted=False,
-                role=Role.CLIENT
+                is_deleted=False
             ).first()
             
             if not client:
                 return restful_response(
                     status="error",
-                    message="Client not found or invalid",
+                    message="Client not found",
                     status_code=400,
                 )
 
@@ -148,12 +138,14 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            # --- Parse and Create Booking ---
+            # --- Parse other fields (excluding service_id and client_id) ---
             parsed_fields = parse_booking_fields(data)
+            
+            # Create booking with explicit client_id and service_id
             booking = Booking(
                 client_id=client_id, 
                 service_id=service_id, 
-                **parsed_fields
+                **parsed_fields  # This now only contains start_time and status
             )
 
             # --- Create Invoice ---
@@ -193,7 +185,7 @@ class BookingListResource(Resource):
             db.session.rollback()
             return restful_response(
                 status="error",
-                message="Database integrity error - invalid client or service ID",
+                message="Database integrity error",
                 status_code=400,
             )
         except Exception as e:
@@ -297,12 +289,6 @@ class BookingResource(Resource):
                             status_code=404,
                         )
                     booking.service_id = service_id
-                else:
-                    return restful_response(
-                        status="error",
-                        message="Service ID cannot be empty",
-                        status_code=400,
-                    )
 
             # --- Handle client_id update ---
             if "client_id" in data:
@@ -327,8 +313,7 @@ class BookingResource(Resource):
 
                     client = User.query.filter_by(
                         id=client_id, 
-                        is_deleted=False,
-                        role=Role.CLIENT
+                        is_deleted=False
                     ).first()
                     if not client:
                         return restful_response(
@@ -337,12 +322,6 @@ class BookingResource(Resource):
                             status_code=404,
                         )
                     booking.client_id = client_id
-                else:
-                    return restful_response(
-                        status="error",
-                        message="Client ID cannot be empty",
-                        status_code=400,
-                    )
 
             db.session.commit()
 
