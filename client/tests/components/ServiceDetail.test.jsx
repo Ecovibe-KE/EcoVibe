@@ -23,14 +23,21 @@ vi.mock("../../src/api/services/booking", () => ({
     createBooking: vi.fn(),
 }));
 
+// Mock AuthContext to properly handle authentication state
+const mockNavigate = vi.fn();
 vi.mock("../../src/context/AuthContext", () => ({
-    useAuth: () => ({ user: { id: 1, name: "Test User" } }),
+    useAuth: () => ({
+        user: { id: 1, name: "Test User" },
+        isActive: true
+    }),
 }));
 
+// Improved BookingForm mock
 vi.mock("../../src/components/BookingForm", () => ({
     __esModule: true,
     default: ({ onSubmit, onClose }) => (
-        <div data-testid="booking-form">
+        <div data-testid="booking-form" role="dialog" aria-modal="true">
+            <h2>Booking Form</h2>
             <button onClick={() => onSubmit({ service_id: "1" })}>Submit Booking</button>
             <button onClick={onClose}>Close Modal</button>
         </div>
@@ -46,13 +53,16 @@ vi.mock("react-router-dom", async () => {
     return {
         ...actual,
         useParams: () => ({ id: "1" }),
-        useNavigate: () => vi.fn(),
+        useNavigate: () => mockNavigate,
     };
 });
 
 // ---- Tests ----
 describe("ServiceDetail Component", () => {
-    afterEach(() => vi.clearAllMocks());
+    beforeEach(() => {
+        mockNavigate.mockClear();
+        vi.clearAllMocks();
+    });
 
     it("renders loading spinner initially", async () => {
         serviceAPI.getServiceById.mockResolvedValueOnce({
@@ -82,8 +92,9 @@ describe("ServiceDetail Component", () => {
             expect(toast.error).toHaveBeenCalledWith(
                 "Server unavailable. Failed to fetch service, please try again later"
             );
-            expect(screen.getByText(/Service Unavailable/i)).toBeInTheDocument();
         });
+
+        expect(screen.getByText(/Service Unavailable/i)).toBeInTheDocument();
     });
 
     it("renders service details correctly", async () => {
@@ -108,9 +119,10 @@ describe("ServiceDetail Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText(/Sustainability Audit/i)).toBeInTheDocument();
-            expect(screen.getByText(/Price: KES 4500/i)).toBeInTheDocument();
-            expect(screen.getByRole("button", { name: /Book Now/i })).toBeInTheDocument();
         });
+
+        expect(screen.getByText(/Price: KES 4500/i)).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /Book Now/i })).toBeInTheDocument();
     });
 
     it("opens and closes booking modal", async () => {
@@ -133,18 +145,25 @@ describe("ServiceDetail Component", () => {
             </MemoryRouter>
         );
 
+        // Wait for service to load
         await waitFor(() => {
-            const bookBtn = screen.getByRole("button", { name: /Book Now/i });
-            fireEvent.click(bookBtn);
+            expect(screen.getByText(/Energy Audit/i)).toBeInTheDocument();
         });
 
+        // Click Book Now button
+        const bookBtn = screen.getByRole("button", { name: /Book Now/i });
+        fireEvent.click(bookBtn);
+
+        // Wait for modal to appear
         await waitFor(() => {
             expect(screen.getByTestId("booking-form")).toBeInTheDocument();
         });
 
+        // Close modal
         const closeBtn = screen.getByText(/Close Modal/i);
         fireEvent.click(closeBtn);
 
+        // Wait for modal to disappear
         await waitFor(() => {
             expect(screen.queryByTestId("booking-form")).not.toBeInTheDocument();
         });
@@ -175,15 +194,26 @@ describe("ServiceDetail Component", () => {
             </MemoryRouter>
         );
 
+        // Wait for service to load
         await waitFor(() => {
-            fireEvent.click(screen.getByRole("button", { name: /Book Now/i }));
+            expect(screen.getByText(/Sustainability Advisory/i)).toBeInTheDocument();
         });
 
+        // Open booking modal
+        const bookBtn = screen.getByRole("button", { name: /Book Now/i });
+        fireEvent.click(bookBtn);
+
+        // Wait for modal and submit booking
         await waitFor(() => {
-            fireEvent.click(screen.getByText(/Submit Booking/i));
+            expect(screen.getByTestId("booking-form")).toBeInTheDocument();
         });
 
+        const submitBtn = screen.getByText(/Submit Booking/i);
+        fireEvent.click(submitBtn);
+
+        // Verify booking was created and success toast shown
         await waitFor(() => {
+            expect(bookingAPI.createBooking).toHaveBeenCalledWith({ service_id: "1" });
             expect(toast.success).toHaveBeenCalledWith("Booking created successfully!");
         });
     });
@@ -210,11 +240,24 @@ describe("ServiceDetail Component", () => {
             </MemoryRouter>
         );
 
+        // Wait for service to load
         await waitFor(() => {
-            fireEvent.click(screen.getByRole("button", { name: /Book Now/i }));
-            fireEvent.click(screen.getByText(/Submit Booking/i));
+            expect(screen.getByText(/Impact Assessment/i)).toBeInTheDocument();
         });
 
+        // Open booking modal
+        const bookBtn = screen.getByRole("button", { name: /Book Now/i });
+        fireEvent.click(bookBtn);
+
+        // Wait for modal and submit booking
+        await waitFor(() => {
+            expect(screen.getByTestId("booking-form")).toBeInTheDocument();
+        });
+
+        const submitBtn = screen.getByText(/Submit Booking/i);
+        fireEvent.click(submitBtn);
+
+        // Verify error handling
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalledWith("Failed to create booking");
         });
