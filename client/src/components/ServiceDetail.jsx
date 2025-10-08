@@ -46,7 +46,9 @@ const ServiceDetail = () => {
 
   const handleBookService = () => {
     if (!isAuthenticated) {
-      toast.error("You must be logged in to book a service. Redirecting to Login page");
+      toast.error(
+        "You must be logged in to book a service. Redirecting to Login page",
+      );
       setTimeout(() => {
         navigate("/login", { state: { from: `/services/${id}` } });
       }, 5000);
