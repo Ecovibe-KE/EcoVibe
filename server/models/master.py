@@ -15,12 +15,11 @@ class ThemeColor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     # Primary colors
-    primary_color = db.Column(db.String(7),
-                              nullable=False, default="#f5a030")  # Hex code
-    secondary_color = db.Column(db.String(7),
-                                nullable=False, default="#37b137")
-    accent_color = db.Column(db.String(7),
-                             nullable=False, default="#37b137")
+    primary_color = db.Column(
+        db.String(7), nullable=False, default="#f5a030"
+    )  # Hex code
+    secondary_color = db.Column(db.String(7), nullable=False, default="#37b137")
+    accent_color = db.Column(db.String(7), nullable=False, default="#37b137")
 
     # UI elements
     background_color = db.Column(db.String(7), default="#FFFFFF")
@@ -37,17 +36,26 @@ class ThemeColor(db.Model):
     font_family = db.Column(db.String(100), default="'Inter', sans-serif")
 
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
-    @validates("primary_color", "secondary_color", "accent_color",
-               "background_color", "text_color", "border_color")
+    @validates(
+        "primary_color",
+        "secondary_color",
+        "accent_color",
+        "background_color",
+        "text_color",
+        "border_color",
+    )
     def validate_hex_color(self, key, color):
         """Validate hex color format"""
-        if color and not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):
+        if color and not re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color):
             raise ValueError(f"{key} must be a valid hex color code")
         return color
 
@@ -58,12 +66,10 @@ class Bank(db.Model):
     __tablename__ = "banks"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100),
-                     nullable=False,
-                     unique=True)
-    code = db.Column(db.String(10),
-                     nullable=False,
-                     unique=True)  # Bank code e.g., "01", "02"
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    code = db.Column(
+        db.String(10), nullable=False, unique=True
+    )  # Bank code e.g., "01", "02"
     swift_code = db.Column(db.String(20), nullable=True)
 
     # Bank account details for receiving payments
@@ -80,18 +86,22 @@ class Bank(db.Model):
     logo_url = db.Column(db.String(500), nullable=True)
     website = db.Column(db.String(200), nullable=True)
 
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     @validates("account_number")
     def validate_account_number(self, key, account_number):
         """Validate account number format"""
-        if not re.match(r'^[0-9]{1,50}$', account_number):
-            raise ValueError("Account number must contain "
-                             "only digits and be 1-50 characters long")
+        if not re.match(r"^[0-9]{1,50}$", account_number):
+            raise ValueError(
+                "Account number must contain " "only digits and be 1-50 characters long"
+            )
         return account_number
 
 
@@ -101,16 +111,12 @@ class PaybillConfig(db.Model):
     __tablename__ = "paybill_configs"
 
     id = db.Column(db.Integer, primary_key=True)
-    paybill_number = db.Column(db.String(20),
-                               nullable=False,
-                               unique=True)
+    paybill_number = db.Column(db.String(20), nullable=False, unique=True)
     business_name = db.Column(db.String(200), nullable=False)
 
     # Provider details
-    provider = db.Column(db.String(50),
-                         nullable=False)  # mpesa, airtel, equitel, etc.
-    provider_type = db.Column(db.String(50),
-                              nullable=False)  # paybill, till
+    provider = db.Column(db.String(50), nullable=False)  # mpesa, airtel, equitel, etc.
+    provider_type = db.Column(db.String(50), nullable=False)  # paybill, till
 
     # API credentials (store encrypted in production)
     consumer_key = db.Column(db.String(500), nullable=True)
@@ -125,23 +131,25 @@ class PaybillConfig(db.Model):
     is_default = db.Column(db.Boolean, default=False)
 
     # Transaction limits
-    min_amount = db.Column(Numeric(12, 2),
-                           default=Decimal("1.00"))
-    max_amount = db.Column(Numeric(12, 2),
-                           default=Decimal("150000.00"))
+    min_amount = db.Column(Numeric(12, 2), default=Decimal("1.00"))
+    max_amount = db.Column(Numeric(12, 2), default=Decimal("150000.00"))
 
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     @validates("paybill_number")
     def validate_paybill_number(self, key, paybill_number):
         """Validate paybill number format"""
-        if not re.match(r'^[0-9]{5,10}$', paybill_number):
-            raise ValueError("Paybill number must contain "
-                             "only digits and be 5-10 characters long")
+        if not re.match(r"^[0-9]{5,10}$", paybill_number):
+            raise ValueError(
+                "Paybill number must contain " "only digits and be 5-10 characters long"
+            )
         return paybill_number
 
 
@@ -176,11 +184,14 @@ class EmailConfig(db.Model):
     last_test_status = db.Column(db.Boolean, nullable=True)
     last_test_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     @validates("smtp_port")
     def validate_smtp_port(self, key, port):
@@ -192,7 +203,7 @@ class EmailConfig(db.Model):
     @validates("from_email", "admin_email")
     def validate_email(self, key, email):
         """Basic email validation"""
-        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
             raise ValueError(f"{key} must be a valid email address")
         return email
 
@@ -240,11 +251,14 @@ class SystemConfig(db.Model):
     max_file_size_mb = db.Column(db.Integer, default=10)  # MB
     allowed_file_types = db.Column(db.String(500), default="jpg,jpeg,png,pdf,doc,docx")
 
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
 
 class NotificationTemplate(db.Model):
@@ -254,8 +268,7 @@ class NotificationTemplate(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
-    template_type = db.Column(db.String(50),
-                              nullable=False)  # email, sms, push
+    template_type = db.Column(db.String(50), nullable=False)  # email, sms, push
     subject = db.Column(db.String(200), nullable=True)
     body = db.Column(db.Text, nullable=False)
 
@@ -266,11 +279,14 @@ class NotificationTemplate(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     is_system = db.Column(db.Boolean, default=False)
 
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
 
 class TaxConfig(db.Model):
@@ -291,11 +307,14 @@ class TaxConfig(db.Model):
     applies_to_products = db.Column(db.Boolean, default=True)
     applies_to_services = db.Column(db.Boolean, default=True)
 
-    created_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime(timezone=True),
-                           default=lambda: datetime.now(timezone.utc),
-                           onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     @validates("rate")
     def validate_tax_rate(self, key, rate):
@@ -312,20 +331,20 @@ class MasterDataManager:
     @staticmethod
     def get_active_banks():
         """Get all active banks"""
-        return (Bank
-                .query
-                .filter_by(is_active=True)
-                .order_by(Bank.display_order, Bank.name)
-                .all())
+        return (
+            Bank.query.filter_by(is_active=True)
+            .order_by(Bank.display_order, Bank.name)
+            .all()
+        )
 
     @staticmethod
     def get_active_paybills():
         """Get all active paybill configurations"""
-        return (PaybillConfig
-                .query
-                .filter_by(is_active=True)
-                .order_by(PaybillConfig.provider)
-                .all())
+        return (
+            PaybillConfig.query.filter_by(is_active=True)
+            .order_by(PaybillConfig.provider)
+            .all()
+        )
 
     @staticmethod
     def get_default_paybill():
