@@ -218,17 +218,14 @@ class BankTransferTransaction(db.Model):
 
     __tablename__ = "bank_transfer_transactions"
     id = db.Column(db.Integer, primary_key=True)
-    amount = db.Column(Numeric(12, 2),
-                       nullable=False,
-                       default=Decimal("0.00"))
+    amount = db.Column(Numeric(12, 2), nullable=False, default=Decimal("0.00"))
     bank_name = db.Column(db.String(100), nullable=False)
     account_name = db.Column(db.String(100), nullable=False)
     account_number = db.Column(db.String(50), nullable=False)
     branch = db.Column(db.String(100), nullable=True)
     swift_code = db.Column(db.String(20), nullable=True)
     reference_number = db.Column(db.String(100), nullable=False)
-    transfer_date = db.Column(db.DateTime(timezone=True),
-                              nullable=False)
+    transfer_date = db.Column(db.DateTime(timezone=True), nullable=False)
 
     # BLOB storage for proof of payment
     proof_of_payment_file = db.Column(db.LargeBinary, nullable=True)
@@ -238,9 +235,7 @@ class BankTransferTransaction(db.Model):
     sender_name = db.Column(db.String(100), nullable=True)
     sender_account = db.Column(db.String(50), nullable=True)
     status = db.Column(
-        db.Enum(PaymentStatus),
-        nullable=False,
-        default=PaymentStatus.PENDING
+        db.Enum(PaymentStatus), nullable=False, default=PaymentStatus.PENDING
     )
     verified_by = db.Column(db.String(100), nullable=True)
     verified_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -279,12 +274,12 @@ class BankTransferTransaction(db.Model):
             "branch": self.branch,
             "swift_code": self.swift_code,
             "reference_number": self.reference_number,
-            "transfer_date": self.transfer_date.isoformat()
-            if self.transfer_date else None,
+            "transfer_date": (
+                self.transfer_date.isoformat() if self.transfer_date else None
+            ),
             "proof_of_payment_filename": self.proof_of_payment_filename,
             "proof_of_payment_mimetype": self.proof_of_payment_mimetype,
-            "has_proof_file": self
-                              .proof_of_payment_file is not None,
+            "has_proof_file": self.proof_of_payment_file is not None,
             "sender_name": self.sender_name,
             "sender_account": self.sender_account,
             "status": self.status,
@@ -309,9 +304,7 @@ class PaybillTransaction(db.Model):
     phone_number = db.Column(db.String(15), nullable=True)
     transaction_date = db.Column(db.DateTime(timezone=True), nullable=True)
     status = db.Column(
-        db.Enum(PaymentStatus),
-        nullable=False,
-        default=PaymentStatus.PENDING
+        db.Enum(PaymentStatus), nullable=False, default=PaymentStatus.PENDING
     )
     confirmation_received = db.Column(db.Boolean, default=False)
     confirmed_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -343,27 +336,27 @@ class PaybillTransaction(db.Model):
     def validate_phone_number(self, key, phone_number):
         """Validate the phone number format if provided."""
         if phone_number and not re.match(r"^254\d{9}$", phone_number):
-            raise ValueError(
-                "Phone number must be in the format 254xxxxxxxxx."
-            )
+            raise ValueError("Phone number must be in the format 254xxxxxxxxx.")
         return phone_number
 
     def to_dict(self):
         """Return a dictionary representation of this PaybillTransaction."""
         return {
             "id": self.id,
-            "amount": str(self.amount) if self.amount is not None else None,
+            "amount": self.amount,
             "paybill_number": self.paybill_number,
             "account_number": self.account_number,
             "provider": self.provider,
             "transaction_code": self.transaction_code,
             "phone_number": self.phone_number,
-            "transaction_date": self.transaction_date.isoformat()
-            if self.transaction_date else None,
-            "status": self.status.value if self.status else None,
+            "transaction_date": (
+                self.transaction_date.isoformat() if self.transaction_date else None
+            ),
+            "status": self.status,
             "confirmation_received": self.confirmation_received,
-            "confirmed_at": self.confirmed_at.isoformat()
-            if self.confirmed_at else None,
+            "confirmed_at": (
+                self.confirmed_at.isoformat() if self.confirmed_at else None
+            ),
             "created_at": self.created_at.isoformat(),
             "currency": self.currency,
         }
@@ -429,31 +422,30 @@ class Payment(db.Model):
         """
         payment_entity = {}
 
-        if (self.payment_method == PaymentMethod
-                .MPESA and self.mpesa_transaction_id):
+        if self.payment_method == PaymentMethod.MPESA and self.mpesa_transaction_id:
             transaction = MpesaTransaction.query.get(self.mpesa_transaction_id)
             if transaction:
                 payment_entity = transaction.to_dict()
-        elif (self.payment_method == PaymentMethod
-                .CASH and self.cash_transaction_id):
+        elif self.payment_method == PaymentMethod.CASH and self.cash_transaction_id:
             transaction = CashTransaction.query.get(self.cash_transaction_id)
             if transaction:
                 payment_entity = transaction.to_dict()
-        elif (self.payment_method == PaymentMethod
-                .CARD and self.card_transaction_id):
+        elif self.payment_method == PaymentMethod.CARD and self.card_transaction_id:
             transaction = CardTransaction.query.get(self.card_transaction_id)
             if transaction:
                 payment_entity = transaction.to_dict()
-        elif (self.payment_method == PaymentMethod
-                .BANK_TRANSFER and self.bank_transfer_transaction_id):
-            transaction = (BankTransferTransaction
-                           .query
-                           .get(self
-                                .bank_transfer_transaction_id))
+        elif (
+            self.payment_method == PaymentMethod.BANK_TRANSFER
+            and self.bank_transfer_transaction_id
+        ):
+            transaction = BankTransferTransaction.query.get(
+                self.bank_transfer_transaction_id
+            )
             if transaction:
                 payment_entity = transaction.to_dict()
-        elif (self.payment_method == PaymentMethod
-                .PAYBILL and self.paybill_transaction_id):
+        elif (
+            self.payment_method == PaymentMethod.PAYBILL and self.paybill_transaction_id
+        ):
             transaction = PaybillTransaction.query.get(self.paybill_transaction_id)
             if transaction:
                 payment_entity = transaction.to_dict()
