@@ -100,7 +100,7 @@ def get_service(id):
     """
     try:
         service = Service.query.filter(
-            Service.id == id, Service.is_deleted is False
+            Service.id == id, Service.is_deleted.is_(False)
         ).first()
         if not service:
             raise NotFound(f"Service with ID {id} not found")
