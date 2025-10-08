@@ -1,3 +1,4 @@
+// Booking.jsx
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -33,7 +34,7 @@ const Booking = () => {
       try {
         const allUsers = await fetchUsers();
         const activeClients = allUsers.filter(
-          (u) => u.role.toUpperCase() === "CLIENT",
+          (u) => u.role.toUpperCase() === "CLIENT" && !u.is_deleted
         );
         setClients(activeClients);
       } catch (error) {
@@ -50,7 +51,7 @@ const Booking = () => {
     const loadServices = async () => {
       try {
         const data = await getServices();
-        console.log(data.data);
+        console.log("Services data:", data.data);
         setServices(data.data || []);
       } catch (err) {
         console.error("Failed to fetch services:", err);
@@ -105,7 +106,7 @@ const Booking = () => {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "Unexpected error while creating booking",
+          "Unexpected error while creating booking"
       );
     }
   };
@@ -157,7 +158,8 @@ const Booking = () => {
             setBookingToDelete({
               id: b.id,
               client_name: b.client_name || "Unknown Client",
-              booking_date: b.created_at,
+              service_name: b.service_name || "Unknown Service",
+              start_time: b.start_time,
             })
           }
           isAdmin={isAtLeastAdmin}
@@ -213,10 +215,11 @@ const Booking = () => {
               <div className="modal-body">
                 <p>
                   Are you sure you want to delete the booking for{" "}
-                  <strong>{bookingToDelete.client_name}</strong> created on{" "}
+                  <strong>{bookingToDelete.client_name}</strong> -{" "}
+                  <strong>{bookingToDelete.service_name}</strong> on{" "}
                   <strong>
-                    {bookingToDelete.booking_date
-                      ? new Date(bookingToDelete.booking_date).toLocaleDateString()
+                    {bookingToDelete.start_time
+                      ? new Date(bookingToDelete.start_time).toLocaleString()
                       : "Unknown Date"}
                   </strong>
                   ?

@@ -4,12 +4,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from flask_jwt_extended import jwt_required
 from models import db
-from models.booking import Booking
+from models.booking import Booking, BookingStatus
 from models.user import User, Role
 from models.service import Service
 from utils.responses import restful_response
 from utils.auth_helpers import get_current_user_and_role
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from models.invoice import Invoice, InvoiceStatus
 
 booking_bp = Blueprint("booking", __name__)
@@ -19,11 +19,31 @@ def parse_booking_fields(data):
     """Parse booking fields from JSON to correct Python types."""
     parsed = {}
     if "start_time" in data:
-        parsed["start_time"] = datetime.fromisoformat(data["start_time"])
+        # Parse the datetime and make it timezone-aware
+        naive_datetime = datetime.fromisoformat(data["start_time"].replace('Z', '+00:00'))
+        parsed["start_time"] = naive_datetime.replace(tzinfo=timezone.utc)
     if "status" in data:
-        parsed["status"] = data["status"]
-    # Remove service_id and client_id from parsed_fields since we handle them separately
+        parsed["status"] = BookingStatus(data["status"])
     return parsed
+
+def calculate_end_time(start_time, duration_str):
+    """Calculate end_time based on start_time and service duration"""
+    try:
+        # Parse duration string like "2 hr 30 min"
+        parts = duration_str.split()
+        hours = 0
+        minutes = 0
+        
+        for i, part in enumerate(parts):
+            if part == 'hr' and i > 0:
+                hours = int(parts[i-1])
+            elif part == 'min' and i > 0:
+                minutes = int(parts[i-1])
+        
+        return start_time + timedelta(hours=hours, minutes=minutes)
+    except (ValueError, IndexError):
+        # Default to 1 hour if parsing fails
+        return start_time + timedelta(hours=1)
 
 class BookingListResource(Resource):
     @jwt_required()
@@ -38,7 +58,8 @@ class BookingListResource(Resource):
                     status_code=401,
                 )
 
-            base_query = Booking.query.options(
+            # Filter out deleted bookings
+            base_query = Booking.query.filter_by(is_deleted=False).options(
                 joinedload(Booking.client), joinedload(Booking.service)
             )
 
@@ -138,14 +159,44 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            # --- Parse other fields (excluding service_id and client_id) ---
-            parsed_fields = parse_booking_fields(data)
-            
-            # Create booking with explicit client_id and service_id
+            # --- Parse and validate start_time ---
+            if "start_time" not in data:
+                return restful_response(
+                    status="error",
+                    message="Start time is required",
+                    status_code=400,
+                )
+
+            try:
+                # Parse and make timezone-aware
+                naive_datetime = datetime.fromisoformat(data["start_time"].replace('Z', '+00:00'))
+                start_time = naive_datetime.replace(tzinfo=timezone.utc)
+            except (ValueError, TypeError):
+                return restful_response(
+                    status="error",
+                    message="Invalid start time format",
+                    status_code=400,
+                )
+
+            # Validate start_time is not in the past (using timezone-aware comparison)
+            if start_time < datetime.now(timezone.utc):
+                return restful_response(
+                    status="error",
+                    message="Start time cannot be in the past",
+                    status_code=400,
+                )
+
+            # --- Calculate end_time from service duration ---
+            end_time = calculate_end_time(start_time, service.duration)
+
+            # --- Create Booking ---
             booking = Booking(
-                client_id=client_id, 
-                service_id=service_id, 
-                **parsed_fields  # This now only contains start_time and status
+                client_id=client_id,
+                service_id=service_id,
+                start_time=start_time,
+                end_time=end_time,
+                booking_date=date.today(),  # Set booking_date to today in routes
+                status=BookingStatus.pending  # Default status
             )
 
             # --- Create Invoice ---
@@ -176,6 +227,7 @@ class BookingListResource(Resource):
                 status_code=201,
             )
         except ValueError as e:
+            db.session.rollback()
             return restful_response(
                 status="error",
                 message=str(e),
@@ -201,9 +253,12 @@ class BookingResource(Resource):
     def get(self, booking_id):
         """Retrieve a single booking by ID (requires authentication)."""
         try:
-            booking = Booking.query.options(
+            booking = Booking.query.filter_by(
+                id=booking_id, 
+                is_deleted=False
+            ).options(
                 joinedload(Booking.client), joinedload(Booking.service)
-            ).get(booking_id)
+            ).first()
 
             if not booking:
                 return restful_response(
@@ -228,9 +283,12 @@ class BookingResource(Resource):
     def patch(self, booking_id):
         """Partially update a booking (only editable fields provided in request)."""
         try:
-            booking = Booking.query.options(
+            booking = Booking.query.filter_by(
+                id=booking_id, 
+                is_deleted=False
+            ).options(
                 joinedload(Booking.client), joinedload(Booking.service)
-            ).get(booking_id)
+            ).first()
 
             if not booking:
                 return restful_response(
@@ -261,11 +319,18 @@ class BookingResource(Resource):
             data = request.get_json()
             parsed_fields = parse_booking_fields(data)
 
-            # Apply parsed fields (start_time, status)
-            for key, value in parsed_fields.items():
-                setattr(booking, key, value)
+            # Track if we need to recalculate end_time
+            recalculate_end_time = False
+            new_start_time = None
+            new_service = booking.service
 
-            # --- Handle service_id update ---
+            # Handle start_time update
+            if "start_time" in parsed_fields:
+                new_start_time = parsed_fields["start_time"]
+                booking.start_time = new_start_time
+                recalculate_end_time = True
+
+            # Handle service_id update
             if "service_id" in data:
                 service_id = data.get("service_id")
                 if service_id:
@@ -278,17 +343,29 @@ class BookingResource(Resource):
                             status_code=400,
                         )
                     
-                    service = Service.query.filter_by(
+                    new_service = Service.query.filter_by(
                         id=service_id, 
                         is_deleted=False
                     ).first()
-                    if not service:
+                    if not new_service:
                         return restful_response(
                             status="error",
                             message="Service not found",
                             status_code=404,
                         )
                     booking.service_id = service_id
+                    recalculate_end_time = True
+
+            # Recalculate end_time if needed
+            if recalculate_end_time:
+                if not new_start_time:
+                    new_start_time = booking.start_time
+                booking.end_time = calculate_end_time(new_start_time, new_service.duration)
+
+            # Apply other parsed fields (status)
+            for key, value in parsed_fields.items():
+                if key not in ['start_time']:  # start_time already handled
+                    setattr(booking, key, value)
 
             # --- Handle client_id update ---
             if "client_id" in data:
@@ -349,9 +426,13 @@ class BookingResource(Resource):
 
     @jwt_required()
     def delete(self, booking_id):
-        """Delete a booking (admins or the booking's client)."""
+        """Soft delete a booking (admins or the booking's client)."""
         try:
-            booking = Booking.query.get(booking_id)
+            booking = Booking.query.filter_by(
+                id=booking_id, 
+                is_deleted=False
+            ).first()
+
             if not booking:
                 return restful_response(
                     status="error",
@@ -376,7 +457,8 @@ class BookingResource(Resource):
                     status_code=403,
                 )
 
-            db.session.delete(booking)
+            # Soft delete instead of hard delete
+            booking.is_deleted = True
             db.session.commit()
 
             return restful_response(

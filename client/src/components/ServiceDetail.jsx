@@ -16,6 +16,7 @@ const ServiceDetail = () => {
   const [service, setService] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const isAuthenticated = !!user && isActive;
   const navigate = useNavigate();
 
@@ -23,20 +24,24 @@ const ServiceDetail = () => {
     window.scrollTo(0, 0);
     const fetchServiceData = async () => {
       try {
+        setLoading(true);
         const response = await getServiceById(id);
         if (response.status === "success") {
           setService(response.data);
         } else {
           toast.error(
-            `Failed to fetch services: ${response.message}. Please try again later`,
+            `Failed to fetch service: ${response.message}. Please try again later`,
           );
+          setService(null);
         }
       } catch (error) {
         console.error(error);
         toast.error(
           `Server unavailable. Failed to fetch service, please try again later`,
         );
-        setService([]);
+        setService(null);
+      } finally {
+        setLoading(false);
       }
     };
     fetchServiceData();
@@ -49,7 +54,7 @@ const ServiceDetail = () => {
       try {
         const allUsers = await fetchUsers();
         const activeClients = allUsers.filter(
-          (u) => u.role.toUpperCase() === "CLIENT",
+          (u) => u.role.toUpperCase() === "CLIENT" && !u.is_deleted
         );
         setClients(activeClients);
       } catch (error) {
@@ -66,7 +71,7 @@ const ServiceDetail = () => {
       toast.error("You must be logged in to book a service. Redirecting to Login page");
       setTimeout(() => {
         navigate("/login", { state: { from: `/services/${id}` } });
-      }, 5000);
+      }, 3000);
       return;
     }
 
@@ -79,22 +84,40 @@ const ServiceDetail = () => {
 
   const handleContact = () => {
     console.log("Contact team clicked");
+    // You can implement contact logic here
+    toast.info("Contact feature coming soon!");
   };
 
   const handleBookingSubmit = async (formData) => {
     try {
-      const response = await createBooking(formData);
+      console.log("Submitting booking from ServiceDetail:", formData);
+      
+      // Ensure service_id is included from the current service
+      const bookingData = {
+        ...formData,
+        service_id: service.id // Always use the current service ID
+      };
+
+      const response = await createBooking(bookingData);
+      console.log("Booking response:", response);
+      
       if (response.status === "success") {
         toast.success("Booking created successfully!");
         setShowBookingModal(false);
+      } else {
+        toast.error(response.message || "Failed to create booking");
       }
     } catch (error) {
       console.error("Booking creation error:", error);
-      toast.error("Failed to create booking");
+      toast.error(
+        error?.response?.data?.message || 
+        error?.message || 
+        "Failed to create booking"
+      );
     }
   };
 
-  if (!service) {
+  if (loading) {
     return (
       <Container className="text-center py-5">
         <Spinner animation="border" role="status" variant="success">
@@ -102,7 +125,9 @@ const ServiceDetail = () => {
         </Spinner>
       </Container>
     );
-  } else if (Array.isArray(service) && service.length === 0) {
+  }
+
+  if (!service) {
     return (
       <Container className="py-5">
         <div className="text-center">
@@ -151,7 +176,11 @@ const ServiceDetail = () => {
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="img-fluid"
+                  className="img-fluid rounded"
+                  onError={(e) => {
+                    e.target.src = '/api/placeholder/600/400';
+                    e.target.alt = 'Service image not available';
+                  }}
                 />
               </div>
 
@@ -170,21 +199,21 @@ const ServiceDetail = () => {
                   <Row>
                     <Col md={6}>
                       <div className="feature-item-fixed">
-                        <i className="bi bi-check-circle-fill"></i>
+                        <i className="bi bi-check-circle-fill text-success"></i>
                         <span>Expert Consultation</span>
                       </div>
                       <div className="feature-item-fixed">
-                        <i className="bi bi-check-circle-fill"></i>
+                        <i className="bi bi-check-circle-fill text-success"></i>
                         <span>Customized Solution</span>
                       </div>
                     </Col>
                     <Col md={6}>
                       <div className="feature-item-fixed">
-                        <i className="bi bi-check-circle-fill"></i>
+                        <i className="bi bi-check-circle-fill text-success"></i>
                         <span>Ongoing Support</span>
                       </div>
                       <div className="feature-item-fixed">
-                        <i className="bi bi-check-circle-fill"></i>
+                        <i className="bi bi-check-circle-fill text-success"></i>
                         <span>Quality Guarantee</span>
                       </div>
                     </Col>
@@ -195,41 +224,56 @@ const ServiceDetail = () => {
 
             <Col lg={4}>
               <div className="booking-section-fixed">
-                <Card className="booking-card-fixed">
+                <Card className="booking-card-fixed shadow-sm">
                   <Card.Body>
-                    <h4>Book This Service</h4>
+                    <h4 className="mb-4">Book This Service</h4>
 
-                    <div className="price-section-fixed">
-                      <div className="price-amount">
-                        Price: {service.currency} {service.price}
+                    <div className="price-section-fixed mb-4">
+                      <div className="price-amount h5 text-primary">
+                        {service.currency} {service.price}
                       </div>
-                      <div className="price-duration">
-                        Duration: {displayDuration(service.duration)}
+                      <div className="price-duration text-muted">
+                        <i className="bi bi-clock me-2"></i>
+                        {displayDuration(service.duration)}
                       </div>
                     </div>
 
-                    <div className="booking-features-fixed">
-                      <div className="feature-point">
-                        <i className="bi bi-check"></i>
+                    <div className="booking-features-fixed mb-4">
+                      <div className="feature-point mb-2">
+                        <i className="bi bi-check-circle text-success me-2"></i>
                         <span>Dedicated expert</span>
                       </div>
-                      <div className="feature-point">
-                        <i className="bi bi-check"></i>
+                      <div className="feature-point mb-2">
+                        <i className="bi bi-check-circle text-success me-2"></i>
                         <span>Flexible scheduling</span>
+                      </div>
+                      <div className="feature-point mb-2">
+                        <i className="bi bi-check-circle text-success me-2"></i>
+                        <span>Automatic duration calculation</span>
                       </div>
                     </div>
 
                     <Button
                       size="lg"
-                      className="book-now-btn-fixed"
+                      className="book-now-btn-fixed w-100 py-3"
                       onClick={handleBookService}
+                      style={{ 
+                        backgroundColor: "#37b137", 
+                        borderColor: "#37b137",
+                        fontSize: "1.1rem",
+                        fontWeight: "600"
+                      }}
                     >
+                      <i className="bi bi-calendar-check me-2"></i>
                       Book Now
                     </Button>
 
                     {!isAuthenticated && (
-                      <div className="mt-2 small text-danger">
-                        Please log in to book this service.
+                      <div className="mt-3 text-center">
+                        <small className="text-danger">
+                          <i className="bi bi-exclamation-triangle me-1"></i>
+                          Please log in to book this service.
+                        </small>
                       </div>
                     )}
                   </Card.Body>
@@ -238,19 +282,34 @@ const ServiceDetail = () => {
             </Col>
           </Row>
 
+          {/* Booking Modal */}
           {showBookingModal && service && (
             <BookingForm
-              initialData={{ service_id: service.id }}
+              initialData={{ 
+                service_id: service.id,
+                // Pre-fill service_id and if admin, no client_id (they'll select)
+                // For non-admins, client_id will be auto-set to their ID
+              }}
               onSubmit={handleBookingSubmit}
               onClose={() => setShowBookingModal(false)}
               clients={clients}
-              services={[service]}
-              disableService={true}
+              services={[service]} // Pass only the current service since it's fixed
+              disableService={true} // Disable service selection since we're on a service detail page
             />
           )}
         </Container>
       </div>
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };

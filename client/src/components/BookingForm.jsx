@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+// BookingForm.jsx
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import Button from "../utils/Button";
@@ -13,20 +14,31 @@ const BookingForm = ({
   services = [],
   disableService = false,
 }) => {
-  const { user, isAdmin, isSuperAdmin, isAtLeastAdmin } = useAuth();
+  const { user, isAtLeastAdmin } = useAuth();
+
+  // Manage booking form state - now includes status for admins
   const [form, setForm] = useState({
     start_time: "",
-    status: "pending",
     service_id: "",
     client_id: "",
+    status: "pending", // Default status
   });
 
   const [errors, setErrors] = useState({});
 
+  // Track initial data to re-initialize form if props change
+  const initialDataRef = useRef(initialData);
+  const hasInitialized = useRef(false);
+
+  // Sync form with new initial data
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
+    const isInitialDataChanged =
+      JSON.stringify(initialData) !== JSON.stringify(initialDataRef.current);
+
+    if (!hasInitialized.current || isInitialDataChanged) {
       console.log("Initial data received:", initialData);
 
+      // Helper: format date string into ISO datetime suitable for input[type=datetime-local]
       const formatDateTimeForInput = (dateString) => {
         if (!dateString) return "";
         try {
@@ -41,27 +53,26 @@ const BookingForm = ({
         }
       };
 
+      // If user isn't admin, default client_id to the logged-in user
       const autoClientId = !isAtLeastAdmin && user ? user.id.toString() : "";
 
+      // Populate form state
       setForm({
         start_time: formatDateTimeForInput(initialData.start_time),
-        status: initialData.status || "pending",
         service_id: initialData.service_id?.toString() || "",
         client_id:
           initialData.client_id?.toString() ||
           autoClientId ||
           (isAtLeastAdmin ? "" : initialData.client_id?.toString()),
+        status: initialData.status || "pending", // Set status from initial data or default
       });
-    } else {
-      if (!isAtLeastAdmin && user) {
-        setForm((prev) => ({
-          ...prev,
-          client_id: user.id.toString(),
-        }));
-      }
+
+      initialDataRef.current = initialData;
+      hasInitialized.current = true;
     }
   }, [initialData, isAtLeastAdmin, user]);
 
+  // Handle input changes and clear related errors
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -70,28 +81,33 @@ const BookingForm = ({
     }
   };
 
+  // Validate form before submission
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.start_time) newErrors.start_time = "Appointment date and time is required";
-    if (!form.service_id) newErrors.service_id = "Service is required";
+    if (!form.start_time) {
+      newErrors.start_time = "Appointment date and time is required";
+    } else {
+      const start = new Date(form.start_time);
+      const now = new Date();
+      if (start < now) {
+        newErrors.start_time = "Appointment date and time cannot be in the past";
+      }
+    }
+
+    if (!form.service_id) {
+      newErrors.service_id = "Service is required";
+    }
 
     if (isAtLeastAdmin && !form.client_id) {
       newErrors.client_id = "Client is required";
-    }
-
-    if (form.start_time) {
-      const start = new Date(form.start_time);
-      const today = new Date();
-      if (start < today) {
-        newErrors.start_time = "Appointment date and time cannot be in the past";
-      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle submit - validate, clean data, then send to parent
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form data before submission:", form);
@@ -101,14 +117,25 @@ const BookingForm = ({
       return;
     }
 
+    // Prepare data for backend
     const formattedData = {
-      ...form,
+      start_time: form.start_time ? new Date(form.start_time).toISOString() : undefined,
       service_id: form.service_id ? parseInt(form.service_id, 10) : undefined,
-      client_id: form.client_id ? parseInt(form.client_id, 10) : undefined,
     };
 
+    // Only include client_id if user is admin and it's provided
+    if (isAtLeastAdmin && form.client_id) {
+      formattedData.client_id = parseInt(form.client_id, 10);
+    }
+
+    // Include status for admin users
+    if (isAtLeastAdmin && form.status) {
+      formattedData.status = form.status;
+    }
+
+    // Remove undefined fields
     Object.keys(formattedData).forEach((key) => {
-      if (formattedData[key] === "" || formattedData[key] === undefined) {
+      if (formattedData[key] === undefined) {
         delete formattedData[key];
       }
     });
@@ -117,14 +144,7 @@ const BookingForm = ({
     onSubmit(formattedData);
   };
 
-  console.log("Current form state:", form);
-  console.log("Current user:", user);
-  console.log("Is admin:", isAdmin);
-  console.log("Is super admin:", isSuperAdmin);
-  console.log("Is at least admin:", isAtLeastAdmin);
-  console.log("Clients available:", clients);
-  console.log("Services available:", services);
-
+  // Show readable client name for non-admins
   const getCurrentClientName = () => {
     if (!isAtLeastAdmin && user) {
       return user.name || user.email || "Current User";
@@ -138,7 +158,7 @@ const BookingForm = ({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit}>
-        {/* Client Selection - Show for both Admin and Super Admin */}
+        {/* Client selector (admin) or static display (user) */}
         {isAtLeastAdmin ? (
           <Select
             label="Client"
@@ -169,6 +189,7 @@ const BookingForm = ({
           </div>
         )}
 
+        {/* Date/time selector */}
         <Input
           label="Appointment Date and Time"
           type="datetime-local"
@@ -179,21 +200,7 @@ const BookingForm = ({
           required
         />
 
-        {/* Status Selection - Only for Admin and Super Admin */}
-        {isAtLeastAdmin && (
-          <Select
-            label="Status"
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-          >
-            <Option value="pending">Pending</Option>
-            <Option value="confirmed">Confirmed</Option>
-            <Option value="completed">Completed</Option>
-            <Option value="cancelled">Cancelled</Option>
-          </Select>
-        )}
-
+        {/* Service selection */}
         <Select
           label="Service"
           name="service_id"
@@ -208,11 +215,36 @@ const BookingForm = ({
           </Option>
           {services.map((service) => (
             <Option key={service.id} value={service.id}>
-              {service.title} - {service.currency} {service.price}
+              {service.title} - {service.currency} {service.price} ({service.duration})
             </Option>
           ))}
         </Select>
 
+        {/* Booking status (admins only) */}
+        {isAtLeastAdmin && (
+          <Select
+            label="Status"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            error={errors.status}
+          >
+            <Option value="pending">Pending</Option>
+            <Option value="confirmed">Confirmed</Option>
+            <Option value="completed">Completed</Option>
+            <Option value="cancelled">Cancelled</Option>
+          </Select>
+        )}
+
+        {/* Info message about automatic duration calculation */}
+        <div className="alert alert-info mt-3">
+          <small>
+            <i className="bi bi-info-circle me-2"></i>
+            The appointment duration will be automatically calculated based on the selected service.
+          </small>
+        </div>
+
+        {/* Action buttons */}
         <div className="d-flex gap-2 mt-3">
           <Button action="add" label="Save" type="submit" />
           <Button action="cancel" label="Cancel" onClick={onClose} />
