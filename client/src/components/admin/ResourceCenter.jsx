@@ -239,7 +239,7 @@ const ResourceCenter = () => {
       )}
 
       {/* ADMIN VIEW */}
-      {role === "admin" && (
+      {(role === "admin" || role === "super_admin") && (
         <section className="my-3 mx-2 bg-white rounded-4 py-5 px-3">
           <div className="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-2">
             <p className="fw-bold m-0">Manage Resources</p>

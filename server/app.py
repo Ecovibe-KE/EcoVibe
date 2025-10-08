@@ -81,6 +81,7 @@ def create_app(config_name="development"):
         ticket,
         token,
         user,
+        master,
     )
 
     # Register Blueprints
