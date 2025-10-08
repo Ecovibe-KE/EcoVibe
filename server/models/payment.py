@@ -352,7 +352,7 @@ class PaybillTransaction(db.Model):
         """Return a dictionary representation of this PaybillTransaction."""
         return {
             "id": self.id,
-            "amount": self.amount,
+            "amount": str(self.amount) if self.amount is not None else None,
             "paybill_number": self.paybill_number,
             "account_number": self.account_number,
             "provider": self.provider,
@@ -360,7 +360,7 @@ class PaybillTransaction(db.Model):
             "phone_number": self.phone_number,
             "transaction_date": self.transaction_date.isoformat()
             if self.transaction_date else None,
-            "status": self.status,
+            "status": self.status.value if self.status else None,
             "confirmation_received": self.confirmation_received,
             "confirmed_at": self.confirmed_at.isoformat()
             if self.confirmed_at else None,
