@@ -82,7 +82,7 @@ const Services = () => {
             </p>
             <Button
               size="lg"
-              className="px-4"
+              className="contact-button px-4"
               onClick={handleContact}
               style={{ backgroundColor: "#37b137", borderColor: "#37b137" }}
             >
@@ -196,7 +196,7 @@ const Services = () => {
                     </p>
                     <Button
                       size="lg"
-                      className="px-4"
+                      className="contact-button px-4"
                       onClick={handleContact}
                       style={{
                         backgroundColor: "#37b137",
