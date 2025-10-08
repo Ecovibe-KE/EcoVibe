@@ -251,14 +251,15 @@ def send_invitation_email(
             <p>Hello {recipient_name},</p>
             <p>You have been invited by {invited_by} to join our platform.</p>
 
-            <p>Your temporary password is:</p>
+            <p>Your password is:</p>
             <div class="password-box">{password}</div>
-            <p>Please click the button below to set your password and
+            <p>Please click the button below to activate
             activate your account:</p>
             <p>
                 <a href="{invitation_link}" class="button-password">
                 Set Your Password</a>
             </p>
+            <p>Reset password after login</p>
             <p><small>This invitation link will expire in 24 hours.</small></p>
         </div>
     </body>
