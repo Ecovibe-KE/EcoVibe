@@ -1,3 +1,4 @@
+// BookingTable.jsx
 import Button from "../utils/Button";
 import styles from "../css/Booking.module.css";
 
@@ -6,20 +7,37 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
     return <p className="text-muted">No bookings available.</p>;
   }
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "—";
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  // Format time for display
+  const formatTime = (dateString) => {
+    if (!dateString) return "—";
+    return new Date(dateString).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+
   // Dynamic column width calculation based on user type
   const getColumnWidths = () => {
     if (isAdmin) {
       return {
-        user: "15%",
-        service: "25%",
-        date: "20%",
-        status: "15%",
-        actions: "25%",
+        user: "14%",
+        service: "18%",
+        bookingDate: "12%",
+        appointment: "18%",
+        status: "16%",
+        actions: "22%", // Increased for 3 buttons
       };
     } else {
       return {
-        service: "40%",
-        date: "20%",
+        service: "25%",
+        bookingDate: "15%",
+        appointment: "20%",
         status: "15%",
         actions: "25%",
       };
@@ -35,9 +53,10 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
       >
         <thead>
           <tr>
-            {isAdmin && <th style={{ width: columnWidths.user }}>User</th>}
+            {isAdmin && <th style={{ width: columnWidths.user }}>Client</th>}
             <th style={{ width: columnWidths.service }}>Service</th>
-            <th style={{ width: columnWidths.date }}>Date</th>
+            <th style={{ width: columnWidths.bookingDate }}>Booking Date</th>
+            <th style={{ width: columnWidths.appointment }}>Appointment Time</th>
             <th style={{ width: columnWidths.status }}>Status</th>
             <th style={{ width: columnWidths.actions }} className="text-end">
               Actions
@@ -55,14 +74,16 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
               <td style={{ width: columnWidths.service }}>
                 {booking.service_name || "—"}
               </td>
-              <td style={{ width: columnWidths.date }}>
-                {new Date(booking.booking_date).toLocaleDateString()}{" "}
-                {booking.start_time
-                  ? new Date(booking.start_time).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : ""}
+              <td style={{ width: columnWidths.bookingDate }}>
+                {formatDate(booking.booking_date)}
+              </td>
+              <td style={{ width: columnWidths.appointment }}>
+                <div>
+                  <strong>Start:</strong> {formatTime(booking.start_time)}
+                </div>
+                <div>
+                  <strong>End:</strong> {formatTime(booking.end_time)}
+                </div>
               </td>
               <td style={{ width: columnWidths.status }}>
                 <span
@@ -70,10 +91,12 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
                     booking.status === "confirmed"
                       ? "bg-success"
                       : booking.status === "pending"
-                        ? "bg-warning"
-                        : booking.status === "cancelled"
-                          ? "bg-danger"
-                          : "bg-secondary"
+                      ? "bg-warning"
+                      : booking.status === "completed"
+                      ? "bg-info"
+                      : booking.status === "cancelled"
+                      ? "bg-danger"
+                      : "bg-secondary"
                   }`}
                 >
                   {booking.status}

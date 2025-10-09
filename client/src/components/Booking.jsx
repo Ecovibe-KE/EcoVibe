@@ -1,3 +1,4 @@
+// Booking.jsx
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -11,7 +12,7 @@ import { fetchUsers } from "../api/services/usermanagement";
 import { getServices } from "../api/services/servicemanagement";
 import BookingTable from "./BookingTable";
 import BookingForm from "./BookingForm";
-import BookingModal from "./BookingModal";
+import BookingDetails from "./BookingDetails";
 
 const Booking = () => {
   const [services, setServices] = useState([]);
@@ -24,16 +25,16 @@ const Booking = () => {
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [clients, setClients] = useState([]);
 
-  const { user, isAdmin } = useAuth();
+  const { user, isAtLeastAdmin } = useAuth();
 
   useEffect(() => {
     const loadClients = async () => {
-      if (!isAdmin) return;
+      if (!isAtLeastAdmin) return;
 
       try {
         const allUsers = await fetchUsers();
         const activeClients = allUsers.filter(
-          (u) => u.role.toUpperCase() === "CLIENT",
+          (u) => u.role.toUpperCase() === "CLIENT" && !u.is_deleted
         );
         setClients(activeClients);
       } catch (error) {
@@ -43,14 +44,14 @@ const Booking = () => {
     };
 
     loadClients();
-  }, [isAdmin]);
+  }, [isAtLeastAdmin]);
 
   // Fetch all services for the form
   useEffect(() => {
     const loadServices = async () => {
       try {
         const data = await getServices();
-        console.log(data.data);
+        console.log("Services data:", data.data);
         setServices(data.data || []);
       } catch (err) {
         console.error("Failed to fetch services:", err);
@@ -69,7 +70,7 @@ const Booking = () => {
 
         let filtered = response.data || response;
 
-        if (!isAdmin) {
+        if (!isAtLeastAdmin) {
           filtered = filtered.filter((b) => b.client_id === user.id);
         }
 
@@ -82,7 +83,7 @@ const Booking = () => {
       }
     };
     fetchData();
-  }, [isAdmin, user.id]);
+  }, [isAtLeastAdmin, user?.id]);
 
   // CREATE booking
   const handleAdd = async (formData) => {
@@ -105,7 +106,7 @@ const Booking = () => {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "Unexpected error while creating booking",
+          "Unexpected error while creating booking"
       );
     }
   };
@@ -157,10 +158,11 @@ const Booking = () => {
             setBookingToDelete({
               id: b.id,
               client_name: b.client_name || "Unknown Client",
-              booking_date: b.booking_date,
+              service_name: b.service_name || "Unknown Service",
+              start_time: b.start_time,
             })
           }
-          isAdmin={isAdmin}
+          isAdmin={isAtLeastAdmin}
         />
       )}
 
@@ -188,69 +190,60 @@ const Booking = () => {
 
       {/* VIEW MODAL */}
       {selectedBooking && (
-        <BookingModal
-          title="Booking Details"
+        <BookingDetails 
+          booking={selectedBooking}
           onClose={() => setSelectedBooking(null)}
-        >
-          <p>
-            <strong>Client:</strong> {selectedBooking.client_name}
-          </p>
-          <p>
-            <strong>Date:</strong>{" "}
-            {selectedBooking.booking_date
-              ? new Date(selectedBooking.booking_date).toLocaleDateString()
-              : "Unknown Date"}
-          </p>
-          <p>
-            <strong>Start:</strong> {selectedBooking.start_time}
-          </p>
-          <p>
-            <strong>End:</strong> {selectedBooking.end_time}
-          </p>
-          <p>
-            <strong>Status:</strong> {selectedBooking.status}
-          </p>
-          <p>
-            <strong>Service:</strong>{" "}
-            {services.find((s) => s.id === selectedBooking.service_id)?.title ||
-              "Unknown Service"}
-          </p>
-        </BookingModal>
+        />
       )}
 
       {/* DELETE CONFIRMATION MODAL */}
       {bookingToDelete && (
-        <BookingModal
-          title="Confirm Deletion"
-          onClose={() => setBookingToDelete(null)}
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
         >
-          <p>
-            Are you sure you want to delete the booking for{" "}
-            <strong>{bookingToDelete.client_name}</strong> on{" "}
-            <strong>
-              {bookingToDelete.booking_date
-                ? new Date(bookingToDelete.booking_date).toLocaleDateString()
-                : "Unknown Date"}
-            </strong>
-            ?
-          </p>
-          <div className="d-flex justify-content-end">
-            <button
-              className="btn btn-secondary me-2"
-              onClick={() => setBookingToDelete(null)}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={() => {
-                handleDelete(bookingToDelete.id);
-              }}
-            >
-              Delete
-            </button>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Deletion</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setBookingToDelete(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  Are you sure you want to delete the booking for{" "}
+                  <strong>{bookingToDelete.client_name}</strong> -{" "}
+                  <strong>{bookingToDelete.service_name}</strong> on{" "}
+                  <strong>
+                    {bookingToDelete.start_time
+                      ? new Date(bookingToDelete.start_time).toLocaleString()
+                      : "Unknown Date"}
+                  </strong>
+                  ?
+                </p>
+                <div className="d-flex justify-content-end">
+                  <button
+                    className="btn btn-secondary me-2"
+                    onClick={() => setBookingToDelete(null)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => {
+                      handleDelete(bookingToDelete.id);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </BookingModal>
+        </div>
       )}
     </div>
   );
