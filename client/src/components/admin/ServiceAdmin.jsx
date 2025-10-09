@@ -1,6 +1,20 @@
-import { Tab, Tabs, Row, Container, Col } from "react-bootstrap";
-import { toast, ToastContainer } from "react-toastify";
-import { useState, useRef, useEffect } from "react";
+import {
+  Tab,
+  Tabs,
+  Row,
+  Container,
+  Col,
+  Spinner
+} from "react-bootstrap";
+import {
+  toast,
+  ToastContainer
+} from "react-toastify";
+import {
+  useState,
+  useRef,
+  useEffect
+} from "react";
 import gearImg from "../../assets/gears.png";
 import tickImg from "../../assets/tick.png";
 import "../../css/ServiceAdmin.css";
@@ -22,7 +36,7 @@ function ServiceAdmin() {
   // for delete modal component
   const [showDeleteServiceModal, setShowDeleteServiceModal] = useState(false);
   // for displaying services
-  const [allServices, setAllServices] = useState([]);
+  const [allServices, setAllServices] = useState(null);
   // get serviceId
   const [idService, setIdService] = useState(null);
   // for original data when in edit modal component
@@ -46,9 +60,11 @@ function ServiceAdmin() {
         );
       }
     } catch (error) {
+      console.error(error);
       toast.error(
-        `Failed to fetch service: ${error.response?.data?.message || error.message}`,
+        `Server unavailable. Please try again later`
       );
+      setAllServices([]);
     }
   };
 
@@ -76,16 +92,16 @@ function ServiceAdmin() {
   const topServiceData = [
     {
       imageSource: gearImg,
-      number: allServices.length,
+      number: allServices ? allServices.length : "loading",
       text: "Total Services",
       imageSetting: "info",
       colSetting: "me-3",
     },
     {
       imageSource: tickImg,
-      number: allServices.filter(
+      number: allServices ? allServices.filter(
         (service) => service.status?.toLowerCase() === "active",
-      ).length,
+      ).length : "loading",
       text: "Active Services",
       imageSetting: "success",
       colSetting: "",
@@ -364,6 +380,16 @@ function ServiceAdmin() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  }
+
+  if (!allServices) {
+    return (
+      <Container className="text-center py-5">
+        <Spinner animation="border" role="status" variant="success">
+        </Spinner>
+        <span className=""> Loading services...</span>
+      </Container>
+    )
   }
 
   return (
