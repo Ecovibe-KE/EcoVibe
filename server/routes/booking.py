@@ -20,11 +20,17 @@ def parse_booking_fields(data):
     """Parse booking fields from JSON to correct Python types."""
     parsed = {}
     if "start_time" in data:
-        # Parse the datetime and make it timezone-aware
-        naive_datetime = datetime.fromisoformat(
-            data["start_time"].replace("Z", "+00:00")
-        )
-        parsed["start_time"] = naive_datetime.replace(tzinfo=timezone.utc)
+        # Parse the datetime - this handles both naive and aware datetimes
+        dt = datetime.fromisoformat(data["start_time"])
+        
+        # Normalize to UTC timezone
+        if dt.tzinfo is None:
+            # If naive datetime, assume UTC
+            parsed["start_time"] = dt.replace(tzinfo=timezone.utc)
+        else:
+            # If timezone-aware, convert to UTC
+            parsed["start_time"] = dt.astimezone(timezone.utc)
+            
     if "status" in data:
         parsed["status"] = BookingStatus(data["status"])
     return parsed
@@ -167,11 +173,17 @@ class BookingListResource(Resource):
                 )
 
             try:
-                # Parse and make timezone-aware
-                naive_datetime = datetime.fromisoformat(
-                    data["start_time"].replace("Z", "+00:00")
-                )
-                start_time = naive_datetime.replace(tzinfo=timezone.utc)
+                # Parse and normalize to UTC timezone
+                dt = datetime.fromisoformat(data["start_time"])
+                
+                # Normalize to UTC timezone
+                if dt.tzinfo is None:
+                    # If naive datetime, assume UTC
+                    start_time = dt.replace(tzinfo=timezone.utc)
+                else:
+                    # If timezone-aware, convert to UTC
+                    start_time = dt.astimezone(timezone.utc)
+                    
             except (ValueError, TypeError):
                 return restful_response(
                     status="error",

@@ -1,5 +1,5 @@
-// BookingDetails.test.jsx
 import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi } from 'vitest';
 import BookingDetails from "../../src/components/BookingDetails";
 
 // Mock child components
@@ -8,15 +8,22 @@ vi.mock("../../src/components/BookingModal", () => ({
     <div data-testid="booking-modal">
       <h2>{title}</h2>
       {children}
-      <button onClick={onClose}>Close Modal</button>
+      <button onClick={onClose} data-testid="button-close">
+        Close Modal
+      </button>
     </div>
   )
 }));
 
+// Fixed Button mock - handle undefined label safely
 vi.mock("../../src/utils/Button", () => ({
-  default: ({ label, onClick }) => (
-    <button onClick={onClick} data-testid={`button-${label.toLowerCase()}`}>
-      {label}
+  default: ({ label, onClick, variant }) => (
+    <button 
+      onClick={onClick} 
+      data-testid={`button-${(label || 'default').toLowerCase()}`}
+      className={variant ? `btn-${variant}` : ''}
+    >
+      {label || 'Button'}
     </button>
   )
 }));
@@ -174,6 +181,10 @@ describe("BookingDetails", () => {
     expect(screen.getByText("Service:")).toBeInTheDocument();
     expect(screen.getByText("Booking Date:")).toBeInTheDocument();
     expect(screen.getByText("Appointment Start:")).toBeInTheDocument();
+    
+    // Check for the dash character in the values
+    const dashes = screen.getAllByText("—");
+    expect(dashes.length).toBeGreaterThan(0);
   });
 
   it("renders close button", () => {
