@@ -57,11 +57,11 @@ class Booking(db.Model):
         if start_time_value.tzinfo is None:
             # If naive datetime, assume UTC
             start_time_value = start_time_value.replace(tzinfo=timezone.utc)
-        
+
         # Compare against current UTC time
         if start_time_value < datetime.now(timezone.utc):
             raise ValueError("Start time cannot be in the past.")
-        
+
         # Return the normalized timezone-aware datetime
         return start_time_value
 
