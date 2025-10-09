@@ -186,9 +186,7 @@ class TicketListResource(Resource):
                 client_id = user.id
                 # FIX: Use Role enum objects instead of .value
                 admin = (
-                    User.query.filter(
-                        User.role.in_([Role.ADMIN, Role.SUPER_ADMIN])
-                    )
+                    User.query.filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
                     .order_by(User.id.asc())
                     .first()
                 )
@@ -220,9 +218,7 @@ class TicketListResource(Resource):
                         status_code=400,
                     )
 
-                client = User.query.filter_by(
-                    id=client_id, role=Role.CLIENT
-                ).first()
+                client = User.query.filter_by(id=client_id, role=Role.CLIENT).first()
                 if not client:
                     return restful_response(
                         status="error", message="Invalid client", status_code=400
