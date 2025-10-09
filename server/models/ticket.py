@@ -25,7 +25,7 @@ class Ticket(db.Model):
     admin_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
-        nullable=False,
+        nullable=True,
     )
     subject = db.Column(db.String(255), nullable=False)
     status = db.Column(
