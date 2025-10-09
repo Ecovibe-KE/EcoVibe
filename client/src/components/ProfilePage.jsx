@@ -38,7 +38,7 @@ const ProfilePage = () => {
           setOriginalData(response.data);
         } else {
           toast.error(
-            `Error: ${response?.message || "Failed to load profile"}`
+            `Error: ${response?.message || "Failed to load profile"}`,
           );
         }
       } catch (error) {
@@ -140,8 +140,8 @@ const ProfilePage = () => {
               {["ADMIN", "admin"].includes(formData.role)
                 ? "Admin"
                 : ["SUPER_ADMIN", "super_admin"].includes(formData.role)
-                ? "Super Admin"
-                : "Client"}
+                  ? "Super Admin"
+                  : "Client"}
             </small>
 
             {/* ✅ Only show industry badge below */}
