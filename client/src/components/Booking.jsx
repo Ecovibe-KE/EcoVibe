@@ -83,7 +83,7 @@ const Booking = () => {
       }
     };
     fetchData();
-  }, [isAtLeastAdmin, user.id]);
+  }, [isAtLeastAdmin, user?.id]);
 
   // CREATE booking
   const handleAdd = async (formData) => {

@@ -53,9 +53,16 @@ class Booking(db.Model):
     @validates("start_time")
     def validate_start_time(self, key, start_time_value):
         """Ensure start_time is not in the past."""
-        # Make both datetimes timezone-aware for comparison
+        # Normalize the incoming datetime to be timezone-aware
+        if start_time_value.tzinfo is None:
+            # If naive datetime, assume UTC
+            start_time_value = start_time_value.replace(tzinfo=timezone.utc)
+        
+        # Compare against current UTC time
         if start_time_value < datetime.now(timezone.utc):
             raise ValueError("Start time cannot be in the past.")
+        
+        # Return the normalized timezone-aware datetime
         return start_time_value
 
     @validates("end_time")
