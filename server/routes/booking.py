@@ -15,16 +15,20 @@ from models.invoice import Invoice, InvoiceStatus
 booking_bp = Blueprint("booking", __name__)
 api = Api(booking_bp)
 
+
 def parse_booking_fields(data):
     """Parse booking fields from JSON to correct Python types."""
     parsed = {}
     if "start_time" in data:
         # Parse the datetime and make it timezone-aware
-        naive_datetime = datetime.fromisoformat(data["start_time"].replace('Z', '+00:00'))
+        naive_datetime = datetime.fromisoformat(
+            data["start_time"].replace("Z", "+00:00")
+        )
         parsed["start_time"] = naive_datetime.replace(tzinfo=timezone.utc)
     if "status" in data:
         parsed["status"] = BookingStatus(data["status"])
     return parsed
+
 
 def calculate_end_time(start_time, duration_str):
     """Calculate end_time based on start_time and service duration"""
@@ -33,17 +37,18 @@ def calculate_end_time(start_time, duration_str):
         parts = duration_str.split()
         hours = 0
         minutes = 0
-        
+
         for i, part in enumerate(parts):
-            if part == 'hr' and i > 0:
-                hours = int(parts[i-1])
-            elif part == 'min' and i > 0:
-                minutes = int(parts[i-1])
-        
+            if part == "hr" and i > 0:
+                hours = int(parts[i - 1])
+            elif part == "min" and i > 0:
+                minutes = int(parts[i - 1])
+
         return start_time + timedelta(hours=hours, minutes=minutes)
     except (ValueError, IndexError):
         # Default to 1 hour if parsing fails
         return start_time + timedelta(hours=1)
+
 
 class BookingListResource(Resource):
     @jwt_required()
@@ -117,11 +122,8 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            client = User.query.filter_by(
-                id=client_id, 
-                is_deleted=False
-            ).first()
-            
+            client = User.query.filter_by(id=client_id, is_deleted=False).first()
+
             if not client:
                 return restful_response(
                     status="error",
@@ -147,11 +149,8 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            service = Service.query.filter_by(
-                id=service_id, 
-                is_deleted=False
-            ).first()
-            
+            service = Service.query.filter_by(id=service_id, is_deleted=False).first()
+
             if not service:
                 return restful_response(
                     status="error",
@@ -169,7 +168,9 @@ class BookingListResource(Resource):
 
             try:
                 # Parse and make timezone-aware
-                naive_datetime = datetime.fromisoformat(data["start_time"].replace('Z', '+00:00'))
+                naive_datetime = datetime.fromisoformat(
+                    data["start_time"].replace("Z", "+00:00")
+                )
                 start_time = naive_datetime.replace(tzinfo=timezone.utc)
             except (ValueError, TypeError):
                 return restful_response(
@@ -196,7 +197,7 @@ class BookingListResource(Resource):
                 start_time=start_time,
                 end_time=end_time,
                 booking_date=date.today(),  # Set booking_date to today in routes
-                status=BookingStatus.pending  # Default status
+                status=BookingStatus.pending,  # Default status
             )
 
             # --- Create Invoice ---
@@ -248,17 +249,17 @@ class BookingListResource(Resource):
                 status_code=500,
             )
 
+
 class BookingResource(Resource):
     @jwt_required()
     def get(self, booking_id):
         """Retrieve a single booking by ID (requires authentication)."""
         try:
-            booking = Booking.query.filter_by(
-                id=booking_id, 
-                is_deleted=False
-            ).options(
-                joinedload(Booking.client), joinedload(Booking.service)
-            ).first()
+            booking = (
+                Booking.query.filter_by(id=booking_id, is_deleted=False)
+                .options(joinedload(Booking.client), joinedload(Booking.service))
+                .first()
+            )
 
             if not booking:
                 return restful_response(
@@ -283,12 +284,11 @@ class BookingResource(Resource):
     def patch(self, booking_id):
         """Partially update a booking (only editable fields provided in request)."""
         try:
-            booking = Booking.query.filter_by(
-                id=booking_id, 
-                is_deleted=False
-            ).options(
-                joinedload(Booking.client), joinedload(Booking.service)
-            ).first()
+            booking = (
+                Booking.query.filter_by(id=booking_id, is_deleted=False)
+                .options(joinedload(Booking.client), joinedload(Booking.service))
+                .first()
+            )
 
             if not booking:
                 return restful_response(
@@ -342,10 +342,9 @@ class BookingResource(Resource):
                             message="Invalid service ID format",
                             status_code=400,
                         )
-                    
+
                     new_service = Service.query.filter_by(
-                        id=service_id, 
-                        is_deleted=False
+                        id=service_id, is_deleted=False
                     ).first()
                     if not new_service:
                         return restful_response(
@@ -360,11 +359,13 @@ class BookingResource(Resource):
             if recalculate_end_time:
                 if not new_start_time:
                     new_start_time = booking.start_time
-                booking.end_time = calculate_end_time(new_start_time, new_service.duration)
+                booking.end_time = calculate_end_time(
+                    new_start_time, new_service.duration
+                )
 
             # Apply other parsed fields (status)
             for key, value in parsed_fields.items():
-                if key not in ['start_time']:  # start_time already handled
+                if key not in ["start_time"]:  # start_time already handled
                     setattr(booking, key, value)
 
             # --- Handle client_id update ---
@@ -389,8 +390,7 @@ class BookingResource(Resource):
                         )
 
                     client = User.query.filter_by(
-                        id=client_id, 
-                        is_deleted=False
+                        id=client_id, is_deleted=False
                     ).first()
                     if not client:
                         return restful_response(
@@ -428,10 +428,7 @@ class BookingResource(Resource):
     def delete(self, booking_id):
         """Soft delete a booking (admins or the booking's client)."""
         try:
-            booking = Booking.query.filter_by(
-                id=booking_id, 
-                is_deleted=False
-            ).first()
+            booking = Booking.query.filter_by(id=booking_id, is_deleted=False).first()
 
             if not booking:
                 return restful_response(
@@ -473,6 +470,7 @@ class BookingResource(Resource):
                 message=f"Error deleting booking: {str(e)}",
                 status_code=500,
             )
+
 
 api.add_resource(BookingListResource, "/bookings")
 api.add_resource(BookingResource, "/bookings/<int:booking_id>")
