@@ -184,9 +184,10 @@ class TicketListResource(Resource):
             if user_role == Role.CLIENT.value:
                 # Assign ticket to the first available admin
                 client_id = user.id
+                # FIX: Use Role enum objects instead of .value
                 admin = (
                     User.query.filter(
-                        User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value])
+                        User.role.in_([Role.ADMIN, Role.SUPER_ADMIN])
                     )
                     .order_by(User.id.asc())
                     .first()
@@ -220,7 +221,7 @@ class TicketListResource(Resource):
                     )
 
                 client = User.query.filter_by(
-                    id=client_id, role=Role.CLIENT.value
+                    id=client_id, role=Role.CLIENT
                 ).first()
                 if not client:
                     return restful_response(
@@ -241,9 +242,10 @@ class TicketListResource(Resource):
                         status_code=400,
                     )
 
+                # FIX: Use Role enum objects instead of .value
                 admin = (
                     User.query.filter_by(id=admin_id)
-                    .filter(User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value]))
+                    .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
                     .first()
                 )
                 if not admin:
@@ -482,11 +484,10 @@ class TicketResource(Resource):
             if "admin_id" in data and is_admin(user_role):
                 try:
                     admin_id = int(data["admin_id"])
+                    # FIX: Use Role enum objects instead of .value
                     admin = (
                         User.query.filter_by(id=admin_id)
-                        .filter(
-                            User.role.in_([Role.ADMIN.value, Role.SUPER_ADMIN.value])
-                        )
+                        .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
                         .first()
                     )
                     if not admin:
