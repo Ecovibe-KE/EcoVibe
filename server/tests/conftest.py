@@ -89,3 +89,47 @@ def session(db, request):
 
     request.addfinalizer(teardown)
     return session
+
+# Add these imports at the top of your conftest.py
+from models.user import User, Role
+from models.service import Service, ServiceStatus
+from models.booking import Booking, BookingStatus
+from models.invoice import Invoice, InvoiceStatus
+import pytest
+
+@pytest.fixture
+def create_test_user(db):
+    """Fixture to create test users"""
+    def _create_user(email, role, industry="Test Industry"):
+        user = User(
+            full_name="Test User",
+            email=email,
+            phone_number="+254712345678",
+            role=role,
+            industry=industry,
+            account_status="active"
+        )
+        user.set_password("TestPass123")
+        db.session.add(user)
+        db.session.commit()
+        return user
+    return _create_user
+
+@pytest.fixture
+def create_test_service(db):
+    """Fixture to create test services"""
+    def _create_service(admin_id, title="Test Service", price=100.0, duration="1 hr"):
+        service = Service(
+            title=title,
+            description="Test service description",
+            price=price,
+            duration=duration,
+            image=b"fake_image_data",
+            status=ServiceStatus.ACTIVE,
+            admin_id=admin_id,
+            currency="KES"
+        )
+        db.session.add(service)
+        db.session.commit()
+        return service
+    return _create_service
