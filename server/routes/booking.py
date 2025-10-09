@@ -22,7 +22,7 @@ def parse_booking_fields(data):
     if "start_time" in data:
         # Parse the datetime - this handles both naive and aware datetimes
         dt = datetime.fromisoformat(data["start_time"])
-        
+
         # Normalize to UTC timezone
         if dt.tzinfo is None:
             # If naive datetime, assume UTC
@@ -30,7 +30,7 @@ def parse_booking_fields(data):
         else:
             # If timezone-aware, convert to UTC
             parsed["start_time"] = dt.astimezone(timezone.utc)
-            
+
     if "status" in data:
         parsed["status"] = BookingStatus(data["status"])
     return parsed
@@ -175,7 +175,7 @@ class BookingListResource(Resource):
             try:
                 # Parse and normalize to UTC timezone
                 dt = datetime.fromisoformat(data["start_time"])
-                
+
                 # Normalize to UTC timezone
                 if dt.tzinfo is None:
                     # If naive datetime, assume UTC
@@ -183,7 +183,7 @@ class BookingListResource(Resource):
                 else:
                     # If timezone-aware, convert to UTC
                     start_time = dt.astimezone(timezone.utc)
-                    
+
             except (ValueError, TypeError):
                 return restful_response(
                     status="error",
