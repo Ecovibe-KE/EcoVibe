@@ -195,9 +195,9 @@ const ServiceDetail = () => {
                     <h4>Book This Service</h4>
 
                     <div className="price-section-fixed">
-                      <div className="price-amount">
+                      {/* <div className="price-amount">
                         Price: {service.currency} {service.price}
-                      </div>
+                      </div> */}
                       <div className="price-duration">
                         Duration: {displayDuration(service.duration)}
                       </div>

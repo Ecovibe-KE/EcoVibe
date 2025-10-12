@@ -235,10 +235,10 @@ function ServiceAdmin() {
   const addNewService = async (e) => {
     e.preventDefault();
 
-    if (formData.servicePrice <= 0) {
-      toast.error("Price must be greater than 0");
-      return;
-    }
+    // if (formData.servicePrice <= 0) {
+    //   toast.error("Price must be greater than 0");
+    //   return;
+    // }
 
     const { hours, minutes } = formData.serviceDuration;
     if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
@@ -284,10 +284,10 @@ function ServiceAdmin() {
     e.preventDefault();
 
     // === ADD VALIDATION CHECKS ===
-    if (formData.servicePrice <= 0) {
-      toast.error("Price must be greater than 0");
-      return;
-    }
+    // if (formData.servicePrice <= 0) {
+    //   toast.error("Price must be greater than 0");
+    //   return;
+    // }
 
     const { hours, minutes } = formData.serviceDuration;
     if (parseInt(hours) <= 0 && parseInt(minutes) <= 0) {
