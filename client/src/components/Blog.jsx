@@ -57,7 +57,10 @@ const Blog = () => {
   // --- Pagination Logic ---
   const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
   const startIndex = (currentPage - 1) * blogsPerPage;
-  const currentBlogs = filteredBlogs.slice(startIndex, startIndex + blogsPerPage);
+  const currentBlogs = filteredBlogs.slice(
+    startIndex,
+    startIndex + blogsPerPage,
+  );
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -130,11 +133,8 @@ const Blog = () => {
                       onClick={() => handlePageChange(currentPage + 1)}
                     />
                   </Pagination>
-
-
                 </div>
               )}
-
             </>
           )}
         </div>

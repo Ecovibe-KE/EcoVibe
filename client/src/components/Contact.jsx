@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReCAPTCHA from "react-google-recaptcha";
 import { sendContactMessage } from "../api/services/contact.js";
-import africa from "../assets/Africa.jpg"
+import africa from "../assets/Africa.jpg";
 
 function Contact() {
   const recaptchaRef = useRef();
@@ -280,12 +280,16 @@ function Contact() {
                     mappa della popolazione Italia
                   </a>
                 </iframe> */}
-                <img src={africa} alt="Africa image" style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "0.5rem",
-                }} />
+                <img
+                  src={africa}
+                  alt="Africa image"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "0.5rem",
+                  }}
+                />
               </div>
             </div>
           </div>
