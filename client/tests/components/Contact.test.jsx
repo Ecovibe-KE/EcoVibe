@@ -33,17 +33,24 @@ vi.mock("react-bootstrap", () => ({
     ),
 }));
 
-// FIX: Mock the correct reCAPTCHA library (react-google-recaptcha instead of react-google-recaptcha-v3)
+// Mock reCAPTCHA - FIXED: Properly mock the ref and siteKey behavior
 vi.mock("react-google-recaptcha", () => ({
     default: vi.fn(({ sitekey, ref }) => {
         // Store the ref so we can reset it in tests
         if (ref && typeof ref === 'object') {
             ref.current = {
                 reset: vi.fn(),
+                execute: vi.fn(),
+                getValue: vi.fn(() => "test-token"),
             };
         }
         return <div data-testid="recaptcha-mock">reCAPTCHA Mock</div>;
     }),
+}));
+
+// Mock environment variables
+vi.mock("../utils/env", () => ({
+    VITE_REACT_APP_RECAPTCHA_SITE_KEY: "test-site-key"
 }));
 
 describe("Contact Component", () => {
@@ -51,6 +58,12 @@ describe("Contact Component", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Mock the environment variable
+        vi.stubEnv('VITE_REACT_APP_RECAPTCHA_SITE_KEY', 'test-site-key');
+    });
+
+    afterEach(() => {
+        vi.unstubAllEnvs();
     });
 
     it("renders contact form and information", () => {
@@ -109,7 +122,7 @@ describe("Contact Component", () => {
         expect(industrySelect).toHaveValue("technology");
     });
 
-    it("submits form successfully", async () => {
+    it("submits form successfully when reCAPTCHA is configured", async () => {
         // Mock the API with the correct function name and response
         sendContactMessage.mockResolvedValueOnce({
             status: "success",
@@ -117,6 +130,11 @@ describe("Contact Component", () => {
         });
 
         render(<Contact />);
+
+        // Wait for reCAPTCHA to load (component useEffect runs)
+        await waitFor(() => {
+            expect(screen.queryByText(/reCAPTCHA is not configured/)).not.toBeInTheDocument();
+        });
 
         // Fill form
         await user.type(screen.getByLabelText(/Name/i), "John Doe");
@@ -129,11 +147,49 @@ describe("Contact Component", () => {
         await user.click(screen.getByText(/Send Message/i));
 
         await waitFor(() => {
-            expect(sendContactMessage).toHaveBeenCalled();
+            expect(sendContactMessage).toHaveBeenCalledWith({
+                name: "John Doe",
+                industry: "technology",
+                email: "john@example.com",
+                phone: "+1234567890",
+                message: "Test message"
+            });
         });
 
         await waitFor(() => {
             expect(toast.success).toHaveBeenCalledWith("Thank you for your message! We will get back to you within 24 hours.");
+        });
+    });
+
+    it("prevents form submission when reCAPTCHA is not configured", async () => {
+        // Remove the environment variable for this test
+        vi.unstubAllEnvs();
+        vi.stubEnv('VITE_REACT_APP_RECAPTCHA_SITE_KEY', '');
+
+        render(<Contact />);
+
+        // Wait for the warning message to appear
+        await waitFor(() => {
+            expect(screen.getByText(/reCAPTCHA is not configured/)).toBeInTheDocument();
+        });
+
+        // Fill form
+        await user.type(screen.getByLabelText(/Name/i), "John Doe");
+        await user.type(screen.getByLabelText(/Email/i), "john@example.com");
+        await user.selectOptions(screen.getByLabelText(/Industry/i), "technology");
+        await user.type(screen.getByLabelText(/How can we help you?/i), "Test message");
+
+        // Submit form
+        await user.click(screen.getByText(/Send Message/i));
+
+        // API should not be called because reCAPTCHA is not configured
+        await waitFor(() => {
+            expect(sendContactMessage).not.toHaveBeenCalled();
+        });
+
+        // Error toast should be shown
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("reCAPTCHA not loaded. Please refresh the page and try again.");
         });
     });
 
@@ -142,6 +198,11 @@ describe("Contact Component", () => {
 
         render(<Contact />);
 
+        // Wait for reCAPTCHA to load
+        await waitFor(() => {
+            expect(screen.queryByText(/reCAPTCHA is not configured/)).not.toBeInTheDocument();
+        });
+
         // Fill required fields
         await user.type(screen.getByLabelText(/Name/i), "John Doe");
         await user.type(screen.getByLabelText(/Email/i), "john@example.com");
@@ -152,22 +213,23 @@ describe("Contact Component", () => {
         await user.click(screen.getByText(/Send Message/i));
 
         await waitFor(() => {
-            // The component might handle errors differently, so let's check if any toast was called
-            // or if the API was called but we don't see a toast
             expect(sendContactMessage).toHaveBeenCalled();
         });
 
-        // The component might not show an error toast for network errors
-        // or it might show a different message
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("API Error");
+        });
     });
 
     it("handles API error response", async () => {
-        sendContactMessage.mockResolvedValueOnce({
-            status: "error",
-            message: "Validation failed",
-        });
+        sendContactMessage.mockRejectedValueOnce(new Error("Validation failed"));
 
         render(<Contact />);
+
+        // Wait for reCAPTCHA to load
+        await waitFor(() => {
+            expect(screen.queryByText(/reCAPTCHA is not configured/)).not.toBeInTheDocument();
+        });
 
         // Fill required fields
         await user.type(screen.getByLabelText(/Name/i), "John Doe");
@@ -182,12 +244,18 @@ describe("Contact Component", () => {
             expect(sendContactMessage).toHaveBeenCalled();
         });
 
-        // The component might handle API error responses differently
-        // It might not show a toast for error status, or it might show a different message
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("Validation failed");
+        });
     });
 
     it("validates required fields", async () => {
         render(<Contact />);
+
+        // Wait for reCAPTCHA to load
+        await waitFor(() => {
+            expect(screen.queryByText(/reCAPTCHA is not configured/)).not.toBeInTheDocument();
+        });
 
         // Try to submit without filling required fields
         await user.click(screen.getByText(/Send Message/i));
@@ -200,6 +268,14 @@ describe("Contact Component", () => {
 
 // Additional tests for the current component structure
 describe("Contact Component Structure Tests", () => {
+    beforeEach(() => {
+        vi.stubEnv('VITE_REACT_APP_RECAPTCHA_SITE_KEY', 'test-site-key');
+    });
+
+    afterEach(() => {
+        vi.unstubAllEnvs();
+    });
+
     it("renders all form fields with correct attributes", () => {
         render(<Contact />);
 
@@ -249,11 +325,15 @@ describe("Contact Component Structure Tests", () => {
 
 // Test the actual Contact component behavior more accurately
 describe("Contact Component Integration Tests", () => {
-    // FIX: Add user setup for this describe block
     const user = userEvent.setup();
 
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.stubEnv('VITE_REACT_APP_RECAPTCHA_SITE_KEY', 'test-site-key');
+    });
+
+    afterEach(() => {
+        vi.unstubAllEnvs();
     });
 
     it("should reset form after successful submission", async () => {
@@ -263,6 +343,11 @@ describe("Contact Component Integration Tests", () => {
         });
 
         render(<Contact />);
+
+        // Wait for reCAPTCHA to load
+        await waitFor(() => {
+            expect(screen.queryByText(/reCAPTCHA is not configured/)).not.toBeInTheDocument();
+        });
 
         const nameInput = screen.getByLabelText(/Name/i);
         const emailInput = screen.getByLabelText(/Email/i);
@@ -279,8 +364,12 @@ describe("Contact Component Integration Tests", () => {
             expect(sendContactMessage).toHaveBeenCalled();
         });
 
-        // After successful submission, form might be reset
-        // This depends on the actual component implementation
+        // Check if form is reset after successful submission
+        await waitFor(() => {
+            expect(nameInput).toHaveValue("");
+            expect(emailInput).toHaveValue("");
+            expect(messageInput).toHaveValue("");
+        });
     });
 
     it("should handle form submission with only required fields", async () => {
@@ -291,6 +380,11 @@ describe("Contact Component Integration Tests", () => {
 
         render(<Contact />);
 
+        // Wait for reCAPTCHA to load
+        await waitFor(() => {
+            expect(screen.queryByText(/reCAPTCHA is not configured/)).not.toBeInTheDocument();
+        });
+
         // Fill only required fields (no phone)
         await user.type(screen.getByLabelText(/Name/i), "John Doe");
         await user.type(screen.getByLabelText(/Email/i), "john@example.com");
@@ -300,7 +394,13 @@ describe("Contact Component Integration Tests", () => {
         await user.click(screen.getByText(/Send Message/i));
 
         await waitFor(() => {
-            expect(sendContactMessage).toHaveBeenCalled();
+            expect(sendContactMessage).toHaveBeenCalledWith({
+                name: "John Doe",
+                industry: "technology",
+                email: "john@example.com",
+                phone: "",
+                message: "Test message"
+            });
         });
     });
 });
