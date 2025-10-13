@@ -213,7 +213,7 @@ def send_verification_email(to_email, user_name, verify_link):
 
 
 def send_invitation_email(
-        recipient_email, recipient_name, invitation_link, invited_by, password
+    recipient_email, recipient_name, invitation_link, invited_by, password
 ):
     """Send user invitation email"""
     subject = "You've been invited to join our platform"
@@ -352,15 +352,15 @@ def send_reset_email(to_email, user_name, reset_link):
 
 
 def send_newsletter_email(
-        to_email,
-        subject,
-        content,
-        call_to_action_link,
-        unsubscribe_link,
-        view_online_link,
-        preheader_text,
-        current_year,
-        blog_thumbnail_url,
+    to_email,
+    subject,
+    content,
+    call_to_action_link,
+    unsubscribe_link,
+    view_online_link,
+    preheader_text,
+    current_year,
+    blog_thumbnail_url,
 ):
     """Send newsletter email to subscribers"""
     body = f"""
@@ -894,11 +894,11 @@ def format_timestamp(timestamp_str):
 
     try:
         # Parse ISO format timestamp
-        if 'T' in timestamp_str:
-            dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+        if "T" in timestamp_str:
+            dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
         else:
-            dt = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+            dt = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
 
-        return dt.strftime('%B %d, %Y at %I:%M %p')
+        return dt.strftime("%B %d, %Y at %I:%M %p")
     except (ValueError, TypeError):
         return "Recently"
