@@ -23,12 +23,12 @@ const SIDEBAR_WIDTH = 280;
 
 const NAV_ITEMS = [
   { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
-  {
+  /*{
     to: "/dashboard/bookings",
     icon: bookings,
     label: "Bookings",
     alt: "Bookings",
-  },
+  },*/
   {
     to: "/dashboard/resources",
     icon: resources,
@@ -36,12 +36,12 @@ const NAV_ITEMS = [
     alt: "Resources",
   },
   { to: "/dashboard/profile", icon: profile, label: "Profile", alt: "Profile" },
-  {
+  /*{
     to: "/dashboard/payments",
     icon: payments,
     label: "Payment History",
     alt: "Payments",
-  },
+  },*/
   { to: "/dashboard/blog", icon: blog, label: "Blog Management", alt: "Blog" },
   {
     to: "/dashboard/services",

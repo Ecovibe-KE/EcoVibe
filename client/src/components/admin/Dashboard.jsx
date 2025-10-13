@@ -88,8 +88,8 @@ export default function Dashboard() {
       icon: <ArticleIcon fontSize="large" className="eck-dashboard-icon" />,
     },
     {
-      title: "Payment Records",
-      value: data.stats?.paymentRecords,
+      title: "Total Services",
+      value: data.stats?.totalServices,
       icon: <PaymentsIcon className="eck-dashboard-icon" />,
     },
   ];
@@ -321,6 +321,7 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
+{/*
           <div className=" bg-white shadow-lg p-4 rounded-3">
             <div className="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary-subtle pb-2 ">
               <h4 className="fw-bold m-0">Recent Payments</h4>
@@ -351,6 +352,7 @@ export default function Dashboard() {
               </table>
             </div>
           </div>
+*/}
         </div>
       )}
     </div>
