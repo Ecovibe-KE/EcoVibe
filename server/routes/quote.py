@@ -35,7 +35,6 @@ class QuoteListResource(Resource):
         """Handle quote request submissions"""
         try:
             data = request.get_json() or {}
-            logger.info(f"Received quote request: {data}")
 
             if not data:
                 return {"error": "No data provided"}, 400
