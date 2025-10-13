@@ -74,7 +74,7 @@ class QuoteListResource(Resource):
                 "phone": 20,
                 "company": 100,
                 "service": 100,
-                "projectDetails": 2000
+                "projectDetails": 2000,
             }
 
             for field, limit in field_limits.items():
@@ -94,8 +94,8 @@ class QuoteListResource(Resource):
 
             return {
                 "message": "Quote request submitted successfully. "
-                           "We will get back to you within 24 hours.",
-                "success": True
+                "We will get back to you within 24 hours.",
+                "success": True,
             }, 200
 
         except Exception as e:
