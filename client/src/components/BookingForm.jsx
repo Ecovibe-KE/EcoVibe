@@ -91,7 +91,8 @@ const BookingForm = ({
       const start = new Date(form.start_time);
       const now = new Date();
       if (start < now) {
-        newErrors.start_time = "Appointment date and time cannot be in the past";
+        newErrors.start_time =
+          "Appointment date and time cannot be in the past";
       }
     }
 
@@ -119,7 +120,9 @@ const BookingForm = ({
 
     // Prepare data for backend
     const formattedData = {
-      start_time: form.start_time ? new Date(form.start_time).toISOString() : undefined,
+      start_time: form.start_time
+        ? new Date(form.start_time).toISOString()
+        : undefined,
       service_id: form.service_id ? parseInt(form.service_id, 10) : undefined,
     };
 
@@ -215,7 +218,8 @@ const BookingForm = ({
           </Option>
           {services.map((service) => (
             <Option key={service.id} value={service.id}>
-              {service.title} - {service.currency} {service.price} ({service.duration})
+              {service.title} - {service.currency} {service.price} (
+              {service.duration})
             </Option>
           ))}
         </Select>
@@ -240,7 +244,8 @@ const BookingForm = ({
         <div className="alert alert-info mt-3">
           <small>
             <i className="bi bi-info-circle me-2"></i>
-            The appointment duration will be automatically calculated based on the selected service.
+            The appointment duration will be automatically calculated based on
+            the selected service.
           </small>
         </div>
 

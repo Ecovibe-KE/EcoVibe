@@ -41,9 +41,9 @@ function RequestQuoteModal({ show, onHide, service }) {
 
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
@@ -52,17 +52,17 @@ function RequestQuoteModal({ show, onHide, service }) {
     const newErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = "Phone number is required";
     }
 
     setErrors(newErrors);
@@ -77,7 +77,9 @@ function RequestQuoteModal({ show, onHide, service }) {
     }
 
     if (!recaptchaRef.current) {
-      toast.error("reCAPTCHA not loaded. Please refresh the page and try again.");
+      toast.error(
+        "reCAPTCHA not loaded. Please refresh the page and try again.",
+      );
       return;
     }
 
@@ -87,17 +89,20 @@ function RequestQuoteModal({ show, onHide, service }) {
       const quoteData = {
         ...formData,
         service: service,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       await sendQuoteRequest(quoteData);
-      toast.success("Thank you for your quote request! We will get back to you within 24 hours.");
+      toast.success(
+        "Thank you for your quote request! We will get back to you within 24 hours.",
+      );
 
       // Reset form and close modal
       handleClose();
-
     } catch (error) {
-      toast.error(error.message || "There was an error submitting your quote request.");
+      toast.error(
+        error.message || "There was an error submitting your quote request.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -227,12 +232,16 @@ function RequestQuoteModal({ show, onHide, service }) {
           >
             {isSubmitting ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
                 Submitting...
               </>
             ) : (
               <>
-                <i className='bi bi-send-fill me-2'></i>
+                <i className="bi bi-send-fill me-2"></i>
                 Submit Quote Request
               </>
             )}

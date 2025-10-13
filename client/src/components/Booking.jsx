@@ -34,7 +34,7 @@ const Booking = () => {
       try {
         const allUsers = await fetchUsers();
         const activeClients = allUsers.filter(
-          (u) => u.role.toUpperCase() === "CLIENT" && !u.is_deleted
+          (u) => u.role.toUpperCase() === "CLIENT" && !u.is_deleted,
         );
         setClients(activeClients);
       } catch (error) {
@@ -106,7 +106,7 @@ const Booking = () => {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "Unexpected error while creating booking"
+          "Unexpected error while creating booking",
       );
     }
   };
@@ -190,7 +190,7 @@ const Booking = () => {
 
       {/* VIEW MODAL */}
       {selectedBooking && (
-        <BookingDetails 
+        <BookingDetails
           booking={selectedBooking}
           onClose={() => setSelectedBooking(null)}
         />
