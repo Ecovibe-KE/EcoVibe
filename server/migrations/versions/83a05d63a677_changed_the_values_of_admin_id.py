@@ -21,8 +21,8 @@ def upgrade():
     op.alter_column('tickets', 'admin_id',
                existing_type=sa.INTEGER(),
                nullable=True)
-    op.execute("ALTER TABLE users ALTER COLUMN role TYPE role_enum USING role::text::role_enum;")
-
+    op.execute("ALTER TABLE users ALTER COLUMN role TYPE role_enum " \
+                "USING role::text::role_enum;")
     # ### end Alembic commands ###
 
 
