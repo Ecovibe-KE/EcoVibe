@@ -99,7 +99,14 @@ const BlogPost = () => {
           {/* Blog content */}
           <div className="blog-content text-start px-1">
             <RichTextEditor
-              value={JSON.parse(blog.content || "{}")}
+              value={(() => {
+                try {
+                  return JSON.parse(blog.content || "{}");
+                } catch (error) {
+                  console.error("Failed to parse blog content:", error);
+                  return [{ type: "paragraph", children: [{ text: "" }] }];
+                }
+              })()}
               readOnly={true}
             />
           </div>
