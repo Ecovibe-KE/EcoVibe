@@ -310,7 +310,7 @@ const SignUpForm = () => {
                   onChange={(phone) =>
                     setFormData((prev) => ({ ...prev, phone }))
                   }
-                  inputClassName={`w-100 custom-phone-input-text${
+                  inputClassName={`w-100 custom-phone-input-text ${
                     errors.phone ? "is-invalid" : ""
                   }`}
                   inputProps={{
