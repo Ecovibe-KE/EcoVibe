@@ -3,21 +3,14 @@ import { Container, Row, Col, Button, Card, Spinner } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { getServiceById } from "../api/services/servicemanagement";
 import "../css/ServiceDetail.css";
-import { displayDuration } from "./admin/ServiceAdminMain";
-import BookingForm from "./BookingForm";
-import { createBooking } from "../api/services/booking";
 import { toast, ToastContainer } from "react-toastify";
-import { useAuth } from "../context/AuthContext";
-import { fetchUsers } from "../api/services/usermanagement";
+import RequestQuoteModal from "./RequestQuoteModal.jsx";
 
 const ServiceDetail = () => {
   const { id } = useParams();
-  const { user, isActive, isAtLeastAdmin } = useAuth();
   const [service, setService] = useState(null);
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [clients, setClients] = useState([]);
+  const [showRequestQuoteModal, setShowRequestQuoteModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const isAuthenticated = !!user && isActive;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,41 +40,9 @@ const ServiceDetail = () => {
     fetchServiceData();
   }, [id]);
 
-  useEffect(() => {
-    const loadClients = async () => {
-      if (!isAtLeastAdmin) return;
-
-      try {
-        const allUsers = (await fetchUsers()) || [];
-        const activeClients = allUsers.filter(
-          (u) =>
-            u &&
-            typeof u.role === "string" &&
-            u.role.toUpperCase() === "CLIENT" &&
-            !u?.is_deleted,
-        );
-        setClients(activeClients);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-        toast.error("Failed to load clients");
-      }
-    };
-
-    loadClients();
-  }, [isAtLeastAdmin]);
-
-  const handleBookService = () => {
-    if (!isAuthenticated) {
-      toast.error(
-        "You must be logged in to book a service. Redirecting to Login page",
-      );
-      setTimeout(() => {
-        navigate("/login", { state: { from: `/services/${id}` } });
-      }, 3000);
-      return;
-    }
-
-    setShowBookingModal(true);
+  const handleRequestQuote = (service = null) => {
+    setService(service);
+    setShowRequestQuoteModal(true);
   };
 
   const handleBackToServices = () => {
@@ -93,36 +54,6 @@ const ServiceDetail = () => {
     // You can implement contact logic here
     toast.info("Contact feature coming soon!");
   };
-
-  const handleBookingSubmit = async (formData) => {
-    try {
-      console.log("Submitting booking from ServiceDetail:", formData);
-
-      // Ensure service_id is included from the current service
-      const bookingData = {
-        ...formData,
-        service_id: service.id, // Always use the current service ID
-      };
-
-      const response = await createBooking(bookingData);
-      console.log("Booking response:", response);
-
-      if (response.status === "success") {
-        toast.success("Booking created successfully!");
-        setShowBookingModal(false);
-      } else {
-        toast.error(response.message || "Failed to create booking");
-      }
-    } catch (error) {
-      console.error("Booking creation error:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create booking",
-      );
-    }
-  };
-
   if (loading) {
     return (
       <Container className="text-center py-5">
@@ -238,16 +169,6 @@ const ServiceDetail = () => {
                   <Card.Body>
                     <h4 className="mb-4">Book This Service</h4>
 
-                    <div className="price-section-fixed mb-4">
-                      <div className="price-amount h5 text-primary">
-                        {service.currency} {service.price}
-                      </div>
-                      <div className="price-duration text-muted">
-                        <i className="bi bi-clock me-2"></i>
-                        {displayDuration(service.duration)}
-                      </div>
-                    </div>
-
                     <div className="booking-features-fixed mb-4">
                       <div className="feature-point mb-2">
                         <i className="bi bi-check-circle text-success me-2"></i>
@@ -266,7 +187,7 @@ const ServiceDetail = () => {
                     <Button
                       size="lg"
                       className="book-now-btn-fixed w-100 py-3"
-                      onClick={handleBookService}
+                      onClick={() => handleRequestQuote(service)}
                       style={{
                         backgroundColor: "#37b137",
                         borderColor: "#37b137",
@@ -275,38 +196,19 @@ const ServiceDetail = () => {
                       }}
                     >
                       <i className="bi bi-calendar-check me-2"></i>
-                      Book Now
+                      Request a Quote
                     </Button>
 
-                    {!isAuthenticated && (
-                      <div className="mt-3 text-center">
-                        <small className="text-danger">
-                          <i className="bi bi-exclamation-triangle me-1"></i>
-                          Please log in to book this service.
-                        </small>
-                      </div>
-                    )}
+                    <RequestQuoteModal
+                      show={showRequestQuoteModal}
+                      onHide={() => setShowRequestQuoteModal(false)}
+                      service={service}
+                    />
                   </Card.Body>
                 </Card>
               </div>
             </Col>
           </Row>
-
-          {/* Booking Modal */}
-          {showBookingModal && service && (
-            <BookingForm
-              initialData={{
-                service_id: service.id,
-                // Pre-fill service_id and if admin, no client_id (they'll select)
-                // For non-admins, client_id will be auto-set to their ID
-              }}
-              onSubmit={handleBookingSubmit}
-              onClose={() => setShowBookingModal(false)}
-              clients={clients}
-              services={[service]} // Pass only the current service since it's fixed
-              disableService={true} // Disable service selection since we're on a service detail page
-            />
-          )}
         </Container>
       </div>
       <ToastContainer
