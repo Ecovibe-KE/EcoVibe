@@ -98,7 +98,7 @@ function RequestQuoteModal({show, onHide, service}) {
         try {
             const quoteData = {
                 ...formData,
-                service: service,
+                service: service.title,
                 timestamp: new Date().toISOString(),
             };
 

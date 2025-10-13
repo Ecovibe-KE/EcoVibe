@@ -5,6 +5,7 @@ from .auth import auth_bp
 from .ping import ping_bp
 from .blog import blogs_bp
 from .newsletter import newsletter_bp
+from .quote import quote_bp
 from .ticket import tickets_bp
 from .document import document_bp
 from .payment import payment_bp
@@ -33,3 +34,4 @@ def register_routes(app):
     app.register_blueprint(dashboard_bp, url_prefix=API)
     app.register_blueprint(booking_bp, url_prefix=API)
     app.register_blueprint(services_bp, url_prefix=API)
+    app.register_blueprint(quote_bp, url_prefix=API)
