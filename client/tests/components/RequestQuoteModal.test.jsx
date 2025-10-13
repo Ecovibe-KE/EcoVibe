@@ -167,8 +167,10 @@ describe("RequestQuoteModal component", () => {
         });
     });
 
+
     it("submits form successfully and resets", async () => {
         vi.spyOn(quoteApi, "sendQuoteRequest").mockResolvedValue({status: "success"});
+        const mockOnHide = vi.fn();
 
         render(
             <RequestQuoteModal show={true} onHide={mockOnHide} service={mockService}/>
@@ -178,13 +180,12 @@ describe("RequestQuoteModal component", () => {
         fireEvent.change(screen.getByTestId("input-email"), {target: {value: "john@example.com"}});
         fireEvent.change(screen.getByTestId("input-phone"), {target: {value: "1234567890"}});
         fireEvent.change(screen.getByTestId("input-company"), {target: {value: "Test Corp"}});
+        fireEvent.change(
+            screen.getByPlaceholderText(/please provide details about your project/i),
+            {target: {value: "Project details"}}
+        );
 
-        // Fix for projectDetails - it's not using the Input component
-        const projectDetailsTextarea = screen.getByPlaceholderText(/please provide details about your project/i);
-        fireEvent.change(projectDetailsTextarea, {target: {value: "Project details"}});
-
-        const submitButton = screen.getByText("Submit Quote Request");
-        fireEvent.click(submitButton);
+        fireEvent.click(screen.getByText("Submit Quote Request"));
 
         await waitFor(() => {
             expect(quoteApi.sendQuoteRequest).toHaveBeenCalledWith(
@@ -193,20 +194,22 @@ describe("RequestQuoteModal component", () => {
                     email: "john@example.com",
                     phone: "1234567890",
                     company: "Test Corp",
-                    service: mockService,
                     projectDetails: "Project details",
-                    timestamp: expect.any(String),
+                    service: "Test Service", // Expect string instead of object
+                    timestamp: expect.any(String)
                 })
             );
-            expect(toast.success).toHaveBeenCalledWith("Thank you for your quote request! We will get back to you within 24 hours.");
+            expect(toast.success).toHaveBeenCalledWith(
+                "Thank you for your quote request! We will get back to you within 24 hours."
+            );
             expect(mockOnHide).toHaveBeenCalled();
         });
 
-        // Check form reset
         expect(screen.getByTestId("input-name")).toHaveValue("");
         expect(screen.getByTestId("input-email")).toHaveValue("");
+        expect(screen.getByTestId("input-phone")).toHaveValue("");
+        expect(screen.getByTestId("input-company")).toHaveValue("");
     });
-
     it("handles submission error", async () => {
         vi.spyOn(quoteApi, "sendQuoteRequest").mockRejectedValue(new Error("Submission failed"));
 
