@@ -1,194 +1,229 @@
-// ServiceDetail.test.jsx
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { BrowserRouter } from "react-router-dom";
+import {render, screen, fireEvent, waitFor} from "@testing-library/react";
+import {describe, it, expect, vi, beforeEach} from "vitest";
+import {BrowserRouter} from "react-router-dom";
 import ServiceDetail from "../../src/components/ServiceDetail";
 import * as serviceManagement from "../../src/api/services/servicemanagement";
+import {toast} from "react-toastify";
 
 // Mock react-toastify
 vi.mock("react-toastify", () => ({
-  toast: { 
-    error: vi.fn(), 
-    success: vi.fn(),
-    info: vi.fn() 
-  },
-  ToastContainer: () => <div>ToastContainer</div>,
+    toast: {
+        error: vi.fn(),
+        success: vi.fn(),
+        info: vi.fn()
+    },
+    ToastContainer: () => <div>ToastContainer</div>,
 }));
 
-// Mock useNavigate
+// Mock useNavigate and useParams
 const mockedNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useParams: () => ({ id: "1" }),
-    useNavigate: () => mockedNavigate,
-  };
+    const actual = await vi.importActual("react-router-dom");
+    return {
+        ...actual,
+        useParams: () => ({id: "1"}),
+        useNavigate: () => mockedNavigate,
+    };
 });
 
-// Mock useAuth
-vi.mock("../../src/context/AuthContext", () => ({
-  useAuth: () => ({
-    user: null,
-    isActive: false,
-    isAtLeastAdmin: false,
-  }),
-}));
-
-// Mock BookingForm
-vi.mock("../../src/components/BookingForm", () => ({
-  default: ({ onClose, onSubmit }) => (
-    <div data-testid="booking-form">
-      <button onClick={onClose}>Close Booking</button>
-      <button onClick={() => onSubmit({ start_time: "2024-01-01T10:00", service_id: 1 })}>Submit Booking</button>
-    </div>
-  ),
-}));
-
-// Mock displayDuration
-vi.mock("../../src/components/admin/ServiceAdminMain", () => ({
-  displayDuration: (duration) => duration,
+// Mock RequestQuoteModal
+vi.mock("../../src/components/RequestQuoteModal", () => ({
+    default: ({show, onHide, service}) => (
+        show && (
+            <div data-testid="request-quote-modal">
+                <span>Request Quote for {service?.title}</span>
+                <button onClick={onHide}>Close</button>
+            </div>
+        )
+    ),
 }));
 
 describe("ServiceDetail component", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renders loading initially", async () => {
-    // Mock the service fetch to resolve after a delay so we can check loading
-    vi.spyOn(serviceManagement, "getServiceById").mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve({
-        status: "success",
-        data: null,
-      }), 100))
-    );
-
-    render(
-      <BrowserRouter>
-        <ServiceDetail />
-      </BrowserRouter>
-    );
-
-    // Check for loading spinner
-    expect(screen.getByText(/Loading service.../i)).toBeInTheDocument();
-  });
-
-  it("displays service details after fetch", async () => {
-    const mockService = {
-      id: 1,
-      title: "Test Service",
-      description: "This is a test service description.",
-      currency: "KES",
-      price: 1000,
-      duration: "1 hr 30 min",
-      image: "https://example.com/image.jpg",
-    };
-
-    vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
-      status: "success",
-      data: mockService,
+    beforeEach(() => {
+        vi.clearAllMocks();
     });
 
-    render(
-      <BrowserRouter>
-        <ServiceDetail />
-      </BrowserRouter>
-    );
+    it("renders loading initially", async () => {
+        vi.spyOn(serviceManagement, "getServiceById").mockImplementation(
+            () => new Promise((resolve) => setTimeout(() => resolve({
+                status: "success",
+                data: null,
+            }), 100))
+        );
 
-    // Wait for the service details to appear
-    await waitFor(() => {
-      expect(screen.getByText("Test Service")).toBeInTheDocument();
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
+
+        expect(screen.getByText(/Loading service.../i)).toBeInTheDocument();
     });
 
-    expect(screen.getByText("This is a test service description.")).toBeInTheDocument();
-    expect(screen.getByText("KES 1000")).toBeInTheDocument();
-    expect(screen.getByText("1 hr 30 min")).toBeInTheDocument();
-  });
+    it("displays service details after fetch", async () => {
+        const mockService = {
+            id: 1,
+            title: "Test Service",
+            description: "This is a test service description.",
+            image: "https://example.com/image.jpg",
+        };
 
-  it("shows login message when not authenticated", async () => {
-    const mockService = {
-      id: 1,
-      title: "Test Service",
-      description: "Test description",
-      currency: "KES",
-      price: 1000,
-      duration: "1 hr",
-      image: "https://example.com/image.jpg",
-    };
+        vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
+            status: "success",
+            data: mockService,
+        });
 
-    vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
-      status: "success",
-      data: mockService,
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Test Service")).toBeInTheDocument();
+        });
+
+        expect(screen.getByText("This is a test service description.")).toBeInTheDocument();
+        expect(screen.getByAltText("Test Service")).toBeInTheDocument();
     });
 
-    render(
-      <BrowserRouter>
-        <ServiceDetail />
-      </BrowserRouter>
-    );
+    it("renders back to services button and navigates correctly", async () => {
+        const mockService = {
+            id: 1,
+            title: "Test Service",
+            description: "Test description",
+            image: "https://example.com/image.jpg",
+        };
 
-    await waitFor(() => {
-      expect(screen.getByText("Test Service")).toBeInTheDocument();
+        vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
+            status: "success",
+            data: mockService,
+        });
+
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Test Service")).toBeInTheDocument();
+        });
+
+        const backButton = screen.getByText(/Back to Services/i);
+        expect(backButton).toBeInTheDocument();
+
+        fireEvent.click(backButton);
+        expect(mockedNavigate).toHaveBeenCalledWith("/services");
     });
 
-    // Check for login message
-    expect(screen.getByText(/Please log in to book this service/i)).toBeInTheDocument();
-  });
+    it("handles service not found", async () => {
+        vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
+            status: "error",
+            message: "Service not found",
+            data: [],
+        });
 
-  it("renders back to services button", async () => {
-    const mockService = {
-      id: 1,
-      title: "Test Service",
-      description: "Test description",
-      currency: "KES",
-      price: 1000,
-      duration: "1 hr",
-      image: "https://example.com/image.jpg",
-    };
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
 
-    vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
-      status: "success",
-      data: mockService,
+        await waitFor(() => {
+            expect(screen.getByText(/Service Unavailable/i)).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/Please check back later/i)).toBeInTheDocument();
     });
 
-    render(
-      <BrowserRouter>
-        <ServiceDetail />
-      </BrowserRouter>
-    );
+    it("renders contact button in error state and triggers toast", async () => {
+        vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
+            status: "error",
+            message: "Service not found",
+            data: [],
+        });
 
-    await waitFor(() => {
-      expect(screen.getByText("Test Service")).toBeInTheDocument();
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/Service Unavailable/i)).toBeInTheDocument();
+        });
+
+        const contactButton = screen.getByText(/Contact Our Team/i);
+        expect(contactButton).toBeInTheDocument();
+
+        fireEvent.click(contactButton);
+        expect(toast.info).toHaveBeenCalledWith("Contact feature coming soon!");
     });
 
-    // Check for back button
-    const backButton = screen.getByText(/Back to Services/i);
-    expect(backButton).toBeInTheDocument();
+    it("renders request quote button and opens modal", async () => {
+        const mockService = {
+            id: 1,
+            title: "Test Service",
+            description: "Test description",
+            image: "https://example.com/image.jpg",
+        };
 
-    // Test back button navigation
-    fireEvent.click(backButton);
-    expect(mockedNavigate).toHaveBeenCalledWith("/services");
-  });
+        vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
+            status: "success",
+            data: mockService,
+        });
 
-  it("handles service not found", async () => {
-    vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
-      status: "error",
-      message: "Service not found",
-      data: [],
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Test Service")).toBeInTheDocument();
+        });
+
+        const requestQuoteButton = screen.getByText(/Request a Quote/i);
+        expect(requestQuoteButton).toBeInTheDocument();
+
+        fireEvent.click(requestQuoteButton);
+        expect(screen.getByTestId("request-quote-modal")).toBeInTheDocument();
+        expect(screen.getByText(`Request Quote for ${mockService.title}`)).toBeInTheDocument();
     });
 
-    render(
-      <BrowserRouter>
-        <ServiceDetail />
-      </BrowserRouter>
-    );
+    it("closes request quote modal", async () => {
+        const mockService = {
+            id: 1,
+            title: "Test Service",
+            description: "Test description",
+            image: "https://example.com/image.jpg",
+        };
 
-    // Wait for the error state
-    await waitFor(() => {
-      expect(screen.getByText(/Service Unavailable/i)).toBeInTheDocument();
+        vi.spyOn(serviceManagement, "getServiceById").mockResolvedValue({
+            status: "success",
+            data: mockService,
+        });
+
+        render(
+            <BrowserRouter>
+                <ServiceDetail/>
+            </BrowserRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Test Service")).toBeInTheDocument();
+        });
+
+        const requestQuoteButton = screen.getByText(/Request a Quote/i);
+        fireEvent.click(requestQuoteButton);
+        expect(screen.getByTestId("request-quote-modal")).toBeInTheDocument();
+
+        const closeButton = screen.getByText(/Close/i);
+        fireEvent.click(closeButton);
+        await waitFor(() => {
+            expect(screen.queryByTestId("request-quote-modal")).not.toBeInTheDocument();
+        });
     });
 
-    expect(screen.getByText(/Please check back later/i)).toBeInTheDocument();
-  });
 });

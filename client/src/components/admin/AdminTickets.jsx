@@ -200,7 +200,7 @@ const AdminTickets = () => {
 
       {/* Stats Cards */}
       <Row className="mb-4">
-        <Col md={2}>
+        <Col md={3}>
           <Card className="text-center">
             <Card.Body>
               <div className="fs-2 text-primary mb-2">📊</div>
@@ -209,7 +209,7 @@ const AdminTickets = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={2}>
+        <Col md={3}>
           <Card className="text-center">
             <Card.Body>
               <div className="fs-2 text-danger mb-2">
@@ -220,7 +220,7 @@ const AdminTickets = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={2}>
+        <Col md={3}>
           <Card className="text-center">
             <Card.Body>
               <div className="fs-2 text-warning mb-2">
@@ -228,17 +228,6 @@ const AdminTickets = () => {
               </div>
               <h5 className="mb-0">{stats.in_progress || 0}</h5>
               <small className="text-muted">In Progress</small>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center">
-            <Card.Body>
-              <div className="fs-2 text-success mb-2">
-                <i className="bi bi-check-circle"></i>
-              </div>
-              <h5 className="mb-0">{stats.resolved || 0}</h5>
-              <small className="text-muted">Resolved</small>
             </Card.Body>
           </Card>
         </Col>
