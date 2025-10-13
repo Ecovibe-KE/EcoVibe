@@ -56,7 +56,7 @@ const ServiceDetail = () => {
   };
   if (loading) {
     return (
-      <Container className="text-center py-5">
+      <Container className="text-center py-5 vh-100">
         <Spinner animation="border" role="status" variant="success">
           <span className="visually-hidden">Loading service...</span>
         </Spinner>

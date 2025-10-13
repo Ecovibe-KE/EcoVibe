@@ -55,7 +55,7 @@ class Service(db.Model):
         return f"<Service {self.title}>"
 
     # --- Data Validations ---
-    @validates("title", "description", "duration", "currency", "status", "admin_id")
+    @validates("title", "description", "duration", "currency", "admin_id")
     def validate_not_empty(self, key, value):
         """Ensures that key text fields are not empty."""
         if not value or (isinstance(value, str) and not value.strip()):

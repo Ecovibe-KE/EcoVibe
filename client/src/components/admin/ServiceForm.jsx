@@ -50,7 +50,7 @@ function ServiceForm({
           placeholder="Enter Price Currency"
           value={formData.priceCurrency}
           onChange={handleChange}
-          required
+          className="d-none"
         />
 
         <Input
@@ -61,7 +61,7 @@ function ServiceForm({
           min="0"
           value={formData.servicePrice}
           onChange={handleChange}
-          required
+          className="d-none"
         />
 
         <p>Duration</p>

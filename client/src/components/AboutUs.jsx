@@ -2,11 +2,8 @@ import AboutUsPartition from "../components/AboutUsPartition";
 import "../css/aboutus.css";
 
 function AboutUs() {
-  // const missionText =
-  //   "To empower businesses with innovative digital solutions that drive growth, enhance efficiency, and create meaningful connections with their audiences.We strive to understand our clients' unique challenges and opportunities, delivering tailored strategies that produce measurable results.";
-
   // Bootstrap screen setting for core values and meet our team section
-  const screenSetting = "row-cols-lg-3";
+  const screenSetting = "row-cols-lg-4";
 
   const missionVisionContent = [
     {
@@ -78,6 +75,7 @@ function AboutUs() {
     extraSetting = "",
     padding = "p-4",
     customClass = "icon-sm mx-auto",
+    widthSettings = ""
   ) {
     return (
       <>
@@ -88,6 +86,7 @@ function AboutUs() {
           extraSetting={extraSetting}
           padding={padding}
           customClass={customClass}
+          widthSettings={widthSettings}
         ></AboutUsPartition>
       </>
     );
@@ -96,7 +95,7 @@ function AboutUs() {
   return (
     <>
       <section>
-        <div className="container-fluid p-lg-5">
+        <div className="container-fluid p-lg-1">
           <div className="row g-0 align-items-center">
             <h1 className="mb-5 fw-semibold display-6 text-center about-underline">
               About Us
@@ -127,9 +126,10 @@ function AboutUs() {
         {displayPage(
           meetOurTeam,
           meetOurTeamContent,
-          screenSetting,
+          "",
           "",
           "card-img-top rounded-top-5 image-fixed-height",
+          "w-100"
         )}
       </section>
     </>
