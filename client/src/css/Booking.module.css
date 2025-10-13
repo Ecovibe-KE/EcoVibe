@@ -1,3 +1,4 @@
+/* Booking.module.css */
 .bookingTable {
   width: 100%;
   table-layout: fixed;
@@ -26,20 +27,29 @@
   background-color: #f8f9fa;
 }
 
-/* Compact uniform button sizing - prevent wrapping */
+/* Compact uniform button sizing for Material-UI buttons */
 .uniformButton {
-  min-width: 60px !important;
+  min-width: 65px !important;
   width: auto !important;
   padding: 0.3rem 0.5rem !important;
   font-size: 0.75rem !important;
   text-align: center;
   line-height: 1.2;
   white-space: nowrap;
+  margin: 0.1rem !important; /* Override the default 0.5rem margin */
 }
 
-/* Ensure button container doesn't wrap */
+/* Ensure button container doesn't wrap and has minimal gap */
 .bookingTable .d-flex.gap-1 {
   flex-wrap: nowrap !important;
+  gap: 0.2rem !important; /* Reduced gap */
+}
+
+/* Reduce Material-UI icon size in buttons */
+.uniformButton .MuiSvgIcon-root {
+  font-size: 1rem !important; /* Smaller icons */
+  width: 0.875em !important;
+  height: 0.875em !important;
 }
 
 /* Admin table specific styles */
@@ -56,10 +66,9 @@
   min-width: 100px;
 }
 
-/* Actions column styling - ensure enough space for all buttons */
+/* Actions column styling - increased for admin's 3 buttons */
 .bookingTable td:last-child {
-  min-width: 180px;
-  /* Increased to accommodate all buttons in one line */
+  min-width: 210px; /* Increased to accommodate 3 buttons with Material-UI icons */
 }
 
 /* Responsive adjustments */
@@ -77,24 +86,30 @@
     min-width: 55px !important;
     padding: 0.25rem 0.4rem !important;
     font-size: 0.7rem !important;
+    margin: 0.05rem !important;
+  }
+
+  .uniformButton .MuiSvgIcon-root {
+    font-size: 0.875rem !important;
+    width: 0.8em !important;
+    height: 0.8em !important;
   }
 
   .bookingTable td:last-child {
-    min-width: 160px;
-    /* Adjusted for mobile */
+    min-width: 180px; /* Adjusted for mobile */
   }
 
   /* Adjust column widths for mobile */
   .adminTable th:nth-child(2),
   /* Service column in admin view */
   .adminTable td:nth-child(2) {
-    width: 30% !important;
+    width: 25% !important;
   }
 
   .clientTable th:nth-child(1),
   /* Service column in client view */
   .clientTable td:nth-child(1) {
-    width: 35% !important;
+    width: 30% !important;
   }
 }
 
@@ -115,9 +130,14 @@
     font-size: 0.65rem !important;
   }
 
+  .uniformButton .MuiSvgIcon-root {
+    font-size: 0.8rem !important;
+    width: 0.75em !important;
+    height: 0.75em !important;
+  }
+
   .bookingTable td:last-child {
-    min-width: 140px;
-    /* Further adjusted for very small screens */
+    min-width: 160px; /* Further adjusted for very small screens */
   }
 
   /* Hide less important columns on very small screens */
@@ -126,9 +146,15 @@
   .adminTable td:nth-child(1) {
     display: none;
   }
+
+  .adminTable th:nth-child(3),
+  /* Booking Date column */
+  .adminTable td:nth-child(3) {
+    display: none;
+  }
 }
 
-/* For extremely small screens, use icons instead of text */
+/* For extremely small screens, use icons only */
 @media (max-width: 400px) {
   .uniformButton {
     min-width: 40px !important;
@@ -137,24 +163,16 @@
     font-size: 0 !important;
   }
 
-  .uniformButton::before {
-    font-size: 0.8rem;
+  .uniformButton .MuiSvgIcon-root {
+    font-size: 0.9rem !important;
+    margin: 0 !important;
   }
 
-  .uniformButton[data-action="view"]::before {
-    content: "👁️";
-  }
-
-  .uniformButton[data-action="update"]::before {
-    content: "✏️";
-  }
-
-  .uniformButton[data-action="delete"]::before {
-    content: "🗑️";
+  .uniformButton span {
+    display: none !important;
   }
 
   .bookingTable td:last-child {
-    min-width: 120px;
-    /* Reduced for icon buttons */
+    min-width: 130px; /* Reduced for icon-only buttons */
   }
 }
