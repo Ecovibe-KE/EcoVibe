@@ -4,36 +4,58 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from flask_jwt_extended import jwt_required
 from models import db
-from models.booking import Booking
+from models.booking import Booking, BookingStatus
 from models.user import User, Role
 from models.service import Service
 from utils.responses import restful_response
 from utils.auth_helpers import get_current_user_and_role
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from models.invoice import Invoice, InvoiceStatus
 
 booking_bp = Blueprint("booking", __name__)
 api = Api(booking_bp)
 
 
-# --- Utility function ---
 def parse_booking_fields(data):
     """Parse booking fields from JSON to correct Python types."""
     parsed = {}
-    if "booking_date" in data:
-        parsed["booking_date"] = datetime.strptime(
-            data["booking_date"], "%Y-%m-%d"
-        ).date()
     if "start_time" in data:
-        parsed["start_time"] = datetime.fromisoformat(data["start_time"])
-    if "end_time" in data:
-        parsed["end_time"] = datetime.fromisoformat(data["end_time"])
+        # Parse the datetime - this handles both naive and aware datetimes
+        dt = datetime.fromisoformat(data["start_time"])
+
+        # Normalize to UTC timezone
+        if dt.tzinfo is None:
+            # If naive datetime, assume UTC
+            parsed["start_time"] = dt.replace(tzinfo=timezone.utc)
+        else:
+            # If timezone-aware, convert to UTC
+            parsed["start_time"] = dt.astimezone(timezone.utc)
+
     if "status" in data:
-        parsed["status"] = data["status"]
+        parsed["status"] = BookingStatus(data["status"])
     return parsed
 
 
-# --- Booking List Resource ---
+def calculate_end_time(start_time, duration_str):
+    """Calculate end_time based on start_time and service duration"""
+    try:
+        # Parse duration string like "2 hr 30 min"
+        parts = duration_str.split()
+        hours = 0
+        minutes = 0
+
+        for i, part in enumerate(parts):
+            if part == "hr" and i > 0:
+                hours = int(parts[i - 1])
+            elif part == "min" and i > 0:
+                minutes = int(parts[i - 1])
+
+        return start_time + timedelta(hours=hours, minutes=minutes)
+    except (ValueError, IndexError):
+        # Default to 1 hour if parsing fails
+        return start_time + timedelta(hours=1)
+
+
 class BookingListResource(Resource):
     @jwt_required()
     def get(self):
@@ -47,8 +69,8 @@ class BookingListResource(Resource):
                     status_code=401,
                 )
 
-            # Use eager loading to prevent N+1 queries
-            base_query = Booking.query.options(
+            # Filter out deleted bookings
+            base_query = Booking.query.filter_by(is_deleted=False).options(
                 joinedload(Booking.client), joinedload(Booking.service)
             )
 
@@ -87,13 +109,31 @@ class BookingListResource(Resource):
             # --- Determine Client ---
             if role == Role.ADMIN.value or role == Role.SUPER_ADMIN.value:
                 client_id = data.get("client_id")
+                if not client_id:
+                    return restful_response(
+                        status="error",
+                        message="Client is required for admin users",
+                        status_code=400,
+                    )
             else:
                 client_id = current_user.id
 
-            if not client_id:
+            # --- Validate Client ---
+            try:
+                client_id = int(client_id)
+            except (ValueError, TypeError):
                 return restful_response(
                     status="error",
-                    message="Client is required",
+                    message="Invalid client ID format",
+                    status_code=400,
+                )
+
+            client = User.query.filter_by(id=client_id, is_deleted=False).first()
+
+            if not client:
+                return restful_response(
+                    status="error",
+                    message="Client not found",
                     status_code=400,
                 )
 
@@ -106,23 +146,74 @@ class BookingListResource(Resource):
                     status_code=400,
                 )
 
-            # --- Parse and Create Booking ---
-            parsed_fields = parse_booking_fields(data)
-            booking = Booking(
-                client_id=client_id, service_id=service_id, **parsed_fields
-            )
-
-            # --- Fetch Service for Price ---
-            service = Service.query.get(service_id)
-            if not service:
+            try:
+                service_id = int(service_id)
+            except (ValueError, TypeError):
                 return restful_response(
                     status="error",
-                    message="Invalid client or service ID",
+                    message="Invalid service ID format",
                     status_code=400,
                 )
 
-            amount = int(service.price)
+            service = Service.query.filter_by(id=service_id, is_deleted=False).first()
+
+            if not service:
+                return restful_response(
+                    status="error",
+                    message="Service not found",
+                    status_code=400,
+                )
+
+            # --- Parse and validate start_time ---
+            if "start_time" not in data:
+                return restful_response(
+                    status="error",
+                    message="Start time is required",
+                    status_code=400,
+                )
+
+            try:
+                # Parse and normalize to UTC timezone
+                dt = datetime.fromisoformat(data["start_time"])
+
+                # Normalize to UTC timezone
+                if dt.tzinfo is None:
+                    # If naive datetime, assume UTC
+                    start_time = dt.replace(tzinfo=timezone.utc)
+                else:
+                    # If timezone-aware, convert to UTC
+                    start_time = dt.astimezone(timezone.utc)
+
+            except (ValueError, TypeError):
+                return restful_response(
+                    status="error",
+                    message="Invalid start time format",
+                    status_code=400,
+                )
+
+            # Validate start_time is not in the past (using timezone-aware comparison)
+            if start_time < datetime.now(timezone.utc):
+                return restful_response(
+                    status="error",
+                    message="Start time cannot be in the past",
+                    status_code=400,
+                )
+
+            # --- Calculate end_time from service duration ---
+            end_time = calculate_end_time(start_time, service.duration)
+
+            # --- Create Booking ---
+            booking = Booking(
+                client_id=client_id,
+                service_id=service_id,
+                start_time=start_time,
+                end_time=end_time,
+                booking_date=date.today(),  # Set booking_date to today in routes
+                status=BookingStatus.pending,  # Default status
+            )
+
             # --- Create Invoice ---
+            amount = int(service.price)
             invoice = Invoice(
                 amount=amount,
                 client_id=client_id,
@@ -149,6 +240,7 @@ class BookingListResource(Resource):
                 status_code=201,
             )
         except ValueError as e:
+            db.session.rollback()
             return restful_response(
                 status="error",
                 message=str(e),
@@ -158,7 +250,7 @@ class BookingListResource(Resource):
             db.session.rollback()
             return restful_response(
                 status="error",
-                message="Invalid client or service ID",
+                message="Database integrity error",
                 status_code=400,
             )
         except Exception as e:
@@ -170,16 +262,16 @@ class BookingListResource(Resource):
             )
 
 
-# --- Booking Detail Resource ---
 class BookingResource(Resource):
     @jwt_required()
     def get(self, booking_id):
         """Retrieve a single booking by ID (requires authentication)."""
         try:
-            # Use eager loading to prevent N+1 queries
-            booking = Booking.query.options(
-                joinedload(Booking.client), joinedload(Booking.service)
-            ).get(booking_id)
+            booking = (
+                Booking.query.filter_by(id=booking_id, is_deleted=False)
+                .options(joinedload(Booking.client), joinedload(Booking.service))
+                .first()
+            )
 
             if not booking:
                 return restful_response(
@@ -204,10 +296,11 @@ class BookingResource(Resource):
     def patch(self, booking_id):
         """Partially update a booking (only editable fields provided in request)."""
         try:
-            # Use eager loading to prevent N+1 queries
-            booking = Booking.query.options(
-                joinedload(Booking.client), joinedload(Booking.service)
-            ).get(booking_id)
+            booking = (
+                Booking.query.filter_by(id=booking_id, is_deleted=False)
+                .options(joinedload(Booking.client), joinedload(Booking.service))
+                .first()
+            )
 
             if not booking:
                 return restful_response(
@@ -238,29 +331,54 @@ class BookingResource(Resource):
             data = request.get_json()
             parsed_fields = parse_booking_fields(data)
 
-            # Apply parsed fields (booking_date, start_time, end_time, status)
-            for key, value in parsed_fields.items():
-                setattr(booking, key, value)
+            # Track if we need to recalculate end_time
+            recalculate_end_time = False
+            new_start_time = None
+            new_service = booking.service
 
-            # --- Handle service_id update ---
+            # Handle start_time update
+            if "start_time" in parsed_fields:
+                new_start_time = parsed_fields["start_time"]
+                booking.start_time = new_start_time
+                recalculate_end_time = True
+
+            # Handle service_id update
             if "service_id" in data:
                 service_id = data.get("service_id")
                 if service_id:
-                    # Validate service exists
-                    service = Service.query.get(service_id)
-                    if not service:
+                    try:
+                        service_id = int(service_id)
+                    except (ValueError, TypeError):
+                        return restful_response(
+                            status="error",
+                            message="Invalid service ID format",
+                            status_code=400,
+                        )
+
+                    new_service = Service.query.filter_by(
+                        id=service_id, is_deleted=False
+                    ).first()
+                    if not new_service:
                         return restful_response(
                             status="error",
                             message="Service not found",
                             status_code=404,
                         )
                     booking.service_id = service_id
-                else:
-                    return restful_response(
-                        status="error",
-                        message="Service ID cannot be empty",
-                        status_code=400,
-                    )
+                    recalculate_end_time = True
+
+            # Recalculate end_time if needed
+            if recalculate_end_time:
+                if not new_start_time:
+                    new_start_time = booking.start_time
+                booking.end_time = calculate_end_time(
+                    new_start_time, new_service.duration
+                )
+
+            # Apply other parsed fields (status)
+            for key, value in parsed_fields.items():
+                if key not in ["start_time"]:  # start_time already handled
+                    setattr(booking, key, value)
 
             # --- Handle client_id update ---
             if "client_id" in data:
@@ -274,8 +392,18 @@ class BookingResource(Resource):
                             status_code=403,
                         )
 
-                    # Validate client exists
-                    client = User.query.get(client_id)
+                    try:
+                        client_id = int(client_id)
+                    except (ValueError, TypeError):
+                        return restful_response(
+                            status="error",
+                            message="Invalid client ID format",
+                            status_code=400,
+                        )
+
+                    client = User.query.filter_by(
+                        id=client_id, is_deleted=False
+                    ).first()
                     if not client:
                         return restful_response(
                             status="error",
@@ -283,12 +411,6 @@ class BookingResource(Resource):
                             status_code=404,
                         )
                     booking.client_id = client_id
-                else:
-                    return restful_response(
-                        status="error",
-                        message="Client ID cannot be empty",
-                        status_code=400,
-                    )
 
             db.session.commit()
 
@@ -316,9 +438,10 @@ class BookingResource(Resource):
 
     @jwt_required()
     def delete(self, booking_id):
-        """Delete a booking (admins or the booking's client)."""
+        """Soft delete a booking (admins or the booking's client)."""
         try:
-            booking = Booking.query.get(booking_id)
+            booking = Booking.query.filter_by(id=booking_id, is_deleted=False).first()
+
             if not booking:
                 return restful_response(
                     status="error",
@@ -343,7 +466,8 @@ class BookingResource(Resource):
                     status_code=403,
                 )
 
-            db.session.delete(booking)
+            # Soft delete instead of hard delete
+            booking.is_deleted = True
             db.session.commit()
 
             return restful_response(
@@ -360,6 +484,5 @@ class BookingResource(Resource):
             )
 
 
-# Register resources
 api.add_resource(BookingListResource, "/bookings")
 api.add_resource(BookingResource, "/bookings/<int:booking_id>")

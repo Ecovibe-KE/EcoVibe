@@ -109,27 +109,25 @@ const BlogSideBar = ({
         <hr />
 
         {/* All */}
-        <Button
+        {/* <Button
           type="button"
-          className={`d-flex justify-content-between w-100 border-0 bg-transparent p-0 category-row ${
-            !selectedCategory ? "fw-bold" : ""
-          }`}
+          className={`d-flex justify-content-between w-100 border-0 bg-transparent p-0 category-row ${!selectedCategory ? "fw-bold" : ""
+            }`}
           onClick={() => setSelectedCategory(null)}
           aria-pressed={!selectedCategory}
         >
           <span>All</span>
           <span>({totalCount})</span>
-        </Button>
+        </Button> */}
 
-        <div className="mb-3 d-flex flex-row">
+        <div className="mb-3 d-flex flex-column">
           {/* Other categories */}
           {Object.entries(categoryCounts).map(([category, count]) => (
             <Button
               type="button"
               key={category}
-              className={`d-flex justify-content-between mt-2 category-row ${
-                selectedCategory === category ? "fw-bold text-dark" : ""
-              }`}
+              className={`d-flex justify-content-between mt-2 category-row ${selectedCategory === category ? "fw-bold text-dark" : ""
+                }`}
               onClick={() => setSelectedCategory(category)}
               aria-pressed={selectedCategory === category}
             >

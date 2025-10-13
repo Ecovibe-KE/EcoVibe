@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+// BookingForm.jsx
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import Button from "../utils/Button";
@@ -13,40 +14,36 @@ const BookingForm = ({
   services = [],
   disableService = false,
 }) => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAtLeastAdmin } = useAuth();
+
+  // Manage booking form state - now includes status for admins
   const [form, setForm] = useState({
-    booking_date: "",
     start_time: "",
-    end_time: "",
-    status: "pending",
     service_id: "",
     client_id: "",
+    status: "pending", // Default status
   });
 
   const [errors, setErrors] = useState({});
 
+  // Track initial data to re-initialize form if props change
+  const initialDataRef = useRef(initialData);
+  const hasInitialized = useRef(false);
+
+  // Sync form with new initial data
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
+    const isInitialDataChanged =
+      JSON.stringify(initialData) !== JSON.stringify(initialDataRef.current);
+
+    if (!hasInitialized.current || isInitialDataChanged) {
       console.log("Initial data received:", initialData);
 
-      const formatDateForInput = (dateString) => {
-        if (!dateString) return "";
-        try {
-          const date = new Date(dateString);
-          if (isNaN(date.getTime())) return "";
-          return date.toISOString().split("T")[0];
-        } catch (error) {
-          console.error("Error formatting date:", error);
-          return "";
-        }
-      };
-
+      // Helper: format date string into ISO datetime suitable for input[type=datetime-local]
       const formatDateTimeForInput = (dateString) => {
         if (!dateString) return "";
         try {
           const date = new Date(dateString);
           if (isNaN(date.getTime())) return "";
-          // Adjust for timezone offset to display correctly in datetime-local input
           const timezoneOffset = date.getTimezoneOffset() * 60000;
           const adjustedDate = new Date(date.getTime() - timezoneOffset);
           return adjustedDate.toISOString().slice(0, 16);
@@ -56,74 +53,61 @@ const BookingForm = ({
         }
       };
 
-      // Auto-set client_id for non-admin users
-      const autoClientId = !isAdmin && user ? user.id.toString() : "";
+      // If user isn't admin, default client_id to the logged-in user
+      const autoClientId = !isAtLeastAdmin && user ? user.id.toString() : "";
 
+      // Populate form state
       setForm({
-        booking_date: formatDateForInput(initialData.booking_date),
         start_time: formatDateTimeForInput(initialData.start_time),
-        end_time: formatDateTimeForInput(initialData.end_time),
-        status: initialData.status || "pending",
         service_id: initialData.service_id?.toString() || "",
         client_id:
           initialData.client_id?.toString() ||
           autoClientId ||
-          (isAdmin ? "" : initialData.client_id?.toString()),
+          (isAtLeastAdmin ? "" : initialData.client_id?.toString()),
+        status: initialData.status || "pending", // Set status from initial data or default
       });
-    } else {
-      // Auto-set client_id for new bookings by non-admin users
-      if (!isAdmin && user) {
-        setForm((prev) => ({
-          ...prev,
-          client_id: user.id.toString(),
-        }));
-      }
-    }
-  }, [initialData, isAdmin, user]);
 
+      initialDataRef.current = initialData;
+      hasInitialized.current = true;
+    }
+  }, [initialData, isAtLeastAdmin, user]);
+
+  // Handle input changes and clear related errors
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+  // Validate form before submission
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.booking_date) newErrors.booking_date = "Booking date is required";
-    if (!form.start_time) newErrors.start_time = "Start time is required";
-    if (!form.end_time) newErrors.end_time = "End time is required";
-    if (!form.service_id) newErrors.service_id = "Service is required";
-
-    // Only validate client_id for admin users (non-admin users have it auto-set)
-    if (isAdmin && !form.client_id) {
-      newErrors.client_id = "Client is required";
-    }
-
-    if (form.start_time && form.end_time) {
+    if (!form.start_time) {
+      newErrors.start_time = "Appointment date and time is required";
+    } else {
       const start = new Date(form.start_time);
-      const end = new Date(form.end_time);
-      if (end <= start) {
-        newErrors.end_time = "End time must be after start time";
+      const now = new Date();
+      if (start < now) {
+        newErrors.start_time = "Appointment date and time cannot be in the past";
       }
     }
 
-    if (form.booking_date) {
-      const bookingDate = new Date(form.booking_date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (bookingDate < today) {
-        newErrors.booking_date = "Booking date cannot be in the past";
-      }
+    if (!form.service_id) {
+      newErrors.service_id = "Service is required";
+    }
+
+    if (isAtLeastAdmin && !form.client_id) {
+      newErrors.client_id = "Client is required";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle submit - validate, clean data, then send to parent
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form data before submission:", form);
@@ -133,15 +117,25 @@ const BookingForm = ({
       return;
     }
 
+    // Prepare data for backend
     const formattedData = {
-      ...form,
+      start_time: form.start_time ? new Date(form.start_time).toISOString() : undefined,
       service_id: form.service_id ? parseInt(form.service_id, 10) : undefined,
-      client_id: form.client_id ? parseInt(form.client_id, 10) : undefined,
     };
 
-    // Remove empty fields
+    // Only include client_id if user is admin and it's provided
+    if (isAtLeastAdmin && form.client_id) {
+      formattedData.client_id = parseInt(form.client_id, 10);
+    }
+
+    // Include status for admin users
+    if (isAtLeastAdmin && form.status) {
+      formattedData.status = form.status;
+    }
+
+    // Remove undefined fields
     Object.keys(formattedData).forEach((key) => {
-      if (formattedData[key] === "" || formattedData[key] === undefined) {
+      if (formattedData[key] === undefined) {
         delete formattedData[key];
       }
     });
@@ -150,15 +144,9 @@ const BookingForm = ({
     onSubmit(formattedData);
   };
 
-  console.log("Current form state:", form);
-  console.log("Current user:", user);
-  console.log("Is admin:", isAdmin);
-  console.log("Clients available:", clients);
-  console.log("Services available:", services);
-
-  // Get current client name for display
+  // Show readable client name for non-admins
   const getCurrentClientName = () => {
-    if (!isAdmin && user) {
+    if (!isAtLeastAdmin && user) {
       return user.name || user.email || "Current User";
     }
     return "";
@@ -170,8 +158,8 @@ const BookingForm = ({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit}>
-        {/* Client Selection - Only show for admins */}
-        {isAdmin ? (
+        {/* Client selector (admin) or static display (user) */}
+        {isAtLeastAdmin ? (
           <Select
             label="Client"
             name="client_id"
@@ -188,7 +176,6 @@ const BookingForm = ({
             ))}
           </Select>
         ) : (
-          /* Display current user info for non-admin clients */
           <div className="mb-3">
             <label className="form-label fw-bold">Client</label>
             <div className="p-2 border rounded bg-light">
@@ -202,18 +189,9 @@ const BookingForm = ({
           </div>
         )}
 
+        {/* Date/time selector */}
         <Input
-          label="Booking Date"
-          type="date"
-          name="booking_date"
-          value={form.booking_date}
-          onChange={handleChange}
-          error={errors.booking_date}
-          required
-        />
-
-        <Input
-          label="Start Time"
+          label="Appointment Date and Time"
           type="datetime-local"
           name="start_time"
           value={form.start_time}
@@ -222,28 +200,7 @@ const BookingForm = ({
           required
         />
 
-        <Input
-          label="End Time"
-          type="datetime-local"
-          name="end_time"
-          value={form.end_time}
-          onChange={handleChange}
-          error={errors.end_time}
-          required
-        />
-
-        <Select
-          label="Status"
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-        >
-          <Option value="pending">Pending</Option>
-          <Option value="confirmed">Confirmed</Option>
-          <Option value="completed">Completed</Option>
-          <Option value="cancelled">Cancelled</Option>
-        </Select>
-
+        {/* Service selection */}
         <Select
           label="Service"
           name="service_id"
@@ -258,11 +215,36 @@ const BookingForm = ({
           </Option>
           {services.map((service) => (
             <Option key={service.id} value={service.id}>
-              {service.title} - {service.currency} {service.price}
+              {service.title} - {service.currency} {service.price} ({service.duration})
             </Option>
           ))}
         </Select>
 
+        {/* Booking status (admins only) */}
+        {isAtLeastAdmin && (
+          <Select
+            label="Status"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            error={errors.status}
+          >
+            <Option value="pending">Pending</Option>
+            <Option value="confirmed">Confirmed</Option>
+            <Option value="completed">Completed</Option>
+            <Option value="cancelled">Cancelled</Option>
+          </Select>
+        )}
+
+        {/* Info message about automatic duration calculation */}
+        <div className="alert alert-info mt-3">
+          <small>
+            <i className="bi bi-info-circle me-2"></i>
+            The appointment duration will be automatically calculated based on the selected service.
+          </small>
+        </div>
+
+        {/* Action buttons */}
         <div className="d-flex gap-2 mt-3">
           <Button action="add" label="Save" type="submit" />
           <Button action="cancel" label="Cancel" onClick={onClose} />
