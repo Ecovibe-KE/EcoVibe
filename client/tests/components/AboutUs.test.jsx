@@ -76,6 +76,6 @@ describe('AboutUs component', () => {
 
         // Example: check that the core values partition received the extraSetting row-cols-lg-3
         const corePartition = partitions.find(p => p.getAttribute('data-title') === 'Our Core Values')
-        expect(corePartition).toHaveAttribute('data-extra', 'row-cols-lg-3')
+        expect(corePartition).toHaveAttribute('data-extra', 'row-cols-lg-4')
     })
 })

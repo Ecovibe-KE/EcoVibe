@@ -283,7 +283,7 @@ function Contact() {
                 <img src={africa} alt="Africa image" style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "cover", // or "contain", depending on what you want
+                  objectFit: "cover",
                   borderRadius: "0.5rem",
                 }} />
               </div>
