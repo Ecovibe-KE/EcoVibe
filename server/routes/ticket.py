@@ -19,7 +19,7 @@ server_host = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
 
 def is_admin(role):
     """Check if user has admin privileges"""
-    return role in [Role.ADMIN, Role.SUPER_ADMIN]
+    return role in [Role.ADMIN.value, Role.SUPER_ADMIN.value]
 
 
 class TicketListResource(Resource):
@@ -48,7 +48,7 @@ class TicketListResource(Resource):
 
             query = Ticket.query
 
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
                 query = query.filter(Ticket.client_id == user.id)
             elif is_admin(user_role) and assigned_to:
                 try:
@@ -163,35 +163,28 @@ class TicketListResource(Resource):
 
             subject_raw = data.get("subject", "")
             description_raw = data.get("description", "")
-            if not isinstance(subject_raw, str):
+            if not isinstance(subject_raw, str) or not subject_raw.strip():
                 return restful_response(
                     status="error",
                     message="Subject must be a non-empty string",
                     status_code=400,
                 )
-            if not isinstance(description_raw, str):
+            if not isinstance(description_raw, str) or not description_raw.strip():
                 return restful_response(
                     status="error",
                     message="Description must be a non-empty string",
                     status_code=400,
                 )
+
             subject = subject_raw.strip()
             description = description_raw.strip()
             priority = data.get("priority", "medium")
             category = data.get("category", "general")
 
-            if not subject:
-                return restful_response(
-                    status="error", message="Subject is required", status_code=400
-                )
-
-            if not description:
-                return restful_response(
-                    status="error", message="Description is required", status_code=400
-                )
-
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
+                # Assign ticket to the first available admin
                 client_id = user.id
+                # FIX: Use Role enum objects instead of .value
                 admin = (
                     User.query.filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
                     .order_by(User.id.asc())
@@ -204,9 +197,12 @@ class TicketListResource(Resource):
                         status_code=503,
                     )
                 admin_id = admin.id
-            else:
+
+            else:  # Admin creating a ticket for a client
                 client_id = data.get("client_id")
                 admin_id = data.get("admin_id", user.id)
+
+                # Validate client_id
                 try:
                     client_id = int(client_id)
                 except (TypeError, ValueError):
@@ -228,11 +224,10 @@ class TicketListResource(Resource):
                         status="error", message="Invalid client", status_code=400
                     )
 
+                # Validate admin_id
                 if admin_id is None:
                     return restful_response(
-                        status="error",
-                        message="admin_id is required",
-                        status_code=400,
+                        status="error", message="admin_id is required", status_code=400
                     )
                 try:
                     admin_id = int(admin_id)
@@ -242,6 +237,8 @@ class TicketListResource(Resource):
                         message="admin_id must be an integer",
                         status_code=400,
                     )
+
+                # FIX: Use Role enum objects instead of .value
                 admin = (
                     User.query.filter_by(id=admin_id)
                     .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
@@ -252,16 +249,17 @@ class TicketListResource(Resource):
                         status="error", message="Invalid admin", status_code=400
                     )
 
+            # Create ticket
             ticket = Ticket(
                 client_id=client_id,
                 admin_id=admin_id,
                 subject=subject,
                 status=TicketStatus.OPEN,
             )
-
             db.session.add(ticket)
             db.session.flush()
 
+            # Add initial message
             initial_message = TicketMessage(
                 ticket_id=ticket.id, sender_id=user.id, body=description
             )
@@ -314,15 +312,19 @@ class TicketStatsResource(Resource):
                 )
 
             q = Ticket.query
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
                 q = q.filter(Ticket.client_id == user.id)
 
-            # one grouped query
+            # Build subquery first if needed
+            subq = q.subquery()
+
+            # Grouped query using the subquery
             counts = dict(
-                db.session.query(Ticket.status, func.count(Ticket.id))
-                .group_by(Ticket.status)
-                .select_from(q.subquery())
+                db.session.query(subq.c.status, func.count(subq.c.id))
+                .group_by(subq.c.status)
+                .all()
             )
+
             total = q.count()
             open_count = counts.get(TicketStatus.OPEN, 0)
             in_progress_count = counts.get(TicketStatus.IN_PROGRESS, 0)
@@ -343,7 +345,7 @@ class TicketStatsResource(Resource):
             )
 
         except Exception:
-            current_app.logger.exception("Error fetching ticket stats ")
+            current_app.logger.exception("Error fetching ticket stats")
             return restful_response(
                 status="error", message="Internal server error", status_code=500
             )
@@ -369,7 +371,7 @@ class TicketResource(Resource):
                 )
 
             # Check permissions
-            if user_role == Role.CLIENT and ticket.client_id != user.id:
+            if user_role == Role.CLIENT.value and ticket.client_id != user.id:
                 return restful_response(
                     status="error", message="Access denied", status_code=403
                 )
@@ -455,7 +457,7 @@ class TicketResource(Resource):
                 )
 
             # Check permissions - only admins or the assigned admin can update
-            if user_role == Role.CLIENT:
+            if user_role == Role.CLIENT.value:
                 return restful_response(
                     status="error", message="Access denied", status_code=403
                 )
@@ -478,6 +480,7 @@ class TicketResource(Resource):
             if "admin_id" in data and is_admin(user_role):
                 try:
                     admin_id = int(data["admin_id"])
+                    # FIX: Use Role enum objects instead of .value
                     admin = (
                         User.query.filter_by(id=admin_id)
                         .filter(User.role.in_([Role.ADMIN, Role.SUPER_ADMIN]))
@@ -566,7 +569,7 @@ class TicketMessagesResource(Resource):
                 )
 
             # Check permissions
-            if user_role == Role.CLIENT and ticket.client_id != user.id:
+            if user_role == Role.CLIENT.value and ticket.client_id != user.id:
                 return restful_response(
                     status="error", message="Access denied", status_code=403
                 )
