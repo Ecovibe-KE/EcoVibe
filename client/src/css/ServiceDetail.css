@@ -18,8 +18,8 @@
 
 .back-btn-fixed {
   border: none;
-  background: white;
-  color: #495057;
+  background: #37b137;
+  color: white;
   font-weight: 600;
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -28,7 +28,7 @@
 }
 
 .back-btn-fixed:hover {
-  background: #37b137;
+  background: #f5a030;
   color: white;
   transform: translateX(-3px);
 }

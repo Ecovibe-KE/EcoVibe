@@ -1,6 +1,7 @@
 .searchInput {
   background-color: #eee3f0 !important;
 }
+
 .searchInput:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -19,6 +20,7 @@
 .searchButton {
   /* background-color: #eee3f0 !important; */
 }
+
 .searchButton:active i {
   transform: none !important;
   /* background-color: #eee3f0 !important; */

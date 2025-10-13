@@ -34,11 +34,11 @@ def require_admin():
 
 
 def validate_price(price):
-    """Validate that price is a positive number greater than 0"""
+    """Validate that price is a positive number"""
     try:
         price_float = float(price)
-        if price_float <= 0:
-            return False, "Price must be greater than 0"
+        if price_float < 0:
+            return False, "Price must be a +ve number"
         return True, price_float
     except (ValueError, TypeError):
         return False, "Price must be a valid number"
@@ -140,7 +140,7 @@ def create_service():
         required_fields = [
             "title",
             "description",
-            "price",
+            # "price",
             "duration",
             "image",
             "status",
