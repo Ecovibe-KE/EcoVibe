@@ -18,7 +18,7 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
     if (!dateString) return "—";
     return new Date(dateString).toLocaleTimeString([], {
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
   };
 
@@ -56,7 +56,9 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
             {isAdmin && <th style={{ width: columnWidths.user }}>Client</th>}
             <th style={{ width: columnWidths.service }}>Service</th>
             <th style={{ width: columnWidths.bookingDate }}>Booking Date</th>
-            <th style={{ width: columnWidths.appointment }}>Appointment Time</th>
+            <th style={{ width: columnWidths.appointment }}>
+              Appointment Time
+            </th>
             <th style={{ width: columnWidths.status }}>Status</th>
             <th style={{ width: columnWidths.actions }} className="text-end">
               Actions
@@ -91,12 +93,12 @@ const BookingTable = ({ bookings, onView, onUpdate, onDelete, isAdmin }) => {
                     booking.status === "confirmed"
                       ? "bg-success"
                       : booking.status === "pending"
-                      ? "bg-warning"
-                      : booking.status === "completed"
-                      ? "bg-info"
-                      : booking.status === "cancelled"
-                      ? "bg-danger"
-                      : "bg-secondary"
+                        ? "bg-warning"
+                        : booking.status === "completed"
+                          ? "bg-info"
+                          : booking.status === "cancelled"
+                            ? "bg-danger"
+                            : "bg-secondary"
                   }`}
                 >
                   {booking.status}
