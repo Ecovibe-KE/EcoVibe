@@ -6,7 +6,6 @@ import Input from "../utils/Input";
 import { toast } from "react-toastify";
 import Button from "../utils/Button";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
 import { createUser } from "../api/services/auth";
@@ -24,6 +23,7 @@ const SignUpForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     industry: "",
+    otherIndustry: "",
     email: "",
     phone: "",
     password: "",
@@ -43,6 +43,12 @@ const SignUpForm = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (formData.industry !== "other" && formData.otherIndustry) {
+      setFormData((prev) => ({ ...prev, otherIndustry: "" }));
+    }
+  }, [formData.industry]);
+
   // ----------------------
   // Password validator
   // ----------------------
@@ -60,6 +66,9 @@ const SignUpForm = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.industry) newErrors.industry = "Please select your industry";
+    if (formData.industry === "other" && !formData.otherIndustry.trim()) {
+      newErrors.otherIndustry = "Please specify your industry";
+    }
 
     const emailError = validateEmail(formData.email);
     if (emailError) newErrors.email = emailError;
@@ -120,11 +129,16 @@ const SignUpForm = () => {
     try {
       setIsSubmitting(true);
 
+      const finalIndustry =
+        formData.industry === "other"
+          ? formData.otherIndustry
+          : formData.industry;
+
       const payload = {
         full_name: formData.name,
         email: formData.email,
         password: formData.password,
-        industry: formData.industry,
+        industry: finalIndustry,
         phone_number: formData.phone,
         recaptchaToken: captchaToken,
       };
@@ -141,6 +155,7 @@ const SignUpForm = () => {
         setFormData({
           name: "",
           industry: "",
+          otherIndustry: "",
           email: "",
           phone: "",
           password: "",
@@ -247,6 +262,24 @@ const SignUpForm = () => {
                     <option value="energy">Energy</option>
                     <option value="other">Other</option>
                   </select>
+                  {formData.industry === "other" && (
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        name="otherIndustry"
+                        placeholder="Please specify your industry"
+                        value={formData.otherIndustry || ""}
+                        onChange={handleChange}
+                        className={`form-control ${errors.otherIndustry ? "is-invalid" : ""}`}
+                        required
+                      />
+                      {errors.otherIndustry && (
+                        <div className="invalid-feedback">
+                          {errors.otherIndustry}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {errors.industry && (
                     <div className="invalid-feedback">{errors.industry}</div>
                   )}
@@ -280,7 +313,6 @@ const SignUpForm = () => {
                   inputClassName={`w-100 custom-phone-input-text ${
                     errors.phone ? "is-invalid" : ""
                   }`}
-                  className="custom-phone-input"
                   inputProps={{
                     name: "phone",
                     required: true,

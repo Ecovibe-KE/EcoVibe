@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Container, Row, Col, Image, Spinner } from "react-bootstrap";
 import Button from "../utils/Button";
 import { getBlogById } from "../api/services/blog";
 import CalendarIcon from "../assets/Calendar.png";
 import UserIcon from "../assets/User.png";
 import { RichTextEditor } from "./RichTextEditor";
+import "../css/BlogPost.css"; // <-- add new styling
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -14,6 +16,7 @@ const BlogPost = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     const fetchBlog = async () => {
       try {
         const data = await getBlogById(id);
@@ -30,61 +33,78 @@ const BlogPost = () => {
     fetchBlog();
   }, [id, navigate]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!blog) return <p>Blog not found.</p>;
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner animation="border" variant="success" />
+      </div>
+    );
+
+  if (!blog) return <p className="text-center mt-5">Blog not found.</p>;
 
   const formattedDate = new Date(blog.date_created).toLocaleDateString();
 
   return (
-    <div className="p-4 max-w-3xl mx-auto container-fluid">
+    <Container className="blogpost-container py-5">
       <Button
         onClick={() => navigate(-1)}
         size="sm"
-        color="#6c757d"
-        hoverColor="#5a6268"
+        color="#37b137"
+        hoverColor="#f5a030"
       >
         ← Back
       </Button>
 
-      <h1 className="text-3xl font-bold mt-4">{blog.title}</h1>
-      <h6 className="text-xl font-semibold mb-4">{blog.category}</h6>
+      <Row className="justify-content-center mt-4">
+        <Col lg={8} md={10} sm={12}>
+          <h1 className="fw-bold text-center mb-3">{blog.title}</h1>
+          <h5 className="text-center text-muted mb-4">{blog.category}</h5>
 
-      <div className="d-flex justify-content-start align-items-center items-center text-sm text-gray-500 mb-4 gap-4">
-        <div className="flex items-center gap-1">
-          <img
-            src={CalendarIcon}
-            alt="calendar"
-            className="w-4 h-4 img-fluid calendar-icon"
-          />
-          <time dateTime={blog.date_created}>{formattedDate}</time>
-        </div>
-        <div className="flex items-center gap-1">
-          <img
-            src={UserIcon}
-            alt="author"
-            className="w-4 h-4 img-fluid user-icon"
-          />
-          <span>{blog.author_name}</span>
-        </div>
-      </div>
+          {/* Meta info */}
+          <div className="d-flex justify-content-center align-items-center gap-3 text-muted small mb-4 flex-wrap">
+            <div className="d-flex align-items-center gap-2">
+              <img src={CalendarIcon} alt="Calendar" className="meta-icon" />
+              <time dateTime={blog.date_created}>{formattedDate}</time>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <img src={UserIcon} alt="Author" className="meta-icon" />
+              <span>{blog.author_name}</span>
+            </div>
+          </div>
 
-      <p className="p-4 font-italic">{blog.excerpt}</p>
+          {/* Blog excerpt */}
+          <p className="lead text-center fst-italic mb-4 px-2">
+            {blog.excerpt}
+          </p>
 
-      {blog.image && (
-        <img
-          src={blog.image}
-          alt={blog.title}
-          className="w-full rounded-lg mb-4"
-        />
-      )}
+          {/* Blog image */}
+          {blog.image && (
+            <div className="text-center mb-5">
+              <Image
+                src={blog.image}
+                alt={blog.title}
+                className="img-fluid blogpost-image shadow-sm rounded-4"
+              />
+            </div>
+          )}
 
-      <p className="text-gray-800 leading-relaxed">
-        <RichTextEditor
-          value={JSON.parse(blog.content || "{}")}
-          readOnly={true}
-        />
-      </p>
-    </div>
+          {/* Blog content */}
+          <div className="blog-content text-start px-1">
+            <RichTextEditor
+              value={(() => {
+                try {
+                  return JSON.parse(blog.content || "{}");
+                } catch (error) {
+                  console.error("Failed to parse blog content:", error);
+                  return [{ type: "paragraph", children: [{ text: "" }] }];
+                }
+              })()}
+              readOnly={true}
+            />
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

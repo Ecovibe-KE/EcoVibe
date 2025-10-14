@@ -108,20 +108,19 @@ const BlogSideBar = ({
         <h5 className="mb-1">Categories</h5>
         <hr />
 
-        {/* All */}
-        <Button
-          type="button"
-          className={`d-flex justify-content-between w-100 border-0 bg-transparent p-0 category-row ${
-            !selectedCategory ? "fw-bold" : ""
-          }`}
-          onClick={() => setSelectedCategory(null)}
-          aria-pressed={!selectedCategory}
-        >
-          <span>All</span>
-          <span>({totalCount})</span>
-        </Button>
-
-        <div className="mb-3 d-flex flex-row">
+        <div className="mb-3 d-flex flex-column">
+          {/* All */}
+          <Button
+            type="button"
+            className={`d-flex justify-content-between category-row ${
+              !selectedCategory ? "fw-bold" : ""
+            }`}
+            onClick={() => setSelectedCategory(null)}
+            aria-pressed={!selectedCategory}
+          >
+            <span>All</span>
+            <span>({totalCount})</span>
+          </Button>
           {/* Other categories */}
           {Object.entries(categoryCounts).map(([category, count]) => (
             <Button

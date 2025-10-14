@@ -7,6 +7,7 @@ function AboutUsPartition({
   extraSetting,
   padding,
   customClass,
+  widthSettings,
 }) {
   return (
     <>
@@ -25,6 +26,7 @@ function AboutUsPartition({
                   paragraphContent={paragraphContent}
                   padding={padding}
                   customClass={customClass}
+                  widthSettings={widthSettings}
                 ></AboutUsCard>
               );
             },

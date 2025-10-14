@@ -6,10 +6,11 @@ function AboutUsCard({
   paragraphContent,
   padding,
   customClass,
+  widthSettings = "",
 }) {
   return (
     <>
-      <div className="col d-flex justify-content-center">
+      <div className={`col d-flex justify-content-center ${widthSettings}`}>
         <div className={`card rounded-5 ${padding}`}>
           <img
             src={`/${imageSourceName}`}

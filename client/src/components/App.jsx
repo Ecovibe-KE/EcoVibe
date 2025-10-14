@@ -26,10 +26,11 @@ import Login from "./Login.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "../css/App.css";
 import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
-import ClientTickets from "./ClientTickets.jsx";
+import Tickets from "./Tickets.jsx";
 import Services from "./Services.jsx";
 import ServiceDetail from "./ServiceDetail.jsx";
 import Footer from "./Footer.jsx";
@@ -40,7 +41,6 @@ import UserManagement from "./admin/UserManagement.jsx";
 import BlogManagementUi from "./admin/BlogManagment.jsx";
 import Booking from "./Booking.jsx";
 import ServiceAdmin from "./admin/ServiceAdmin.jsx";
-import AdminTickets from "./admin/AdminTickets.jsx";
 import InvoiceDashboard from "./InvoiceDashboard.jsx";
 import ServicesSection from "./Services.jsx";
 
@@ -129,7 +129,8 @@ function App() {
                 </div>
               }
             />
-            <Route
+            {/*
+              <Route
               path="payments"
               element={
                 <div className="p-4">
@@ -137,13 +138,14 @@ function App() {
                   <InvoiceDashboard />
                 </div>
               }
-            />
+            />*/
+            }
             <Route
               path="tickets"
               element={
                 <div className="p-4">
                   <h2>Tickets</h2>
-                  <ClientTickets />
+                  <Tickets />
                 </div>
               }
             />
@@ -173,7 +175,7 @@ function App() {
                 </RequireRole>
               }
             />
-
+            {/*
             <Route
               path="about"
               element={
@@ -182,16 +184,7 @@ function App() {
                   <p>Update about information.</p>
                 </div>
               }
-            />
-
-            <Route
-              path="tickets/admin"
-              element={
-                <RequireRole allowedRoles={["admin", "super_admin"]}>
-                  <AdminTickets />
-                </RequireRole>
-              }
-            />
+            />*/}
           </Route>
 
           {/* =======================

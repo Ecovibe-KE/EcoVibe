@@ -12,6 +12,7 @@ from sqlalchemy.orm import joinedload
 from models.invoice import Invoice
 from models.blog import Blog
 from models.payment import Payment
+from models.service import Service
 
 # Create Blueprint and Api
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -104,6 +105,7 @@ class DashboardResource(Resource):
 
         elif user.role.value in [Role.ADMIN.value, Role.SUPER_ADMIN.value]:
             total_bookings = db.session.query(func.count(Booking.id)).scalar() or 0
+            total_services = db.session.query(func.count(Service.id)).scalar() or 0
             total_payments = db.session.query(func.count(Payment.id)).scalar() or 0
             total_clients = (
                 db.session.query(func.count(User.id))
@@ -168,6 +170,7 @@ class DashboardResource(Resource):
                         "registeredUsers": total_clients,
                         "blogPosts": blog_post,
                         "paymentRecords": total_payments,
+                        "totalServices": total_services,
                     },
                     "recentBookings": recent_bookings_data,
                     "recentPayments": payments_data,

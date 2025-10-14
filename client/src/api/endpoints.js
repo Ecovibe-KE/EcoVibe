@@ -61,6 +61,8 @@ export const ENDPOINTS = {
 
   // Services
   services: "/services",
+  // Contact
+  quote: "/quote",
 
   // Add more endpoints as needed here
 };

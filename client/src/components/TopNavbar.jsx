@@ -4,10 +4,10 @@ import { NavLink, Link, Outlet } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import useBreakpoint from "../hooks/useBreakpoint";
 import home from "../assets/home.png";
-import bookings from "../assets/bookings.png";
+//import bookings from "../assets/bookings.png";
 import resources from "../assets/resources.png";
 import profile from "../assets/profile.png";
-import payments from "../assets/payment.png";
+//import payments from "../assets/payment.png";
 import blog from "../assets/blog.png";
 import services from "../assets/services.png";
 import about from "../assets/about.png";
@@ -23,12 +23,12 @@ const SIDEBAR_WIDTH = 280;
 
 const NAV_ITEMS = [
   { to: "/dashboard/main", icon: home, label: "Dashboard", alt: "Home" },
-  {
+  /*{
     to: "/dashboard/bookings",
     icon: bookings,
     label: "Bookings",
     alt: "Bookings",
-  },
+  },*/
   {
     to: "/dashboard/resources",
     icon: resources,
@@ -36,12 +36,12 @@ const NAV_ITEMS = [
     alt: "Resources",
   },
   { to: "/dashboard/profile", icon: profile, label: "Profile", alt: "Profile" },
-  {
+  /*{
     to: "/dashboard/payments",
     icon: payments,
     label: "Payment History",
     alt: "Payments",
-  },
+  },*/
   { to: "/dashboard/blog", icon: blog, label: "Blog Management", alt: "Blog" },
   {
     to: "/dashboard/services",
@@ -49,12 +49,13 @@ const NAV_ITEMS = [
     label: "Service Management",
     alt: "Services",
   },
+  /*
   {
     to: "/dashboard/about",
     icon: about,
     label: "About Us Management",
     alt: "About Us",
-  },
+  },*/
   {
     to: "/dashboard/users",
     icon: users,

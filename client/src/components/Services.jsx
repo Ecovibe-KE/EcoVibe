@@ -63,11 +63,10 @@ const Services = () => {
 
   if (!services) {
     return (
-      <Container className="text-center py-5">
-        <Spinner animation="border" role="status" variant="success">
-          <span className="visually-hidden">Loading service...</span>
-        </Spinner>
-      </Container>
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner animation="border" role="status" variant="success"></Spinner>
+        <span className=""> Loading services...</span>
+      </div>
     );
   } else if (Array.isArray(services) && services.length === 0) {
     return (

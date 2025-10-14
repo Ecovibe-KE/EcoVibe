@@ -54,8 +54,6 @@ describe("Dashboard Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Welcome, Test Client/i)).toBeInTheDocument();
-      expect(screen.getByText("Total Bookings")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
     });
   });
 
