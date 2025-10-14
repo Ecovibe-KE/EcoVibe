@@ -129,7 +129,8 @@ function App() {
                 </div>
               }
             />
-            <Route
+            {/*
+              <Route
               path="payments"
               element={
                 <div className="p-4">
@@ -137,7 +138,8 @@ function App() {
                   <InvoiceDashboard />
                 </div>
               }
-            />
+            />*/
+            }
             <Route
               path="tickets"
               element={
@@ -173,7 +175,7 @@ function App() {
                 </RequireRole>
               }
             />
-
+            {/*
             <Route
               path="about"
               element={
@@ -182,7 +184,7 @@ function App() {
                   <p>Update about information.</p>
                 </div>
               }
-            />
+            />*/}
           </Route>
 
           {/* =======================

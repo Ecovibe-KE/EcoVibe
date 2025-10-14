@@ -49,12 +49,13 @@ const NAV_ITEMS = [
     label: "Service Management",
     alt: "Services",
   },
+  /*
   {
     to: "/dashboard/about",
     icon: about,
     label: "About Us Management",
     alt: "About Us",
-  },
+  },*/
   {
     to: "/dashboard/users",
     icon: users,
