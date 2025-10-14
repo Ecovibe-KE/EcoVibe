@@ -1,20 +1,6 @@
-import {
-  Tab,
-  Tabs,
-  Row,
-  Container,
-  Col,
-  Spinner
-} from "react-bootstrap";
-import {
-  toast,
-  ToastContainer
-} from "react-toastify";
-import {
-  useState,
-  useRef,
-  useEffect
-} from "react";
+import { Tab, Tabs, Row, Container, Col, Spinner } from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
+import { useState, useRef, useEffect } from "react";
 import gearImg from "../../assets/gears.png";
 import tickImg from "../../assets/tick.png";
 import "../../css/ServiceAdmin.css";
@@ -61,9 +47,7 @@ function ServiceAdmin() {
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        `Server unavailable. Please try again later`
-      );
+      toast.error(`Server unavailable. Please try again later`);
       setAllServices([]);
     }
   };
@@ -99,9 +83,11 @@ function ServiceAdmin() {
     },
     {
       imageSource: tickImg,
-      number: allServices ? allServices.filter(
-        (service) => service.status?.toLowerCase() === "active",
-      ).length : "loading",
+      number: allServices
+        ? allServices.filter(
+            (service) => service.status?.toLowerCase() === "active",
+          ).length
+        : "loading",
       text: "Active Services",
       imageSetting: "success",
       colSetting: "",
@@ -385,11 +371,10 @@ function ServiceAdmin() {
   if (!allServices) {
     return (
       <Container className="text-center py-5">
-        <Spinner animation="border" role="status" variant="success">
-        </Spinner>
+        <Spinner animation="border" role="status" variant="success"></Spinner>
         <span className=""> Loading services...</span>
       </Container>
-    )
+    );
   }
 
   return (

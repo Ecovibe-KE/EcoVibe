@@ -112,8 +112,9 @@ const BlogSideBar = ({
           {/* All */}
           <Button
             type="button"
-            className={`d-flex justify-content-between category-row ${!selectedCategory ? "fw-bold" : ""
-              }`}
+            className={`d-flex justify-content-between category-row ${
+              !selectedCategory ? "fw-bold" : ""
+            }`}
             onClick={() => setSelectedCategory(null)}
             aria-pressed={!selectedCategory}
           >
@@ -125,8 +126,9 @@ const BlogSideBar = ({
             <Button
               type="button"
               key={category}
-              className={`d-flex justify-content-between mt-2 category-row ${selectedCategory === category ? "fw-bold text-dark" : ""
-                }`}
+              className={`d-flex justify-content-between mt-2 category-row ${
+                selectedCategory === category ? "fw-bold text-dark" : ""
+              }`}
               onClick={() => setSelectedCategory(category)}
               aria-pressed={selectedCategory === category}
             >

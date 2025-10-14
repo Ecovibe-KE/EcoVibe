@@ -64,8 +64,7 @@ const Services = () => {
   if (!services) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
-        <Spinner animation="border" role="status" variant="success">
-        </Spinner>
+        <Spinner animation="border" role="status" variant="success"></Spinner>
         <span className=""> Loading services...</span>
       </div>
     );

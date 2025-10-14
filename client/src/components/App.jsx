@@ -26,7 +26,7 @@ import Login from "./Login.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import "../css/App.css"
+import "../css/App.css";
 import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
@@ -129,7 +129,8 @@ function App() {
                 </div>
               }
             />
-            <Route
+            {/*
+              <Route
               path="payments"
               element={
                 <div className="p-4">
@@ -137,7 +138,8 @@ function App() {
                   <InvoiceDashboard />
                 </div>
               }
-            />
+            />*/
+            }
             <Route
               path="tickets"
               element={
@@ -173,7 +175,7 @@ function App() {
                 </RequireRole>
               }
             />
-
+            {/*
             <Route
               path="about"
               element={
@@ -182,9 +184,7 @@ function App() {
                   <p>Update about information.</p>
                 </div>
               }
-            />
-
-          
+            />*/}
           </Route>
 
           {/* =======================

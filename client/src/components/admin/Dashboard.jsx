@@ -45,7 +45,7 @@ export default function Dashboard() {
   }, [user, token]);
 
   const clientCards = [
-    {
+    /*{
       title: "Total Bookings",
       value: data.stats?.totalBookings,
       icon: (
@@ -56,7 +56,7 @@ export default function Dashboard() {
       title: "Paid Invoices",
       value: data.stats?.paidInvoices,
       icon: <ReceiptLongIcon fontSize="large" className="eck-dashboard-icon" />,
-    },
+    },*/
     {
       title: "Tickets Raised",
       value: data.stats?.ticketsRaised,
@@ -88,8 +88,8 @@ export default function Dashboard() {
       icon: <ArticleIcon fontSize="large" className="eck-dashboard-icon" />,
     },
     {
-      title: "Payment Records",
-      value: data.stats?.paymentRecords,
+      title: "Total Services",
+      value: data.stats?.totalServices,
       icon: <PaymentsIcon className="eck-dashboard-icon" />,
     },
   ];
@@ -142,7 +142,7 @@ export default function Dashboard() {
       <div className="row mb-4">
         {role === "client" ? renderCards(clientCards) : renderCards(adminCards)}
       </div>
-      {role === "client" && (
+      {/*role === "client" && (
         <div className="bg-white p-3">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h4>Upcoming Appointments</h4>
@@ -194,7 +194,7 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-      )}
+      )
       {(role === "admin" || role === "super_admin") && (
         <div className=" bg-white shadow-lg p-4 rounded-3">
           <div className="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-subtle pb-3">
@@ -246,6 +246,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+      */}
       {role === "client" && (
         <div className="mt-5  bg-white shadow-lg p-4 rounded-3">
           <div className="d-flex align-items-center justify-content-between">
@@ -321,6 +322,7 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
+          {/*
           <div className=" bg-white shadow-lg p-4 rounded-3">
             <div className="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary-subtle pb-2 ">
               <h4 className="fw-bold m-0">Recent Payments</h4>
@@ -351,6 +353,7 @@ export default function Dashboard() {
               </table>
             </div>
           </div>
+*/}
         </div>
       )}
     </div>

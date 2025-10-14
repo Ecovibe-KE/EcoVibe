@@ -75,7 +75,7 @@ function AboutUs() {
     extraSetting = "",
     padding = "p-4",
     customClass = "icon-sm mx-auto",
-    widthSettings = ""
+    widthSettings = "",
   ) {
     return (
       <>
@@ -129,7 +129,7 @@ function AboutUs() {
           "",
           "",
           "card-img-top rounded-top-5 image-fixed-height",
-          "w-100"
+          "w-100",
         )}
       </section>
     </>

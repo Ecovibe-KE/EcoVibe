@@ -7,7 +7,7 @@ function AboutUsPartition({
   extraSetting,
   padding,
   customClass,
-  widthSettings
+  widthSettings,
 }) {
   return (
     <>

@@ -63,19 +63,11 @@ const BlogPost = () => {
           {/* Meta info */}
           <div className="d-flex justify-content-center align-items-center gap-3 text-muted small mb-4 flex-wrap">
             <div className="d-flex align-items-center gap-2">
-              <img
-                src={CalendarIcon}
-                alt="Calendar"
-                className="meta-icon"
-              />
+              <img src={CalendarIcon} alt="Calendar" className="meta-icon" />
               <time dateTime={blog.date_created}>{formattedDate}</time>
             </div>
             <div className="d-flex align-items-center gap-2">
-              <img
-                src={UserIcon}
-                alt="Author"
-                className="meta-icon"
-              />
+              <img src={UserIcon} alt="Author" className="meta-icon" />
               <span>{blog.author_name}</span>
             </div>
           </div>

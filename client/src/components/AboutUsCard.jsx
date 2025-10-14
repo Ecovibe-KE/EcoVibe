@@ -6,7 +6,7 @@ function AboutUsCard({
   paragraphContent,
   padding,
   customClass,
-  widthSettings = ""
+  widthSettings = "",
 }) {
   return (
     <>
