@@ -1,8 +1,8 @@
-"""initial migrations
+"""Initial migration
 
-Revision ID: 0a2fb69f9058
+Revision ID: cb1357822cc1
 Revises:
-Create Date: 2025-10-07 08:22:15.521881
+Create Date: 2025-10-03 16:56:14.334702
 
 """
 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "0a2fb69f9058"
+revision = "cb1357822cc1"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -67,12 +67,11 @@ def upgrade():
         sa.Column("profile_image_url", sa.String(length=200), nullable=True),
         sa.Column(
             "account_status",
-            sa.Enum("ACTIVE", "SUSPENDED", "INACTIVE", "DELETED", name="accountstatus"),
+            sa.Enum("ACTIVE", "SUSPENDED", "INACTIVE", name="accountstatus"),
             nullable=False,
         ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.Column("password_hash", sa.String(length=255), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email", name="uq_user_email"),
@@ -146,7 +145,7 @@ def upgrade():
         sa.Column("image", sa.LargeBinary(), nullable=False),
         sa.Column(
             "status",
-            sa.Enum("ACTIVE", "INACTIVE", "DELETED", name="servicestatus"),
+            sa.Enum("ACTIVE", "INACTIVE", name="servicestatus"),
             nullable=False,
         ),
         sa.Column(
@@ -157,7 +156,6 @@ def upgrade():
         ),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("admin_id", sa.Integer(), nullable=False),
-        sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
             ["admin_id"],
             ["users.id"],
@@ -172,11 +170,10 @@ def upgrade():
         sa.Column("subject", sa.String(length=255), nullable=False),
         sa.Column(
             "status",
-            sa.Enum("OPEN", "CLOSED", "IN_PROGRESS", "DELETED", name="ticketstatus"),
+            sa.Enum("OPEN", "CLOSED", "IN_PROGRESS", name="ticketstatus"),
             nullable=False,
         ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
             ["admin_id"],
             ["users.id"],
@@ -210,12 +207,7 @@ def upgrade():
         sa.Column(
             "status",
             sa.Enum(
-                "pending",
-                "confirmed",
-                "completed",
-                "cancelled",
-                "deleted",
-                name="bookingstatus",
+                "pending", "confirmed", "completed", "cancelled", name="bookingstatus"
             ),
             nullable=False,
         ),
@@ -228,7 +220,6 @@ def upgrade():
             nullable=False,
         ),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
             ["client_id"],
             ["users.id"],
@@ -272,17 +263,9 @@ def upgrade():
         sa.Column("due_date", sa.Date(), nullable=False),
         sa.Column(
             "status",
-            sa.Enum(
-                "pending",
-                "paid",
-                "overdue",
-                "cancelled",
-                "deleted",
-                name="invoicestatus",
-            ),
+            sa.Enum("pending", "paid", "overdue", "cancelled", name="invoicestatus"),
             nullable=False,
         ),
-        sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
             ["client_id"],
             ["users.id"],
