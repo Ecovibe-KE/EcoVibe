@@ -93,7 +93,7 @@ function Contact() {
           <div className="col-lg-7">
             <div className="mb-4">
               <div
-                className="card shadow-sm h-100"
+                className="card shadow-sm h-100 rounded-5"
                 style={{ backgroundColor: "#F9F9F9" }}
               >
                 <div className="card-body ">
@@ -204,7 +204,7 @@ function Contact() {
           </div>
           <div className="col-lg-5">
             <div
-              className="card shadow-sm border-0 p-4"
+              className="card shadow-sm border-0 p-4 rounded-5"
               style={{ backgroundColor: "#F9F9F9", borderRadius: "1rem" }}
             >
               <h5

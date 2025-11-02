@@ -57,7 +57,8 @@ describe('AboutUs component', () => {
             expect.arrayContaining([
                 'Mission & Vision',
                 'Our Core Values',
-                'Meet Our Team'
+                'Who We Serve'
+
             ])
         )
 
@@ -72,7 +73,7 @@ describe('AboutUs component', () => {
 
         expect(counts['Mission & Vision']).toBe(2)
         expect(counts['Our Core Values']).toBe(4)
-        expect(counts['Meet Our Team']).toBe(1)
+        expect(counts['Who We Serve']).toBe(4)
 
         // Example: check that the core values partition received the extraSetting row-cols-lg-3
         const corePartition = partitions.find(p => p.getAttribute('data-title') === 'Our Core Values')
