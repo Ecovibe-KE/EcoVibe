@@ -1,0 +1,196 @@
+client
+├── README.md
+├── client_tree.txt
+├── eslint.config.js
+├── firebase.json
+├── firebaseConfig.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   ├── 3826376 1.png
+│   ├── EcovibeLogo.png
+│   ├── Empower.png
+│   ├── Eye.png
+│   ├── Sharon.jpeg
+│   ├── Target.png
+│   ├── ceo.png
+│   ├── chairs.png
+│   ├── creativeDirector.png
+│   ├── forest-272595_1280 2.png
+│   ├── index.html
+│   ├── investment-5241253_1280 2.png
+│   ├── leadDeveloper.png
+│   └── logo.png
+├── src
+│   ├── api
+│   │   ├── axiosConfig.js
+│   │   ├── endpoints.js
+│   │   └── services
+│   ├── assets
+│   │   ├── Calendar.png
+│   │   ├── User.png
+│   │   ├── about.png
+│   │   ├── blog.png
+│   │   ├── bookings.png
+│   │   ├── chairs-2181960_1280 2.png
+│   │   ├── collaboration1.jpg
+│   │   ├── collaboration2.jpg
+│   │   ├── gears.png
+│   │   ├── hands.jpg
+│   │   ├── home.png
+│   │   ├── logo.png
+│   │   ├── payment.png
+│   │   ├── placeholder.png
+│   │   ├── profile.png
+│   │   ├── resources.png
+│   │   ├── services.png
+│   │   ├── tick.png
+│   │   ├── tickets.png
+│   │   └── users.png
+│   ├── components
+│   │   ├── About.jsx
+│   │   ├── AboutUs.jsx
+│   │   ├── AboutUsCard.jsx
+│   │   ├── AboutUsPartition.jsx
+│   │   ├── App.jsx
+│   │   ├── Blog.jsx
+│   │   ├── BlogCard.jsx
+│   │   ├── BlogPost.jsx
+│   │   ├── BlogSideBar.jsx
+│   │   ├── Booking.jsx
+│   │   ├── BookingDetails.jsx
+│   │   ├── BookingForm.jsx
+│   │   ├── BookingModal.jsx
+│   │   ├── BookingTable.jsx
+│   │   ├── ClientTickets.jsx
+│   │   ├── Contact.jsx
+│   │   ├── Footer.jsx
+│   │   ├── FooterWrapper.jsx
+│   │   ├── ForgotPassword.jsx
+│   │   ├── Homepage.jsx
+│   │   ├── InvoiceDashboard.jsx
+│   │   ├── Login.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── PasswordInput.jsx
+│   │   ├── Playground.jsx
+│   │   ├── PrivacyPolicy.jsx
+│   │   ├── ProfilePage.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   ├── ResetPassword.jsx
+│   │   ├── RichTextEditor.jsx
+│   │   ├── ServiceDetail.jsx
+│   │   ├── Services.jsx
+│   │   ├── Signup.jsx
+│   │   ├── Terms.jsx
+│   │   ├── Tickets.jsx
+│   │   ├── TopNavbar.jsx
+│   │   ├── Verify.jsx
+│   │   └── admin
+│   ├── context
+│   │   └── AuthContext.jsx
+│   ├── css
+│   │   ├── App.css
+│   │   ├── Blog.module.css
+│   │   ├── Booking.module.css
+│   │   ├── Footer.css
+│   │   ├── ForgotPassword.module.css
+│   │   ├── Header.module.css
+│   │   ├── Login.module.css
+│   │   ├── ProfilePage.module.css
+│   │   ├── ResourceCenter.css
+│   │   ├── ServiceAdmin.css
+│   │   ├── ServiceDetail.css
+│   │   ├── Services.css
+│   │   ├── TopNavBar.css
+│   │   ├── UserManagement.css
+│   │   ├── aboutus.css
+│   │   ├── dashboard.css
+│   │   ├── index.css
+│   │   ├── navbar.css
+│   │   └── signup.css
+│   ├── hooks
+│   │   ├── useAnalytics.jsx
+│   │   └── useBreakpoint.jsx
+│   ├── main.jsx
+│   ├── sum.js
+│   ├── utils
+│   │   ├── Button.jsx
+│   │   ├── DropdownButton.jsx
+│   │   ├── Input.jsx
+│   │   ├── ToggleSwitch.jsx
+│   │   └── Validations.js
+│   └── wrappers
+│       ├── RequireRole.jsx
+│       └── Unauthorized.jsx
+├── tests
+│   ├── api
+│   │   ├── handlers.js
+│   │   ├── server.js
+│   │   └── services
+│   ├── components
+│   │   ├── AboutUs.test.jsx
+│   │   ├── AboutUsCard.test.jsx
+│   │   ├── AboutUsPartition.test.jsx
+│   │   ├── AddUserModal.test.jsx
+│   │   ├── App.test.jsx
+│   │   ├── AuthContext.test.jsx
+│   │   ├── BlockUserModal.test.jsx
+│   │   ├── Blog.test.jsx
+│   │   ├── BlogCard.test.jsx
+│   │   ├── BlogManagement.test.jsx
+│   │   ├── BlogModal.test.jsx
+│   │   ├── BlogPost.test.jsx
+│   │   ├── BlogSideBar.test.jsx
+│   │   ├── Booking.test.jsx
+│   │   ├── BookingDetail.test.jsx
+│   │   ├── BookingForm.test.jsx
+│   │   ├── BookingModal.test.jsx
+│   │   ├── BookingTable.test.jsx
+│   │   ├── Contact.test.jsx
+│   │   ├── DeleteServiceModal.test.jsx
+│   │   ├── DeleteUserModal.test.jsx
+│   │   ├── DropdownButton.test.jsx
+│   │   ├── EditServiceModal.test.jsx
+│   │   ├── EditUserModal.test.jsx
+│   │   ├── Footer.test.jsx
+│   │   ├── ForgotPassword.test.jsx
+│   │   ├── InvoiceDashboard.test.jsx
+│   │   ├── Login.test.jsx
+│   │   ├── Playground.test.jsx
+│   │   ├── PrivacyPolicy.test.jsx
+│   │   ├── ProfilePage.test.jsx
+│   │   ├── RequireRole.test.jsx
+│   │   ├── ResetPassword.test.jsx
+│   │   ├── RichTextEditor.test.jsx
+│   │   ├── Service
+│   │   ├── ServiceAdmin.test.jsx
+│   │   ├── ServiceAdminMain.test.jsx
+│   │   ├── ServiceAdminTop.test.jsx
+│   │   ├── ServiceDetail.test.jsx
+│   │   ├── ServiceForm.test.jsx
+│   │   ├── Services.test.jsx
+│   │   ├── Signup.test.jsx
+│   │   ├── StatusInfo.test.jsx
+│   │   ├── Terms.test.jsx
+│   │   ├── Tickets.test.jsx
+│   │   ├── ToggleSwitch.test.jsx
+│   │   ├── TopNavbar.test.jsx
+│   │   ├── Unauthorized.test.jsx
+│   │   ├── UserManagement.test.jsx
+│   │   ├── Validation.test.jsx
+│   │   ├── Verify.test.jsx
+│   │   ├── ViewUserModal.test.jsx
+│   │   ├── __snapshots__
+│   │   └── dashboard.test.jsx
+│   ├── hooks
+│   │   ├── useAnalytics.test.js
+│   │   └── useBreakpoint.test.jsx
+│   ├── setup.js
+│   ├── sum.test.js
+│   └── utils
+│       ├── Button.test.jsx
+│       └── Input.test.jsx
+└── vite.config.js
+
+20 directories, 174 files

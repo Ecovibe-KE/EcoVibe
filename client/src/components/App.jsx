@@ -1,11 +1,18 @@
+import { useAuth } from "../context/AuthContext";
+import RequireRole from "../wrappers/RequireRole";
+import Unauthorized from "../wrappers/Unauthorized";
 import { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAnalytics } from "../hooks/useAnalytics";
+
+// Core layout and components
 import NavBar from "./Navbar.jsx";
 import TopNavbar from "./TopNavbar.jsx";
 import FooterWrapper from "./FooterWrapper.jsx";
+
+// Public pages
 import Homepage from "./Homepage.jsx";
 import Playground from "./Playground.jsx";
 import Contact from "./Contact.jsx";
@@ -16,40 +23,31 @@ import Terms from "./Terms.jsx";
 import VerifyPage from "./Verify.jsx";
 import SignUpForm from "./Signup.jsx";
 import Login from "./Login.jsx";
-import UserManagement from "./admin/UserManagement.jsx";
-import TopNavbar from "./TopNavbar.jsx";
-import Footer from "./Footer.jsx";
-import SignUpForm from "./Signup.jsx";
-import Login from "./Login.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "../css/App.css";
+import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
+import Tickets from "./Tickets.jsx";
+import Services from "./Services.jsx";
+import ServiceDetail from "./ServiceDetail.jsx";
+import Footer from "./Footer.jsx";
+import Dashboard from "./admin/Dashboard.jsx";
 
-// Footer Wrapper to detect page type
-function FooterWrapper() {
-  const location = useLocation();
+// Admin pages
+import UserManagement from "./admin/UserManagement.jsx";
+import BlogManagementUi from "./admin/BlogManagment.jsx";
+import Booking from "./Booking.jsx";
+import ServiceAdmin from "./admin/ServiceAdmin.jsx";
+import InvoiceDashboard from "./InvoiceDashboard.jsx";
+import ServicesSection from "./Services.jsx";
 
-  const pageType = useMemo(() => {
-    const path = location.pathname.toLowerCase();
-    if (path.startsWith("/about")) return "about";
-    if (path.startsWith("/blog")) return "blog";
-    if (path.startsWith("/services")) return "services";
-    if (path.startsWith("/contact")) return "contact";
-    return "landing";
-  }, [location.pathname]);
-
-  if (import.meta.env?.MODE === "development") {
-    console.debug("Rendering FooterWrapper with pageType:", pageType);
-  }
-
-  return <Footer pageType={pageType} />;
-}
-
+// Lazy loaded page
 const PrivacyPolicy = lazy(() => import("./PrivacyPolicy.jsx"));
 
-// Dashboard Layout (Protected pages, no footer)
+// Dashboard wrapper (for protected pages)
 function DashboardLayout() {
   return (
     <>
@@ -62,6 +60,7 @@ function App() {
   const location = useLocation();
   const { logEvent } = useAnalytics();
 
+  // Track route changes with analytics
   useEffect(() => {
     logEvent("screen_view", {
       firebase_screen: location.pathname || "/",
@@ -69,56 +68,58 @@ function App() {
     });
   }, [logEvent, location.pathname]);
 
+  // Protects routes based on auth + account status
+  const PrivateRoute = ({ children }) => {
+    const { user, isInactive, isSuspended, isHydrating } = useAuth();
+
+    // ⏳ Wait until AuthContext finishes hydration
+    if (isHydrating) {
+      return <div className="p-4">Loading…</div>;
+    }
+
+    if (!user) return <Navigate to="/login" replace />;
+    if (isInactive) return <Navigate to="/verify" replace />;
+    if (isSuspended) return <Navigate to="/unauthorized" replace />;
+
+    return <>{children}</>;
+  };
+
   return (
     <>
       <Suspense fallback={<div className="p-4">Loading…</div>}>
         <Routes>
-          {/* Dashboard routes - TopNavbar handles the layout and nested routing */}
+          {/* =======================
+              DASHBOARD (Protected)
+          ======================= */}
           <Route
             path="/dashboard/*"
             element={
-              <>
+              <PrivateRoute>
                 <TopNavbar />
-              </>
+              </PrivateRoute>
             }
           >
-            <Route
-              index
-              element={
-                <div className="p-4">
-                  <h2>Dashboard Main</h2>
-                  <p>Welcome to your dashboard!</p>
-                </div>
-              }
-            />
+            {/* General dashboard pages - any active user */}
+            <Route index element={<Navigate to="main" replace />} />
+
             <Route
               path="main"
               element={
                 <div className="p-4">
-                  <h2>Dashboard Main</h2>
-                  <p>Welcome to your dashboard!</p>
+                  <Dashboard />
                 </div>
               }
             />
-            <Route
-              path="bookings"
-              element={
-                <div className="p-4">
-                  <h2>Bookings</h2>
-                  <p>Manage your bookings here.</p>
-                </div>
-              }
-            />
+            <Route path="bookings" element={<Booking />} />
+
             <Route
               path="resources"
               element={
                 <div className="p-4">
-                  <h2>Resources</h2>
-                  <p>Access your resources.</p>
+                  <ResourceCenter />
                 </div>
               }
             />
-
             <Route
               path="profile"
               element={
@@ -128,34 +129,52 @@ function App() {
                 </div>
               }
             />
-
-            <Route
+            {/*
+              <Route
               path="payments"
               element={
                 <div className="p-4">
                   <h2>Payments</h2>
-                  <p>View payment history.</p>
+                  <InvoiceDashboard />
                 </div>
+              }
+            />*/}
+            <Route
+              path="tickets"
+              element={
+                <div className="p-4">
+                  <h2>Tickets</h2>
+                  <Tickets />
+                </div>
+              }
+            />
+
+            {/* Role-restricted dashboard pages - Admin only */}
+            <Route
+              path="services"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <ServiceAdmin />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <UserManagement />
+                </RequireRole>
               }
             />
             <Route
               path="blog"
               element={
-                <div className="p-4">
-                  <h2>Blog</h2>
-                  <p>Manage blog content.</p>
-                </div>
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <BlogManagementUi />
+                </RequireRole>
               }
             />
-            <Route
-              path="services"
-              element={
-                <div className="p-4">
-                  <h2>Services</h2>
-                  <p>Manage your services.</p>
-                </div>
-              }
-            />
+            {/*
             <Route
               path="about"
               element={
@@ -164,27 +183,18 @@ function App() {
                   <p>Update about information.</p>
                 </div>
               }
-            />
-            <Route path="users" element={<UserManagement />} />
-            <Route
-              path="tickets"
-              element={
-                <div className="p-4">
-                  <h2>Tickets</h2>
-                  <p>Manage support tickets.</p>
-                </div>
-              }
-            />
+            />*/}
           </Route>
 
-          {/* Public routes - NO NESTED ROUTES */}
+          {/* =======================
+              PUBLIC ROUTES
+          ======================= */}
           <Route
             path="/"
             element={
               <>
                 <NavBar />
                 <Homepage />
-                <FooterWrapper />
               </>
             }
           />
@@ -194,7 +204,6 @@ function App() {
               <>
                 <NavBar />
                 <Homepage />
-                <FooterWrapper />
               </>
             }
           />
@@ -204,7 +213,6 @@ function App() {
               <>
                 <NavBar />
                 <SignUpForm />
-                <FooterWrapper />
               </>
             }
           />
@@ -214,7 +222,6 @@ function App() {
               <>
                 <NavBar />
                 <Playground />
-                <FooterWrapper />
               </>
             }
           />
@@ -224,7 +231,6 @@ function App() {
               <>
                 <NavBar />
                 <Contact />
-                <FooterWrapper />
               </>
             }
           />
@@ -234,7 +240,24 @@ function App() {
               <>
                 <NavBar />
                 <AboutUs />
-                <FooterWrapper />
+              </>
+            }
+          />
+          <Route
+            path="/services"
+            element={
+              <>
+                <NavBar />
+                <Services />
+              </>
+            }
+          />
+          <Route
+            path="/services/:id"
+            element={
+              <>
+                <NavBar />
+                <ServiceDetail />
               </>
             }
           />
@@ -244,7 +267,6 @@ function App() {
               <>
                 <NavBar />
                 <VerifyPage />
-                <FooterWrapper />
               </>
             }
           />
@@ -254,7 +276,6 @@ function App() {
               <>
                 <NavBar />
                 <Blog />
-                <FooterWrapper />
               </>
             }
           />
@@ -264,7 +285,6 @@ function App() {
               <>
                 <NavBar />
                 <BlogPost />
-                <FooterWrapper />
               </>
             }
           />
@@ -274,7 +294,6 @@ function App() {
               <>
                 <NavBar />
                 <PrivacyPolicy />
-                <FooterWrapper />
               </>
             }
           />
@@ -284,7 +303,6 @@ function App() {
               <>
                 <NavBar />
                 <PrivacyPolicy />
-                <FooterWrapper />
               </>
             }
           />
@@ -294,7 +312,6 @@ function App() {
               <>
                 <NavBar />
                 <Terms />
-                <FooterWrapper />
               </>
             }
           />
@@ -304,7 +321,6 @@ function App() {
               <>
                 <NavBar />
                 <Login />
-                <FooterWrapper />
               </>
             }
           />
@@ -314,32 +330,30 @@ function App() {
               <>
                 <NavBar />
                 <ForgotPassword />
-                <FooterWrapper />
               </>
             }
           />
-
           <Route
             path="/reset-password"
             element={
               <>
                 <NavBar />
                 <ResetPassword />
-                <FooterWrapper />
               </>
             }
           />
+          {/* Unauthorized page */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* Catch-all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </div>
+          {/* Fallback for unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
 
-      {/* Footer rendered only on public/non-protected pages */}
+      {/* Shared footer for public pages */}
       <FooterWrapper />
 
-      {/* Toast Notifications */}
+      {/* Global toast notifications */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -351,7 +365,7 @@ function App() {
         draggable
         pauseOnHover
       />
-    </div>
+    </>
   );
 }
 

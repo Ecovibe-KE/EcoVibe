@@ -61,7 +61,7 @@ const Button = ({
   // Default color scheme
   const defaultColor = "#37b137";
   const defaultHoverColor = "#ff8c00";
-  const defaultOutlineColor = "#37b137";
+  const defaultOutlineColor = "#2b2b2bff";
 
   // Use custom colors if provided, otherwise use defaults
   const btnColor = color || defaultColor;
@@ -159,14 +159,12 @@ const Button = ({
           if (!disabled) {
             const el = e.currentTarget;
             el.style.backgroundColor = outline ? btnColor : btnHoverColor;
-            el.style.borderColor = outline ? btnHoverColor : btnHoverColor;
           }
         }}
         onMouseOut={(e) => {
           if (!disabled) {
             const el = e.currentTarget;
             el.style.backgroundColor = outline ? "transparent" : "";
-            el.style.borderColor = "";
           }
         }}
         {...props}
@@ -199,7 +197,6 @@ const Button = ({
         if (!disabled) {
           const el = e.currentTarget;
           el.style.backgroundColor = outline ? "transparent" : btnColor;
-          el.style.borderColor = btnColor;
         }
       }}
       {...props}

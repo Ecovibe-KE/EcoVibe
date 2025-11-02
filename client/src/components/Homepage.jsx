@@ -199,7 +199,7 @@ const Homepage = () => {
               <Card.Img
                 src="/investment-5241253_1280 2.png"
                 alt="EcoVibe ESG consultancy"
-                className="rounded-3 img-fluid"
+                className="rounded-5 img-fluid"
               />
             </Card>
           </div>
@@ -234,7 +234,7 @@ const Homepage = () => {
           <div className="row g-4">
             {services.map((service, index) => (
               <div className="col-12 col-md-6 col-lg-4" key={index}>
-                <div className="card h-100 shadow-sm border-0 p-4 text-start">
+                <div className="card h-100 p-4 text-start rounded-5">
                   <div
                     className="d-flex align-items-center gap-2 mb-4  "
                     style={{ height: "35px" }}

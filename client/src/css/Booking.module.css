@@ -1,0 +1,178 @@
+/* Booking.module.css */
+.bookingTable {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.bookingTable th,
+.bookingTable td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.bookingTable thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.bookingTable tbody tr {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.bookingTable tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Compact uniform button sizing for Material-UI buttons */
+.uniformButton {
+  min-width: 65px !important;
+  width: auto !important;
+  padding: 0.3rem 0.5rem !important;
+  font-size: 0.75rem !important;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  margin: 0.1rem !important; /* Override the default 0.5rem margin */
+}
+
+/* Ensure button container doesn't wrap and has minimal gap */
+.bookingTable .d-flex.gap-1 {
+  flex-wrap: nowrap !important;
+  gap: 0.2rem !important; /* Reduced gap */
+}
+
+/* Reduce Material-UI icon size in buttons */
+.uniformButton .MuiSvgIcon-root {
+  font-size: 1rem !important; /* Smaller icons */
+  width: 0.875em !important;
+  height: 0.875em !important;
+}
+
+/* Admin table specific styles */
+.adminTable td:nth-last-child(2),
+/* Status column in admin view */
+.adminTable th:nth-last-child(2) {
+  min-width: 100px;
+}
+
+/* Client table specific styles */
+.clientTable td:nth-last-child(2),
+/* Status column in client view */
+.clientTable th:nth-last-child(2) {
+  min-width: 100px;
+}
+
+/* Actions column styling - increased for admin's 3 buttons */
+.bookingTable td:last-child {
+  min-width: 210px; /* Increased to accommodate 3 buttons with Material-UI icons */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bookingTable {
+    font-size: 0.8rem;
+  }
+
+  .bookingTable th,
+  .bookingTable td {
+    padding: 0.4rem;
+  }
+
+  .uniformButton {
+    min-width: 55px !important;
+    padding: 0.25rem 0.4rem !important;
+    font-size: 0.7rem !important;
+    margin: 0.05rem !important;
+  }
+
+  .uniformButton .MuiSvgIcon-root {
+    font-size: 0.875rem !important;
+    width: 0.8em !important;
+    height: 0.8em !important;
+  }
+
+  .bookingTable td:last-child {
+    min-width: 180px; /* Adjusted for mobile */
+  }
+
+  /* Adjust column widths for mobile */
+  .adminTable th:nth-child(2),
+  /* Service column in admin view */
+  .adminTable td:nth-child(2) {
+    width: 25% !important;
+  }
+
+  .clientTable th:nth-child(1),
+  /* Service column in client view */
+  .clientTable td:nth-child(1) {
+    width: 30% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .bookingTable {
+    font-size: 0.75rem;
+  }
+
+  /* Further reduce padding on very small screens */
+  .bookingTable th,
+  .bookingTable td {
+    padding: 0.3rem;
+  }
+
+  .uniformButton {
+    min-width: 50px !important;
+    padding: 0.2rem 0.3rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .uniformButton .MuiSvgIcon-root {
+    font-size: 0.8rem !important;
+    width: 0.75em !important;
+    height: 0.75em !important;
+  }
+
+  .bookingTable td:last-child {
+    min-width: 160px; /* Further adjusted for very small screens */
+  }
+
+  /* Hide less important columns on very small screens */
+  .adminTable th:nth-child(1),
+  /* User column */
+  .adminTable td:nth-child(1) {
+    display: none;
+  }
+
+  .adminTable th:nth-child(3),
+  /* Booking Date column */
+  .adminTable td:nth-child(3) {
+    display: none;
+  }
+}
+
+/* For extremely small screens, use icons only */
+@media (max-width: 400px) {
+  .uniformButton {
+    min-width: 40px !important;
+    width: 40px !important;
+    padding: 0.2rem !important;
+    font-size: 0 !important;
+  }
+
+  .uniformButton .MuiSvgIcon-root {
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+  }
+
+  .uniformButton span {
+    display: none !important;
+  }
+
+  .bookingTable td:last-child {
+    min-width: 130px; /* Reduced for icon-only buttons */
+  }
+}

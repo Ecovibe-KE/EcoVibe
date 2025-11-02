@@ -7,6 +7,8 @@ from models.user import User
 from datetime import datetime, timezone
 from utils.mpesa_utils import mpesa_utility
 
+from models.invoice import InvoiceStatus
+
 mpesa_bp = Blueprint("mpesa", __name__)
 
 
@@ -79,6 +81,7 @@ def initiate_stk_push():
             )
 
         # Validate invoice exists if provided
+        invoice = None
         if invoice_id:
             invoice = Invoice.query.get(invoice_id)
             if not invoice:
@@ -98,7 +101,7 @@ def initiate_stk_push():
         db.session.add(mpesa_transaction)
         db.session.flush()  # Get the ID without committing
 
-        # Initiate STK push using your mpesa_utility
+        # Initiate STK push using mpesa_utility
         result = mpesa_utility.initiate_stk_push(
             amount=amount,
             phone_number=phone_number,
@@ -114,12 +117,24 @@ def initiate_stk_push():
             mpesa_transaction.response_description = result.get("ResponseDescription")
             mpesa_transaction.customer_message = result.get("CustomerMessage")
 
+            # Create Payment record only after successful STK push
+            payment = None
+            if invoice_id:  # Only create Payment record if invoice_id is provided
+                payment = Payment(
+                    invoice_id=invoice_id,
+                    payment_method=PaymentMethod.MPESA,
+                    mpesa_transaction_id=mpesa_transaction.id,
+                    created_at=datetime.now(timezone.utc),
+                )
+                db.session.add(payment)
+
             db.session.commit()
 
             return jsonify(
                 {
                     "success": True,
                     "transaction_id": mpesa_transaction.id,
+                    "payment_id": payment.id if payment else None,
                     "checkout_request_id": mpesa_transaction.checkout_request_id,
                     "customer_message": mpesa_transaction.customer_message,
                     "message": "STK push initiated successfully",
@@ -244,17 +259,13 @@ def mpesa_callback():
                 payment = Payment(
                     invoice_id=transaction.invoice_id,
                     payment_method=PaymentMethod.MPESA,
-                    payment_method_id=transaction.id,
+                    mpesa_transaction_id=transaction.id,
                     created_at=datetime.now(timezone.utc),
                 )
+                invoice = Invoice.query.filter_by(id=transaction.invoice_id).first()
+                if invoice:
+                    invoice.status = InvoiceStatus.paid
                 db.session.add(payment)
-
-                # Update invoice status if applicable
-                if transaction.invoice_id:
-                    invoice = Invoice.query.get(transaction.invoice_id)
-                    if invoice:
-                        invoice.status = "paid"
-
             else:
                 transaction.status = "failed"
 

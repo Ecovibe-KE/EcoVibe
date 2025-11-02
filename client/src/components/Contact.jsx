@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReCAPTCHA from "react-google-recaptcha";
 import { sendContactMessage } from "../api/services/contact.js";
+import africa from "../assets/Africa.jpg";
 
 function Contact() {
   const recaptchaRef = useRef();
@@ -92,7 +93,7 @@ function Contact() {
           <div className="col-lg-7">
             <div className="mb-4">
               <div
-                className="card shadow-sm h-100"
+                className="card shadow-sm h-100 rounded-5"
                 style={{ backgroundColor: "#F9F9F9" }}
               >
                 <div className="card-body ">
@@ -203,7 +204,7 @@ function Contact() {
           </div>
           <div className="col-lg-5">
             <div
-              className="card shadow-sm border-0 p-4"
+              className="card shadow-sm border-0 p-4 rounded-5"
               style={{ backgroundColor: "#F9F9F9", borderRadius: "1rem" }}
             >
               <h5
@@ -234,7 +235,7 @@ function Contact() {
                   </div>
                 </div>
 
-                <div className="d-flex align-items-start">
+                {/* <div className="d-flex align-items-start">
                   <i
                     className="bi bi-geo-alt-fill me-3 mt-1"
                     style={{ color: "#37B137", fontSize: "1.2rem" }}
@@ -248,7 +249,7 @@ function Contact() {
                       Nairobi, Kenya{" "}
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="d-flex align-items-start">
                   <i
@@ -265,7 +266,7 @@ function Contact() {
             </div>
             <div className="card-body pt-5">
               <div style={{ width: "100%" }}>
-                <iframe
+                {/* <iframe
                   width="100%"
                   height="400"
                   frameBorder="0"
@@ -278,7 +279,17 @@ function Contact() {
                   <a href="https://www.mapsdirections.info/it/calcola-la-popolazione-su-una-mappa/">
                     mappa della popolazione Italia
                   </a>
-                </iframe>
+                </iframe> */}
+                <img
+                  src={africa}
+                  alt="Africa image"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "0.5rem",
+                  }}
+                />
               </div>
             </div>
           </div>

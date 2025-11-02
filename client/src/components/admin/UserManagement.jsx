@@ -58,10 +58,13 @@ const UserManagement = () => {
   });
   const [addError, setAddError] = useState("");
   const [addFieldErrors, setAddFieldErrors] = useState({});
-  const currentUserRole =
+
+  const userData =
     typeof localStorage !== "undefined"
-      ? localStorage.getItem("userRole") || "Admin"
-      : "Admin";
+      ? JSON.parse(localStorage.getItem("user") || '{"role":"admin"}')
+      : { role: "admin" };
+
+  const currentUserRole = userData.role;
 
   // Load users on component mount
   useEffect(() => {

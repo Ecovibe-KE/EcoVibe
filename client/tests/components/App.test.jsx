@@ -1,68 +1,44 @@
-/* eslint-disable no-undef */
-import { render, screen, fireEvent } from '@testing-library/react';
-import { vi, describe, test, expect, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
-import App from '../../src/components/App';
-import { UserContext } from '../../src/context/UserContext'; // adjust path if needed
+// tests/components/App.test.jsx
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import App from "../../src/components/App";
+import { AuthProvider } from "../../src/context/AuthContext";
+import { vi } from "vitest";
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
-
-// Mock dependencies
-const mockLogEvent = vi.fn();
-vi.mock('../../src/hooks/useAnalytics', () => ({
-  useAnalytics: vi.fn(() => ({
-    logEvent: mockLogEvent,
-  })),
+// --- mock analytics hook with a shared spy ---
+const logEventMock = vi.fn();
+vi.mock("../../src/hooks/useAnalytics", () => ({
+  useAnalytics: () => ({
+    logEvent: logEventMock,
+  }),
 }));
 
-vi.mock("../../src/utils/Button", () => ({
-  default: ({ children, onClick }) => (
-    <button onClick={onClick}>{children}</button>
-  ),
-  ActionButton: ({ label, onClick }) => (
-    <button onClick={onClick}>{label}</button>
-  ),
-}));
-
-global.alert = vi.fn();
-
-describe('App component', () => {
-  const mockUserContext = { user: null, setUser: vi.fn() };
-
+describe("App component", () => {
   beforeEach(() => {
-    mockLogEvent.mockClear();
-    global.alert.mockClear();
+    logEventMock.mockClear();
   });
 
-  // Helper to render App with Router + UserContext
-  const renderAppWithProviders = () =>
+  test("logs screen_view event on mount", () => {
     render(
       <MemoryRouter>
-        <UserContext.Provider value={mockUserContext}>
+        <AuthProvider>
           <App />
-        </UserContext.Provider>
+        </AuthProvider>
       </MemoryRouter>
     );
 
-  test('logs screen_view event on mount', () => {
-    renderAppWithProviders();
-
-    expect(mockLogEvent).toHaveBeenCalled();
-    expect(mockLogEvent).toHaveBeenCalledWith('screen_view', {
-      firebase_screen: '/',
-      firebase_screen_class: 'App',
+    // Assert analytics logEvent was called with correct data
+    expect(logEventMock).toHaveBeenCalled();
+    expect(logEventMock).toHaveBeenCalledWith("screen_view", {
+      firebase_screen: "/",
+      firebase_screen_class: "App",
     });
+
+    // Basic smoke test: homepage renders
+    expect(
+      screen.getByText(
+        /leading the way in offering cutting-edge solutions for sustainable development/i
+      )
+    ).toBeInTheDocument();
   });
 });

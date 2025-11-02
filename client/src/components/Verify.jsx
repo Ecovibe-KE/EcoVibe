@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Button from "../utils/Button";
-import { verifyAccount } from "../api/services/auth";
+import { verifyAccount, resendVerification } from "../api/services/auth";
+import { toast } from "react-toastify";
 
 function VerifyPage() {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const email = searchParams.get("email");
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -28,6 +31,23 @@ function VerifyPage() {
       });
   }, [searchParams]);
 
+  const handleResend = async () => {
+    if (!email) {
+      toast.error("No email found for resend.");
+      return;
+    }
+    try {
+      const res = await resendVerification(email);
+      if (res.status === "success") {
+        toast.success(res.message || "Activation link resent!");
+      } else {
+        toast.error(res.message || "Failed to resend activation link.");
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to resend activation link ❌");
+    }
+  };
+
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
       {status === "loading" && (
@@ -41,7 +61,7 @@ function VerifyPage() {
           </h2>
           <p style={{ color: "#333" }}>{message}</p>
 
-          <Button onClick={() => navigate("/login")} color="#f5a030">
+          <Button onClick={() => navigate("/login")} variant="success">
             Go to Login
           </Button>
         </>
@@ -53,6 +73,18 @@ function VerifyPage() {
             ❌ Verification Failed
           </h2>
           <p style={{ color: "#333" }}>{message}</p>
+
+          {/* 👇 Always visible option */}
+          <p>
+            Didn’t work?{" "}
+            <Button
+              onClick={handleResend}
+              variant="outline-primary"
+              className="btn-sm"
+            >
+              Resend account activation link
+            </Button>
+          </p>
         </>
       )}
     </div>

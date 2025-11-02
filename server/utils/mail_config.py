@@ -3,6 +3,7 @@ import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+import requests
 
 from dotenv import load_dotenv
 
@@ -20,6 +21,7 @@ FLASK_SMTP_USER = os.getenv("FLASK_SMTP_USER")
 FLASK_SMTP_PASS = os.getenv("FLASK_SMTP_PASS")
 FLASK_ADMIN_EMAIL = os.getenv("FLASK_ADMIN_EMAIL")
 FLASK_SMTP_REPLY_EMAIL = os.getenv("FLASK_SMTP_REPLY_EMAIL")
+FLASK_RESEND_API_KEY = os.getenv("FLASK_RESEND_API_KEY")
 
 ENVIRONMENT = os.getenv("FLASK_DEBUG")
 IS_DEBUG = ENVIRONMENT == "1"
@@ -40,8 +42,15 @@ if IS_DEBUG:
     )
 
 
+# N/B the comment fuction below was and \n
+#  still is the main function for sending email the \n
+# function provided after this is just a temporary solution.
+# this section has been commented out to allow \n
+# sending of email on render free tier the \n
+# functionality has been replaced with the function below it.
+"""
 def send_email(to_email: str, subject: str, body: str, is_html=False):
-    """Send an email with logging for debugging."""
+    #Send an email with logging for debugging.
     try:
         debug_log("Preparing email...")
         msg = MIMEMultipart()
@@ -87,3 +96,38 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
         logger.error("Failed to send email: %s", e, exc_info=True)
         error_msg = f"SMTP error: {str(e)}"
         return False, error_msg
+"""
+
+
+def send_email(to_email: str, subject: str, body: str, is_html=False):
+    """Send email using Resend API (Render-compatible)."""
+    try:
+        if not FLASK_RESEND_API_KEY:
+            raise ValueError("RESEND_API_KEY not set")
+
+        headers = {
+            "Authorization": f"Bearer {FLASK_RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {
+            "from": f"Ecovibe Kenya <{FLASK_SMTP_USER}>",
+            "to": [to_email],
+            "subject": subject,
+            "html": body if is_html else f"<pre>{body}</pre>",
+        }
+
+        response = requests.post(
+            "https://api.resend.com/emails", headers=headers, json=payload, timeout=10
+        )
+
+        if response.status_code == 200:
+            logger.info(f"Email successfully sent to {to_email}")
+            return True, "Email sent successfully"
+        else:
+            logger.error(f"Email failed: {response.status_code} - {response.text}")
+            return False, f"Resend API error: {response.text}"
+
+    except Exception as e:
+        logger.error("Failed to send email: %s", e, exc_info=True)
+        return False, str(e)
