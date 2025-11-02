@@ -76,7 +76,7 @@ const BlogSideBar = ({
     <>
       {/* --- Search Box --- */}
       <div
-        className={`p-4 text-center w-100 position-relative ${style.sidebarBox}`}
+        className={`p-4 text-center w-100 rounded-5 position-relative ${style.sidebarBox}`}
       >
         <h5 className={`text-start fs-4 ${style.searchTitle}`}>Search</h5>
         <form

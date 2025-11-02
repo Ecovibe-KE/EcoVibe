@@ -61,7 +61,7 @@ const Button = ({
   // Default color scheme
   const defaultColor = "#37b137";
   const defaultHoverColor = "#ff8c00";
-  const defaultOutlineColor = "#37b137";
+  const defaultOutlineColor = "#2b2b2bff";
 
   // Use custom colors if provided, otherwise use defaults
   const btnColor = color || defaultColor;
