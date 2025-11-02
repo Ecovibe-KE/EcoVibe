@@ -42,9 +42,11 @@ if IS_DEBUG:
     )
 
 
-# N/B the comment fuction below was and still is the main function for sending email the \n
+# N/B the comment fuction below was and \n
+#  still is the main function for sending email the \n
 # function provided after this is just a temporary solution.
-# this section has been commented out to allow sending of email on render free tier the \n
+# this section has been commented out to allow \n
+# sending of email on render free tier the \n
 # functionality has been replaced with the function below it.
 """
 def send_email(to_email: str, subject: str, body: str, is_html=False):
