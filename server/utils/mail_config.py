@@ -118,7 +118,10 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
         }
 
         response = requests.post(
-            "https://api.resend.com/emails", headers=headers, json=payload
+            "https://api.resend.com/emails", 
+            headers=headers, 
+            json=payload,
+            timeout=10
         )
 
         if response.status_code == 200:
