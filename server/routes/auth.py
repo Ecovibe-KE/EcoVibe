@@ -347,7 +347,7 @@ class ForgotPasswordResource(Resource):
                 additional_claims={"purpose": "password_reset"},
             )
 
-            frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5173")
+            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
 
             threading.Thread(
