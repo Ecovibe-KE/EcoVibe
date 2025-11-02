@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Pagination } from "react-bootstrap";
 import { getBlogs } from "../api/services/blog";
 import BlogCard from "./BlogCard";
 import BlogSideBar from "./BlogSideBar";
@@ -11,6 +12,9 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1); // ✅ pagination state
+  const blogsPerPage = 3; // ✅ number of blogs per page
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,6 +54,24 @@ const Blog = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // --- Pagination Logic ---
+  const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
+  const startIndex = (currentPage - 1) * blogsPerPage;
+  const currentBlogs = filteredBlogs.slice(
+    startIndex,
+    startIndex + blogsPerPage,
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top when changing page
+  };
+
+  // --- Reset to page 1 when filters/search change ---
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchTerm]);
+
   return (
     <div>
       <div className="text-center">
@@ -69,41 +91,57 @@ const Blog = () => {
         <div className="p-4 text-start w-100">
           {loading ? (
             <p>Loading blogs...</p>
-          ) : filteredBlogs.length === 0 ? (
+          ) : currentBlogs.length === 0 ? (
             <p>No blogs match your search or selected category.</p>
           ) : (
-            <div className="d-grid gap-4">
-              {filteredBlogs.map((blog) => (
-                <BlogCard
-                  key={blog.id}
-                  id={blog.id}
-                  title={blog.title}
-                  imageUrl={blog.image}
-                  description={blog.preview}
-                  createdAt={blog.date_created}
-                  author={blog.author_name}
-                  onReadMore={(id) => navigate(`/blog/${id}`)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="d-grid gap-4">
+                {currentBlogs.map((blog) => (
+                  <BlogCard
+                    key={blog.id}
+                    id={blog.id}
+                    title={blog.title}
+                    imageUrl={blog.image}
+                    description={blog.preview}
+                    createdAt={blog.date_created}
+                    author={blog.author_name}
+                    preview={blog.excerpt}
+                    onReadMore={(id) => navigate(`/blog/${id}`)}
+                  />
+                ))}
+              </div>
+
+              {/* ✅ Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-4">
+                  <Pagination className="customPagination justify-content-center mt-4">
+                    <Pagination.Prev
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                    />
+                    {[...Array(totalPages)].map((_, index) => (
+                      <Pagination.Item
+                        key={index + 1}
+                        active={index + 1 === currentPage}
+                        onClick={() => handlePageChange(index + 1)}
+                      >
+                        {index + 1}
+                      </Pagination.Item>
+                    ))}
+                    <Pagination.Next
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                    />
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
         </div>
 
-        {/* --- Toggle button (mobile only) --- */}
-        <button
-          className="btn d-lg-none mb-3 border-0"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#sidebarOffcanvas"
-        >
-          <i
-            className={`bi bi-arrow-left-circle fs-3 ${style.toggleButtonIcon}`}
-          ></i>
-        </button>
-
         {/* --- Sidebar (desktop) --- */}
         <div
-          className={`d-none d-lg-flex flex-column align-items-center justify-content-between w-50 gap-4 ${style.blogContainer}`}
+          className={`d-none d-lg-flex flex-column align-items-center w-50 gap-4 ${style.blogContainer}`}
         >
           <BlogSideBar
             style={style}

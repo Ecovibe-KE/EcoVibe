@@ -1,5 +1,5 @@
 import enum
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from sqlalchemy.orm import validates
 from . import db
 
@@ -43,18 +43,27 @@ class Booking(db.Model):
         db.DateTime(timezone=True),
         onupdate=db.func.now(),
     )
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     # --- Relationships ---
     client = db.relationship("User", back_populates="bookings")
     service = db.relationship("Service", back_populates="bookings")
 
     # --- Data Validations ---
-    @validates("booking_date")
-    def validate_booking_date(self, key, booking_date_value):
-        """Ensure booking_date is not in the past."""
-        if booking_date_value < date.today():
-            raise ValueError("Booking date cannot be in the past.")
-        return booking_date_value
+    @validates("start_time")
+    def validate_start_time(self, key, start_time_value):
+        """Ensure start_time is not in the past."""
+        # Normalize the incoming datetime to be timezone-aware
+        if start_time_value.tzinfo is None:
+            # If naive datetime, assume UTC
+            start_time_value = start_time_value.replace(tzinfo=timezone.utc)
+
+        # Compare against current UTC time
+        if start_time_value < datetime.now(timezone.utc):
+            raise ValueError("Start time cannot be in the past.")
+
+        # Return the normalized timezone-aware datetime
+        return start_time_value
 
     @validates("end_time")
     def validate_end_time(self, key, end_time_value):
@@ -75,7 +84,10 @@ class Booking(db.Model):
             "end_time": (self.end_time.isoformat() if self.end_time else None),
             "status": self.status.value if self.status else None,
             "client_id": self.client_id,
+            "client_name": self.client.full_name if self.client else None,
             "service_id": self.service_id,
+            "service_name": self.service.title if self.service else None,
+            "service_duration": self.service.duration if self.service else None,
             "created_at": (self.created_at.isoformat() if self.created_at else None),
             "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
         }

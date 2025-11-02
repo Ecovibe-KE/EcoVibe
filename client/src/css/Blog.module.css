@@ -1,6 +1,7 @@
 .searchInput {
   background-color: #eee3f0 !important;
 }
+
 .searchInput:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -17,20 +18,21 @@
 }
 
 .searchButton {
-  background-color: #eee3f0 !important;
+  /* background-color: #eee3f0 !important; */
 }
+
 .searchButton:active i {
   transform: none !important;
-  background-color: #eee3f0 !important;
+  /* background-color: #eee3f0 !important; */
 }
 
 .sidebarBox {
   background-color: #ffffff;
 }
 
-.searchForm {
+/* .searchForm {
   background-color: #eee3f0;
-}
+} */
 
 .toggleButtonIcon {
   color: #4a4a4a;

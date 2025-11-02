@@ -22,6 +22,7 @@ jobs:
     env:
       VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
       VITE_SERVER_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+      VITE_REACT_APP_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_REACT_APP_RECAPTCHA_SITE_KEY }}
     steps:
       - uses: actions/checkout@v4
 

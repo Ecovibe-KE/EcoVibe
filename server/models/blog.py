@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 import os
 from sqlalchemy.orm import validates
 from . import db
-import base64
 
 SERVER_HOST = os.getenv("FLASK_SERVER_URL", "http://localhost:5000").rstrip("/")
+api_endpoint = os.getenv("FLASK_API", "/api").rstrip("/")
 
 
 class BlogType(enum.Enum):
@@ -46,11 +46,17 @@ class Blog(db.Model):
         db.ForeignKey("users.id"),
         nullable=False,
     )
+    excerpt = db.Column(db.String(150), nullable=True)
     content = db.Column(db.Text, nullable=False)
     reading_duration = db.Column(db.String(50), nullable=False)
     type = db.Column(
         db.Enum(BlogType),
         default=BlogType.ARTICLE,
+        nullable=False,
+    )
+    status = db.Column(
+        db.Enum(BlogStatus),
+        default=BlogStatus.PUBLISHED,
         nullable=False,
     )
 
@@ -119,11 +125,13 @@ class Blog(db.Model):
             "views": self.views,
             "category": self.category,
             "author_name": self.author_name,
-            "image": f"{SERVER_HOST}/blogs/image/{self.id}",
+            "image": f"{SERVER_HOST}{api_endpoint}/blogs/image/{self.id}",
             "admin_id": self.admin_id,
             "content": self.content,
+            "excerpt": self.excerpt,
             "reading_duration": self.reading_duration,
             "type": self.type.value if self.type else None,
+            "status": self.status.value if self.status else None,
         }
 
     def __repr__(self):

@@ -1,9 +1,9 @@
 # routes/auth.py
-
 import os
 import threading
 from datetime import datetime, timezone, timedelta
-from flask import Blueprint, request, current_app
+
+from flask import Blueprint, request, current_app, jsonify
 from flask_restful import Api, Resource
 from flask_jwt_extended import (
     jwt_required,
@@ -11,18 +11,166 @@ from flask_jwt_extended import (
     get_jwt,
     create_access_token,
 )
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from email_validator import validate_email, EmailNotValidError
+
 from models import db
 from models.user import User, AccountStatus
 from models.token import Token
 from utils.token import create_refresh_token_for_user
-from utils.mail_templates import send_reset_email
+from utils.mail_templates import send_reset_email, send_verification_email
 from utils.password import _is_valid_password
 
 
 # Blueprint for auth endpoints
 auth_bp = Blueprint("auth", __name__)
 api = Api(auth_bp)
+
+
+class RegisterResource(Resource):
+    """Handle POST /register"""
+
+    def post(self):
+        payload = request.get_json(silent=True)
+
+        # Reject if body is missing or malformed JSON
+        if payload is None:
+            return {
+                "status": "error",
+                "message": "Invalid JSON format",
+                "data": None,
+            }, 400
+
+        # Extract + sanitize fields
+        full_name = str(payload.get("full_name", "")).strip()
+        email_raw = str(payload.get("email", "")).strip()
+        password = payload.get("password")
+        industry = str(payload.get("industry", "")).strip()
+        phone_number = str(payload.get("phone_number", "")).strip()
+
+        # Validate required fields
+        if not full_name:
+            return {
+                "status": "error",
+                "message": "full_name cannot be empty",
+                "data": None,
+            }, 400
+        if not industry:
+            return {
+                "status": "error",
+                "message": "industry cannot be empty",
+                "data": None,
+            }, 400
+        if not phone_number:
+            return {
+                "status": "error",
+                "message": "phone_number cannot be empty",
+                "data": None,
+            }, 400
+
+        # Validate password strength
+        if not _is_valid_password(password):
+            return {
+                "status": "error",
+                "message": "Password must have at least 8 chars, "
+                "one uppercase, one digit.",
+                "data": None,
+            }, 400
+
+        # Validate email format
+        try:
+            email = validate_email(email_raw).email.lower()
+        except EmailNotValidError:
+            return {
+                "status": "error",
+                "message": "The email address is not valid.",
+                "data": None,
+            }, 400
+
+        try:
+            # Check duplicates
+            if User.query.filter_by(email=email).first():
+                return {
+                    "status": "error",
+                    "message": "Email already exists",
+                    "data": None,
+                }, 409
+            if User.query.filter_by(phone_number=phone_number).first():
+                return {
+                    "status": "error",
+                    "message": "Phone number already exists",
+                    "data": None,
+                }, 409
+
+            # Create + persist user
+            user = User(
+                full_name=full_name,
+                email=email,
+                industry=industry,
+                phone_number=phone_number,
+                account_status=AccountStatus.INACTIVE,
+            )
+            user.set_password(password)
+            db.session.add(user)
+            db.session.commit()
+
+            # Create JWT verification token
+            verification_token = create_access_token(
+                identity=str(user.id),
+                expires_delta=timedelta(hours=24),
+                additional_claims={"purpose": "account_verification"},
+            )
+
+            frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5173")
+            verify_link = (
+                f"{frontend_url}/verify?token={verification_token}&email={user.email}"
+            )
+
+            # Send email asynchronously
+            threading.Thread(
+                target=send_verification_email,
+                args=(user.email, user.full_name, verify_link),
+                daemon=True,
+            ).start()
+
+            return {
+                "status": "success",
+                "message": "Registration successful. "
+                "Please check your email to verify your account.",
+                "data": user.to_safe_dict(include_email=True, include_phone=True),
+            }, 201
+
+        except ValueError as e:
+            db.session.rollback()
+            return {"status": "error", "message": str(e), "data": None}, 400
+        except IntegrityError as e:
+            db.session.rollback()
+            current_app.logger.exception("IntegrityError while registering user")
+
+            constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", "")
+            error_messages = {
+                "uq_user_email": "Email already exists",
+                "uq_user_phone_number": "Phone number already exists",
+            }
+            if constraint in error_messages:
+                return {
+                    "status": "error",
+                    "message": error_messages[constraint],
+                    "data": None,
+                }, 409
+
+            return {"status": "error", "message": str(e), "data": None}, 400
+        except IntegrityError:
+            db.session.rollback()
+            return {
+                "status": "error",
+                "message": "Email or phone number already exists.",
+                "data": None,
+            }, 409
+        except Exception:
+            db.session.rollback()
+            current_app.logger.exception("Unexpected error during registration")
+            return {"status": "error", "message": "Server error", "data": None}, 500
 
 
 class VerifyResource(Resource):
@@ -130,6 +278,7 @@ class LoginResource(Resource):
             "industry": user.industry,
             "phone_number": user.phone_number,
             "role": user.role.value,
+            "account_status": user.account_status.value,
         }
 
         return {
@@ -174,7 +323,10 @@ class RefreshResource(Resource):
                 "data": None,
             }, 404
 
-        new_access_token = create_access_token(identity=str(user.id))
+        new_access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims={"purpose": "auth"},
+        )
 
         return {
             "status": "success",
@@ -503,7 +655,69 @@ class ChangePasswordResource(Resource):
             }, 500
 
 
-# register routes on blueprint
+class ResendVerificationResource(Resource):
+    """Resend the account verification link if account is not active."""
+
+    def post(self):
+        data = request.get_json(silent=True) or {}
+        email = (data.get("email") or "").strip().lower()
+
+        if not email:
+            return {
+                "status": "error",
+                "message": "Email is required",
+                "data": None,
+            }, 400
+
+        user = User.query.filter_by(email=email).first()
+
+        # Always return success response to avoid leaking user status
+        if not user or user.account_status == AccountStatus.ACTIVE:
+            return {
+                "status": "success",
+                "message": (
+                    "If this account is not verified,an activation link will be sent."
+                ),
+                "data": {},
+            }, 200
+
+        try:
+            verify_token = create_access_token(
+                identity=str(user.id),
+                expires_delta=timedelta(hours=24),
+                additional_claims={"purpose": "account_verification"},
+            )
+
+            frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
+            verify_link = (
+                f"{frontend_url}/verify?token={verify_token}&email={user.email}"
+            )
+
+            threading.Thread(
+                target=send_verification_email,
+                args=(user.email, user.full_name, verify_link),
+                daemon=True,
+            ).start()
+
+            return {
+                "status": "success",
+                "message": (
+                    "If this account is not verified, an activation link will be sent."
+                ),
+                "data": {},
+            }, 200
+
+        except Exception:
+            current_app.logger.exception("Error sending verification email")
+            return {
+                "status": "error",
+                "message": "Server error. Please try again later.",
+                "data": None,
+            }, 500
+
+
+# Register routes on blueprint
+api.add_resource(RegisterResource, "/register")
 api.add_resource(VerifyResource, "/verify")
 api.add_resource(LoginResource, "/login")
 api.add_resource(LogoutResource, "/logout")
@@ -512,3 +726,4 @@ api.add_resource(MeResource, "/me")
 api.add_resource(ForgotPasswordResource, "/forgot-password")
 api.add_resource(ResetPasswordResource, "/reset-password")
 api.add_resource(ChangePasswordResource, "/change-password")
+api.add_resource(ResendVerificationResource, "/resend-verification")

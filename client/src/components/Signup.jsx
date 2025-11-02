@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { useState, useEffect, useRef } from "react";
@@ -5,7 +6,6 @@ import Input from "../utils/Input";
 import { toast } from "react-toastify";
 import Button from "../utils/Button";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "../css/signup.css";
 import { createUser } from "../api/services/auth";
@@ -15,7 +15,7 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [, setPasswordTouched] = useState(false);
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const recaptchaRef = useRef();
   const [siteKey, setSiteKey] = useState("");
@@ -23,6 +23,7 @@ const SignUpForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     industry: "",
+    otherIndustry: "",
     email: "",
     phone: "",
     password: "",
@@ -32,17 +33,21 @@ const SignUpForm = () => {
   });
 
   // ----------------------
-  // Load reCAPTCHA site key on mount
+  // Load reCAPTCHA site key
   // ----------------------
   useEffect(() => {
     const key = import.meta.env.VITE_REACT_APP_RECAPTCHA_SITE_KEY;
     setSiteKey(key);
-    console.log("reCAPTCHA Site Key:", key ? "Loaded" : "Missing");
-
     if (!key) {
       toast.error("reCAPTCHA site key is missing. Please contact Site Owner.");
     }
   }, []);
+
+  useEffect(() => {
+    if (formData.industry !== "other" && formData.otherIndustry) {
+      setFormData((prev) => ({ ...prev, otherIndustry: "" }));
+    }
+  }, [formData.industry]);
 
   // ----------------------
   // Password validator
@@ -55,27 +60,20 @@ const SignUpForm = () => {
   };
 
   // ----------------------
-  // Validate the entire form
+  // Validate form
   // ----------------------
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-    if (!formData.industry) {
-      newErrors.industry = "Please select your industry";
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.industry) newErrors.industry = "Please select your industry";
+    if (formData.industry === "other" && !formData.otherIndustry.trim()) {
+      newErrors.otherIndustry = "Please specify your industry";
     }
 
-    // use the centralized email validator
     const emailError = validateEmail(formData.email);
-    if (emailError) {
-      newErrors.email = emailError;
-    }
+    if (emailError) newErrors.email = emailError;
 
-    if (!formData.phone) {
-      newErrors.phone = "Phone number is required";
-    }
+    if (!formData.phone) newErrors.phone = "Phone number is required";
     if (!validatePassword(formData.password)) {
       newErrors.password =
         "Password must be at least 8 characters, include one uppercase letter and one number";
@@ -88,11 +86,11 @@ const SignUpForm = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // true if no errors
+    return Object.keys(newErrors).length === 0;
   };
 
   // ----------------------
-  // Handle form field changes
+  // Handle input changes
   // ----------------------
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -102,7 +100,6 @@ const SignUpForm = () => {
     }));
   };
 
-  // track when password input changes
   const handlePasswordChange = (e) => {
     setFormData((prev) => ({ ...prev, password: e.target.value }));
     setPasswordTouched(true);
@@ -113,9 +110,8 @@ const SignUpForm = () => {
   // ----------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return; // prevent double click submit
-
-    if (!validateForm()) return; // stop if validation fails
+    if (isSubmitting) return;
+    if (!validateForm()) return;
 
     if (!recaptchaRef.current) {
       toast.error(
@@ -133,12 +129,16 @@ const SignUpForm = () => {
     try {
       setIsSubmitting(true);
 
-      // prepare data to send to backend
+      const finalIndustry =
+        formData.industry === "other"
+          ? formData.otherIndustry
+          : formData.industry;
+
       const payload = {
         full_name: formData.name,
         email: formData.email,
         password: formData.password,
-        industry: formData.industry,
+        industry: finalIndustry,
         phone_number: formData.phone,
         recaptchaToken: captchaToken,
       };
@@ -146,11 +146,16 @@ const SignUpForm = () => {
       const response = await createUser(payload);
 
       if (response.status === "success") {
-        // success -> show toast + reset form
-        toast.success("An activation link was sent to your email address.");
+        // ✅ Show inline success
+        setSuccessMessage(
+          response.message || "An activation link has been sent to your email.",
+        );
+
+        // reset form
         setFormData({
           name: "",
           industry: "",
+          otherIndustry: "",
           email: "",
           phone: "",
           password: "",
@@ -161,14 +166,7 @@ const SignUpForm = () => {
         setErrors({});
         setPasswordTouched(false);
         if (recaptchaRef.current) recaptchaRef.current.reset();
-        setTimeout(() => navigate("/login"), 2500);
       } else {
-        // backend responded but not success
-        if (response.message?.toLowerCase().includes("email")) {
-          setErrors({ email: response.message });
-        } else if (response.message?.toLowerCase().includes("phone")) {
-          setErrors({ phone: response.message });
-        }
         toast.error(
           response.message || "There was an error submitting your form.",
         );
@@ -176,21 +174,11 @@ const SignUpForm = () => {
       }
     } catch (error) {
       console.error(error);
-
-      // handle thrown errors (Axios/network/backend)
       const backendMessage =
         error.response?.data?.message || error.message || null;
-
-      if (backendMessage?.toLowerCase().includes("email")) {
-        setErrors({ email: backendMessage });
-        toast.error(backendMessage);
-      } else if (backendMessage?.toLowerCase().includes("phone")) {
-        setErrors({ phone: backendMessage });
-        toast.error(backendMessage);
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
-
+      toast.error(
+        backendMessage || "An unexpected error occurred. Please try again.",
+      );
       if (recaptchaRef.current) recaptchaRef.current.reset();
     } finally {
       setIsSubmitting(false);
@@ -198,12 +186,12 @@ const SignUpForm = () => {
   };
 
   // ----------------------
-  // Render form UI
+  // Render
   // ----------------------
   return (
     <section className="container-fluid justify-content-center align-items-center signup-form-section p-md-3 p-lg-5">
       <div className="row">
-        {/* Left side with branding */}
+        {/* Left side */}
         <div className="col-lg-6 col-12 text-dark d-flex flex-column justify-content-center align-items-center p-3 p-lg-5 mb-0">
           <h4 className="mb-3 register-text fw-bold fs-1">Ecovibe</h4>
           <h2 className="mb-0 mb-lg-4 fs-3 text-light">
@@ -214,10 +202,30 @@ const SignUpForm = () => {
           </div>
         </div>
 
-        {/* Right side with sign up form */}
+        {/* Right side */}
         <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center p-5">
           <div className="bg-white text-dark p-4 rounded-4 shadow w-100">
             <h2 className="mb-4 fw-bold fs-4">Sign up now</h2>
+
+            {/* ✅ Inline success message styled with EcoVibe green */}
+            {successMessage && (
+              <div
+                className="p-3 rounded-3 mb-3 text-white fw-semibold"
+                style={{ backgroundColor: "#37B137" }}
+                role="alert"
+              >
+                {successMessage}
+                <div className="mt-2">
+                  <Link
+                    to="/login"
+                    className="btn btn-light btn-sm rounded-pill"
+                  >
+                    Go to Login
+                  </Link>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} noValidate>
               {/* Name & Industry */}
               <div className="row">
@@ -254,6 +262,24 @@ const SignUpForm = () => {
                     <option value="energy">Energy</option>
                     <option value="other">Other</option>
                   </select>
+                  {formData.industry === "other" && (
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        name="otherIndustry"
+                        placeholder="Please specify your industry"
+                        value={formData.otherIndustry || ""}
+                        onChange={handleChange}
+                        className={`form-control ${errors.otherIndustry ? "is-invalid" : ""}`}
+                        required
+                      />
+                      {errors.otherIndustry && (
+                        <div className="invalid-feedback">
+                          {errors.otherIndustry}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {errors.industry && (
                     <div className="invalid-feedback">{errors.industry}</div>
                   )}
@@ -287,7 +313,6 @@ const SignUpForm = () => {
                   inputClassName={`w-100 custom-phone-input-text ${
                     errors.phone ? "is-invalid" : ""
                   }`}
-                  className="custom-phone-input"
                   inputProps={{
                     name: "phone",
                     required: true,

@@ -1,7 +1,8 @@
 export const ENDPOINTS = {
   // Ping
   ping: "/ping",
-
+  // dashboard
+  dashboard: "/dashboard",
   // Auth
   register: "/register",
   login: "/login",
@@ -19,6 +20,7 @@ export const ENDPOINTS = {
   // Blog
   blogs: "/blogs",
   blogById: (id) => `/blogs/${id}`,
+  adminBlogs: "/admin/blogs",
 
   // Users
   users: "/users",
@@ -27,9 +29,40 @@ export const ENDPOINTS = {
   // Newsletter
   newsletter_subscribers: "/newsletter-subscribers",
 
+  // resource centre
+  documents: "/documents",
   // Profile
   me: "/me",
   changePassword: "/change-password",
+
+  // Bookings
+  bookings: "/bookings",
+  bookingById: (id) => `/bookings/${id}`,
+
+  // Add more endpoints as needed here
+  // Tickets
+  tickets: "/tickets",
+  ticketById: (id) => `/tickets/${id}`,
+  ticketMessages: (id) => `/tickets/${id}/messages`,
+  ticketStats: "/tickets/stats",
+
+  // Payments & Invoices
+  allPayments: "/invoices",
+  myPayments: "/clientInvoices",
+  mpesaStkPush: "/mpesa/stk-push",
+  cancelTransaction: "/transaction/cancel",
+  paymentStatus: "/payments/status",
+  transactionHistory: "/payments/transactions",
+  verifyPayment: "/payments/verify",
+  invoicePDF: "/invoices/pdf",
+
+  // New endpoints for invoice management
+  payments: "/payments",
+
+  // Services
+  services: "/services",
+  // Contact
+  quote: "/quote",
 
   // Add more endpoints as needed here
 };

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from routes import register_routes
@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
 import re
+from datetime import timedelta
 
 load_dotenv()
 
@@ -17,17 +18,6 @@ jwt = JWTManager()
 def create_app(config_name="development"):
     """
     Create and configure a Flask application instance.
-
-    Parameters:
-        config_name (str): Configuration profile to use. If "testing", the app uses
-            the FLASK_TEST_SQLALCHEMY_DATABASE_URI environment variable and enables
-            Flask's TESTING mode; otherwise configuration is loaded from
-            environment variables using Flask's prefixed env loader.
-
-    Returns:
-        flask.Flask: A configured Flask application with the SQLAlchemy extension
-        initialized, Flask-Migrate bound, application models imported, and routes
-        registered.
     """
     app = Flask(__name__)
     if config_name == "testing":
@@ -35,16 +25,48 @@ def create_app(config_name="development"):
             "FLASK_TEST_SQLALCHEMY_DATABASE_URI"
         )
         app.config["TESTING"] = True
+
     else:
         app.config.from_prefixed_env()
 
-    # Load  Jwt secret key
+    # Load JWT secret key
     app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_JWT_SECRET_KEY", "super-secret")
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=360)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
 
     # Init extensions
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+
+    # ---------------------------
+    # JWT error handlers
+    # ---------------------------
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return (
+            jsonify({"status": "error", "message": "Token has expired", "data": None}),
+            401,
+        )
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(reason):
+        return (
+            jsonify(
+                {"status": "error", "message": f"Invalid token: {reason}", "data": None}
+            ),
+            401,
+        )
+
+    @jwt.unauthorized_loader
+    def missing_token_callback(reason):
+        return (
+            jsonify(
+                {"status": "error", "message": f"Missing token: {reason}", "data": None}
+            ),
+            401,
+        )
 
     from models import (
         blog,
@@ -59,6 +81,7 @@ def create_app(config_name="development"):
         ticket,
         token,
         user,
+        master,
     )
 
     # Register Blueprints
@@ -66,7 +89,7 @@ def create_app(config_name="development"):
 
     # CORs setup
     netlify_pr_regex = r"^https:\/\/deploy-preview-\d+--ecovibe-develop\.netlify\.app$"
-    firebase_pr_regex = r"^https:\/\/pr-\d+-.*\.web\.app$"
+    firebase_pr_regex = r"^https:\/\/.*pr-?\d+.*\.web\.app\/?$"
     dynamic_pr_cors_origins = [
         re.compile(netlify_pr_regex),
         re.compile(firebase_pr_regex),

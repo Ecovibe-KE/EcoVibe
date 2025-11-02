@@ -1,0 +1,27 @@
+/* GLOBAL OVERRIDE for Bootstrap pagination */
+.customPagination .page-item .page-link {
+  color: #37b137 !important;
+  border: 1px solid #37b137 !important;
+  border-radius: 8px !important;
+  background-color: transparent !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.customPagination .page-item.active .page-link {
+  background-color: #37b137 !important;
+  border-color: #37b137 !important;
+  color: #fff !important;
+}
+
+.customPagination .page-item .page-link:hover {
+  background-color: #f5a030 !important;
+  border-color: #f5a030 !important;
+  color: #fff !important;
+}
+
+.customPagination .page-item.disabled .page-link {
+  color: #ccc !important;
+  border-color: #ddd !important;
+  background-color: transparent !important;
+  pointer-events: none !important;
+}
