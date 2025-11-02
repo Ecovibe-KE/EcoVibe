@@ -42,8 +42,10 @@ if IS_DEBUG:
     )
 
 
-# N/B the comment fuction below was and still is the main function for sending email the function provided after this is just a temporary solution.
-#this section has been commented out to allow sending of email on render free tier the functionality has been replaced with the function below it.
+# N/B the comment fuction below was and still is the main function for sending email the \n
+# function provided after this is just a temporary solution.
+# this section has been commented out to allow sending of email on render free tier the \n
+# functionality has been replaced with the function below it.
 """
 def send_email(to_email: str, subject: str, body: str, is_html=False):
     #Send an email with logging for debugging.
@@ -94,6 +96,7 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
         return False, error_msg
 """
 
+
 def send_email(to_email: str, subject: str, body: str, is_html=False):
     """Send email using Resend API (Render-compatible)."""
     try:
@@ -102,7 +105,7 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
 
         headers = {
             "Authorization": f"Bearer {FLASK_RESEND_API_KEY}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         payload = {
@@ -112,7 +115,9 @@ def send_email(to_email: str, subject: str, body: str, is_html=False):
             "html": body if is_html else f"<pre>{body}</pre>",
         }
 
-        response = requests.post("https://api.resend.com/emails", headers=headers, json=payload)
+        response = requests.post(
+            "https://api.resend.com/emails", headers=headers, json=payload
+        )
 
         if response.status_code == 200:
             logger.info(f"Email successfully sent to {to_email}")
