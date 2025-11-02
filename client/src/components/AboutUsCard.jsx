@@ -19,7 +19,11 @@ function AboutUsCard({
           />
           <div className="card-body">
             <h5 className="card-title text-center fw-bold">{heading}</h5>
-            <p className="card-text" style={{ whiteSpace: "pre-line" }}   dangerouslySetInnerHTML={{ __html: paragraphContent }}/>
+            <p
+              className="card-text"
+              style={{ whiteSpace: "pre-line" }}
+              dangerouslySetInnerHTML={{ __html: paragraphContent }}
+            />
           </div>
         </div>
       </div>
