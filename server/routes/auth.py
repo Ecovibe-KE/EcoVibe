@@ -121,7 +121,7 @@ class RegisterResource(Resource):
                 additional_claims={"purpose": "account_verification"},
             )
 
-            frontend_url = os.getenv("FLASK_VITE_FRONTEND_URL", "http://localhost:5173")
+            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
             verify_link = (
                 f"{frontend_url}/verify?token={verification_token}&email={user.email}"
             )
@@ -688,7 +688,7 @@ class ResendVerificationResource(Resource):
                 additional_claims={"purpose": "account_verification"},
             )
 
-            frontend_url = os.getenv("VITE_SERVER_BASE_URL", "http://localhost:5173")
+            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
             verify_link = (
                 f"{frontend_url}/verify?token={verify_token}&email={user.email}"
             )
