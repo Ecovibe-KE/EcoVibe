@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import "../css/Footer.css";
+import { Link } from "react-router-dom";
 
 const Footer = ({ pageType }) => {
   const isLandingFooter = [
@@ -31,18 +32,15 @@ const Footer = ({ pageType }) => {
           {/* Nav Links (centered wrapper) */}
           <div className="footer-nav-wrapper">
             <div className="footer-nav-links">
-              <a href="/about" className="nav-link">
-                {" "}
-                About{" "}
-              </a>
-              <a href="/blog" className="nav-link">
-                {" "}
-                Blogs{" "}
-              </a>
-              <a href="/login" className="nav-link">
-                {" "}
-                Login{" "}
-              </a>
+              <Link to={"/about"} className="nav-link">
+              About 
+              </Link>
+                  <Link to={"/blog"} className="nav-link">
+               Blogs 
+              </Link>
+                  <Link to={"/login"} className="nav-link">
+              Login 
+              </Link>
             </div>
           </div>
 
