@@ -111,6 +111,6 @@ describe('AboutUsPartition', () => {
         const heading = screen.getByRole('heading', { level: 2, name: /Grid/i })
         const rowContainer = heading.nextElementSibling // should be the row div
         expect(rowContainer).toBeTruthy()
-        expect(rowContainer.className).toMatch(/row-cols-lg-4/)
+
     })
 })

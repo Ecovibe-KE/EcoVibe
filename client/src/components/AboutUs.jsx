@@ -11,13 +11,13 @@ function AboutUs() {
       imageSourceName: "Target.png",
       heading: "Our Mission",
       paragraphContent:
-        "To drive Agenda 2063 by environmental and social change through expert consultancy services, empowering organizations with sustainable practices and strategies that create lasting positive impact for businesses, communities, and the environment.",
+        "To accelerate the transition towards a circular and sustainable economy by empowering communities, financial institutions, and enterprises through inclusive partnerships, innovation, and capacity building, ensuring equitable access to green finance, responsible production, and resilient livelihoods that advance the Sustainable Development Goals.",
     },
     {
       imageSourceName: "Eye.png",
       heading: "Our Vision",
       paragraphContent:
-        "To be the premier catalyst for sustainable transformation in Kenya and Africa as a whole. We use global guidelines to accelerate the vision. Currently, Agenda 2030 is fueling our strategic analysis. Aim being to drive business excellence and community prosperity.",
+        "A regenerative, inclusive circular economy where people, nature, and enterprises thrive through sustainable prosperity for all.",
     },
   ];
 
@@ -26,7 +26,7 @@ function AboutUs() {
       imageSourceName: "Target.png",
       heading: "Impact & Accountability",
       paragraphContent:
-        "We measure success by the tangible positive impact our work creates, holding ourselves accountable for delivering measurable results that advance sustainability goals.",
+        "We believe true impact is achieved through inclusivity, ensuring every voice, from grassroots communities to corporate partners, contributes meaningfully to accountable and sustainable transformation.",
     },
     {
       imageSourceName: "Target.png",
@@ -36,7 +36,7 @@ function AboutUs() {
     },
     {
       imageSourceName: "Target.png",
-      heading: "Innovation & Excellence",
+      heading: "Sustainability Inclusion",
       paragraphContent:
         "We continuously evolve our methodologies and stay ahead of industry trends, delivering innovative solutions that exceed client expectations and drive meaningful change.",
     },
@@ -97,9 +97,11 @@ function AboutUs() {
   const coreValues = "Our Core Values";
   //const meetOurTeam = "Meet Our Team";
   const WhoWeServe = "Who We Serve";
+  const wsh_subheading = "Ecovibe Kenya (ECK) empowers financial institutions and community enterprises to transition toward sustainable, inclusive, and climate-resilient growth. We act as the link between compliance readiness, investor engagement, and measurable impact,  transforming sustainability into bankable opportunities."
 
   function displayPage(
     title,
+    subheading="",
     contentArray,
     extraSetting = "",
     padding = "p-4",
@@ -111,6 +113,7 @@ function AboutUs() {
         <AboutUsPartition
           key={title}
           title={title}
+          subheading={subheading}
           contentArray={contentArray}
           extraSetting={extraSetting}
           padding={padding}
@@ -150,8 +153,8 @@ function AboutUs() {
       </section>
 
       <section className="text-bg-light text-center p-4">
-        {displayPage(missionVision, missionVisionContent)}
-        {displayPage(coreValues, coreValueContent, screenSetting)}
+        {displayPage(missionVision, "",missionVisionContent)}
+        {displayPage(coreValues,"", coreValueContent, screenSetting)}
         {/*displayPage(
           meetOurTeam,
           meetOurTeamContent,
@@ -162,7 +165,7 @@ function AboutUs() {
         )*/}
       </section>
       <section className="text-bg-light text-center p-4">
-        {displayPage(WhoWeServe, WhoWeServeContent, extraSettings)}
+        {displayPage(WhoWeServe, wsh_subheading, WhoWeServeContent, extraSettings)}
       </section>
       <section className="py-5 text-center bg-light">
         <div className="container">
@@ -223,9 +226,7 @@ function AboutUs() {
                 </div>
                 <h5>Tailored Client Pathways</h5>
                 <p>
-                  Whether you’re a BANK, SACCO, CHAMA, or MSME, we design a
-                  clear, actionable roadmap from compliance to capital and
-                  sustainable growth.
+                  Whether you operate in agriculture, manufacturing, energy, construction, technology, or any other sector, we design a clear, actionable roadmap from compliance to capital and sustainable growth.
                 </p>
               </div>
             </div>
