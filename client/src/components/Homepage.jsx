@@ -2,6 +2,14 @@ import { Card } from "react-bootstrap";
 import { StarBorder } from "@mui/icons-material";
 import Button from "../utils/Button";
 import { Link } from "react-router-dom";
+import AgricultureIcon from "@mui/icons-material/Agriculture";
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import ApartmentIcon from "@mui/icons-material/Apartment";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import BoltIcon from "@mui/icons-material/Bolt";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import GavelIcon from "@mui/icons-material/Gavel";
+import { Carousel } from "react-bootstrap";
 const Homepage = () => {
   const services = [
     {
@@ -45,6 +53,59 @@ const Homepage = () => {
         "Tracking sustainability performance and providing impact measurement reports, while supporting transparent disclosure for investors and stakeholders.",
     },
   ];
+  const sectors = [
+    {
+      title: "Agriculture & Food Systems",
+      goal: "Reduce waste, regenerate soils, and improve food security.",
+      image: "/Agri.jpg",
+    },
+    {
+      title: "Manufacturing & Industrial Processing",
+      goal: "Embed resource efficiency, waste recovery, and clean production.",
+      image: "/Manufacturing.jpg",
+    },
+    {
+      title: "Waste Management & Plastics Recycling",
+      goal: "Transition from linear 'take–make–dispose' to circular 'reduce–reuse–recycle–recover'.",
+      image: "/recycle.jpg",
+    },
+    {
+      title: "Energy & Transport",
+      goal: "Promote clean energy and low-carbon transport.",
+      image: "/energy.jpg",
+    },
+    {
+      title: "Construction & Real Estate",
+      goal: "Encourage sustainable material use and energy efficiency in buildings.",
+      image: "/construction.jpg",
+    },
+    {
+      title: "Water & Sanitation",
+      goal: "Improve water efficiency, reuse, and wastewater recovery.",
+      image: "/water.jpg",
+    },
+    {
+      title: "Mining & Natural Resources",
+      goal: "Ensure resource extraction and use align with regeneration principles.",
+      image: "/mining.jpg",
+    },
+    {
+      title: "Financial Sector",
+      goal: "Channel capital into circular, sustainable investments.",
+      image: "/finance.jpg",
+    },
+    {
+      title: "Education & Capacity Development",
+      goal: "Foster knowledge and innovation in sustainability.",
+      image: "/Education.jpg",
+    },
+    {
+      title: "ICT & Digital Economy",
+      goal: "Enable digital solutions for circular monitoring and inclusion.",
+      image: "/ICT.jpg",
+    },
+  ];
+
   return (
     <>
       <section className=" bg-secondary">
@@ -102,14 +163,14 @@ const Homepage = () => {
               Navigating the ESG Landscape with Expertise
             </h1>
             <p className="text-muted" style={{ marginBottom: 0 }}>
-              At EcoVibe Kenya, we understand that the Environmental, Social,
+              At Ecovibe Kenya, we understand that the Environmental, Social,
               and Governance (ESG) landscape is constantly evolving. Our team of
               experienced consultants stays at the forefront of these changes,
               ensuring your organization is always ahead of the curve.
             </p>
             <p className="text-muted mb-4">
               We believe that sustainable development isn't just about
-              compliance—it's about creating lasting value for your business,
+              compliance, it's about creating lasting value for your business,
               community, and the environment. Our cutting-edge solutions are
               tailored to meet the unique challenges facing organizations in
               Kenya and across East Africa.
@@ -230,7 +291,6 @@ const Homepage = () => {
               development and create a lasting impact.
             </p>
           </div>
-
           <div className="row g-4">
             {services.map((service, index) => (
               <div className="col-12 col-md-6 col-lg-4" key={index}>
@@ -261,6 +321,77 @@ const Homepage = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+      <section className="p-5 bg-light">
+        <h1
+          className="fw-bold text-center"
+          style={{
+            marginBottom: "60px",
+          }}>
+          Empowering Every Industry for a Circular Future
+        </h1>
+        <p className="text mx-auto fw-bold fw-bold"
+          style={{
+            maxWidth: "700px",
+            marginBottom: "60px",
+            fontSize: 25,
+            color: "#535252",
+          }}>
+          We collaborate with organizations across all sectors to embed circular
+          economy principles into their operations. From policy design to
+          project management, we help translate sustainability goals into
+          measurable, lasting results.
+        </p>
+        <div id="esgCarousel" className="carousel slide " data-bs-ride="carousel">
+          <div className="carousel-inner rounded-5">
+            {sectors.map((sector, index) => (
+              <div
+                className={`carousel-item ${index === 0 ? "active" : ""}`}
+                key={index}
+              >
+                <img
+                  src={sector.image}
+                  className="d-block w-100"
+                  alt={sector.title}
+                  style={{ height: "80vh", objectFit: "cover", filter: "brightness(70%)" }}
+                />
+                <div className="carousel-caption d-none d-md-block">
+                  <h2 style={{ color: "#F5A030", fontWeight: "bold", textShadow: "2px 2px 6px rgba(0,0,0,0.5)" }}>
+                    {sector.title}
+                  </h2>
+                  <p style={{
+                    color: "#ffffff",
+                    backgroundColor: "rgba(55, 177, 55, 0.7)",
+                    borderRadius: "8px",
+                    display: "inline-block",
+                    padding: "8px 12px",
+                    fontSize: "1.1rem"
+                  }}>
+                    {sector.goal}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button
+            className="carousel-control-prev"
+            type="button"
+            data-bs-target="#esgCarousel"
+            data-bs-slide="prev"
+          >
+            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span className="visually-hidden">Previous</span>
+          </button>
+          <button
+            className="carousel-control-next"
+            type="button"
+            data-bs-target="#esgCarousel"
+            data-bs-slide="next"
+          >
+            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+            <span className="visually-hidden">Next</span>
+          </button>
         </div>
       </section>
     </>
