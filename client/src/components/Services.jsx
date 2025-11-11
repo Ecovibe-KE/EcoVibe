@@ -105,10 +105,7 @@ const Services = () => {
                   Our Sustainable Services
                 </h1>
                 <p className="lead fw-semibold">
-                  At Ecovibe Kenya, we provide comprehensive ESG (Environmental,
-                  Social, and Governance) consultancy services tailored to help
-                  your organization thrive in the evolving sustainability
-                  landscape.
+                  At ECK we evaluate the Nationally Determined Contributions and convert them into National Adaptation Plans per sector. This helps to align your business with the country's goals set in line with sustainable development.
                 </p>
               </Col>
             </Row>

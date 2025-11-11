@@ -460,7 +460,15 @@ const BlogPostItem = ({ post, onEdit, onDelete }) => {
 
         {/* Title and Description */}
         <h2 className="fs-5 fw-semibold text-dark mb-1 lh-sm">{post.title}</h2>
-        <p className="small text-secondary mb-3 text-truncate">
+        <p className="small text-secondary mb-3"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           {post.excerpt}
         </p>
 

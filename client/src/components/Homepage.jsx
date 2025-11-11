@@ -28,9 +28,9 @@ const Homepage = () => {
         "Training organizations, community leaders, and grassroots groups on sustainability practices, and delivering workshops on financial literacy, leadership, innovation, and SDG integration.",
     },
     {
-      heading: "Climate Finance Access & Project Structuring",
+      heading: "Green Finance Access & Project Structuring",
       content:
-        "Structuring green, sustainability-linked, and blended finance instruments, while supporting MSMEs and community-driven projects to access climate finance.",
+        "Structuring green, sustainability-linked, and blended finance instruments, while supporting MSMEs and community-driven projects to access green finance.",
     },
     {
       heading: "Partnership Development (SDG17 Focus)",
@@ -206,9 +206,9 @@ const Homepage = () => {
                     }}
                   ></div>
                   <div className="ms-2">
-                    <h6 className="fw-bold mb-0">Carbon Management</h6>
+                    <h6 className="fw-bold mb-0">GHG scoping & Waste management practices</h6>
                     <small className="text-muted">
-                      Advising on climate strategies that deliver both
+                      Advising on strategies that deliver both
                       mitigation and adaptation outcomes.
                     </small>
                   </div>
