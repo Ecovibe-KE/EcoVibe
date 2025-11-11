@@ -46,7 +46,7 @@ class Blog(db.Model):
         db.ForeignKey("users.id"),
         nullable=False,
     )
-    excerpt = db.Column(db.String(150), nullable=True)
+    excerpt = db.Column(db.String(500), nullable=True)
     content = db.Column(db.Text, nullable=False)
     reading_duration = db.Column(db.String(50), nullable=False)
     type = db.Column(
