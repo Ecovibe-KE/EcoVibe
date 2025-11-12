@@ -1,0 +1,18 @@
+# this work flow pings our render service after every 10 min to make sure it does not spin down with inactivity
+name: Keep Render Service Awake
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Random delay (0–59 seconds)
+        run: sleep $((RANDOM % 60))
+
+      - name: Ping Render backend
+        run: |
+          curl -s -I ${{ secrets.RENDER_URL }}
