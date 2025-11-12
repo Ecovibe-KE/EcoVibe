@@ -11,7 +11,7 @@ function AboutUs() {
       imageSourceName: "Target.png",
       heading: "Our Mission",
       paragraphContent:
-        "To accelerate the transition towards a circular and sustainable economy by empowering communities, financial institutions, and enterprises through inclusive partnerships, innovation, and capacity building, ensuring equitable access to green finance, responsible production, and resilient livelihoods that advance the Sustainable Development Goals.",
+        "To drive sustainable development by empowering inclusive participation of communities, corporations, and stakeholders in advancing the global Sustainable Development Goals.",
     },
     {
       imageSourceName: "Eye.png",
