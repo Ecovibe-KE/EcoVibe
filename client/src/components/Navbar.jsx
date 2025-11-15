@@ -20,7 +20,7 @@ function NavBar() {
           >
             <Navbar.Brand as={NavLink} to="/home">
               <img
-                src="/EcovibeLogo.png"
+                src="/EcovibeLogo.webp"
                 alt="EcoVibe Logo"
                 className="d-inline-block img-fluid"
                 style={{ maxWidth: "250px", height: "auto" }}
