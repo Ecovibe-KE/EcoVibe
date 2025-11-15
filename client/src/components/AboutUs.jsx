@@ -145,7 +145,7 @@ function AboutUs() {
             </div>
             <div className="col-lg-6">
               <div className="my-5 mt-lg-0 text-md-center text-lg-start">
-                <img alt="" className="img-fluid" src="/chairs.png" />
+                <img alt="" className="img-fluid" src="/chairs.webp" />
               </div>
             </div>
           </div>
