@@ -24,7 +24,7 @@ const Footer = ({ pageType }) => {
         <div className="footer-top-row">
           {/* Logo */}
           <img
-            src="/EcovibeLogo.png"
+            src="/EcovibeLogo.webp"
             alt="EcoVibe Logo"
             className="footer-logo"
           />
