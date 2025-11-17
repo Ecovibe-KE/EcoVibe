@@ -41,7 +41,7 @@ describe('AboutUs component', () => {
         // main image (chairs.png) should be in the document with correct src
         const mainImg = screen.getByAltText('')
         expect(mainImg).toBeInTheDocument()
-        expect(mainImg).toHaveAttribute('src', '/chairs.png')
+        expect(mainImg).toHaveAttribute('src', '/chairs.webp')
     })
 
     it('renders three AboutUsPartition instances with expected titles and counts', () => {
