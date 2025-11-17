@@ -5,48 +5,7 @@ import { Link } from "react-router-dom";
 import "../css/Homepage.css"
 
 const Homepage = () => {
-  const services = [
-    {
-      heading: "Sustainability Framework Development",
-      content:
-        "Design tailored ESG and SDG-aligned frameworks for various sectors, integrating sustainability into corporate, community, and government programs.",
-    },
-    {
-      heading: "ESG Advisory & Compliance",
-      content:
-        "Helping organizations meet national and global ESG reporting requirements through ESG gap assessments and compliance audits.",
-    },
-    {
-      heading: "Capacity Building & Training",
-      content:
-        "Training organizations, community leaders, and grassroots groups on sustainability practices, and delivering workshops on financial literacy, leadership, innovation, and SDG integration.",
-    },
-    {
-      heading: "Green Finance Access & Project Structuring",
-      content:
-        "Structuring green, sustainability-linked, and blended finance instruments, while supporting MSMEs and community-driven projects to access green finance.",
-    },
-    {
-      heading: "Partnership Development (SDG17 Focus)",
-      content:
-        "Creating multi-stakeholder partnerships to drive development programs and facilitate collaborations between the private sector, civil society, and government.",
-    },
-    {
-      heading: "Circular Economy Solutions",
-      content:
-        "Designing strategies to maximize resource use and reduce waste, while supporting industries such as mining to optimize human labor and resources sustainably.",
-    },
-    {
-      heading: "Policy Research & Advocacy",
-      content:
-        "Publishing policy frameworks aligned with SDGs for professional and development sectors, and advising on sustainable governance systems and judicial reforms.",
-    },
-    {
-      heading: "Monitoring, Evaluation & Impact Reporting",
-      content:
-        "Tracking sustainability performance and providing impact measurement reports, while supporting transparent disclosure for investors and stakeholders.",
-    },
-  ];
+  
   const sectors = [
     {
       title: "Agriculture & Food Systems",
@@ -258,54 +217,6 @@ const Homepage = () => {
           </div>
         </div>
       </section>
-      {
-      <section className="container-fluid bg-light py-4 px-4">
-        <div className="text-center mb-5 mx-lg-5">
-          <div className="text-center">
-            <h1
-              className="fw-bold mb-3">
-              Our Consultancy Services
-            </h1>
-            <p
-              className="text mx-auto fs-3 text-muted lead" style={{maxWidth: "700px"}}>
-              We offer comprehensive ESG consultancy services designed to help
-              your organization navigate the complex landscape of sustainable
-              development and create a lasting impact.
-            </p>
-          </div>
-          <div className="row g-4">
-            {services.map((service, index) => (
-              <div className="col-12 col-md-6 col-lg-4" key={index}>
-                <div className="card h-100 p-4 text-start rounded-5">
-                  <div
-                    className="d-flex align-items-center gap-2 mb-4  "
-                    style={{ height: "35px" }}
-                  >
-                    <div
-                      style={{
-                        backgroundColor: "#F5A030",
-                        color: "#FFFFFF",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        width: "30px",
-                        height: "30px",
-                        padding: "5px",
-                        justifyContent: "center",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      <StarBorder style={{ fontSize: 20 }} />
-                    </div>
-                    <h5 className="fw-bold mb-1">{service.heading}</h5>
-                  </div>
-                  <p className="text-muted">{service.content}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      }
       <section className="p-3 p-md-5 bg-light">
         <h1
           className="fw-bold text-center mb-3">
