@@ -7,7 +7,7 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyDG1nja18VwZlSGTE1QLV0ZI_Gx9KC5Iy0",
   authDomain: "ecivibe.firebaseapp.com",
   projectId: "ecivibe",
   storageBucket: "ecivibe.firebasestorage.app",
@@ -18,4 +18,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+
+export { app, analytics };
