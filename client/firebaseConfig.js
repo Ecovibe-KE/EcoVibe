@@ -4,19 +4,20 @@ import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ,
-  authDomain: "moto-tracker-57f25.firebaseapp.com",
-  databaseURL: "https://moto-tracker-57f25-default-rtdb.firebaseio.com",
-  projectId: "moto-tracker-57f25",
-  storageBucket: "moto-tracker-57f25.firebasestorage.app",
-  messagingSenderId: "123596698999",
-  appId: "1:123596698999:web:4c9d870e7c28c05a56dd72",
-  measurementId: "G-9P4KCX1VVE"
+  apiKey: "AIzaSyDG1nja18VwZlSGTE1QLV0ZI_Gx9KC5Iy0",
+  authDomain: "ecivibe.firebaseapp.com",
+  projectId: "ecivibe",
+  storageBucket: "ecivibe.firebasestorage.app",
+  messagingSenderId: "337448707951",
+  appId: "1:337448707951:web:3503ddf35f936677086a9a",
+  measurementId: "G-5YHZ2B7TCQ"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
-export { app, analytics };   
+export { app, analytics };
