@@ -97,11 +97,12 @@ function AboutUs() {
   const coreValues = "Our Core Values";
   //const meetOurTeam = "Meet Our Team";
   const WhoWeServe = "Who We Serve";
-  const wsh_subheading = "Ecovibe Kenya (ECK) empowers financial institutions and community enterprises to transition toward sustainable, inclusive, and climate-resilient growth. We act as the link between compliance readiness, investor engagement, and measurable impact,  transforming sustainability into bankable opportunities."
+  const wsh_subheading =
+    "Ecovibe Kenya (ECK) empowers financial institutions and community enterprises to transition toward sustainable, inclusive, and climate-resilient growth. We act as the link between compliance readiness, investor engagement, and measurable impact,  transforming sustainability into bankable opportunities.";
 
   function displayPage(
     title,
-    subheading="",
+    subheading = "",
     contentArray,
     extraSetting = "",
     padding = "p-4",
@@ -153,8 +154,8 @@ function AboutUs() {
       </section>
 
       <section className="text-bg-light text-center p-4">
-        {displayPage(missionVision, "",missionVisionContent)}
-        {displayPage(coreValues,"", coreValueContent, screenSetting)}
+        {displayPage(missionVision, "", missionVisionContent)}
+        {displayPage(coreValues, "", coreValueContent, screenSetting)}
         {/*displayPage(
           meetOurTeam,
           meetOurTeamContent,
@@ -165,7 +166,12 @@ function AboutUs() {
         )*/}
       </section>
       <section className="text-bg-light text-center p-4">
-        {displayPage(WhoWeServe, wsh_subheading, WhoWeServeContent, extraSettings)}
+        {displayPage(
+          WhoWeServe,
+          wsh_subheading,
+          WhoWeServeContent,
+          extraSettings,
+        )}
       </section>
       <section className="py-5 text-center bg-light">
         <div className="container">
@@ -226,7 +232,10 @@ function AboutUs() {
                 </div>
                 <h5>Tailored Client Pathways</h5>
                 <p>
-                  Whether you operate in agriculture, manufacturing, energy, construction, technology, or any other sector, we design a clear, actionable roadmap from compliance to capital and sustainable growth.
+                  Whether you operate in agriculture, manufacturing, energy,
+                  construction, technology, or any other sector, we design a
+                  clear, actionable roadmap from compliance to capital and
+                  sustainable growth.
                 </p>
               </div>
             </div>

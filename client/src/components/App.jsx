@@ -31,8 +31,8 @@ import ResourceCenter from "./admin/ResourceCenter.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import Tickets from "./Tickets.jsx";
-import Services from "./Services.jsx";
-import ServiceDetail from "./ServiceDetail.jsx";
+//import Services from "./Services.jsx";
+//import ServiceDetail from "./ServiceDetail.jsx";
 import Footer from "./Footer.jsx";
 import Dashboard from "./admin/Dashboard.jsx";
 
@@ -243,7 +243,8 @@ function App() {
               </>
             }
           />
-          <Route
+          {
+            /*<Route
             path="/services"
             element={
               <>
@@ -252,7 +253,9 @@ function App() {
               </>
             }
           />
-          <Route
+          */}
+          { /*
+            <Route
             path="/services/:id"
             element={
               <>
@@ -260,7 +263,7 @@ function App() {
                 <ServiceDetail />
               </>
             }
-          />
+          /> */}
           <Route
             path="/verify"
             element={
