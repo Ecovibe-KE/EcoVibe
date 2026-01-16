@@ -18,3 +18,42 @@
     font-size: 36px;
   }
 }
+
+.circle-bullet {
+  width: 10px;
+  height: 10px;
+  background-color: #37B137;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.bullet {
+  width: 10px;
+  height: 10px;
+  background-color: #37B137;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.hover-cards {
+  transition: all 0.3s ease-in-out;
+}
+
+.hover-card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.hover-cards:hover .hover-card {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.hover-card:hover {
+  transform: scale(1.08) !important;
+  opacity: 1;
+  z-index: 10;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
