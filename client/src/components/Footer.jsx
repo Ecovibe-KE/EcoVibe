@@ -33,13 +33,13 @@ const Footer = ({ pageType }) => {
           <div className="footer-nav-wrapper">
             <div className="footer-nav-links">
               <Link to={"/about"} className="nav-link">
-              About 
+                About
               </Link>
-                  <Link to={"/blog"} className="nav-link">
-               Blogs 
+              <Link to={"/blog"} className="nav-link">
+                Blogs
               </Link>
-                  <Link to={"/login"} className="nav-link">
-              Login 
+              <Link to={"/login"} className="nav-link">
+                Login
               </Link>
             </div>
           </div>
