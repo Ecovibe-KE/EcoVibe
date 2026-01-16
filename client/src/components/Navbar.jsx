@@ -49,6 +49,7 @@ function NavBar() {
                   >
                     About
                   </Nav.Link>
+                  {/*
                   <Nav.Link
                     as={NavLink}
                     to="/services"
@@ -56,6 +57,7 @@ function NavBar() {
                   >
                     Services
                   </Nav.Link>
+                  */}
                   <Nav.Link
                     as={NavLink}
                     to="/blog"
