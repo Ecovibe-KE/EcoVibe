@@ -109,7 +109,7 @@ const Homepage = () => {
           <div className="col-12 col-lg-6 mb-4 mb-lg-0">
             <h1 className="fw-bold mb-4">Who We Are</h1>
             <p className="text-muted mb-2" style={{ marginBottom: 0 }}>
-              <strong> EcoviBE Kenya </strong> is a circular economy and
+              <strong> Ecovibe Kenya </strong> is a circular economy and
               sustainable development consultancy dedicated to transforming how
               organisations, sectors, and communities use resources and create
               impact.
@@ -501,7 +501,7 @@ const Homepage = () => {
                   a community organisation driving sustainable practices at the
                   local level, or a government partner advancing national
                   development goals,
-                  <strong> EcoviBE Kenya</strong> can help unleash your circular
+                  <strong> Ecovibe Kenya</strong> can help unleash your circular
                   potential.
                 </p>
                 <Link to={"/contact"}>
