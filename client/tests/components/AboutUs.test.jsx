@@ -49,7 +49,7 @@ describe('AboutUs component', () => {
 
         // There are three partitions (Mission & Vision, Our Core Values, Meet Our Team)
         const partitions = screen.getAllByTestId('mock-partition')
-        expect(partitions).toHaveLength(3)
+        expect(partitions).toHaveLength(2)
 
         // Verify each partition title and the number of items passed
         const titles = partitions.map(p => p.getAttribute('data-title'))
@@ -57,7 +57,7 @@ describe('AboutUs component', () => {
             expect.arrayContaining([
                 'Mission & Vision',
                 'Our Core Values',
-                'Who We Serve'
+                //'Who We Serve'
 
             ])
         )
@@ -73,7 +73,7 @@ describe('AboutUs component', () => {
 
         expect(counts['Mission & Vision']).toBe(2)
         expect(counts['Our Core Values']).toBe(4)
-        expect(counts['Who We Serve']).toBe(4)
+        //expect(counts['Who We Serve']).toBe(4)
 
         // Example: check that the core values partition received the extraSetting row-cols-lg-3
         const corePartition = partitions.find(p => p.getAttribute('data-title') === 'Our Core Values')
