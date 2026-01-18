@@ -165,6 +165,7 @@ function AboutUs() {
           "w-100",
         )*/}
       </section>
+      {/*
       <section className="text-bg-light text-center p-4">
         {displayPage(
           WhoWeServe,
@@ -173,6 +174,7 @@ function AboutUs() {
           extraSettings,
         )}
       </section>
+      */}
       <section className="py-5 text-center bg-light">
         <div className="container">
           <h2 className="mb-5 fw-semibold display-6 about-underline">
