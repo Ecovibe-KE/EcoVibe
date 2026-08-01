@@ -37,7 +37,7 @@ describe("App component", () => {
     // Basic smoke test: homepage renders
     expect(
       screen.getByText(
-        /leading the way in offering cutting-edge solutions for sustainable development/i
+        /Regenerative production and consumption/i
       )
     ).toBeInTheDocument();
   });
