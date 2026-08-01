@@ -137,10 +137,18 @@ function AboutUs() {
               <div className="col-lg-8 mx-auto text-center">
                 <h2 className="fw-bold">Empowering Sustainable Solutions</h2>
                 <p className="lead">
-                  Ecovibe Kenya provides consultancy services and keeps up to
-                  date with evolving ESG landscape. We lead the way in offering
-                  cutting-edge solutions for sustainable development. Join us as
-                  we work towards a greener and more socially responsible world.
+                  Ecovibe Kenya provides consultancy services and stays up to
+                  date with the evolving circular economy landscape. We offer
+                  cutting-edge solutions for sustainable development at the ward
+                  level, empowering communities through practical and
+                  sustainable initiatives.
+                </p>
+                <p className="lead">
+                  No matter which ward you come from, we are committed to helping
+                  transform it into a more sustainable and resilient community
+                  where people are empowered financially, mentally, and
+                  development-wise. Join us as we work towards building a
+                  greener, more inclusive, and socially responsible future.
                 </p>
               </div>
             </div>
@@ -156,6 +164,122 @@ function AboutUs() {
       <section className="text-bg-light text-center p-4">
         {displayPage(missionVision, "", missionVisionContent)}
         {displayPage(coreValues, "", coreValueContent, screenSetting)}
+
+        <div className="container mt-4">
+          <div className="row g-4 text-start">
+            <div className="col-12">
+              <div className="card rounded-5 p-4 p-md-5 h-100">
+                <div className="d-flex align-items-center gap-3 mb-3">
+                  <div style={{ color: "#37B137" }}>
+                    <i className="bi bi-exclamation-circle fs-4"></i>
+                  </div>
+                  <h2 className="fw-bold mb-0">The Problem</h2>
+                </div>
+                <p className="lead mb-3">
+                  The current state of society is focused on transforming the
+                  circular economy from a round-table conversation into a
+                  practical and bankable venture.
+                </p>
+                <p className="lead mb-0">
+                  Ecovibe Kenya works with various partners to bring this vision
+                  to life by implementing circular economy initiatives across
+                  Kenya, particularly within community-based development zones.
+                </p>
+              </div>
+            </div>
+
+            <div className="col-12 col-lg-6">
+              <div className="card rounded-5 p-4 p-md-5 h-100">
+                <div className="d-flex align-items-center gap-3 mb-3">
+                  <div style={{ color: "#37B137" }}>
+                      <i className="bi bi-diagram-3 fs-4"></i>
+                  </div>
+                  <h2 className="fw-bold mb-0">The Analysis Process</h2>
+                </div>
+                <p className="lead mb-3">
+                  Ecovibe Kenya uses systems thinking to analyze challenges
+                  within communities and identify solutions that are financially
+                  inclusive.
+                </p>
+                <p className="lead mb-0">
+                  Most of these challenges are linked to the Sustainable
+                  Development Goals (SDGs). Ecovibe Kenya connects these
+                  challenges to practical implementation strategies that create
+                  lasting impact.
+                </p>
+              </div>
+            </div>
+
+            <div className="col-12 col-lg-6">
+              <div className="card rounded-5 p-4 p-md-5 h-100">
+                <div className="d-flex align-items-center gap-3 mb-3">
+                  <div style={{ color: "#37B137" }}>
+                    <i className="bi bi-people fs-4"></i>
+                  </div>
+                  <h2 className="fw-bold mb-0">Our Solution</h2>
+                </div>
+                <p className="lead mb-3">
+                  We coordinate with partners at every level, including national
+                  ministries, county governments, municipal authorities,
+                  parastatal organizations, the business community, and most
+                  importantly, local communities.
+                </p>
+                <p className="lead mb-0">
+                  This collaborative approach ensures sustainable and
+                  community-centered solutions.
+                </p>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <div className="card rounded-5 p-4 p-md-5 h-100">
+                <div className="d-flex align-items-center gap-3 mb-4">
+                  <div style={{ color: "#37B137" }}>
+                    <i className="bi bi-list-check fs-4"></i>
+                  </div>
+                  <h2 className="fw-bold mb-0">How We Implement</h2>
+                </div>
+                <div className="row g-3">
+                  {[
+                    {
+                      title: "Stakeholder Engagement",
+                      text: "Engage with the relevant organizations and partners.",
+                    },
+                    {
+                      title: "Community Focus Groups",
+                      text: "Conduct structured discussions with community members.",
+                    },
+                    {
+                      title: "Independent Assessment",
+                      text: "Perform an independent analysis to validate the identified challenges.",
+                    },
+                    {
+                      title: "Solution Development",
+                      text: "Design sustainable and financially inclusive solutions.",
+                    },
+                    {
+                      title: "Community-First Implementation",
+                      text: "Implement solutions while ensuring every stakeholder is recognized and the community remains the highest priority.",
+                    },
+                  ].map((step, index) => (
+                    <div className="col-12 col-md-6 col-lg-4" key={step.title}>
+                      <div className="d-flex align-items-start gap-3">
+                        <div className="rounded-circle bg-success text-white fw-bold d-flex align-items-center justify-content-center" style={{ width: "36px", height: "36px", flexShrink: 0, color: "#37B137"}}>
+                          {index + 1}
+                        </div>
+                        <div>
+                          <h5 className="fw-bold mb-1">{step.title}</h5>
+                          <p className="mb-0 text-muted">{step.text}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/*displayPage(
           meetOurTeam,
           meetOurTeamContent,
