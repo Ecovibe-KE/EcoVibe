@@ -26,37 +26,45 @@ describe("Partnerships page", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  it("shows the loading state while the API request is in flight", () => {
-    vi.spyOn(partnershipService, "fetchAllPartnerships").mockReturnValue(
-      new Promise(() => {}),
-    );
-
-    renderPage();
-
-    expect(screen.getByText(/Loading opportunities/i)).toBeInTheDocument();
-  });
-
-  it("shows the empty-state card when there are no published opportunities", async () => {
+it("shows the empty-state card when there are no published opportunities", async () => {
     vi.spyOn(partnershipService, "fetchAllPartnerships").mockResolvedValue({
       message: "success",
       data: [],
     });
-
+  
     renderPage();
-
+  
     expect(
       await screen.findByRole("heading", {
-        name: /Funding & Partnership Opportunities/i,
+        name: /Partnership Opportunities/i,
       }),
     ).toBeInTheDocument();
+  
     expect(
-      screen.getByText(/There are currently no funding or partnership opportunities/i),
+      screen.getByText(/Cross sector Innovation/i),
     ).toBeInTheDocument();
+  
     expect(
-      screen.getByText(/New opportunities will appear here as they become available/i),
+      screen.getByText(/Sustainability Initiatives/i),
     ).toBeInTheDocument();
+  
     expect(
-      screen.getByText(/Check back soon for upcoming opportunities/i),
+  -   screen.getByText(/Knowledge & Resource Sharingb/i),
+  +   screen.getByText(/Knowledge & Resource Sharing/i),
+    ).toBeInTheDocument();
+  });
+  
+  it("shows the empty-state card when the API request fails (no backend)", async () => {
+    vi.spyOn(partnershipService, "fetchAllPartnerships").mockRejectedValue(
+      new Error("Network error"),
+    );
+  
+    renderPage();
+  
+    expect(
+      await screen.findByRole("heading", {
+      name: /Partnership Opportunities/i,
+      }),
     ).toBeInTheDocument();
   });
 

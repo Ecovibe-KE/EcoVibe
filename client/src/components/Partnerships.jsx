@@ -135,32 +135,40 @@ const Partnerships = () => {
         sustainable, environment-friendly initiatives and grow your impact.
       </p>
 
-      {loading ? (
+      {loading? (
         <div className="d-flex justify-content-center align-items-center py-5">
           <Spinner animation="border" variant="success" />
           <span className="ms-2 text-secondary">Loading opportunities...</span>
         </div>
-      ) : opportunities.length === 0 ? (
+      ): opportunities.length === 0 ? (
         <div
           className="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center mx-auto my-4"
           style={{ maxWidth: 720 }}
         >
           <h2 className="fw-bold text-dark mb-3">
-            Funding &amp; Partnership Opportunities
+            Partnership Opportunities
           </h2>
-          <p className="text-muted mb-3">
+          {/*<p className="text-muted mb-3">
             There are currently no funding or partnership opportunities
             available.
-          </p>
+          </p>*/}
           <p className="text-muted mb-4">
-            We're continually working to connect businesses, organizations, and
-            sustainability initiatives with relevant funding and collaboration
-            opportunities. New opportunities will appear here as they become
-            available.
+            Ecovibe Kenya welcomes strategic partnerships and collaborations from all sectors, including private businesses, public institutions, (International)/Non Governmental Organizations, as well as community initiatives.
+
+            We are actively seeking forward thinking partners to co-create sustainable solutions and bridge the gap in realizing a true circular economy environment. 
+            Whether through joint sustainability projects, green innovation, or impactful resource management, we believe that cross sector collaboration is vital to scaling eco-friendly practices.
+
+            Our doors are always open to impactful ideas and strategic alliances.
+            How to Partner with Us
+            - Cross sector Innovation: We collaborate with businesses and organizations of all sizes to integrate circularity into their operations.
+            - Sustainability Initiatives: We co-design and implement localized green projects that drive measurable environmental impact.
+            - Knowledge & Resource Sharing: We invite technical experts and advocacy groups to join forces in accelerating sustainable development.
+            
+            If your organization shares our vision of eliminating waste and driving a circular economy in Kenya, we want to hear from you. Reach out to our partnership team today to discuss how we can work together.
           </p>
-          <p className="small fw-medium text-secondary mb-0">
+          {/* <p className="small fw-medium text-secondary mb-0">
             Check back soon for upcoming opportunities.
-          </p>
+          </p>*/}
         </div>
       ) : (
         <div className="row g-4">
