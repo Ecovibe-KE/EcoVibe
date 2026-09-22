@@ -254,8 +254,7 @@ function App() {
               </>
             }
           />
-          {
-            /*<Route
+          {/*<Route
             path="/services"
             element={
               <>
@@ -265,7 +264,7 @@ function App() {
             }
           />
           */}
-          { /*
+          {/*
             <Route
             path="/services/:id"
             element={

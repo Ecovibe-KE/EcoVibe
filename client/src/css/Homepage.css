@@ -111,7 +111,9 @@
   background: #ffffff;
   box-shadow: 0 12px 35px rgba(20, 45, 20, 0.08);
   border: 1px solid rgba(55, 177, 55, 0.1);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .info-card {
@@ -167,7 +169,9 @@
 }
 
 .hover-card {
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
   cursor: pointer;
 }
 
