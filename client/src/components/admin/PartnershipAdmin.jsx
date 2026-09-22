@@ -52,7 +52,9 @@ const TypeBadge = ({ type }) => {
   return (
     <span
       className={`badge rounded-pill py-1 px-2 me-1 ${
-        isFunding ? "bg-success-subtle text-success" : "bg-primary-subtle text-primary"
+        isFunding
+          ? "bg-success-subtle text-success"
+          : "bg-primary-subtle text-primary"
       }`}
     >
       <small className="fw-medium">{type}</small>
@@ -62,15 +64,23 @@ const TypeBadge = ({ type }) => {
 
 const StatusBadge = ({ status }) => {
   const palette = {
-    Published: { colorClass: "text-success", bgColorClass: "bg-success-subtle" },
+    Published: {
+      colorClass: "text-success",
+      bgColorClass: "bg-success-subtle",
+    },
     Draft: { colorClass: "text-warning", bgColorClass: "bg-warning-subtle" },
     Pending: { colorClass: "text-primary", bgColorClass: "bg-primary-subtle" },
     Rejected: { colorClass: "text-danger", bgColorClass: "bg-danger-subtle" },
-    Archived: { colorClass: "text-secondary", bgColorClass: "bg-secondary-subtle" },
+    Archived: {
+      colorClass: "text-secondary",
+      bgColorClass: "bg-secondary-subtle",
+    },
   };
   const { colorClass, bgColorClass } = palette[status] || palette.Archived;
   return (
-    <span className={`badge rounded-pill py-1 px-2 ${bgColorClass} ${colorClass}`}>
+    <span
+      className={`badge rounded-pill py-1 px-2 ${bgColorClass} ${colorClass}`}
+    >
       <small className="fw-medium">{status}</small>
     </span>
   );
@@ -148,22 +158,19 @@ const PartnershipAdmin = () => {
     setIsFormOpen(true);
   }, []);
 
-  const closeForm = useCallback(
-    (result) => {
-      setIsFormOpen(false);
-      setEditingOpportunity(null);
-      if (result && result.id) {
-        setOpportunities((prev) => {
-          const exists = prev.some((opp) => opp.id === result.id);
-          if (exists) {
-            return prev.map((opp) => (opp.id === result.id ? result : opp));
-          }
-          return [result, ...prev];
-        });
-      }
-    },
-    [],
-  );
+  const closeForm = useCallback((result) => {
+    setIsFormOpen(false);
+    setEditingOpportunity(null);
+    if (result && result.id) {
+      setOpportunities((prev) => {
+        const exists = prev.some((opp) => opp.id === result.id);
+        if (exists) {
+          return prev.map((opp) => (opp.id === result.id ? result : opp));
+        }
+        return [result, ...prev];
+      });
+    }
+  }, []);
 
   const openDelete = useCallback((opp) => {
     setDeleteTarget(opp);
@@ -179,7 +186,9 @@ const PartnershipAdmin = () => {
     if (!deleteTarget) return;
     try {
       await deletePartnership(deleteTarget.id);
-      setOpportunities((prev) => prev.filter((opp) => opp.id !== deleteTarget.id));
+      setOpportunities((prev) =>
+        prev.filter((opp) => opp.id !== deleteTarget.id),
+      );
       closeDelete();
       toast.success("Opportunity deleted successfully.");
     } catch (err) {
@@ -227,8 +236,12 @@ const PartnershipAdmin = () => {
 
   const totalOpportunities = opportunities.length;
   const fundingCount = opportunities.filter((o) => o.type === "Funding").length;
-  const partnershipCount = opportunities.filter((o) => o.type === "Partnership").length;
-  const publishedCount = opportunities.filter((o) => o.status === "Published").length;
+  const partnershipCount = opportunities.filter(
+    (o) => o.type === "Partnership",
+  ).length;
+  const publishedCount = opportunities.filter(
+    (o) => o.status === "Published",
+  ).length;
 
   const typeOptions = ["All Types", "Funding", "Partnership"];
 
@@ -343,7 +356,9 @@ const PartnershipAdmin = () => {
         </div>
 
         {/* Opportunity List */}
-        {isLoading && <div className="text-secondary">Loading opportunities...</div>}
+        {isLoading && (
+          <div className="text-secondary">Loading opportunities...</div>
+        )}
         {error && <div className="text-danger">{error}</div>}
         {!isLoading && !error && filteredOpportunities.length === 0 && (
           <div className="text-secondary">No opportunities found.</div>
@@ -435,7 +450,13 @@ const OpportunityItem = ({
 
         <div className="d-flex flex-wrap align-items-center small text-secondary">
           <span className="d-flex align-items-center me-3">
-            <img src={CalendarIcon} alt="Launch" className="me-1" width={14} height={14} />
+            <img
+              src={CalendarIcon}
+              alt="Launch"
+              className="me-1"
+              width={14}
+              height={14}
+            />
             <span>
               Launch:{" "}
               {opportunity.launch_date
@@ -444,7 +465,13 @@ const OpportunityItem = ({
             </span>
           </span>
           <span className="d-flex align-items-center me-3">
-            <img src={CalendarIcon} alt="Deadline" className="me-1" width={14} height={14} />
+            <img
+              src={CalendarIcon}
+              alt="Deadline"
+              className="me-1"
+              width={14}
+              height={14}
+            />
             <span>
               Deadline:{" "}
               {opportunity.deadline_date

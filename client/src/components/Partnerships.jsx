@@ -12,7 +12,9 @@ const PartnershipBadge = ({ type }) => {
   return (
     <span
       className={`badge rounded-pill py-1 px-2 me-1 ${
-        isFunding ? "bg-success-subtle text-success" : "bg-primary-subtle text-primary"
+        isFunding
+          ? "bg-success-subtle text-success"
+          : "bg-primary-subtle text-primary"
       }`}
     >
       <small className="fw-medium">{type}</small>
@@ -56,7 +58,13 @@ const Partnership = ({ opportunity, onCreate }) => {
 
       <div className="d-flex flex-wrap align-items-center small text-secondary mb-4">
         <span className="d-flex align-items-center me-3 mb-1">
-          <img src={CalendarIcon} alt="Launch" className="me-1" width={14} height={14} />
+          <img
+            src={CalendarIcon}
+            alt="Launch"
+            className="me-1"
+            width={14}
+            height={14}
+          />
           <time dateTime={opportunity.launch_date}>
             {opportunity.launch_date
               ? new Date(opportunity.launch_date).toLocaleDateString()
@@ -64,7 +72,13 @@ const Partnership = ({ opportunity, onCreate }) => {
           </time>
         </span>
         <span className="d-flex align-items-center me-3 mb-1">
-          <img src={CalendarIcon} alt="Deadline" className="me-1" width={14} height={14} />
+          <img
+            src={CalendarIcon}
+            alt="Deadline"
+            className="me-1"
+            width={14}
+            height={14}
+          />
           <time dateTime={opportunity.deadline_date}>
             {opportunity.deadline_date
               ? new Date(opportunity.deadline_date).toLocaleDateString()
@@ -90,7 +104,6 @@ const Partnership = ({ opportunity, onCreate }) => {
 const Partnerships = () => {
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -100,10 +113,9 @@ const Partnerships = () => {
         setLoading(true);
         const response = await fetchAllPartnerships();
         setOpportunities(response?.data || []);
-        setError(null);
       } catch (err) {
         console.error("Error fetching partnerships:", err);
-        setError("Failed to load opportunities. Please try again later.");
+        setOpportunities([]);
       } finally {
         setLoading(false);
       }
@@ -128,22 +140,28 @@ const Partnerships = () => {
           <Spinner animation="border" variant="success" />
           <span className="ms-2 text-secondary">Loading opportunities...</span>
         </div>
-      ) : error ? (
-        <div className="text-center py-5">
-          <p className="text-danger">{error}</p>
-          <Button
-            size="sm"
-            color="#37b137"
-            hoverColor="#f5a030"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </Button>
-        </div>
       ) : opportunities.length === 0 ? (
-        <p className="text-center text-secondary py-5">
-          No opportunities are available at the moment. Check back soon.
-        </p>
+        <div
+          className="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center mx-auto my-4"
+          style={{ maxWidth: 720 }}
+        >
+          <h2 className="fw-bold text-dark mb-3">
+            Funding &amp; Partnership Opportunities
+          </h2>
+          <p className="text-muted mb-3">
+            There are currently no funding or partnership opportunities
+            available.
+          </p>
+          <p className="text-muted mb-4">
+            We're continually working to connect businesses, organizations, and
+            sustainability initiatives with relevant funding and collaboration
+            opportunities. New opportunities will appear here as they become
+            available.
+          </p>
+          <p className="small fw-medium text-secondary mb-0">
+            Check back soon for upcoming opportunities.
+          </p>
+        </div>
       ) : (
         <div className="row g-4">
           {opportunities.map((opp) => (

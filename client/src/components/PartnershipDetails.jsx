@@ -55,9 +55,7 @@ const PartnershipDetails = () => {
 
       {error || !opportunity ? (
         <div className="text-center mt-5">
-          <p className="text-secondary">
-            {error || "Opportunity not found."}
-          </p>
+          <p className="text-secondary">{error || "Opportunity not found."}</p>
           <Button
             size="sm"
             color="#37b137"
