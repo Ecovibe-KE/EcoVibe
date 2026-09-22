@@ -19,12 +19,12 @@ const Homepage = () => {
     },
     {
       title: "Waste Management & Plastics Recycling",
-      goal: "Transition from linear 'take–make–dispose' to circular 'reduce–reuse–recycle–recover'.",
+      goal: "Transition from linear 'take make dispose' to circular 'reduce reuse recycle recover'.",
       image: "/recycle.webp",
     },
     {
       title: "Energy & Transport",
-      goal: "Promote clean energy and low-carbon transport.",
+      goal: "Promote clean energy and low carbon transport.",
       image: "/energy.webp",
     },
     {
@@ -208,7 +208,7 @@ const Homepage = () => {
                 <Card.ImgOverlay className="d-flex flex-column justify-content-end p-4 text-start">
                   <div className="hero-panel hero-panel--overlay">
                     <h3 className="fw-bold text-white mb-0">
-                      Our mission is to inspire systemic change toward a regenerative and low-impact economy — ensuring prosperity without depleting the planet’s natural capital.
+                      Our mission is to inspire systemic change toward a regenerative and low impact economy ensuring prosperity without depleting the planet’s natural capital.
                     </h3>
                   </div>
                 </Card.ImgOverlay>
@@ -405,7 +405,7 @@ const Homepage = () => {
               <h2 className="fw-bold mb-3">Why Circular Economy Matters</h2>
               <p className="mb-4">
                 The circular economy is an alternative to the traditional
-                <strong> “take-make-dispose”</strong> model. It focuses on:
+                <strong> “take make dispose”</strong> model. It focuses on:
               </p>
               <ul className="list-unstyled ms-2">
                 <li className="d-flex align-items-start mb-3">

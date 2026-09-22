@@ -1,8 +1,10 @@
 export const ENDPOINTS = {
   // Ping
   ping: "/ping",
-  // dashboard
+
+  // Dashboard
   dashboard: "/dashboard",
+
   // Auth
   register: "/register",
   login: "/login",
@@ -29,8 +31,9 @@ export const ENDPOINTS = {
   // Newsletter
   newsletter_subscribers: "/newsletter-subscribers",
 
-  // resource centre
+  // Resource Centre
   documents: "/documents",
+
   // Profile
   me: "/me",
   changePassword: "/change-password",
@@ -39,7 +42,6 @@ export const ENDPOINTS = {
   bookings: "/bookings",
   bookingById: (id) => `/bookings/${id}`,
 
-  // Add more endpoints as needed here
   // Tickets
   tickets: "/tickets",
   ticketById: (id) => `/tickets/${id}`,
@@ -55,14 +57,16 @@ export const ENDPOINTS = {
   transactionHistory: "/payments/transactions",
   verifyPayment: "/payments/verify",
   invoicePDF: "/invoices/pdf",
-
-  // New endpoints for invoice management
   payments: "/payments",
 
   // Services
   services: "/services",
-  // Contact
+
+  // Quote
   quote: "/quote",
 
-  // Add more endpoints as needed here
+  // Partnerships & Funding
+  partnerships: "/partnerships",
+  partnershipById: (id) => `/partnerships/${id}`,
+  partnershipStatus: (id) => `/partnerships/${id}/status`,
 };
