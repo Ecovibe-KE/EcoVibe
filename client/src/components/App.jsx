@@ -28,6 +28,9 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "../css/App.css";
 import ResourceCenter from "./admin/ResourceCenter.jsx";
+import Partnerships from "./Partnerships.jsx";
+import PartnershipDetails from "./PartnershipDetails.jsx";
+import PartnershipAdmin from "./admin/PartnershipAdmin.jsx";
 import ProfilePage from "./ProfilePage.jsx";
 import ResetPassword from "./ResetPassword.jsx";
 import Tickets from "./Tickets.jsx";
@@ -174,6 +177,14 @@ function App() {
                 </RequireRole>
               }
             />
+            <Route
+              path="partnerships"
+              element={
+                <RequireRole allowedRoles={["admin", "super_admin"]}>
+                  <PartnershipAdmin />
+                </RequireRole>
+              }
+            />
             {/*
             <Route
               path="about"
@@ -243,8 +254,7 @@ function App() {
               </>
             }
           />
-          {
-            /*<Route
+          {/*<Route
             path="/services"
             element={
               <>
@@ -254,7 +264,7 @@ function App() {
             }
           />
           */}
-          { /*
+          {/*
             <Route
             path="/services/:id"
             element={
@@ -288,6 +298,24 @@ function App() {
               <>
                 <NavBar />
                 <BlogPost />
+              </>
+            }
+          />
+          <Route
+            path="/partnerships"
+            element={
+              <>
+                <NavBar />
+                <Partnerships />
+              </>
+            }
+          />
+          <Route
+            path="/partnerships/:id"
+            element={
+              <>
+                <NavBar />
+                <PartnershipDetails />
               </>
             }
           />
