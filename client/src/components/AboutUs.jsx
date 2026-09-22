@@ -144,10 +144,10 @@ function AboutUs() {
                   sustainable initiatives.
                 </p>
                 <p className="lead">
-                  No matter which ward you come from, we are committed to helping
-                  transform it into a more sustainable and resilient community
-                  where people are empowered financially, mentally, and
-                  development-wise. Join us as we work towards building a
+                  No matter which ward you come from, we are committed to
+                  helping transform it into a more sustainable and resilient
+                  community where people are empowered financially, mentally,
+                  and development-wise. Join us as we work towards building a
                   greener, more inclusive, and socially responsible future.
                 </p>
               </div>
@@ -192,7 +192,7 @@ function AboutUs() {
               <div className="card rounded-5 p-4 p-md-5 h-100">
                 <div className="d-flex align-items-center gap-3 mb-3">
                   <div style={{ color: "#37B137" }}>
-                      <i className="bi bi-diagram-3 fs-4"></i>
+                    <i className="bi bi-diagram-3 fs-4"></i>
                   </div>
                   <h2 className="fw-bold mb-0">The Analysis Process</h2>
                 </div>
@@ -264,7 +264,15 @@ function AboutUs() {
                   ].map((step, index) => (
                     <div className="col-12 col-md-6 col-lg-4" key={step.title}>
                       <div className="d-flex align-items-start gap-3">
-                        <div className="rounded-circle bg-success text-white fw-bold d-flex align-items-center justify-content-center" style={{ width: "36px", height: "36px", flexShrink: 0, color: "#37B137"}}>
+                        <div
+                          className="rounded-circle bg-success text-white fw-bold d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "36px",
+                            height: "36px",
+                            flexShrink: 0,
+                            color: "#37B137",
+                          }}
+                        >
                           {index + 1}
                         </div>
                         <div>

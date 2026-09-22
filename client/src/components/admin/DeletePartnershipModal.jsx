@@ -1,12 +1,7 @@
 import { Modal } from "react-bootstrap";
 import Button from "../../utils/Button";
 
-function DeletePartnershipModal({
-  show,
-  onClose,
-  onDelete,
-  opportunityTitle,
-}) {
+function DeletePartnershipModal({ show, onClose, onDelete, opportunityTitle }) {
   return (
     <Modal
       show={show}

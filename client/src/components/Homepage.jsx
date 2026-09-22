@@ -110,14 +110,17 @@ const Homepage = () => {
             <div className="container py-5">
               <div className="row align-items-center gy-4">
                 <div className="col-12 col-lg-7">
-                  <p className="hero-eyebrow" >
-                    Circular economy • Sustainable development • Community impact
+                  <p className="hero-eyebrow">
+                    Circular economy • Sustainable development • Community
+                    impact
                   </p>
                   <h1 className="display-4 display-md-3 display-lg-2 fw-bold mb-3 text-white">
                     ECOVIBE KENYA
                   </h1>
                   <p className="hero-copy">
-                    We provide grassroots empowerment through sensitization trainings to build knowledge on various economic endeavors at ward level.
+                    We provide grassroots empowerment through sensitization
+                    trainings to build knowledge on various economic endeavors
+                    at ward level.
                   </p>
                   <div className="d-flex flex-wrap gap-3 mt-4">
                     <Link to="/contact">
@@ -161,14 +164,16 @@ const Homepage = () => {
                 align="start"
               />
               <p className="text-muted mb-3">
-                We work with private companies, public institutions, and civil society to:
+                We work with private companies, public institutions, and civil
+                society to:
               </p>
               <div className="row mt-2">
                 <div className="col-6 mb-3">
                   <div className="d-flex align-items-center">
                     <span className="rounded-circle bullet-dot"></span>
                     <small className="ms-2 text-muted fw-bold">
-                      Design closed-loop systems that prioritise reuse, repair, and recycling.
+                      Design closed-loop systems that prioritise reuse, repair,
+                      and recycling.
                     </small>
                   </div>
                 </div>
@@ -176,7 +181,8 @@ const Homepage = () => {
                   <div className="d-flex align-items-center">
                     <span className="rounded-circle bullet-dot"></span>
                     <small className="ms-2 text-muted fw-bold">
-                      Build resource-efficient value chains that reduce inputs and waste.
+                      Build resource-efficient value chains that reduce inputs
+                      and waste.
                     </small>
                   </div>
                 </div>
@@ -184,7 +190,8 @@ const Homepage = () => {
                   <div className="d-flex align-items-center">
                     <span className="rounded-circle bullet-dot"></span>
                     <small className="ms-2 text-muted fw-bold">
-                      Support sustainable livelihoods through inclusive employment and social innovation.
+                      Support sustainable livelihoods through inclusive
+                      employment and social innovation.
                     </small>
                   </div>
                 </div>
@@ -192,7 +199,8 @@ const Homepage = () => {
                   <div className="d-flex align-items-center">
                     <span className="rounded-circle bullet-dot"></span>
                     <small className="ms-2 text-muted fw-bold">
-                      Integrate circular thinking into strategy, policy, and operations.
+                      Integrate circular thinking into strategy, policy, and
+                      operations.
                     </small>
                   </div>
                 </div>
@@ -208,7 +216,9 @@ const Homepage = () => {
                 <Card.ImgOverlay className="d-flex flex-column justify-content-end p-4 text-start">
                   <div className="hero-panel hero-panel--overlay">
                     <h3 className="fw-bold text-white mb-0">
-                      Our mission is to inspire systemic change toward a regenerative and low impact economy ensuring prosperity without depleting the planet’s natural capital.
+                      Our mission is to inspire systemic change toward a
+                      regenerative and low impact economy ensuring prosperity
+                      without depleting the planet’s natural capital.
                     </h3>
                   </div>
                 </Card.ImgOverlay>
@@ -228,17 +238,24 @@ const Homepage = () => {
           <div className="row g-4">
             <div className="col-12 col-lg-6">
               <div className="info-card h-100">
-                <h4 className="fw-bold mb-3 text-center" style={{ color: "#37B137" }}>
+                <h4
+                  className="fw-bold mb-3 text-center"
+                  style={{ color: "#37B137" }}
+                >
                   Circular Economy Strategy & Advisory
                 </h4>
                 <p>
-                  We guide organisations in transitioning from resource-intensive linear practices to closed-loop, regenerative business models. This includes:
+                  We guide organisations in transitioning from
+                  resource-intensive linear practices to closed-loop,
+                  regenerative business models. This includes:
                 </p>
                 <ul className="list-unstyled ms-3 my-4">
                   <li className="d-flex align-items-start mb-3">
                     <span className="bullet"></span>
                     <span className="ms-3">
-                      <strong>Material flow mapping & lifecycle analysis</strong>
+                      <strong>
+                        Material flow mapping & lifecycle analysis
+                      </strong>
                     </span>
                   </li>
                   <li className="d-flex align-items-start mb-3">
@@ -250,22 +267,31 @@ const Homepage = () => {
                   <li className="d-flex align-items-start">
                     <span className="bullet"></span>
                     <span className="ms-3">
-                      <strong>Implementation roadmaps for reuse, remanufacturing, and recycling infrastructure</strong>
+                      <strong>
+                        Implementation roadmaps for reuse, remanufacturing, and
+                        recycling infrastructure
+                      </strong>
                     </span>
                   </li>
                 </ul>
                 <p className="text-muted mb-0">
-                  By retaining product value longer and keeping resources in use, organisations can reduce environmental impacts and unlock new economic opportunities.
+                  By retaining product value longer and keeping resources in
+                  use, organisations can reduce environmental impacts and unlock
+                  new economic opportunities.
                 </p>
               </div>
             </div>
             <div className="col-12 col-lg-6">
               <div className="info-card h-100">
-                <h4 className="fw-bold mb-3 text-center" style={{ color: "#37B137" }}>
+                <h4
+                  className="fw-bold mb-3 text-center"
+                  style={{ color: "#37B137" }}
+                >
                   Capacity Building & Training
                 </h4>
                 <p>
-                  We deliver training, workshops, and capacity-building sessions on:
+                  We deliver training, workshops, and capacity-building sessions
+                  on:
                 </p>
                 <ul className="list-unstyled ms-3 my-4">
                   <li className="d-flex align-items-start mb-3">
@@ -283,12 +309,15 @@ const Homepage = () => {
                   <li className="d-flex align-items-start">
                     <span className="bullet"></span>
                     <span className="ms-3">
-                      <strong>Stakeholder engagement for multi-sector collaboration</strong>
+                      <strong>
+                        Stakeholder engagement for multi-sector collaboration
+                      </strong>
                     </span>
                   </li>
                 </ul>
                 <p className="text-muted mb-0">
-                  Our programs equip leaders, innovators, and communities with practical tools to drive lasting change.
+                  Our programs equip leaders, innovators, and communities with
+                  practical tools to drive lasting change.
                 </p>
               </div>
             </div>
@@ -327,33 +356,55 @@ const Homepage = () => {
           <div className="row g-4 hover-cards">
             <div className="col-12 col-md-4">
               <div className="card h-100 hover-card border-0 shadow-sm">
-                <img src="Waste_valorization.webp" className="card-img-top" alt="Waste valorisation" height="220" />
+                <img
+                  src="Waste_valorization.webp"
+                  className="card-img-top"
+                  alt="Waste valorisation"
+                  height="220"
+                />
                 <div className="card-body">
                   <h4 className="card-title fw-bold">Waste Valorisation</h4>
                   <p className="card-text">
-                    Transform waste streams into valuable inputs and products through recycling, upcycling, and resource recovery initiatives.
+                    Transform waste streams into valuable inputs and products
+                    through recycling, upcycling, and resource recovery
+                    initiatives.
                   </p>
                 </div>
               </div>
             </div>
             <div className="col-12 col-md-4">
               <div className="card h-100 hover-card border-0 shadow-sm">
-                <img src="Green_jobs.webp" className="card-img-top" alt="Green jobs" height="220" />
+                <img
+                  src="Green_jobs.webp"
+                  className="card-img-top"
+                  alt="Green jobs"
+                  height="220"
+                />
                 <div className="card-body">
-                  <h4 className="card-title fw-bold">Green Innovation & Jobs</h4>
+                  <h4 className="card-title fw-bold">
+                    Green Innovation & Jobs
+                  </h4>
                   <p className="card-text">
-                    Build new enterprises and value chains that create employment in circular economy sectors like repair, remanufacturing, and composting.
+                    Build new enterprises and value chains that create
+                    employment in circular economy sectors like repair,
+                    remanufacturing, and composting.
                   </p>
                 </div>
               </div>
             </div>
             <div className="col-12 col-md-4">
               <div className="card h-100 hover-card border-0 shadow-sm">
-                <img src="Resource_recovery.webp" className="card-img-top" alt="Resource recovery" height="220" />
+                <img
+                  src="Resource_recovery.webp"
+                  className="card-img-top"
+                  alt="Resource recovery"
+                  height="220"
+                />
                 <div className="card-body">
                   <h4 className="card-title fw-bold">Resource Recovery</h4>
                   <p className="card-text">
-                    Promote sustainable systems that recover materials and extend product lifecycles through circular design.
+                    Promote sustainable systems that recover materials and
+                    extend product lifecycles through circular design.
                   </p>
                 </div>
               </div>
@@ -369,10 +420,17 @@ const Homepage = () => {
             title="Empowering every industry for a circular future"
             intro="We collaborate with organizations across all sectors to embed circular economy principles into their operations."
           />
-          <div id="esgCarousel" className="carousel slide" data-bs-ride="carousel">
+          <div
+            id="esgCarousel"
+            className="carousel slide"
+            data-bs-ride="carousel"
+          >
             <div className="carousel-inner rounded-5">
               {sectors.map((sector, index) => (
-                <div className={`carousel-item ${index === 0 ? "active" : ""}`} key={index}>
+                <div
+                  className={`carousel-item ${index === 0 ? "active" : ""}`}
+                  key={index}
+                >
                   <img
                     src={sector.image}
                     className="d-block w-100 vh-40 vh-md-80"
@@ -386,12 +444,28 @@ const Homepage = () => {
                 </div>
               ))}
             </div>
-            <button className="carousel-control-prev" type="button" data-bs-target="#esgCarousel" data-bs-slide="prev">
-              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+            <button
+              className="carousel-control-prev"
+              type="button"
+              data-bs-target="#esgCarousel"
+              data-bs-slide="prev"
+            >
+              <span
+                className="carousel-control-prev-icon"
+                aria-hidden="true"
+              ></span>
               <span className="visually-hidden">Previous</span>
             </button>
-            <button className="carousel-control-next" type="button" data-bs-target="#esgCarousel" data-bs-slide="next">
-              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+            <button
+              className="carousel-control-next"
+              type="button"
+              data-bs-target="#esgCarousel"
+              data-bs-slide="next"
+            >
+              <span
+                className="carousel-control-next-icon"
+                aria-hidden="true"
+              ></span>
               <span className="visually-hidden">Next</span>
             </button>
           </div>
@@ -417,7 +491,9 @@ const Homepage = () => {
                 <li className="d-flex align-items-start mb-3">
                   <span className="circle-bullet"></span>
                   <span className="ms-3">
-                    <strong>Keeping products and materials in circulation</strong>
+                    <strong>
+                      Keeping products and materials in circulation
+                    </strong>
                   </span>
                 </li>
                 <li className="d-flex align-items-start">
@@ -428,18 +504,28 @@ const Homepage = () => {
                 </li>
               </ul>
               <p className="mt-4 text-muted">
-                This approach reduces pollution, conserves natural resources, and builds economic resilience, contributing directly to sustainable development goals.
+                This approach reduces pollution, conserves natural resources,
+                and builds economic resilience, contributing directly to
+                sustainable development goals.
               </p>
             </div>
             <div className="col-12 col-lg-6">
               <div className="p-5 bg-white rounded-4 shadow-sm text-center h-100">
                 <h3 className="fw-bold mb-3">Get Involved</h3>
                 <p className="mb-4">
-                  Whether you are a business redesigning your product lifecycle, a community organisation driving sustainable practices at the local level, or a government partner advancing national development goals,
-                  <strong> EcoVibe Kenya</strong> can help unleash your circular potential.
+                  Whether you are a business redesigning your product lifecycle,
+                  a community organisation driving sustainable practices at the
+                  local level, or a government partner advancing national
+                  development goals,
+                  <strong> EcoVibe Kenya</strong> can help unleash your circular
+                  potential.
                 </p>
                 <Link to="/contact">
-                  <Button color="#37B137" hoverColor="#2d8b2d" className="rounded-pill px-4 py-2 text-white fw-bold">
+                  <Button
+                    color="#37B137"
+                    hoverColor="#2d8b2d"
+                    className="rounded-pill px-4 py-2 text-white fw-bold"
+                  >
                     Contact us
                   </Button>
                 </Link>

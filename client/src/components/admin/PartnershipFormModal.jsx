@@ -96,8 +96,7 @@ const PartnershipFormModal = ({ show, onClose, opportunity }) => {
     if (!launchDate) nextErrors.launch_date = "Launch date is required";
     if (!deadlineDate) nextErrors.deadline_date = "Deadline date is required";
     if (launchDate && deadlineDate && launchDate > deadlineDate) {
-      nextErrors.deadline_date =
-        "Launch date cannot be after deadline date";
+      nextErrors.deadline_date = "Launch date cannot be after deadline date";
     }
 
     setErrors(nextErrors);
@@ -222,9 +221,7 @@ const PartnershipFormModal = ({ show, onClose, opportunity }) => {
             />
 
             {errors.image && (
-              <small className="text-danger d-block mt-1">
-                {errors.image}
-              </small>
+              <small className="text-danger d-block mt-1">{errors.image}</small>
             )}
 
             {form.image ? (
