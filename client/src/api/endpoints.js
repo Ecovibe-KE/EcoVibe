@@ -69,4 +69,8 @@ export const ENDPOINTS = {
   partnerships: "/partnerships",
   partnershipById: (id) => `/partnerships/${id}`,
   partnershipStatus: (id) => `/partnerships/${id}/status`,
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> a2145e12718932336eab9c572f1b7ab16ca5fceb
