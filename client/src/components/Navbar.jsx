@@ -67,6 +67,13 @@ function NavBar() {
                   </Nav.Link>
                   <Nav.Link
                     as={NavLink}
+                    to="/partnerships"
+                    className="mx-3 fw-bold nav-link"
+                  >
+                    Partnerships
+                  </Nav.Link>
+                  <Nav.Link
+                    as={NavLink}
                     to="/contact"
                     className="mx-3 fw-bold nav-link"
                   >

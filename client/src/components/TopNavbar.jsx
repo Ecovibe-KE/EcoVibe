@@ -10,6 +10,7 @@ import profile from "../assets/profile.png";
 //import payments from "../assets/payment.png";
 import blog from "../assets/blog.png";
 import services from "../assets/services.png";
+import gears from "../assets/gears.png";
 //import about from "../assets/about.png";
 import users from "../assets/users.png";
 import tickets from "../assets/tickets.png";
@@ -43,6 +44,12 @@ const NAV_ITEMS = [
     alt: "Payments",
   },*/
   { to: "/dashboard/blog", icon: blog, label: "Blog Management", alt: "Blog" },
+  {
+    to: "/dashboard/partnerships",
+    icon: gears,
+    label: "Partnerships & Funding",
+    alt: "Partnerships",
+  },
   {
     to: "/dashboard/services",
     icon: services,

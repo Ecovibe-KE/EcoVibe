@@ -15,6 +15,8 @@ from .service import services_bp
 
 from .user_management import user_management_bp
 
+from .partnership_n_funding import partnership_bp
+
 FLASK_API = os.getenv("FLASK_API", "/api")
 
 API = FLASK_API
@@ -34,4 +36,5 @@ def register_routes(app):
     app.register_blueprint(dashboard_bp, url_prefix=API)
     app.register_blueprint(booking_bp, url_prefix=API)
     app.register_blueprint(services_bp, url_prefix=API)
+    app.register_blueprint(partnership_bp, url_prefix=API)
     app.register_blueprint(quote_bp, url_prefix=API)

@@ -75,6 +75,7 @@ def create_app(config_name="development"):
         document,
         invoice,
         newsletter_subscriber,
+        partnerships_n_funding,
         payment,
         service,
         ticket_message,
