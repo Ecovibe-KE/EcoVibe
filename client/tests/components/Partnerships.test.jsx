@@ -46,17 +46,17 @@ describe("Partnerships page", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: /Funding & Partnership Opportunities/i,
+        name: Partnership Opportunities/i,
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/There are currently no funding or partnership opportunities/i),
+      screen.getByText(/Cross sector Innovation/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/New opportunities will appear here as they become available/i),
+      screen.getByText(/Sustainability Initiatives/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Check back soon for upcoming opportunities/i),
+      screen.getByText(/Knowledge & Resource Sharingb/i),
     ).toBeInTheDocument();
   });
 
