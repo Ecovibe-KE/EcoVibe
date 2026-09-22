@@ -115,12 +115,12 @@ const Homepage = () => {
                     impact
                   </p>
                   <h1 className="display-4 display-md-3 display-lg-2 fw-bold mb-3 text-white">
-                    ECOVIBE KENYA
+                    Ecovibe Kenya
                   </h1>
                   <p className="hero-copy">
                     We provide grassroots empowerment through sensitization
                     trainings to build knowledge on various economic endeavors
-                    at ward level.
+                    at the ward level, to be replicated at the county and national level
                   </p>
                   <div className="d-flex flex-wrap gap-3 mt-4">
                     <Link to="/contact">
@@ -160,7 +160,7 @@ const Homepage = () => {
               <SectionHeading
                 eyebrow="Who we are"
                 title="A trusted partner for regenerative growth"
-                intro="EcoVibe Kenya is a circular economy and sustainable development consultancy dedicated to transforming how organisations, sectors, and communities use resources and create impact."
+                intro="Ecovibe Kenya is a circular economy and sustainable development consultancy dedicated to transforming how organisations, sectors, and communities use resources and create impact."
                 align="start"
               />
               <p className="text-muted mb-3">
@@ -210,7 +210,7 @@ const Homepage = () => {
               <Card className="shadow-card border-0 rounded-5 overflow-hidden">
                 <Card.Img
                   src="/investment.webp"
-                  alt="EcoVibe Kenya supporting circular and sustainable development"
+                  alt="Ecovibe Kenya supporting circular and sustainable development"
                   className="img-fluid w-100"
                 />
                 <Card.ImgOverlay className="d-flex flex-column justify-content-end p-4 text-start">
@@ -517,7 +517,7 @@ const Homepage = () => {
                   a community organisation driving sustainable practices at the
                   local level, or a government partner advancing national
                   development goals,
-                  <strong> EcoVibe Kenya</strong> can help unleash your circular
+                  <strong> Ecovibe Kenya</strong> can help unleash your circular
                   potential.
                 </p>
                 <Link to="/contact">
