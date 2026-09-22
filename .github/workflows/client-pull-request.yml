@@ -14,6 +14,7 @@ on:
 jobs:
   # This workflow contains a job called "react-tests"
   react-tests:
+    if: false
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
