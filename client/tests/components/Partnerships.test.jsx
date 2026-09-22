@@ -46,7 +46,7 @@ describe("Partnerships page", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: Partnership Opportunities/i,
+        name: /Partnership Opportunities/i,
       }),
     ).toBeInTheDocument();
     expect(
