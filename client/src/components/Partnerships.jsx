@@ -127,7 +127,7 @@ const Partnerships = () => {
     <div className="container py-5">
       <div className="text-center">
         <h1 className={`fw-bold d-block ${style.sustainabilityUnderline}`}>
-          Partnerships &amp; Funding
+          Partnerships
         </h1>
       </div>
       <p className="p-4 text-center">
@@ -148,23 +148,65 @@ const Partnerships = () => {
           <h2 className="fw-bold text-dark mb-3">
             Partnership Opportunities
           </h2>
-          {/*<p className="text-muted mb-3">
-            There are currently no funding or partnership opportunities
-            available.
-          </p>*/}
-          <p className="text-muted mb-4">
-            Ecovibe Kenya welcomes strategic partnerships and collaborations from all sectors, including private businesses, public institutions, (International)/Non Governmental Organizations, as well as community initiatives.
+          <p className="text-muted mb-3">
+            Ecovibe Kenya welcomes strategic partnerships and collaborations
+            from all sectors, including private businesses, public
+            institutions, (International)/Non Governmental Organizations, as
+            well as community initiatives.
+          </p>
+          <p className="text-muted mb-3">
+            We are actively seeking forward thinking partners to co-create
+            sustainable solutions and bridge the gap in realizing a true
+            circular economy environment. Whether through joint sustainability
+            projects, green innovation, or impactful resource management, we
+            believe that cross sector collaboration is vital to scaling
+            eco-friendly practices.
+          </p>
+          <p className="text-muted mb-3">
+            Our doors are always open to impactful ideas and strategic
+            alliances.
+          </p>
 
-            We are actively seeking forward thinking partners to co-create sustainable solutions and bridge the gap in realizing a true circular economy environment. 
-            Whether through joint sustainability projects, green innovation, or impactful resource management, we believe that cross sector collaboration is vital to scaling eco-friendly practices.
+          <div className="text-start mx-auto mb-4" style={{ maxWidth: 620 }}>
+            <h3 className="fw-bold h6 text-dark mb-3">
+              How to Partner with Us
+            </h3>
+            <ul className="list-unstyled text-muted mb-0">
+              <li className="d-flex mb-2">
+                <span className="fw-semibold text-dark me-2">
+                  Cross sector Innovation:
+                </span>
+                <span>
+                  We collaborate with businesses and organizations of all sizes
+                  to integrate circularity into their operations.
+                </span>
+              </li>
+              <li className="d-flex mb-2">
+                <span className="fw-semibold text-dark me-2">
+                  Sustainability Initiatives:
+                </span>
+                <span>
+                  We co-design and implement localized green projects that
+                  drive measurable environmental impact.
+                </span>
+              </li>
+              <li className="d-flex">
+                <span className="fw-semibold text-dark me-2">
+                  Knowledge &amp; Resource Sharing:
+                </span>
+                <span>
+                  We invite technical experts and advocacy groups to join
+                  forces in accelerating sustainable development.
+                </span>
+              </li>
+            </ul>
+          </div>
 
-            Our doors are always open to impactful ideas and strategic alliances.
-            How to Partner with Us
-            - Cross sector Innovation: We collaborate with businesses and organizations of all sizes to integrate circularity into their operations.
-            - Sustainability Initiatives: We co-design and implement localized green projects that drive measurable environmental impact.
-            - Knowledge & Resource Sharing: We invite technical experts and advocacy groups to join forces in accelerating sustainable development.
-            
-            If your organization shares our vision of eliminating waste and driving a circular economy in Kenya, we want to hear from you. Reach out to our partnership team today to discuss how we can work together.
+          <p className="text-muted mb-0">
+            If your organization shares our vision of eliminating waste and
+            driving a circular economy in Kenya, we want to hear from you.
+            Reach out to our partnership team today to discuss how we can work
+            together.
           </p>
           {/* <p className="small fw-medium text-secondary mb-0">
             Check back soon for upcoming opportunities.
