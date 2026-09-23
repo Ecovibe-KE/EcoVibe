@@ -135,32 +135,82 @@ const Partnerships = () => {
         sustainable, environment-friendly initiatives and grow your impact.
       </p>
 
-      {loading ? (
+      {loading? (
         <div className="d-flex justify-content-center align-items-center py-5">
           <Spinner animation="border" variant="success" />
           <span className="ms-2 text-secondary">Loading opportunities...</span>
         </div>
-      ) : opportunities.length === 0 ? (
+      ): opportunities.length === 0 ? (
         <div
           className="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center mx-auto my-4"
           style={{ maxWidth: 720 }}
         >
           <h2 className="fw-bold text-dark mb-3">
-            Funding &amp; Partnership Opportunities
+            Partnership Opportunities
           </h2>
           <p className="text-muted mb-3">
-            There are currently no funding or partnership opportunities
-            available.
+            Ecovibe Kenya welcomes strategic partnerships and collaborations
+            from all sectors, including private businesses, public
+            institutions, (International)/Non Governmental Organizations, as
+            well as community initiatives.
           </p>
-          <p className="text-muted mb-4">
-            We're continually working to connect businesses, organizations, and
-            sustainability initiatives with relevant funding and collaboration
-            opportunities. New opportunities will appear here as they become
-            available.
+          <p className="text-muted mb-3">
+            We are actively seeking forward thinking partners to co-create
+            sustainable solutions and bridge the gap in realizing a true
+            circular economy environment. Whether through joint sustainability
+            projects, green innovation, or impactful resource management, we
+            believe that cross sector collaboration is vital to scaling
+            eco-friendly practices.
           </p>
-          <p className="small fw-medium text-secondary mb-0">
+          <p className="text-muted mb-3">
+            Our doors are always open to impactful ideas and strategic
+            alliances.
+          </p>
+
+          <div className="text-start mx-auto mb-4" style={{ maxWidth: 620 }}>
+            <h3 className="fw-bold h6 text-dark mb-3">
+              How to Partner with Us
+            </h3>
+            <ul className="list-unstyled text-muted mb-0">
+              <li className="d-flex mb-2">
+                <span className="fw-semibold text-dark me-2">
+                  Cross sector Innovation:
+                </span>
+                <span>
+                  We collaborate with businesses and organizations of all sizes
+                  to integrate circularity into their operations.
+                </span>
+              </li>
+              <li className="d-flex mb-2">
+                <span className="fw-semibold text-dark me-2">
+                  Sustainability Initiatives:
+                </span>
+                <span>
+                  We co-design and implement localized green projects that
+                  drive measurable environmental impact.
+                </span>
+              </li>
+              <li className="d-flex">
+                <span className="fw-semibold text-dark me-2">
+                  Knowledge &amp; Resource Sharing:
+                </span>
+                <span>
+                  We invite technical experts and advocacy groups to join
+                  forces in accelerating sustainable development.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <p className="text-muted mb-0">
+            If your organization shares our vision of eliminating waste and
+            driving a circular economy in Kenya, we want to hear from you.
+            Reach out to our partnership team today to discuss how we can work
+            together.
+          </p>
+          {/* <p className="small fw-medium text-secondary mb-0">
             Check back soon for upcoming opportunities.
-          </p>
+          </p>*/}
         </div>
       ) : (
         <div className="row g-4">
